@@ -79,6 +79,8 @@ class InfoSource implements Serializable {
     // An infosource serves many collections
     static hasMany = [collections: ProviderGroup]
 
+    // prevent grails creating these as DB columns (as a result of the getters/setters defined below)
+    static transients = ['webServiceUri', 'webServiceProtocol']
 
     static constraints = {
         guid(nullable:true, maxSize: 45)   // will become blank:false, unique:true

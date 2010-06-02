@@ -15,7 +15,7 @@ environments {
 	development {
 		dataSource {
 //            logSql = "true"
-			dbCreate = "update" // one of 'create', 'create-drop','update'
+			dbCreate = "create" // one of 'create', 'create-drop','update'
             url = "jdbc:mysql://localhost:3306/collectory?autoReconnect=true&connectTimeout=0"
 //			url = "jdbc:hsqldb:mem:devDB"
 		}

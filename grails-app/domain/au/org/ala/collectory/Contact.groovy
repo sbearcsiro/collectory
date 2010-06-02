@@ -54,8 +54,16 @@ class Contact implements Serializable {
 
     /**
      * Loads a name that comes as a single string. Only handles simple cases.
+     *
      */
     void parseName(String name) {
+        if (!name) return
+        // remove any trailing parentheses  -  handles cases like "Mr Tom Weir (BSc (HONS))"
+
+        if (name.indexOf('(') > 0) {
+            name = name.substring(0, name.indexOf('('))
+        }
+
         def parts = name.split()
         switch (parts.size()) {
             case 0: break // bad
@@ -73,7 +81,7 @@ class Contact implements Serializable {
                     - make the last part the last name
                     - dump all the remaining parts into first name
                  */
-                if (parts[0] in ["Dr", "Prof", "Mr", "Ms", ""]) {
+                if (parts[0] in ["Dr", "Dr.", "Prof", "Mr", "Ms", ""]) {
                     title = parts[0]
                     firstName = parts[1..parts.size() - 2].join(" ")
                 } else {

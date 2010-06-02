@@ -19,4 +19,20 @@ class GeneralGroovyTests extends GrailsUnitTestCase {
 
         assertEquals 2, list.findAll{it.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION}.size()
     }
+
+    void testLoadingAsParams() {
+        String [] keys = ['one', 'two', 'three'];
+        def values = ['v1', 'v2', 'v3']
+        def params = [:]
+        keys.eachWithIndex {it, i ->
+            params[it] = values[i]
+        }
+        assertEquals 3, params.size()
+        params.each {key, value ->
+            println "${key} == ${value}"
+        }
+        assertEquals 'v2', params.two
+    }
+
+
 }

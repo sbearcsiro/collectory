@@ -1,7 +1,6 @@
 package au.org.ala.collectory
 
 import grails.test.*
-import au.org.ala.collectory.DataLoaderService.BCI
 /**
  * Created by IntelliJ IDEA.
  * User: markew
@@ -24,32 +23,61 @@ class DataLoaderTests extends GrailsUnitTestCase {
     }
 
     void testBuildLocation() {
-        String[] coll = new String[46]
-        coll[BCI.LOCATION_LONG.ordinal()] = "151.0414080000"
-        coll[BCI.LOCATION_LAT.ordinal()] = "-33.7465780000"
-        coll[BCI.LOCATION_ALT.ordinal()] = "700m"
-        assertEquals "Lat: -33.7465780000 Long: 151.0414080000 Alt: 700m", dataLoaderService.buildLocation(coll)
+        def params = ['longitude': "151.0414080000", 'latitude': "-33.7465780000", 'altitude': "700m"]
 
-        coll[BCI.LOCATION_LAT.ordinal()] = ""
-        assertEquals "Long: 151.0414080000 Alt: 700m", dataLoaderService.buildLocation(coll)
+        assertEquals "Lat: -33.7465780000 Long: 151.0414080000 Alt: 700m", dataLoaderService.buildLocation(params)
 
-        coll[BCI.LOCATION_ALT.ordinal()] = ""
-        assertEquals "Long: 151.0414080000", dataLoaderService.buildLocation(coll)
+        params.latitude = ""
+        assertEquals "Long: 151.0414080000 Alt: 700m", dataLoaderService.buildLocation(params)
+
+        params.altitude = ""
+        assertEquals "Long: 151.0414080000", dataLoaderService.buildLocation(params)
         
     }
 
     void testBuildSize() {
-        String[] coll = new String[46]
-        coll[BCI.SIZE_APPROX_INT.ordinal()] = ""
+        def params = ['numRecords': '-1', 'size': ""]
 
-        coll[BCI.SIZE.ordinal()] = "200 000"
-        assertEquals 200000, dataLoaderService.buildSize(coll)
+        params.size = "200 000"
+        assertEquals 200000, dataLoaderService.buildSize(params)
 
-        coll[BCI.SIZE.ordinal()] = "200,000"
-        assertEquals 200000, dataLoaderService.buildSize(coll)
+        params.size = "200,000"
+        assertEquals 200000, dataLoaderService.buildSize(params)
 
-        coll[BCI.SIZE.ordinal()] = "200.000"
-        assertEquals 200000, dataLoaderService.buildSize(coll)
+        params.size = "200.000"
+        assertEquals 200000, dataLoaderService.buildSize(params)
     }
 
+    void testRecogniseInstitution() {
+        assertEquals 'Commonwealth Scientific and Industrial Research Organisation', dataLoaderService.recogniseInstitution('CSIRO')
+        assertEquals 'Tasmanian Museum and Art Gallery', dataLoaderService.recogniseInstitution('Department of Tasmanian Museum and Art Gallery.')
+    }
+
+    void testIsALAPartner() {
+        assertTrue dataLoaderService.isALAPartner('Commonwealth Scientific and Industrial Research Organisation')
+        assertTrue dataLoaderService.isALAPartner('Australian Museum')
+    }
+
+    void testMassageInstitutionType() {
+
+        // use local variant of the method as I can't get constraints to mock correctly
+        assertNotNull massageInstitutionType('Government (State/Regional)')
+        assertNotNull massageInstitutionType('Museum (General)')
+        assertNotNull massageInstitutionType('Government (National/Federal)')
+        assertNotNull massageInstitutionType('Natural History Museum (Diverse Collections)')
+        assertNull massageInstitutionType('Entomology')
+    }
+
+    String massageInstitutionType(String bciType) {
+        if (bciType) {
+            String type = bciType.toLowerCase()
+            if (['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government', 'herbarium', 'historicalSociety', 'horticulturalInstitution', 'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum', 'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute', 'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'].contains(type)) {
+                return type
+            }
+            if (type =~ "government") return "government"
+            if (type =~ "museum") return "museum"
+            println "Failed to massage institution type: ${bciType}"
+        }
+        return null
+    }
 }

@@ -1,6 +1,7 @@
 package au.org.ala.collectory
 
 import grails.test.GrailsUnitTestCase
+import grails.converters.JSON
 
 /**
  * Created by markew
@@ -34,5 +35,23 @@ class GeneralGroovyTests extends GrailsUnitTestCase {
         assertEquals 'v2', params.two
     }
 
+    void testSplit() {
+        String test = 'Entomology (Insects/Spiders)'
+
+        def words = test.tokenize("[ ()/]")
+        words.each {println it}
+        assertEquals 3, words.size()
+        assertEquals 'Entomology', words[0]
+        assertEquals 'Insects', words[1]
+        assertEquals 'Spiders', words[2]
+    }
+
+    void testExtractKeywords() {
+        def str = 'Ducks, Quail and Sparrows'
+        List words = str.tokenize("[, ()/]")
+        words = words.collect{it.toLowerCase()}
+        def keywords = words.findAll {!(it in ['and','not','specified'])}
+        assertEquals '["ducks","quail","sparrows"]', (keywords as JSON).toString()
+    }
 
 }

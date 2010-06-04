@@ -16,6 +16,7 @@
 package au.org.ala.collectory
 
 import org.hibernate.ObjectNotFoundException
+import grails.converters.JSON
 
 /**
  *  Represents an organisational group in the collectory, such as an
@@ -23,11 +24,11 @@ import org.hibernate.ObjectNotFoundException
  *
  *  - based on collectory data model version 4
  *
- *  NOTE: class name changed to Grp as ProviderGroup is a reserved word in many
- *  persistence languages
+ *  NOTE: class name changed to ProviderGroup as Group is a reserved word in many persistence languages
  *
  * .@history 2010-04-23 MEW Replaced String location with BigDecimal latitude, longitude and String altitude
  * .@history 2010-05-27 MEW Refactored model
+ * .@history 2010-06-02 MEW Renamed providerCodes, changed to list, added internal mirror field
  *
  */
 
@@ -47,7 +48,6 @@ class ProviderGroup implements Serializable {
     String pubDescription       // public description
     String techDescription      // technical description
     String focus                //
-    //String address
     Address address
     BigDecimal latitude = NO_INFO_AVAILABLE     // decimal latitude
     BigDecimal longitude = NO_INFO_AVAILABLE    // decimal longitude
@@ -66,11 +66,14 @@ class ProviderGroup implements Serializable {
     String notes
     static embedded = ['address', 'logoRef', 'imageRef']
 
+    // collection attributes
+    String providerCodes       // the codes used for this entity by the owning institution as a JSON array
+                               //  form is: ["code1", "code2"]
+    String internalProviderCodes// a set of codes for internal use that override the providerCodes
+    String internalInstitutionCode
+
     // institution attributes
     String institutionType      // the type of institution, eg herbarium, library
-
-    // collection attributes
-    String providerCollectionCode       // the code used for this entity by the owning institution
 
     // project attributes
     Date projectStart
@@ -87,6 +90,8 @@ class ProviderGroup implements Serializable {
 
     /* this causes stack overflow from circular validations - we don't want cascading deletes anyway */
     //static belongsTo = ProviderGroup
+
+    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup']
 
     static constraints = {
         guid(blank:false, unique:true, maxSize:45)
@@ -115,7 +120,9 @@ class ProviderGroup implements Serializable {
 
         institutionType(nullable:true, maxSize:45, inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government', 'herbarium', 'historicalSociety', 'horticulturalInstitution', 'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum', 'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute', 'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'])
 
-        providerCollectionCode(nullable:true, maxSize:45)
+        providerCodes(nullable:true, maxSize:2048)
+        internalProviderCodes(nullable:true, maxSize:2048)
+        internalInstitutionCode(nullable:true, maxSize:45)
 
         projectStart(nullable:true)
         projectEnd(nullable:true)
@@ -220,6 +227,34 @@ class ProviderGroup implements Serializable {
 
     List getParentInstitutionsOrderedByName() {
         return new ArrayList<ProviderGroup>(this.getParents()).sort{item-> item.name}
+    }
+
+    /*
+     * Returns the list of provider codes that can be used to look up specimen records
+     *
+     * stored form of codes is: ["code1", "code2"]
+     * @return the list of codes - may be empty
+     */
+    List<String> getListOfCollectionCodesForLookup() {
+        String codes = this.internalProviderCodes ? this.internalProviderCodes : this.providerCodes
+        if (codes) {
+            def jsonArray = JSON.parse(codes)
+            return jsonArray.collect {it}
+        } else {
+            return []
+        }
+    }
+
+    /**
+     * Returns the institution code that can be used to look up specimen records
+     *
+     * @return code or null
+     */
+    String getInstitutionCodeForLookup() {
+        String code = getInternalInstitutionCode()
+        if (!code)
+            code = getAcronym()
+        return code
     }
 }
 

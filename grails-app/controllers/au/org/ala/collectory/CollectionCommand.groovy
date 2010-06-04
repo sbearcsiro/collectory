@@ -1,8 +1,7 @@
 package au.org.ala.collectory
 
 import org.codehaus.groovy.grails.validation.Validateable
-import org.springframework.web.multipart.MultipartFile
-import org.apache.log4j.Logger
+import grails.converters.JSON
 
 /**
  * A command class for collecting and validating a collection instance.
@@ -32,7 +31,7 @@ class CollectionCommand implements Serializable {
     String email
     String phone
     String notes
-    String providerCollectionCode       // the code used for this entity by the owning institution
+    String providerCodes       // a comma-separated list of the codes used for this entity by the owning institution
 
     List<ProviderGroup> parents = []
 
@@ -40,7 +39,7 @@ class CollectionCommand implements Serializable {
 
     // maps to CollectionScope
     String collectionType       // type of collection e.g live, preserved, tissue, DNA
-    String keywords
+    String keywords             // a comma-separated list of keywords
     String active               // see active vocab
     int numRecords = ProviderGroup.NO_INFO_AVAILABLE
                                 // total number of records held that are able to be digitised
@@ -108,9 +107,9 @@ class CollectionCommand implements Serializable {
             "texts",
             "tissue",
             "visual"])
-        providerCollectionCode(nullable:true, maxSize:45)
+        providerCodes(nullable:true, maxSize:2048)
 
-        keywords(nullable:true)
+        keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
         numRecords()
         numRecordsDigitised()
@@ -225,7 +224,7 @@ class CollectionCommand implements Serializable {
         email = collectionInstance.email
         phone = collectionInstance.phone
         notes = collectionInstance.notes
-        providerCollectionCode = collectionInstance.providerCollectionCode
+        providerCodes = toCSVString(collectionInstance.providerCodes)
 
         parents = collectionInstance.getParentInstitutionsOrderedByName()
 
@@ -235,7 +234,7 @@ class CollectionCommand implements Serializable {
         CollectionScope collectionScope = collectionInstance.scope
         if (collectionScope) {
             collectionType = collectionScope.collectionType
-            keywords = collectionScope.keywords
+            keywords = toCSVString(collectionScope.keywords)
             active = collectionScope.active
             numRecords = collectionScope.numRecords
             numRecordsDigitised = collectionScope.numRecordsDigitised
@@ -300,18 +299,21 @@ class CollectionCommand implements Serializable {
         ['longitude', 'latitude'].each {
             collectionInstance."${it}" = this."${it}" ? this."${it}" : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
+        println "provider codes = ${this.providerCodes}"
+        collectionInstance.providerCodes = toJSON(this.providerCodes)
         // update collection scope
         // create a scope if there isn't one
         if (!collectionInstance.scope) {
             collectionInstance.scope = new CollectionScope()
         }
-        collectionInstance.scope.properties['collectionType', 'keywords', 'active', 'states', 'geographicDescription',
+        collectionInstance.scope.properties['collectionType', 'active', 'states', 'geographicDescription',
                 'startDate', 'endDate', 'scientificNames'] = this.properties
         collectionInstance.scope.kingdomCoverage = this.kingdomCoverage?.join(" ")
         println "KC=" + collectionInstance.scope.kingdomCoverage
         ['eastCoordinate', 'westCoordinate', 'northCoordinate', 'southCoordinate', 'numRecords', 'numRecordsDigitised'].each {
             collectionInstance.scope."${it}" = this."${it}" ? this."${it}" : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
+        collectionInstance.scope.keywords = toJSON(this.keywords)
         // modify and save changes to institutions
         addedInstitutions.each {
             ProviderGroup inst = ProviderGroup.get(it)
@@ -417,4 +419,22 @@ class CollectionCommand implements Serializable {
         return true
     }
 
+    String toCSVString(String json) {
+        if (json) {
+            def list = JSON.parse(json)
+            //return list.join(',')  // why doesn't this work?
+            String str = ''
+            list.each{(str) ? (str += "," + it) : (str += it)}
+            return str
+        }
+        return null
+    }
+
+    String toJSON(String csvs) {
+        if (csvs) {
+            List codes = csvs?.tokenize('[, ]')
+            return (codes as JSON).toString()
+        }
+        return null
+    }
 }

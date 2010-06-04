@@ -42,9 +42,9 @@
                             <td valign="top" class="name">
                               <cl:label for="scientificNames" source="infoSource" default="Scientific names"/>
                             </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'endDate', 'errors')}">
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'scientificNames', 'errors')}">
                                 <!--richui:autoComplete name="scientificNames" controller="collection" action="scinames" title="sci name"/-->
-                              <g:textArea name="scientificNames" />
+                              <g:textArea name="scientificNames" value="${fieldValue(bean: command, field: 'scientificNames')}"/>
                               <cl:helpText code="infosource.scientificNames"/>
                           </td>
                           <cl:helpTD/>

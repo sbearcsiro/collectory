@@ -47,7 +47,7 @@ class CollectionScope implements Serializable {
     static belongsTo = ProviderGroup
 
     static constraints = {
-        collectionType(nullable: true/*, inList: [
+        collectionType(nullable: true, inList: [
             "archival",
             "art",
             "audio",
@@ -63,8 +63,8 @@ class CollectionScope implements Serializable {
             "taxonomic",
             "texts",
             "tissue",
-            "visual"]*/)
-        keywords(nullable:true)
+            "visual"])
+        keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
         numRecords()
         numRecordsDigitised()
@@ -90,7 +90,7 @@ class CollectionScope implements Serializable {
                 }
                 return ok
             })
-        scientificNames(nullable:true)
+        scientificNames(nullable:true, maxSize:2048)
         dateCreated(nullable:true)
         dateLastModified()
         userLastModified(maxSize:256)

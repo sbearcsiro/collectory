@@ -57,11 +57,6 @@
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "focus")}</td>
                         </tr>
                     
-<!-- prov coll code --> <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.providerCollectionCode.label" default="Provider Collection Code" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "providerCollectionCode")}</td>
-                        </tr>
-
 <!-- Institutions -->   <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.institutions.label" default="Institutions" /></td>
 
@@ -96,7 +91,7 @@
 
 <!-- Keywords -->       <tr class="prop">
                           <td valign="top" class="name"><g:message code="infoSource.keywords.label" default="Keywords" /></td>
-                          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.keywords")}</td>
+                          <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.scope.keywords}'/></td>
                         </tr>
                     
 <!-- Web site -->       <tr class="prop">
@@ -181,6 +176,11 @@
                           <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.kingdomCoverage")}</td>
                         </tr>
 
+<!-- sci names -->      <tr class="prop">
+                          <td valign="top" class="name"><g:message code="infoSource.scientificNames.label" default="Scientific Names" /></td>
+                          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.scientificNames")}</td>
+                        </tr>
+
 <!-- Num records -->    <tr class="prop">
                           <td valign="top" class="name"><g:message code="infoSource.numRecords.label" default="Num Records" /></td>
                           <td valign="top" class="value">
@@ -251,6 +251,11 @@
 <!-- protocol -->       <tr class="prop">
                             <td valign="top" class="name"><g:message code="infoSource.webServiceProtocol.label" default="Web Service Protocol" /></td>
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "infoSource.webServiceProtocol")}</td>
+                        </tr>
+
+<!-- provider codes --> <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.providerCodes.label" default="Collection codes" /></td>
+                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.providerCodes}'/></td>
                         </tr>
 
 <!-- Contacts -->       <tr class="prop">

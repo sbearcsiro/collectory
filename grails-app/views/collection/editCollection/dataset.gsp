@@ -48,14 +48,16 @@
                               </td>
                               <cl:helpTD/>
                         </tr>
-                        
+
 <!-- web service -->    <tr class="prop">
                             <td valign="top" class="name">
                               <label for="webServiceUri"><g:message code="infoSource.webServiceUri.label" default="Web Service Uri" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'webServiceUri', 'errors')}">
                                 <g:textField name="webServiceUri" value="${fieldValue(bean: command, field: 'webServiceUri')}" />
+                                <cl:helpText code="infoSource.numRecords"/>
                             </td>
+                            <cl:helpTD/>
                         </tr>
 
 <!-- protocol -->       <tr class="prop">
@@ -64,7 +66,20 @@
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'webServiceProtocol', 'errors')}">
                                 <g:textField name="webServiceProtocol" value="${fieldValue(bean: command, field: 'webServiceProtocol')}" />
+                                <cl:helpText code="infoSource.numRecords"/>
                             </td>
+                            <cl:helpTD/>
+                        </tr>
+
+<!-- codes -->          <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="providerCodes"><g:message code="providerGroup.providerCodes.label" default="Collection code" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'providerCodes', 'errors')}">
+                                <g:textField name="providerCodes" value="${fieldValue(bean: command, field: 'providerCodes')}" />
+                                <cl:helpText code="providerGroup.providerCodes"/>
+                            </td>
+                            <cl:helpTD/>
                         </tr>
 
                         </tbody>

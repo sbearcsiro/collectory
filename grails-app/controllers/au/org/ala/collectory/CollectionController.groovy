@@ -20,7 +20,7 @@ class CollectionController {
     final static LinkedHashMap SCOPE_MAPPING = [include:['spatialRepresentationType', 'spatialResolution', 'states',
                 'geographicDescription', 'wellKnownText', 'eastCoordinate', 'westCoordinate', 'northCoordinate',
                 'southCoordinate', 'startDate', 'endDate', 'kingdomCoverage', 'scientificNames']]
-    final static LinkedHashMap DATASET_MAPPING = [include:['webServiceUri', 'webServiceProtocol', 'numRecords', 'numRecordsDigitised']]
+    final static LinkedHashMap DATASET_MAPPING = [include:['webServiceUri', 'webServiceProtocol', 'numRecords', 'numRecordsDigitised', 'providerCodes']]
     final static LinkedHashMap LOCATION_MAPPING = [include:['address.street', 'address.postBox', 'address.city',
                 'address.state', 'address.postcode', 'address.country', 'latitude', 'longitude', 'altitude', 'state', 'email', 'phone']]
 
@@ -125,16 +125,55 @@ class CollectionController {
 
     // search for collections using the supplied search term
     def searchList = {
+        params.each {println it}
+        if (!params.max) params.max = 10
+        if (!params.offset) params.offset = 0
+        if (!params.sort) params.sort = "name"
+        if (!params.order) params.order = "asc"
+
+        def results = ProviderGroup.withCriteria {
+            maxResults(params.max?.toInteger())
+            firstResult(params.offset?.toInteger())
+            order(params.sort, params.order)
+            eq ('groupType', 'Collection')
+            or {
+                like ('name', "%${params.term}%")
+                scope {
+                    like ('keywords', "%${params.term}%")
+                }
+                eq ('acronym', "${params.term}")
+            }
+        }
+        def total = ProviderGroup.withCriteria {
+            eq ('groupType', 'Collection')
+            or {
+                like ('name', "${params.term}")
+                scope {
+                    like ('keywords', "%${params.term}%")
+                }
+                eq ('acronym', "${params.term}")
+            }
+        }.size()
         def term = params.term
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        params.sort = "name"
-        //log.info "term=" + term
-        // for display purposes
-        def criteria = term ? term : "blank"
-        [providerGroupInstanceList : ProviderGroup.findAllByNameIlikeOrAcronymIlike("%"+term+"%", "%"+term+"%", params),
-                providerGroupInstanceTotal: ProviderGroup.countByNameIlikeOrAcronymIlike("%"+term+"%", "%"+term+"%"),
-                criteria: [criteria],
-                term: term]
+        def criteria = term ? term : "blank"        // for display purposes
+/*        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.sort = params.sort ? params.sort : 'name'
+        params.order = params.order ? params.order : 'asc'
+        params.each {println it}
+        def matches = ProviderGroup.findAll("""\
+            from ProviderGroup as p where p.acronym=:term \
+            or p.name like :liketerm \
+            or (p.groupType='Collection' and p.scope.keywords like :liketerm)""", [term:term, liketerm:"%${term}%"], params)
+        // def matches = ProviderGroup.findAllByNameIlikeOrAcronymIlike("%"+term+"%", "%"+term+"%", params)
+        def total = params.providerGroupInstanceTotal
+        if (!total) {
+            def all = ProviderGroup.findAll("""\
+                from ProviderGroup as p where p.acronym=:term \
+                or p.name like :liketerm \
+                or (p.groupType='Collection' and p.scope.keywords like :liketerm)""", [term:term, liketerm:"%${term}%"])
+            total = all.size()
+        }*/
+        [providerGroupInstanceList : results, providerGroupInstanceTotal: total, criteria: [criteria], term: term]
     }
 
     // not currently used - see editCollection flow
@@ -289,7 +328,7 @@ class CollectionController {
                         flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), flow.colid])}"
                         failure()
                     } else {
-                        log.info "Editing collection ${cmd.name}"
+                        log.info "Editing collection ${cmd.name} with provider codes ${cmd.providerCodes} and names ${cmd.scientificNames}"
                     }
                 } else {
                     log.info "Creating collection"

@@ -13,7 +13,7 @@ class DataLoaderService {
      * LSID,RECORD_ID,CREATED,MODIFIED,NAME,CODE,KIND,TAXON_SCOPE,GEO_SCOPE,SIZE,SIZE_APPROX_INT,FOUNDED_YEAR,NOTES,CONTACT_PERSON,CONTACT_POSITION,CONTACT_PHONE,CONTACT_FAX,CONTACT_EMAIL,WEB_SITE,WEB_SERVICE_URI,WEB_SERVICE_TYPE,LOCATION_DEPARTMENT,LOCATION_STREET,LOCATION_POST_BOX,LOCATION_CITY,LOCATION_STATE,LOCATION_POSTCODE,LOCATION_COUNTRY_NAME,LOCATION_COUNTRY_ISO,LOCATION_LONG,LOCATION_LAT,LOCATION_ALT,LOCATION_NOTES,INSTITUTION_NAME,INSTITUTION_TYPE,INSTITUTION_URI,DESCRIPTION_TECH,DESCRIPTION_PUB,URL
      */
     // List of field names as domain property names (_NAx are not mapped)
-    def column = ["guid","_NA1","_NA2","_NA3","name","acronym","collectionType","focus","geographicDescription","size","numRecords","startDate","notes","contactName","contactRole","contactPhone","contactFax","contactEmail","websiteUrl","webServiceUri","webServiceProtocol","_NA4","street","postBox","city","state","postcode","country","countryIsoCode","longitude","latitude","altitude","_NA6","institutionName","institutionType","institutionUri","techDescription","pubDescription","_NA7"]
+    def column = ["guid","_NA1","_NA2","_NA3","name","acronym","kind","focus","geographicDescription","size","numRecords","startDate","notes","contactName","contactRole","contactPhone","contactFax","contactEmail","websiteUrl","webServiceUri","webServiceProtocol","_NA4","street","postBox","city","state","postcode","country","countryIsoCode","longitude","latitude","altitude","_NA6","institutionName","institutionType","institutionUri","techDescription","pubDescription","_NA7"]
 
     def loadContact(String firstName, String lastName, boolean publish) {
         Contact c = JSON.parse("""{
@@ -113,7 +113,7 @@ class DataLoaderService {
                         institution.address.properties["street","postBox","city","state","postcode","country"] = params
                         provider.institutionType = massageInstitutionType(params.institutionType)
                         if (!provider.institutionType)
-                            provider.institutionType = massageInstitutionType(params.collectionType)
+                            provider.institutionType = massageInstitutionType(params.kind)
                         institution.isALAPartner = isALAPartner(institution.name)
                         institution.userLastModified = "BCI loader"
                         // discard existing provider object and make this the provider (so we can do common processing later)
@@ -123,14 +123,14 @@ class DataLoaderService {
                         provider.groupType = ProviderGroup.GROUP_TYPE_INSTITUTION
                         provider.institutionType = massageInstitutionType(params.institutionType)
                         if (!provider.institutionType)
-                            provider.institutionType = massageInstitutionType(params.collectionType)
+                            provider.institutionType = massageInstitutionType(params.kind)
                         // use AFD museum list to look up missing acronyms
                         if (!provider.acronym) {
                             String code = institutionCodeLoaderService.lookupInstitutionCode(provider.name)
                             if (code) {
                                 println "Using code ${code} for institution ${provider.name}"
                                 provider.acronym = code
-                                // TODO: provider.providerCode = code
+                                // TODO: provider.providerCodes = code
                             }
                         }
                         provider.isALAPartner = isALAPartner(institutionName)
@@ -139,7 +139,8 @@ class DataLoaderService {
                     /* collection */
                     provider.groupType = ProviderGroup.GROUP_TYPE_COLLECTION
                     provider.scope = new CollectionScope()
-                    provider.scope.properties["collectionType","geographicDescription","startDate"] = params
+                    provider.scope.properties["geographicDescription","startDate"] = params
+                    provider.scope.keywords = extractKeywords(params)
                     provider.scope.numRecords = buildSize(params)
                     provider.scope.userLastModified = "BCI loader"
                     // create or assign infosource only if there is some data
@@ -394,5 +395,12 @@ class DataLoaderService {
                 'Australian Government Department of the Environment, Water, Heritage and the Arts ',
                 'Museum Victoria',
                 'Museum of Victoria']
+    }
+
+    String extractKeywords(params) {
+        List words = params.kind.tokenize("[, ()/]")
+        words = words.collect{it.toLowerCase()}
+        def keywords = words.findAll {!(it in ['and','not','specified'])}
+        return (keywords as JSON).toString()
     }
 }

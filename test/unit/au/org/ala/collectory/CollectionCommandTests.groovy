@@ -15,7 +15,7 @@ class CollectionCommandTests extends GrailsUnitTestCase {
 
     protected void setUp() {
         super.setUp()
-        mockDomain ProviderGroup
+//        mockDomain ProviderGroup
         cc = new CollectionCommand()
         pg1 = new ProviderGroup(id:1)
         c1 = new Contact(id:3)
@@ -51,5 +51,13 @@ class CollectionCommandTests extends GrailsUnitTestCase {
         assertEquals 1, cc.contacts.size()
         cc.removeAsContact c1
         assertEquals 0, cc.contacts.size()
+    }
+
+    void testToJSON() {
+        assertEquals '["Entomology","Insects","Spiders"]', cc.toJSON('Entomology,Insects,Spiders')
+    }
+
+    void testToCSVString() {
+        assertEquals 'Entomology,Insects,Spiders', cc.toCSVString('["Entomology","Insects","Spiders"]')
     }
 }

@@ -4,6 +4,7 @@ import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
+import grails.converters.JSON
 
 class CollectoryTagLib {
 
@@ -263,6 +264,23 @@ class CollectoryTagLib {
      */
     def helpTD = {
         out << '<td><img class="helpButton" alt="help" src="' + resource(dir:'images/skin', file:'help.gif') + '" onclick="toggleHelp(this);"/></td>'
+    }
+
+    /**
+     * Displays a JSON list as a comma-separated list of strings
+     */
+    def JSONListAsStrings = {attrs ->
+        if (!attrs?.json)
+            return ""
+        //println attrs.json
+        //println attrs.json.toString().decodeHTML()
+        def list = JSON.parse(attrs.json.toString())
+        list.each {println it}
+        String str = ""
+        list.each {(str == "") ? (str += it) : (str += ", " + it)}
+        //println "str=" + str
+        //println "join=" + list.join(',')
+        out << str
     }
 
     /**

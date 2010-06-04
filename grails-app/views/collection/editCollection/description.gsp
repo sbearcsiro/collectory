@@ -1,4 +1,3 @@
-
 <%@ page import="au.org.ala.collectory.CollectionCommand" %>
 <html>
     <head>

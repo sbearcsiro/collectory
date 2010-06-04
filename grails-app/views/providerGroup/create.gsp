@@ -229,8 +229,8 @@
                                 <td valign="top" class="name">
                                     <label for="providerCollectionCode"><g:message code="providerGroup.providerCollectionCode.label" default="Provider Collection Code" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'providerCollectionCode', 'errors')}">
-                                    <g:textField name="providerCollectionCode" maxlength="45" value="${providerGroupInstance?.providerCollectionCode}" />
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'providerCodes', 'errors')}">
+                                    <g:textField name="providerCollectionCode" maxlength="45" value="${providerGroupInstance?.providerCodes}" />
                                 </td>
                             </tr>
                         

@@ -193,7 +193,7 @@
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="providerGroup.providerCollectionCode.label" default="Provider Collection Code" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "providerCollectionCode")}</td>
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "providerCodes")}</td>
                             
                         </tr>
                     

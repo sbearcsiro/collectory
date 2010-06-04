@@ -5,11 +5,11 @@
         <thead>
             <tr>
 
-                <g:sortableColumn property="name" title="${message(code: 'collection.name.label', default: 'Name')}" />
+                <g:sortableColumn property="name" title="${message(code: 'collection.name.label', default: 'Name')}" params="${params}"/>
 
-                <g:sortableColumn property="acronym" title="${message(code: 'collection.acronym.label', default: 'Acronym')}" />
+                <g:sortableColumn property="acronym" title="${message(code: 'collection.acronym.label', default: 'Acronym')}" params="${params}"/>
 
-                <g:sortableColumn property="focus" title="${message(code: 'collection.focus.label', default: 'Focus')}" />
+                <g:sortableColumn property="focus" title="${message(code: 'collection.focus.label', default: 'Focus')}" params="${params}" />
 
             </tr>
         </thead>

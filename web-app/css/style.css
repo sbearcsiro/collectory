@@ -99,7 +99,7 @@ ul, ol {
 
 #footer {
     background: #fff;
-    border-top: 1px solid #CECECE;
+    /* MEW border-top: 1px solid #CECECE;*/
     clear: both;
 }
 

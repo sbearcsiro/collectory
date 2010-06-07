@@ -284,6 +284,23 @@ class CollectoryTagLib {
     }
 
     /**
+     * Displays label, count and percent of total as 3 table columns
+     * @param total - divisor in percent calculation
+     * @param with - count to display, dividend in percent calc
+     * @param without - 'inverse' of count to display, ie display total - this number
+     */
+    def totalAndPercent = {attrs ->
+        def count = 0
+        if (attrs.with) {
+            count = attrs.with
+        } else {
+            count = attrs.total - attrs.without
+        }
+        out << """<td>${attrs.label}</td><td>${count}</td>\n
+         <td>${cl.percentIfKnown(dividend:count, divisor:attrs.total)}</td>"""
+    }
+
+    /**
      * Inserts a hidden div holding the specified help text.
      */
     def helpText = { attrs ->

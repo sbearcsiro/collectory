@@ -47,6 +47,11 @@
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">
+        <g:link class="mainLink" controller="reports" action="show">View reports</g:link>
+        <p class="mainText">Browse summaries of Registry contents and usage.</p>
+      </div>
+
+      <div class="homeCell">
         <g:link class="mainLink" controller="role" action="list">Manage roles</g:link>
         <p class="mainText">Define who can do what by role.</p>
       </div>

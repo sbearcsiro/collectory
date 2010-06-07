@@ -52,8 +52,8 @@
     <g:isNotLoggedIn>
         <g:link controller="login">Log in</g:link>
     </g:isNotLoggedIn>
-</div>
-
+</div><browser:isMsie><div style="clear:both"></div></browser:isMsie><!-- fix IE float bug-->
+  
 <div id="content" class="clearfix">
  
 	<div id="content-full-width">

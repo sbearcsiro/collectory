@@ -16,7 +16,7 @@ class CollectoryTagLib {
      * Decorates the role if present
      */
     def roleIfPresent = { attrs, body ->
-        out << (!attrs.role ? '' : ' - ' + attrs.role)
+        out << (!attrs.role ? '' : ' - ' + attrs.role.encodeAsHTML())
     }
 
     /**
@@ -106,9 +106,9 @@ class CollectoryTagLib {
             target = ""
         }
         if (lsid =~ 'lsid') {  // contains
-            out << "<a${target} href='http://biocol.org/${lsid}'>${lsid}</a>"
+            out << "<a${target} href='http://biocol.org/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
         } else {
-            out << lsid
+            out << lsid.encodeAsHTML()
         }
     }
 
@@ -280,7 +280,7 @@ class CollectoryTagLib {
         list.each {(str == "") ? (str += it) : (str += ", " + it)}
         //println "str=" + str
         //println "join=" + list.join(',')
-        out << str
+        out << str.encodeAsHTML()
     }
 
     /**

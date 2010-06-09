@@ -49,9 +49,9 @@ class CollectoryTagLib {
 
     def showDecimal = { attrs ->
         BigDecimal val = -1
-        if (attrs.value.class == BigDecimal.class) {
+        if (attrs.value?.class == BigDecimal.class) {
             val = attrs.value
-        } else if (attrs.value.class == StreamCharBuffer.class) {
+        } else if (attrs.value?.class == StreamCharBuffer.class) {
             try {
                 val = new BigDecimal(Double.parseDouble(attrs.value.toString()))
             } catch (NumberFormatException e) {}
@@ -70,6 +70,12 @@ class CollectoryTagLib {
      */
     def numberIfKnown = {attrs, body ->
         out << (attrs.number == -1 ? "" : attrs.number + body())
+    }
+
+    def ifNotBlank = {attrs, body ->
+        if (attrs.value) {
+            out << "<p>" << attrs.value.encodeAsHTML() << "</p>" << body()
+        }
     }
 
     def percentIfKnown = {attrs ->
@@ -185,7 +191,7 @@ class CollectoryTagLib {
      * - excluded buttons are still created so they participate in layout
      */
     def navButtons = {attrs ->
-        out << """<div class="buttons">"""
+        out << """<div class="buttons flowButtons">"""
         out << cl.createFlowSubmit(event:"back", show: attrs.exclude?.contains("back") ? "false" : "true",
                 value:"${message(code: 'default.button.cancel.label', default: 'Previous')}")
         out << cl.createFlowSubmit(event:"cancel", show: attrs.exclude?.contains("cancel") ? "false" : "true",
@@ -272,15 +278,23 @@ class CollectoryTagLib {
     def JSONListAsStrings = {attrs ->
         if (!attrs?.json)
             return ""
-        //println attrs.json
-        //println attrs.json.toString().decodeHTML()
         def list = JSON.parse(attrs.json.toString())
-        list.each {println it}
         String str = ""
         list.each {(str == "") ? (str += it) : (str += ", " + it)}
-        //println "str=" + str
-        //println "join=" + list.join(',')
         out << str.encodeAsHTML()
+    }
+
+    /**
+     * Displays a JSON list as an unordered list of strings
+     */
+    def JSONListAsList = {attrs ->
+        if (!attrs?.json)
+            return ""
+        def list = JSON.parse(attrs.json.toString())
+        String str = "<ul>"
+        list.each {str += "<li>${it.encodeAsHTML()}</li>"}
+        str += "</ul>"
+        out << str
     }
 
     /**
@@ -306,6 +320,40 @@ class CollectoryTagLib {
     def helpText = { attrs ->
         def _default = attrs.default ? attrs.default : ""
         out << '<div class="fieldHelp" style="display:none">' + message(code:attrs.code, default: _default) + '</div>'
+    }
+
+    /**
+     * Selects the words to describe the start and end dates of a collection based on data availability.
+     */
+    def temporalSpan = { attrs ->
+        if (attrs.start && attrs.end)
+          out << "<p>The collection was established in ${attrs.start} and ceased acquisitions in ${attrs.end}.</p>"
+        else if (attrs.start)
+          out << "<p>The collection was established in ${attrs.start} and continues to the present.</p>"
+        else if (attrs.end)
+          out << "<p>The collection ceased acquisitions in ${attrs.end}.</p>"
+    }
+
+    def stateCoverage = {attrs ->
+        if (!attrs.states) return
+        if (attrs.states.toLowerCase() in ["all", "all states", "australian states"]) {
+            out << "All Australian states are covered."
+        } else {
+            out << "Australian states covered include " + attrs.states.encodeAsHTML()
+        }
+    }
+
+    /**
+     * A little bit of email scrambling for dumb scrappers.
+     */
+    def emailLink = { attrs, body ->
+        def strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)"
+        String email = body().toString()
+        int index = email.indexOf('@')
+        if (index > 0) {
+            email.replaceAll("@", strEncodedAtSign)
+        }
+        out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
     }
 
     /* junk */

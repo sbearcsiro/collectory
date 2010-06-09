@@ -22,6 +22,7 @@
             <g:form method="post" action="editCollection">
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="next" />
+                <cl:navButtons exclude="next"/>
                 <div class="dialog">
                   <p class="wizardHeading">Choose contacts for this collection</p>
 
@@ -199,7 +200,6 @@
                         </td></tr>
                     </table>
                 </div>
-                <cl:navButtons exclude="next"/>
             </g:form>
         </div>
     </body>

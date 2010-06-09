@@ -24,6 +24,7 @@
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="next" />
                 <div class="dialog">
+                  <cl:navButtons />
                     <table>
                         <tbody>
 
@@ -49,7 +50,6 @@
                         </tbody>
                     </table>
                 </div>
-                <cl:navButtons />
             </g:uploadForm>
         </div>
     </body>

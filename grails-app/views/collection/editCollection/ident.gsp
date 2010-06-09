@@ -30,12 +30,15 @@
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="next" />
                 <div class="dialog">
+                  <cl:navButtons exclude='back' />
                     <table>
                         <tbody>
 
                           <tr class="prop">
                               <td valign="top" class="name">
-                                <label for="guid"><g:message code="providerGroup.guid.label" default="Guid" /></label>
+                                <label for="guid"><g:message code="providerGroup.guid.label" default="Guid" />
+                                  <br/><span class=hint>* required field</span>
+                                </label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'guid', 'errors')}">
                                 <g:textField name="guid" maxlength="45" value="${command?.guid}" />
@@ -46,7 +49,9 @@
 
                           <tr class="prop">
                               <td valign="top" class="name">
-                                <label for="name"><g:message code="providerGroup.name.label" default="Name" /></label>
+                                <label for="name"><g:message code="providerGroup.name.label" default="Name" />
+                                  <br/><span class=hint>* required field</span>
+                                </label>
                               </td>
                               <td id="previous" valign="top" class="value ${hasErrors(bean: command, field: 'name', 'errors')}">
                                 <g:textField name="name" maxlength="128" value="${command?.name}" />
@@ -102,7 +107,6 @@
                         </tbody>
                     </table>
                 </div>
-                <cl:navButtons exclude='back' />
             </g:form>
         </div>
     </body>

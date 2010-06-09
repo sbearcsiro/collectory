@@ -23,6 +23,7 @@
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="next" />
                 <div class="dialog">
+                  <cl:navButtons />
                   <p class="wizardHeading">Indicate the institutions that administer this collection</p>
 
 <!-- current -->        <span style="margin-left:50px;"><g:message code="providerGroup.existingContacts.label" default="Current institutions" /></span>
@@ -111,9 +112,7 @@
                         <input type="submit" style="color:#222" onclick="return document.getElementById('event').value = 'create'" class="addAction" value="Add institution"/>
                       </td></tr>
                     </table>
-
                 </div>
-                <cl:navButtons />
             </g:form>
         </div>
     </body>

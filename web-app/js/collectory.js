@@ -65,3 +65,17 @@ function findPrevious(o, tag, limit){
       return true;
     }
   }
+
+// opens email window for slightly obfuscated email addy
+var strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)";
+function sendEmail(strEncoded) {
+    var strAddress;
+    strAddress = strEncoded.split(strEncodedAtSign);
+    strAddress = strAddress.join("@");
+    var objWin = window.open ('mailto:' + strAddress + '?subject=' + document.title + '&body=' + document.title + ' \n(' + window.location.href + ')','_blank');
+    if (objWin) objWin.close();
+    if (event) {
+        event.cancelBubble = true;
+    }
+    return false;
+}

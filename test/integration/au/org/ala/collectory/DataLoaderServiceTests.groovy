@@ -3,6 +3,7 @@ package au.org.ala.collectory
 import grails.test.*
 import org.codehaus.groovy.grails.web.json.JSONObject
 import au.com.bytecode.opencsv.CSVReader
+import grails.converters.JSON
 
 class DataLoaderServiceTests extends GrailsUnitTestCase {
 
@@ -26,6 +27,10 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
         assertEquals 'Sandy', contact.firstName
     }
 
+    void testLoadSupplimentaryData() {
+        dataLoaderService.loadSupplementaryData("/data/collectory/bootstrap/sup.json", false)
+    }
+    
     /* order of fields in BCI csv
 "lsid","record_id","created","modified","name","code","kind","taxon_scope","geo_scope","size","size_approx_int","founded_year","notes","contact_person","contact_position","contact_phone","contact_fax","contact_email","web_site","web_service_uri","web_service_type","location_department","location_street","location_post_box","location_city","location_state","location_postcode","location_country_name","location_country_iso","location_long","location_lat","location_alt","location_notes","institution_name","institution_type","institution_uri","description_tech","description_pub","url"
      */

@@ -65,6 +65,12 @@
         <g:link class="mainLink" controller="secRequestMap" action="list">Manage url security</g:link>
         <p class="mainText">Restrict access to specific urls.</p>
       </div>
+
+      <div class="homeCell">
+        <g:link class="mainLink" controller="collection" action="loadSupplementary">Load supplementary data</g:link>
+        <p class="mainText">Only if you know what you are doing.</p>
+        <p class="mainText"><g:link controller="collection" action="loadSupplementary" params="[override:true]">with override</g:link></p>
+      </div>
     </g:ifAllGranted>
       <!--div class="homeCell">
         <h4 class="inline">Add an institution</h4>

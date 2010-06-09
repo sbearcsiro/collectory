@@ -63,7 +63,7 @@ class CollectionCommand implements Serializable {
 	List<String> kingdomCoverage = []      // the higher taxonomy that the collection covers - see kingdom_coverage vocab
                                 // a space-separated string that can contain any number of these values:
                                 // Animalia Archaebacteria Eubacteria Fungi Plantae Protista
-    String scientificNames
+    String scientificNames      // comma-separated list of sci names
 
     // maps to InfoSource
 	String webServiceUri
@@ -249,7 +249,7 @@ class CollectionCommand implements Serializable {
             if (collectionScope.kingdomCoverage) {
                 kingdomCoverage = collectionScope.kingdomCoverage.split(" ")
             }
-            scientificNames = collectionScope.scientificNames
+            scientificNames = toCSVString(collectionScope.scientificNames)
         }
 
         // load from InfoSource
@@ -307,13 +307,14 @@ class CollectionCommand implements Serializable {
             collectionInstance.scope = new CollectionScope()
         }
         collectionInstance.scope.properties['collectionType', 'active', 'states', 'geographicDescription',
-                'startDate', 'endDate', 'scientificNames'] = this.properties
+                'startDate', 'endDate'] = this.properties
         collectionInstance.scope.kingdomCoverage = this.kingdomCoverage?.join(" ")
         println "KC=" + collectionInstance.scope.kingdomCoverage
         ['eastCoordinate', 'westCoordinate', 'northCoordinate', 'southCoordinate', 'numRecords', 'numRecordsDigitised'].each {
             collectionInstance.scope."${it}" = this."${it}" ? this."${it}" : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
         collectionInstance.scope.keywords = toJSON(this.keywords)
+        collectionInstance.scope.scientificNames = toJSON(this.scientificNames)
         // modify and save changes to institutions
         addedInstitutions.each {
             ProviderGroup inst = ProviderGroup.get(it)

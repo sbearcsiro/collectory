@@ -53,7 +53,7 @@ class BootStrap {
         }
         ProviderGroup adt = ProviderGroup.findByName('Antarctic Division Herbarium')
 
-        ProviderGroup anu = new ProviderGroup(guid: '9999', name: 'Australian National University',
+        /*ProviderGroup anu = new ProviderGroup(guid: '9999', name: 'Australian National University',
                 address: new Address(street: 'Acton', postBox: 'GPO Box 1700', city: 'Canberra', state: 'ACT', postcode: '2601'),
                 latitude: -35.762000, longitude: 149.114000, institutionType: 'university',
                 logoRef: new Image(file: 'ANURGB_REV.gif'),
@@ -62,16 +62,16 @@ class BootStrap {
                 userLastModified: 'bootstrap').save(flush:true)
         if (anu?.hasErrors) {
             anu.errors.each {println it}
-        }
+        }*/
 
         // add a test user for security checking
         Contact test = new Contact(firstName: 'Mark', lastName: 'Woolston', email: 'mark.woolston@csiro.au', userLastModified: 'bootstrap').save(flush: true)
-        [ame, anic, anu, adt].each {
+        [ame, anic, adt].each {
             it?.addToContacts test, 'Tester', true, 'bootstrap'
         }
 
         // save changes
-        [csiro, uofa, anic, ame, amh, anu].each {
+        [csiro, uofa, anic, ame, amh].each {
             it?.userLastModified = 'bootstrap'
             it?.save(flush:true)
         }
@@ -106,6 +106,11 @@ class BootStrap {
         dave.passwd = authenticateService?.encodePassword('halfpipe')
         dave.save(flush: true)
         admin.addToPeople dave
+
+        Logon pete = new Logon(username: 'peter.neville@csiro.au', userRealName: 'Peter Neville', enabled:true)
+        pete.passwd = authenticateService?.encodePassword('museum')
+        pete.save(flush: true)
+        admin.addToPeople pete
 
         Logon donald = new Logon(username: 'donald.hobern@csiro.au', userRealName: 'Donald Hobern', enabled:true)
         donald.passwd = authenticateService?.encodePassword('tomtower')

@@ -91,7 +91,7 @@ class ProviderGroup implements Serializable {
     /* this causes stack overflow from circular validations - we don't want cascading deletes anyway */
     //static belongsTo = ProviderGroup
 
-    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup']
+    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact']
 
     static constraints = {
         guid(blank:false, unique:true, maxSize:45)
@@ -180,6 +180,28 @@ class ProviderGroup implements Serializable {
     }
 
     /**
+     * Return the contact that should be displayed for this group.
+     *
+     * @return primary ContactFor (contains the contact and the role for this collection)
+     */
+    ContactFor getPrimaryContact() {
+        List<ContactFor> list = getContacts()
+        switch (list.size()) {
+            case 0: return null
+            case 1: return list[0]
+            default:
+                ContactFor result = null
+                list.each {
+                    if (it.role.toLowerCase() =~ 'curator') result = it  // first choice
+                    if (!result && it.role.toLowerCase() =~ 'director') result = it  // second choice
+                    if (!result && it.role.toLowerCase() =~ 'manager') result = it  // third choice
+                }
+                if (!result) result = list[0]  // just take one
+                return result
+        }
+    }
+
+    /**
      * Deletes the linkage between the contact and this group
      */
     void deleteFromContacts(Contact contact) {
@@ -256,6 +278,25 @@ class ProviderGroup implements Serializable {
             code = getAcronym()
         return code
     }
+
+    /**
+     * Returns this collection's parent institution. If multiple, uses rules to pick one.
+     *
+     * @return the collection's parent institution
+     */
+    ProviderGroup findPrimaryInstitution() {
+        if (this.parents == null || this.parents.isEmpty()) return null
+        switch (getParents()?.size()) {
+            case 0: return null
+            case 1: return getParents().toArray()[0]
+            default:
+                // use some rules - these can be extended as necessary, eg looking at institution code
+                // for now take the first parent that is an institution
+                getParents().findByGroupType(GROUP_TYPE_INSTITUTION)
+        }
+        return null
+    }
+
 }
 
 /**
@@ -295,5 +336,8 @@ class Image implements Serializable {
 
     static constraints = {
         file(blank:false)
+        caption(nullable:true)
+        attribution(nullable:true)
+        copyright(nullable:true)
     }
 }

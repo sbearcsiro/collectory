@@ -178,7 +178,7 @@
 
 <!-- sci names -->      <tr class="prop">
                           <td valign="top" class="name"><g:message code="infoSource.scientificNames.label" default="Scientific Names" /></td>
-                          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.scientificNames")}</td>
+                          <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scope.scientificNames")}'/></td>
                         </tr>
 
 <!-- Num records -->    <tr class="prop">
@@ -269,9 +269,13 @@
                             </g:each>
                             </ul>
                         </td>
-
                         </tr>
                     
+<!-- last edit -->      <tr class="prop">
+                            <td valign="top" class="name">Last edited</td>
+                            <td valign="top" class="value">by ${fieldValue(bean: collectionInstance, field: "userLastModified")} on ${fieldValue(bean: collectionInstance, field: "dateLastModified")}</td>
+                        </tr>
+
                     </tbody>
                 </table>
             </div>
@@ -284,6 +288,7 @@
                 <g:ifAllGranted role="ROLE_ADMIN">
                   <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
                 </g:ifAllGranted>
+                <span class="button"><g:actionSubmit class="preview" action='preview' value="${message(code: 'default.button.preview.label', default: 'Preview')}" /></span>
               </g:form>
             </div>
         </div>

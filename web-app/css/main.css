@@ -377,7 +377,9 @@ th.desc a {
 }
 /* MEW nav buttons - keep separate for when we have bkg images */
 .buttons input.back {
-    background: transparent;
+    background: transparent url(../images/skin/left-arrow.gif) 0 50% no-repeat;
+    width: 64px;
+    text-align: right;
     position: relative;
     left: 30px;
 }
@@ -392,9 +394,24 @@ th.desc a {
     left: 300px;
 }
 .buttons input.next {
-    background: transparent;
+    background: transparent url(../images/skin/right-arrow.gif) 40px 50% no-repeat;
+    width: 50px;
     position: relative;
     left: 470px;
+}
+
+/* Flow buttons */
+/* modifications to the standard grails buttons for a flatter look */
+.flowButtons {
+    background: #f8f8f8 url(../images/skin/shadow.jpg) bottom repeat-x;
+    border: 0;
+    margin-top: 0;
+}
+
+.flowButtons input {
+    color: #5E5E5E;
+    font-size: 11px;
+    font-weight: normal;
 }
 
 /* added style for buttons within the main body */
@@ -586,4 +603,86 @@ div.fieldHelp {
     font-size: 14px;
     font-weight: bold;
     color: #666;
+}
+
+/* MEW for collection preview page */
+.previewHeader {
+    margin-top: 20px;
+}
+.previewHeader img {
+    float: right;
+}
+
+.previewHeader span a {
+    font-size: 1.5em;
+    font-weight: normal;
+}
+
+.previewHeader a {
+    color: #666;
+    font-size: .8em;
+}
+
+table.preview {
+    border: 0;
+}
+
+.preview td {
+    font-size: 12px;
+    line-height: 180%;
+    padding-left: 0;
+    padding-right: 4px;
+}
+
+.preview td.leftColumn {
+    padding-right: 18px;
+}
+
+.previewHeader h1 {
+    font-size: 20px;
+    margin-bottom: 0;
+}
+
+.preview h2 {
+    color: #7D8804;
+    font-size: 1.5em;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.preview h4 {
+    color: #7D8804;
+    font-size: 1.0em;
+    margin-top: 20px;
+    margin-bottom: 4px;
+}
+
+.preview p.caption {
+    color: #666;
+    font-size: .8em;
+    line-height: normal;
+}
+
+.rightColumn p {
+    font-size: .9em;
+    line-height: normal;
+    padding-bottom: 4px;
+}
+
+.preview p.contactName {
+    color: #7D8804;
+    font-size: 1.0em;
+}
+
+.preview img {
+    width: 100%;
+}
+
+.preview li {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.preview table {
+    border: 0;
 }

@@ -9,7 +9,7 @@ import org.springframework.webflow.core.collection.LocalAttributeMap
  */
 class CollectionController {
 
-    def authenticateService
+    def authenticateService, dataLoaderService
 
     def scaffold = ProviderGroup
 
@@ -121,6 +121,25 @@ class CollectionController {
             log.info "Showing ${collectionInstance.name} with numRecords = ${collectionInstance.scope.numRecords}"
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
         }
+    }
+
+    // preview a single collection
+    def preview = {
+        def collectionInstance = ProviderGroup.get(params.id)
+        if (!collectionInstance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
+            redirect(action: "list")
+        }
+        else {
+            log.info "Previewing ${collectionInstance.name}"
+            [collectionInstance: collectionInstance, contact: collectionInstance.getPrimaryContact()]
+        }
+    }
+
+    def loadSupplementary = {
+        boolean override = params.override ? params.override : false
+        dataLoaderService.loadSupplementaryData("/data/collectory/bootstrap/sup.json", override, authenticateService.userDomain().username)
+        redirect(url: "http://localhost:8080/Collectory")  //action: "list")
     }
 
     // search for collections using the supplied search term

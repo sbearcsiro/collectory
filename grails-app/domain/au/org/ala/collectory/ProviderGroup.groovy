@@ -94,8 +94,8 @@ class ProviderGroup implements Serializable {
     static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact']
 
     static constraints = {
-        guid(blank:false, unique:true, maxSize:45)
-        name(blank:false, maxSize:128)                  // unique:true - ideally should be unique but relax so we can view all BCI data
+        guid(nullable:true, maxSize:45)         // allow blank for institutions - therefore can't make unique
+        name(blank:false, maxSize:128)          // unique:true - ideally should be unique but relax so we can view all BCI data
         acronym(nullable:true, maxSize:45)
         groupType(blank:false, maxSize:45, inList: [GROUP_TYPE_INSTITUTION, GROUP_TYPE_COLLECTION])
         pubDescription(nullable:true, maxSize:2048)

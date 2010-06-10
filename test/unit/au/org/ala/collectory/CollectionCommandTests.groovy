@@ -60,4 +60,20 @@ class CollectionCommandTests extends GrailsUnitTestCase {
     void testToCSVString() {
         assertEquals 'Entomology,Insects,Spiders', cc.toCSVString('["Entomology","Insects","Spiders"]')
     }
+
+    void testBigDecimalValidation() {
+        mockForConstraintsTests CollectionCommand, [cc]
+        cc.setLatitude "-35.6789"
+        cc.validate()
+        assertFalse cc.hasErrors()
+        assertEquals "-35.6789", cc.getLatitude()
+
+        cc.setLatitude "trevor"
+        cc.validate()
+        if (cc.hasErrors()) {
+            cc.errors.each {println it}
+        }
+        assertTrue cc.hasErrors()
+
+    }
 }

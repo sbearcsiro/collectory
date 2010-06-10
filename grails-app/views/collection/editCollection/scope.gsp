@@ -30,7 +30,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="checkbox">
-                              <cl:label for="kingdomCoverage" source="infoSource" default="Kingdom coverage"/>
+                              <cl:label for="kingdomCoverage" source="scope" default="Kingdom coverage"/>
                             </td>
                             <td valign="top" class="checkbox">
                                 <cl:checkBoxList name="kingdomCoverage" from="${CollectionCommand.kingdoms()}" value="${command?.kingdomCoverage}" />
@@ -41,7 +41,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="scientificNames" source="infoSource" default="Scientific names"/>
+                              <cl:label for="scientificNames" source="scope" default="Scientific names"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'scientificNames', 'errors')}">
                                 <!--richui:autoComplete name="scientificNames" controller="collection" action="scinames" title="sci name"/-->
@@ -53,7 +53,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="states" source="infoSource" default="States"/>
+                              <cl:label for="states" source="scope" default="States"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'states', 'errors')}">
                                 <g:textField name="states" value="${command?.states}" />
@@ -64,7 +64,7 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="geographicDescription" source="infoSource" default="Geographic description"/>
+                              <cl:label for="geographicDescription" source="scope" default="Geographic description"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'geographicDescription', 'errors')}">
                                 <g:textField name="geographicDescription" value="${command?.geographicDescription}" />
@@ -72,13 +72,18 @@
                             </td>
                             <cl:helpTD/>
                         </tr>
-                        
+
+                        <tr class="prop">
+                          <td colspan="2">If possible, describe the geographic range of your collection in terms of the
+                          maximum extents of the regions of collection.</td>
+                        </tr>
+
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="eastCoordinate" source="infoSource" default="East Coordinate"/>
+                              <cl:label for="eastCoordinate" source="scope" default="Most eastern longitude"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'eastCoordinate', 'errors')}">
-                              <g:textField name="eastCoordinate" value="${cl.showDecimal(value:fieldValue(bean: command, field: 'eastCoordinate'))}" />
+                              <g:textField name="eastCoordinate" value="${fieldValue(bean: command, field: 'eastCoordinate')}" />
                               <cl:helpText code="infosource.eastCoordinate"/>
                           </td>
                           <cl:helpTD/>
@@ -86,9 +91,9 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="westCoordinate" source="infoSource" default="West Coordinate"/>
+                              <cl:label for="westCoordinate" source="scope" default="Western extent"/>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'westCoordinate', 'errors')}">
-                              <g:textField name="westCoordinate" value="${cl.showDecimal(value:fieldValue(bean: command, field: 'westCoordinate'))}" />
+                              <g:textField name="westCoordinate" value="${fieldValue(bean: command, field: 'westCoordinate')}" />
                               <cl:helpText code="infosource.westCoordinate"/>
                           </td>
                           <cl:helpTD/>
@@ -96,10 +101,10 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="northCoordinate" source="infoSource" default="North Coordinate"/>
+                              <cl:label for="northCoordinate" source="scope" default="Northern extent"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'northCoordinate', 'errors')}">
-                                <g:textField name="northCoordinate" value="${cl.showDecimal(value:fieldValue(bean: command, field: 'northCoordinate'))}" />
+                                <g:textField name="northCoordinate" value="${fieldValue(bean: command, field: 'northCoordinate')}" />
                                 <cl:helpText code="infosource.northCoordinate"/>
                             </td>
                             <cl:helpTD/>
@@ -107,10 +112,10 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="southCoordinate" source="infoSource" default="South Coordinate"/>
+                              <cl:label for="southCoordinate" source="scope" default="Southern extent"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'southCoordinate', 'errors')}">
-                              <g:textField name="southCoordinate" value="${cl.showDecimal(value:fieldValue(bean: command, field: 'southCoordinate'))}" />
+                              <g:textField name="southCoordinate" value="${fieldValue(bean: command, field: 'southCoordinate')}" />
                               <cl:helpText code="infosource.southCoordinate"/>
                           </td>
                           <cl:helpTD/>
@@ -118,7 +123,7 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="startDate" source="infoSource" default="Start date"/>
+                              <cl:label for="startDate" source="scope" default="Start date"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'startDate', 'errors')}">
                                 <g:textField name="startDate" maxlength="45" value="${command?.startDate}" />
@@ -129,7 +134,7 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="endDate" source="infoSource" default="End date"/>
+                              <cl:label for="endDate" source="scope" default="End date"/>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'endDate', 'errors')}">
                                 <g:textField name="endDate" maxlength="45" value="${command?.endDate}" />

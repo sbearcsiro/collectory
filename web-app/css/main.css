@@ -609,7 +609,7 @@ div.fieldHelp {
 .previewHeader {
     margin-top: 20px;
 }
-.previewHeader img {
+.previewHeader img.logo {
     float: right;
 }
 
@@ -625,6 +625,16 @@ div.fieldHelp {
 
 table.preview {
     border: 0;
+}
+
+.preview a {
+    color: #666;
+    font-size: .8em;
+}
+
+.preview div.webSite {
+    width: 213px;
+    overflow: hidden;
 }
 
 .preview td {

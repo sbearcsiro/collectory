@@ -18,7 +18,7 @@
             <!-- institution -->
             <g:set var="institution" value="${collectionInstance.findPrimaryInstitution()}"/>
             <g:if test="${institution}">
-              <g:if test="${fieldValue(bean: institution, field: 'logoRef')}">
+              <g:if test="${fieldValue(bean: institution, field: 'logoRef') && fieldValue(bean: institution, field: 'logoRef.file')}">
                 <img src='${resource(dir:"images/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
                 <!--div style="clear: both;"></div-->
               </g:if>
@@ -88,11 +88,13 @@
               </td>
               <td class="rightColumn">
                 <div>
-                  <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
-                          src="${resource(dir:'images/collection', file:collectionInstance.imageRef.file)}" />
-                  <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</p>
-                  <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p>
-                  <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p>
+                  <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef') && fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
+                    <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
+                            src="${resource(dir:'images/collection', file:collectionInstance.imageRef.file)}" />
+                    <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</p>
+                    <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p>
+                    <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p>
+                  </g:if>
                 </div>
 
                 <h4>Location</h4>
@@ -104,13 +106,21 @@
                   <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "email")}'/>
                   <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "phone")}'/>
 
-                <h4>Contact</h4>
-                  <p class="contactName">${contact?.contact?.buildName()}</p>
-                  <p>${contact?.role}</p>
-                  <cl:ifNotBlank value='${fieldValue(bean: contact, field: "contact.phone")}'/>
-                  <cl:ifNotBlank value='${fieldValue(bean: contact, field: "contact.fax")}'/>
-                  <p>Email: <cl:emailLink>${contact.contact.email}</cl:emailLink></p>
-                  
+                <g:if test="${contact}">
+                  <h4>Contact</h4>
+                    <p class="contactName">${contact?.contact?.buildName()}</p>
+                    <p>${contact?.role}</p>
+                    <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
+                    <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: contact, field: "contact.fax")}'/>
+                    <p>email: <cl:emailLink>${contact?.contact?.email}</cl:emailLink></p>
+                </g:if>                  
+
+                <!-- web site -->
+                <g:if test="${collectionInstance.websiteUrl}">
+                  <h4>Web site</h4>
+                  <div class="webSite">
+                  <a target="_blank" href="${collectionInstance.websiteUrl}">${collectionInstance.websiteUrl}</a></div>
+                </g:if>
 
               </td></tr>
             </table>

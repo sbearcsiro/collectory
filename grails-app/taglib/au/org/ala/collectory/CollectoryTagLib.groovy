@@ -72,9 +72,17 @@ class CollectoryTagLib {
         out << (attrs.number == -1 ? "" : attrs.number + body())
     }
 
-    def ifNotBlank = {attrs, body ->
+    def ifNotBlank = {attrs ->
         if (attrs.value) {
-            out << "<p>" << attrs.value.encodeAsHTML() << "</p>" << body()
+            out << "<p>"
+            if (attrs.prefix) {
+                out << attrs.prefix
+            }
+            out << attrs.value.encodeAsHTML()
+            if (attrs.postfix) {
+                out << attrs.postfix
+            }
+            out << "</p>"
         }
     }
 

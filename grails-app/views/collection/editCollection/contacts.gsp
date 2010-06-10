@@ -19,6 +19,11 @@
                 <g:renderErrors bean="${command}" as="list" />
             </div>
             </g:hasErrors>
+            <g:hasErrors bean="${contact}">
+            <div class="errors">
+                <g:renderErrors bean="${contact}" as="list" />
+            </div>
+            </g:hasErrors>
             <g:form method="post" action="editCollection">
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="next" />
@@ -95,7 +100,7 @@
                             <label for="title"><g:message code="contact.title.label" default="Title" /></label><br/>
                             <span style="color:#777">e.g. Dr</span>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'title', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'title', 'errors')}">
                               <g:textField name="title" maxlength="10"/>
                           </td>
                         </tr>
@@ -104,7 +109,7 @@
                           <td valign="top" class="name">
                             <label for="firstName"><g:message code="contact.firstName.label" default="First name" /></label>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'firstName', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'firstName', 'errors')}">
                               <g:textField name="firstName" maxlength="255"/>
                           </td>
                         </tr>
@@ -113,7 +118,7 @@
                           <td valign="top" class="name">
                             <label for="lastName"><g:message code="contact.lastName.label" default="Last name" /></label>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'lastName', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'lastName', 'errors')}">
                               <g:textField name="lastName" maxlength="255"/>
                           </td>
                         </tr>
@@ -122,7 +127,7 @@
                           <td valign="top" class="name">
                             <label for="phone"><g:message code="contact.phone.label" default="Phone" /></label>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'phone', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'phone', 'errors')}">
                               <g:textField name="phone" maxlength="45"/>
                           </td>
                         </tr>
@@ -131,7 +136,7 @@
                           <td valign="top" class="name">
                             <label for="mobile"><g:message code="contact.mobile.label" default="Mobile" /></label>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'mobile', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'mobile', 'errors')}">
                               <g:textField name="mobile" maxlength="45"/>
                           </td>
                         </tr>
@@ -140,7 +145,7 @@
                           <td valign="top" class="name">
                             <label for="email"><g:message code="contact.email.label" default="Email" /></label>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'email', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'email', 'errors')}">
                               <g:textField name="email" maxlength="45"/>
                           </td>
                         </tr>
@@ -158,7 +163,7 @@
                           <td valign="top" class="name">
                             <label for="notes"><g:message code="contact.notes.label" default="Notes" /></label>
                           </td>
-                          <td valign="top" class="value ${hasErrors(bean: command, field: 'notes', 'errors')}">
+                          <td valign="top" class="value ${hasErrors(bean: contact, field: 'notes', 'errors')}">
                               <g:textArea name="notes" cols="40" rows="5" maxlength="1024"/>
                           </td>
                         </tr>

@@ -14,9 +14,8 @@
         </div>
         <div class="body">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-            <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
-            </g:if>
+            <g:if test="${flash.message}"><div class="message">${flash.message}</div></g:if>
+            <g:if test="${message}"><div class="message">${message}</div></g:if>
             <g:render template="collectionList" model="[collectionInstanceList: providerGroupInstanceList]"/>
             <div class="paginateButtons">
                 <g:paginate controller="collection" action="list" total="${providerGroupInstanceTotal}" />

@@ -26,7 +26,7 @@ class Contact implements Serializable {
                                       // relationships and only the ProviderGroup can cascade saves
 
     static constraints = {
-        title(nullable:true, maxSize: 10, inList: ["Dr", "Prof", "Mr", "Ms", ""])
+        title(nullable:true, maxSize: 10, inList: ["Dr", "Prof", "Mr", "Ms", "Mrs"])
         firstName(nullable: true, maxSize: 255)
         lastName(nullable: true, maxSize: 255)
         phone(nullable: true, maxSize:45)

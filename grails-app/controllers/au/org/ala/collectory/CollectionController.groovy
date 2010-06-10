@@ -80,6 +80,8 @@ class CollectionController {
 
     // list all collections
     def list = {
+        if (params.message)
+            flash.message = params.message
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
         //println "Count = " + ProviderGroup.countByGroupType('Institution')
@@ -342,7 +344,10 @@ class CollectionController {
                 if (mode == "edit") {
                     flow.colid = params.long("id")
                     log.info ">> colid = " + flow.colid
-
+                    if (!flow.colid) {
+                        // bad
+                        return noId()
+                    }
                     if (!cmd.load(flow.colid)) {
                         flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), flow.colid])}"
                         failure()
@@ -365,6 +370,7 @@ class CollectionController {
             }
             on("success").to "ident"
             on("failure").to "cancelEdit"
+            on("noId").to "noSuchCollection"
             on(NumberFormatException).to "noSuchCollection"
         }
 
@@ -386,7 +392,7 @@ class CollectionController {
                 bindData(flow.command, params, IDENTITY_MAPPING)
                 flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
+                    flow.command.errors.each {log.warn it}
                     failure()
                 }
             }.to "updateCollection"
@@ -398,23 +404,26 @@ class CollectionController {
             on("next") {
                 log.info ">> colid = " + flow.colid
                 bindData(flow.command, params, DESCRIPTION_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "scope"
             on("back") {
                 bindData(flow.command, params, DESCRIPTION_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "ident"
             on("cancel").to "cancelEdit"
             on("done") {
                 bindData(flow.command, params, DESCRIPTION_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
+                    flow.command.errors.each {log.warn it}
                     return
                 }
             }.to "updateCollection"
@@ -425,27 +434,28 @@ class CollectionController {
             on ("next") {
                 log.info ">> colid = " + flow.colid
                 bindReference(params, flow)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "institution"
             on("back") {
                 bindReference(params, flow)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "location"
             on ("cancel").to "cancelEdit"
             on ("done") {
                 params.each{log.info it}
                 bindReference(params, flow)
-                log.info "filename: " + flow.command.imageRef?.file
-                log.info "attribution: " + flow.command.imageRef?.attribution
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "updateCollection"
             on ("removeImage") {
@@ -457,24 +467,27 @@ class CollectionController {
         scope {
             on ("next") {
                 bindData(flow.command, params, SCOPE_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "dataset"
             on ("back") {
                 bindData(flow.command, params, SCOPE_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "description"
             on ("cancel").to "cancelEdit"
             on ("done") {
                 bindData(flow.command, params, SCOPE_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "updateCollection"
         }
@@ -483,26 +496,28 @@ class CollectionController {
         dataset {
             on ("next") {
                 bindData(flow.command, params, DATASET_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "location"
             on("back") {
                 bindData(flow.command, params, DATASET_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "scope"
             on ("cancel").to "cancelEdit"
             on ("done") {
                 params.each {log.info it}
                 bindData(flow.command, params, DATASET_MAPPING)
-                log.info "Command obj>numRecords = " + flow.command.numRecords
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "updateCollection"
         }
@@ -511,23 +526,26 @@ class CollectionController {
         location {
             on ("next") {
                 bindData(flow.command, params, LOCATION_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "reference"
             on("back") {
                 bindData(flow.command, params, LOCATION_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
-                    return
+                    flow.command.errors.each {log.warn it}
+                    failure()
                 }
             }.to "dataset"
             on ("cancel").to "cancelEdit"
             on ("done") {
                 bindData(flow.command, params, LOCATION_MAPPING)
+                flow.command.validate()
                 if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warning it}
+                    flow.command.errors.each {log.warn it}
                     failure()
                 }
             }.to "updateCollection"
@@ -582,38 +600,47 @@ class CollectionController {
                 params.each {log.info it}
                 ProviderGroup inst = new ProviderGroup(params)
                 inst.groupType = ProviderGroup.GROUP_TYPE_INSTITUTION
-                flow.newInst=inst
+                inst.dateLastModified = new Date()
+                inst.userLastModified = authenticateService.userDomain().username + "(created)"
+                inst.validate()
+                if (inst.hasErrors()) {
+                    flow.newInst = inst
+                    failure()
+                } else {
+                    flow.newInst=inst
+                }
             }
             on("success") {
                 // add to db immediately (need id to link the contact)
-                flow.newInst.dateLastModified = new Date()
-                flow.newInst.userLastModified = authenticateService.userDomain().username
                 flow.newInst.save(flush: true)
-                flow.newInst.validate()
                 if (flow.newInst.hasErrors()) {
                     flow.newInst.errors.each {log.info it}
-                    failure() // TODO: need correct error handling
+                    failure()
                 }
                 log.info "new inst id=" + flow.newInst.id
-                // add the user as the contact
-                def user = authenticateService.userDomain().username
-                log.info user
-                if (user) {
-                    Contact c = Contact.findByEmail(user)
-                    if (c) {
-                        flow.newInst.addToContacts(c, "Editor", true, user)
-                        // save contact
-                        flow.newInst.save(flush: true)
+                // if we have no id something is wrong
+                if (!flow.newInst?.id) {
+                    failure()
+                } else {
+                    // add the user as the contact
+                    def user = authenticateService.userDomain().username
+                    log.info user
+                    if (user) {
+                        Contact c = Contact.findByEmail(user)
+                        if (c) {
+                            flow.newInst.addToContacts(c, "Editor", true, user)
+                            // save contact
+                            flow.newInst.save(flush: true)
+                        }
                     }
+                    // add new institution to the collection
+                    flow.command.addAsParent(flow.newInst.id)
+                    // don't leave it in the flow
+                    flow.newInst = null
                 }
-                // add new institution to the collection
-                flow.command.addAsParent(flow.newInst.id)
-                // don't leave it in the flow
-                flow.newInst = null
             }.to "institution"
             on("failure") {
-                // TODO: return errors
-                flash.message = "error"
+                render(view: 'institution', model: [command: flow.command, newInst: flow.newInst])
             }.to "institution"
         }
 
@@ -645,7 +672,6 @@ class CollectionController {
         // removes a contact
         removeContact {
             action {
-                log.info "> entered removeContact"
                 params.each {log.info it}
                 log.info "Removing id: ${params.id}"
                 Contact contact = Contact.get(params.id)
@@ -659,19 +685,26 @@ class CollectionController {
         // creates a new contact record and adds the contact to the collection
         createContact {
             action {
-                //log.info "> entered createContact"
-                //params.each {log.info it}
                 Contact contact = new Contact(params)
                 contact.dateLastModified = new Date()
-                contact.userLastModified = authenticateService.userDomain().username
-                // save immediately - review this decision
-                contact.save()
-                flow.command.addAsContact(contact, params.role2, (params.isAdmin2 as String == 'true'))
+                contact.userLastModified = authenticateService.userDomain().username + "(created)"
+                contact.validate()
+                if ([params.firstName, params.lastName, params.phone, params.mobile, params.email].join() == "") {
+                    contact.errors.reject("contact.fields.noData.message", "Name, phone, mobile and email in new contact cannot all be blank")
+                }
+                // do our own handling here as the values don't map directly to the command object
+                if (contact.hasErrors()) {
+                    flow.contact = contact
+                    failure()
+                } else {
+                    // save immediately - review this decision
+                    contact.save()
+                    flow.command.addAsContact(contact, params.role2, (params.isAdmin2 as String == 'true'))
+                }
             }
             on("success").to "contacts"
             on("failure") {
-                // TODO: return errors
-                flash.message = "error"
+                render(view: 'contacts', model: [command: flow.command, contact: flow.contact])
             }.to "contacts"
         }
 
@@ -686,8 +719,8 @@ class CollectionController {
                         log.info "> created ${flow.command.name} with acronym ${flow.command.acronym} and id ${flow.command.id}"
                         flow.colid = flow.command.id
                     } else {
-                        error()
-                    }
+                        failure()
+v                    }
                 } else {
                     log.info ">> colid = " + flow.colid
                     // save changes
@@ -714,7 +747,7 @@ class CollectionController {
         
         // exit because the specified collection doesn't exist
         noSuchCollection {
-            redirect(controller:"collection", action:"list")
+            redirect(controller:"collection", action:"list", params: [message: "Cannot edit a collection with no id specified"])
         }
 
         // exit because the user cancelled the edit
@@ -739,7 +772,7 @@ class CollectionController {
         }
 
         exitToShow {
-            redirect(controller:"collection", action:"show", params: [id: flash.id])
+            redirect(controller:"collection", id:flash.id, action:"show")
         }
 
         exitToList {

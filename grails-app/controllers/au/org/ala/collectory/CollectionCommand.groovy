@@ -2,6 +2,7 @@ package au.org.ala.collectory
 
 import org.codehaus.groovy.grails.validation.Validateable
 import grails.converters.JSON
+import java.text.NumberFormat
 
 /**
  * A command class for collecting and validating a collection instance.
@@ -23,8 +24,8 @@ class CollectionCommand implements Serializable {
     String techDescription      // technical description
     String focus                //
     Address address
-    BigDecimal latitude = ProviderGroup.NO_INFO_AVAILABLE     // decimal latitude
-    BigDecimal longitude = ProviderGroup.NO_INFO_AVAILABLE    // decimal longitude
+    String latitude             // decimal latitude as string
+    String longitude            // decimal longitude as string
     String state
     String websiteUrl
     Image imageRef             // the main image to represent the entity
@@ -41,21 +42,15 @@ class CollectionCommand implements Serializable {
     String collectionType       // type of collection e.g live, preserved, tissue, DNA
     String keywords             // a comma-separated list of keywords
     String active               // see active vocab
-    int numRecords = ProviderGroup.NO_INFO_AVAILABLE
-                                // total number of records held that are able to be digitised
-    int numRecordsDigitised = ProviderGroup.NO_INFO_AVAILABLE
-                                // number of records that are digitised
+    String numRecords           // total number of records held that are able to be digitised
+    String numRecordsDigitised  // number of records that are digitised
 
     String states               // states and territories that are covered by the collection - see state vocab
 	String geographicDescription// a free text description of where the data relates to
-	BigDecimal eastCoordinate = ProviderGroup.NO_INFO_AVAILABLE
-                                // furthest point East for this collection in decimal degrees
-	BigDecimal westCoordinate = ProviderGroup.NO_INFO_AVAILABLE
-                                // furthest point West for this collection in decimal degrees
-	BigDecimal northCoordinate = ProviderGroup.NO_INFO_AVAILABLE
-                                // furthest point North for this collection in decimal degrees
-	BigDecimal southCoordinate = ProviderGroup.NO_INFO_AVAILABLE
-                                // furthest point South for this collection in decimal degrees
+	String eastCoordinate       // furthest point East for this collection in decimal degrees
+	String westCoordinate       // furthest point West for this collection in decimal degrees
+	String northCoordinate      // furthest point North for this collection in decimal degrees
+	String southCoordinate      // furthest point South for this collection in decimal degrees
 
 	String startDate            // the start date of the period the collection covers
 	String endDate	            // the end date of the period the collection covers
@@ -82,8 +77,15 @@ class CollectionCommand implements Serializable {
         techDescription(nullable:true, maxSize:2048)
         focus(nullable:true, maxSize:2048)
         address(nullable:true)
-        latitude(max:360.0, min:-360.0, scale:10)
-        longitude(max:360.0, min:-360.0, scale:10)
+        latitude(nullable:true, validator: { dd -> if (!dd) return true
+            // must be convertable to a valid BigDecimal
+            try { new BigDecimal(dd) } catch (NumberFormatException e) { return ['decimal.invalid'] }
+            return true
+        })
+        longitude(nullable:true, validator: { dd -> if (!dd) return true
+            try { new BigDecimal(dd) } catch (NumberFormatException e) { return ['decimal.invalid'] }
+            return true
+        })
         state(nullable:true, maxSize:45, inList: ['Australian Capital Territory', 'New South Wales', 'Queensland', 'Northern Territory', 'Western Australia', 'South Australia', 'Tasmania', 'Victoria'])
         websiteUrl(nullable:true, maxSize:256)
         imageRef(nullable:true)
@@ -111,16 +113,34 @@ class CollectionCommand implements Serializable {
 
         keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
-        numRecords()
-        numRecordsDigitised()
+        numRecords(nullable:true, validator: { ii -> if (!ii) return true
+            try { NumberFormat.getIntegerInstance().parse(ii) } catch (NumberFormatException e) { return ['number.invalid'] }
+            return true
+        })
+        numRecordsDigitised(nullable:true, validator: { ii -> if (!ii) return true
+            try { NumberFormat.getIntegerInstance().parse(ii) } catch (NumberFormatException e) { return ['number.invalid'] }
+            return true
+        })
         states(nullable:true)
         geographicDescription(nullable:true)
         webServiceUri(nullable:true)
         webServiceProtocol(nullable:true)
-        eastCoordinate(max:360.0, min:-360.0, scale:10)
-        westCoordinate(max:360.0, min:-360.0, scale:10)
-        northCoordinate(max:360.0, min:-360.0, scale:10)
-        southCoordinate(max:360.0, min:-360.0, scale:10)
+        eastCoordinate(nullable:true, validator: { dd -> if (!dd) return true
+            try { new BigDecimal(dd) } catch (NumberFormatException e) { return ['decimal.invalid'] }
+            return true
+        })
+        westCoordinate(nullable:true, validator: { dd -> if (!dd) return true
+            try { new BigDecimal(dd) } catch (NumberFormatException e) { return ['decimal.invalid'] }
+            return true
+        })
+        northCoordinate(nullable:true, validator: { dd -> if (!dd) return true
+            try { new BigDecimal(dd) } catch (NumberFormatException e) { return ['decimal.invalid'] }
+            return true
+        })
+        southCoordinate(nullable:true, validator: { dd -> if (!dd) return true
+            try { new BigDecimal(dd) } catch (NumberFormatException e) { return ['decimal.invalid'] }
+            return true
+        })
         startDate(nullable:true, maxSize:45)
         endDate(nullable:true, maxSize:45)
         kingdomCoverage(validator: { kc ->
@@ -216,8 +236,8 @@ class CollectionCommand implements Serializable {
         techDescription = collectionInstance.techDescription
         focus = collectionInstance.focus
         address = collectionInstance.address
-        latitude = collectionInstance.latitude
-        longitude = collectionInstance.longitude
+        latitude = loadBigDecimal(collectionInstance.latitude)
+        longitude = loadBigDecimal(collectionInstance.longitude)
         state = collectionInstance.state
         websiteUrl = collectionInstance.websiteUrl
         imageRef = collectionInstance.imageRef
@@ -236,14 +256,14 @@ class CollectionCommand implements Serializable {
             collectionType = collectionScope.collectionType
             keywords = toCSVString(collectionScope.keywords)
             active = collectionScope.active
-            numRecords = collectionScope.numRecords
-            numRecordsDigitised = collectionScope.numRecordsDigitised
+            numRecords = loadInt(collectionScope.numRecords)
+            numRecordsDigitised = loadInt(collectionScope.numRecordsDigitised)
             states = collectionScope.states
             geographicDescription = collectionScope.geographicDescription
-            eastCoordinate = collectionScope.eastCoordinate
-            westCoordinate = collectionScope.westCoordinate
-            northCoordinate = collectionScope.northCoordinate
-            southCoordinate = collectionScope.southCoordinate
+            eastCoordinate = loadBigDecimal(collectionScope.eastCoordinate)
+            westCoordinate = loadBigDecimal(collectionScope.westCoordinate)
+            northCoordinate = loadBigDecimal(collectionScope.northCoordinate)
+            southCoordinate = loadBigDecimal(collectionScope.southCoordinate)
             startDate = collectionScope.startDate
             endDate = collectionScope.endDate
             if (collectionScope.kingdomCoverage) {
@@ -297,7 +317,7 @@ class CollectionCommand implements Serializable {
                 'websiteUrl', 'imageRef',
                 'address', 'state', 'email', 'phone', 'parents'] = this.properties
         ['longitude', 'latitude'].each {
-            collectionInstance."${it}" = this."${it}" ? this."${it}" : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
+            collectionInstance."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
         println "provider codes = ${this.providerCodes}"
         collectionInstance.providerCodes = toJSON(this.providerCodes)
@@ -310,8 +330,11 @@ class CollectionCommand implements Serializable {
                 'startDate', 'endDate'] = this.properties
         collectionInstance.scope.kingdomCoverage = this.kingdomCoverage?.join(" ")
         println "KC=" + collectionInstance.scope.kingdomCoverage
-        ['eastCoordinate', 'westCoordinate', 'northCoordinate', 'southCoordinate', 'numRecords', 'numRecordsDigitised'].each {
-            collectionInstance.scope."${it}" = this."${it}" ? this."${it}" : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
+        ['numRecords', 'numRecordsDigitised'].each {
+            collectionInstance.scope."${it}" = this."${it}" ? toInt(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
+        }
+        ['eastCoordinate', 'westCoordinate', 'northCoordinate', 'southCoordinate'].each {
+            collectionInstance.scope."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
         collectionInstance.scope.keywords = toJSON(this.keywords)
         collectionInstance.scope.scientificNames = toJSON(this.scientificNames)
@@ -437,5 +460,29 @@ class CollectionCommand implements Serializable {
             return (codes as JSON).toString()
         }
         return null
+    }
+
+    String loadInt(int ii) {
+        if (ii == ProviderGroup.NO_INFO_AVAILABLE) {
+            return ""
+        } else {
+            return ii?.toString()
+        }
+    }
+
+    String loadBigDecimal(BigDecimal bd) {
+        if (bd == ProviderGroup.NO_INFO_AVAILABLE) {
+            return ""
+        } else {
+            return bd?.toString()
+        }
+    }
+
+    int toInt(String value) throws NumberFormatException {
+        return NumberFormat.getIntegerInstance().parse(value)
+    }
+
+    BigDecimal toBigDecimal(String value) throws NumberFormatException {
+        return new BigDecimal(value)
     }
 }

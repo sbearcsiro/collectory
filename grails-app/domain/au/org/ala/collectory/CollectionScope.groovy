@@ -37,7 +37,7 @@ class CollectionScope implements Serializable {
 	String kingdomCoverage      // the higher taxonomy that the collection covers - see kingdom_coverage vocab
                                 // a space-separated string that can contain any number of these values:
                                 // Animalia Archaebacteria Eubacteria Fungi Plantae Protista
-    String scientificNames
+    String scientificNames      // as JSON array eg ["Insecta", "Arachnida"]
 
     Date dateCreated = new Date()
     Date dateLastModified = new Date()

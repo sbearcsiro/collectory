@@ -94,7 +94,7 @@
                                 </label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'latitude', 'errors')}">
-                                <g:textField name="latitude" value="${cl.showDecimal(value:fieldValue(bean: command, field: 'latitude'))}" />
+                                <g:textField name="latitude" value="${fieldValue(bean: command, field: 'latitude')}" />
                                 <cl:helpText code="collection.latitude"/>
                             </td>
                             <cl:helpTD/>
@@ -108,7 +108,7 @@
                                 </label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'longitude', 'errors')}">
-                                <g:textField name="longitude" value="${cl.showDecimal(value:fieldValue(bean: command, field: 'longitude'))}" />
+                                <g:textField name="longitude" value="${fieldValue(bean: command, field: 'longitude')}" />
                                 <cl:helpText code="collection.longitude"/>
                             </td>
                             <cl:helpTD/>

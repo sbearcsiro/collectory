@@ -106,7 +106,7 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
             }
 
             // attempt to create
-            ContactFor contactFor2 = new ContactFor(contact1, group1.id, "ProviderGroup", "Contact", true).save(flush: true)
+            ContactFor contactFor2 = new ContactFor(contact1, group1.id, "ProviderGroup", "Contact", true, true).save(flush: true)
             if (contactFor2.hasErrors()) {
                 contactFor2.errors.each {println it.toString()}
             }

@@ -12,6 +12,7 @@ class ContactFor implements Serializable {
     String entityType
     String role
     boolean administrator = false
+    boolean primaryContact = false
 
     Date dateCreated = new Date()
     Date dateLastModified = new Date()
@@ -19,15 +20,13 @@ class ContactFor implements Serializable {
 
     ContactFor () {}
 
-    ContactFor (Contact contact, long entityId, String entityType, String role, boolean isAdministrator) {
+    ContactFor (Contact contact, long entityId, String entityType, String role, boolean isAdministrator, boolean isPrimaryContact) {
         this.contact = contact
         this.entityId = entityId
         this.entityType = entityType
         this.role = role
         this.administrator = isAdministrator
-        dateCreated()
-        dateLastModified()
-        userLastModified(maxSize:256)
+        this.primaryContact = isPrimaryContact
     }
     
     static mapping = {
@@ -40,6 +39,10 @@ class ContactFor implements Serializable {
         entityId()
         entityType(blank:false, inList: [ProviderGroup.ENTITY_TYPE, InfoSource.ENTITY_TYPE])
         role(nullable:true, maxSize:128)
+        dateCreated()
+        dateLastModified()
+        userLastModified(maxSize:256)
+        // could constrain primaryContact to only one for an entity
     }
 
     def print() {
@@ -47,7 +50,11 @@ class ContactFor implements Serializable {
          "Entity id: " + entityId,
          "Entity type: " + entityType,
          "Role: " + role,
-         "isAdmin: " + administrator]
+         "isAdmin: " + administrator,
+         "isPrimary: " + primaryContact]
     }
 
+    void setPrimaryContact(boolean value) {
+        this.primaryContact = value
+    }
 }

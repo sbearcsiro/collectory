@@ -14,7 +14,8 @@ class ContactForTests extends GrailsUnitTestCase {
             entityId: 27,
             entityType: "Institution",
             role: "Manager",
-            administrator: true)
+            administrator: true,
+            primaryContact: true)
 
     }
 
@@ -28,7 +29,8 @@ class ContactForTests extends GrailsUnitTestCase {
             "Entity id: 27",
             "Entity type: Institution",
             "Role: Manager",
-            "Admin: true"]
+            "isAdmin: true",
+            "isPrimary: true"]
             , cf.print())
     }
 }

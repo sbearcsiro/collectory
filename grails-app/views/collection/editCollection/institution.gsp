@@ -25,6 +25,7 @@
             </div>
             </g:hasErrors>
             <g:form method="post" enctype="multipart/form-data" action="editCollection">
+                <g:hiddenField name="id" value="${command?.id}" />
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="next" />
                 <div class="dialog">
@@ -82,7 +83,7 @@
                           <br/><span class=hint>* required field</span>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: newInst, field: 'name', 'errors')}">
-                            <g:textField name="name" maxlength="128"/>
+                            <g:textField name="name" maxlength="128" value="${fieldValue(bean: newInst, field:'name')}"/>
                         </td>
                       </tr>
 
@@ -92,7 +93,7 @@
                           <br/><span class="hint">(if known)</span>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: newInst, field: 'guid', 'errors')}">
-                            <g:textField name="guid" maxlength="45"/>
+                            <g:textField name="guid" maxlength="45" value="${fieldValue(bean: newInst, field:'guid')}"/>
                         </td>
                       </tr>
 
@@ -101,7 +102,7 @@
                           <label for="acronym"><g:message code="institution.acronym.label" default="Acronym" /></label>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: newInst, field: 'acronym', 'errors')}">
-                            <g:textField name="acronym" maxlength="45"/>
+                            <g:textField name="acronym" maxlength="45" value="${fieldValue(bean: newInst, field:'acronym')}"/>
                         </td>
                       </tr>
 
@@ -110,7 +111,7 @@
                           <label for="institutionType"><g:message code="institution.institutionType.label" default="Institution Type" /></label>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: newInst, field: 'institutionType', 'errors')}">
-                          <g:select name="institutionType" from="${ProviderGroup.constraints.institutionType.inList}" valueMessagePrefix="providerGroup.institutionType" noSelection="['': '']" />
+                          <g:select name="institutionType" from="${ProviderGroup.constraints.institutionType.inList}" valueMessagePrefix="providerGroup.institutionType" noSelection="['': '']"  value="${fieldValue(bean: newInst, field:'institutionType')}"/>
                         </td>
                       </tr>
 

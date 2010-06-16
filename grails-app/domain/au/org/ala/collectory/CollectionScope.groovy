@@ -1,5 +1,7 @@
 package au.org.ala.collectory
 
+import grails.converters.JSON
+
 /**
  * Models collection-specific information. Extends a ProviderGroup object where the type is collection.
  * 
@@ -43,11 +45,13 @@ class CollectionScope implements Serializable {
     Date dateLastModified = new Date()
     String userLastModified
 
+    String subCollections       // list of sub-collections as JSON
+
     // A collection has exactly one CollectionScope
     static belongsTo = ProviderGroup
 
     static constraints = {
-        collectionType(nullable: true, inList: [
+        collectionType(nullable: true, maxSize: 256/*, inList: [
             "archival",
             "art",
             "audio",
@@ -63,7 +67,7 @@ class CollectionScope implements Serializable {
             "taxonomic",
             "texts",
             "tissue",
-            "visual"])
+            "visual"]*/)
         keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
         numRecords()
@@ -91,8 +95,18 @@ class CollectionScope implements Serializable {
                 return ok
             })
         scientificNames(nullable:true, maxSize:2048)
+        subCollections(nullable:true, maxSize:4096)
         dateCreated(nullable:true)
         dateLastModified()
         userLastModified(maxSize:256)
+    }
+
+    def listSubCollections() {
+        if (!subCollections) return []
+        def result = []
+        JSON.parse(subCollections).each {
+            result << [name: it.name, description: it.description]
+        }
+        return result
     }
 }

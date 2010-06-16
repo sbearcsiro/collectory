@@ -80,7 +80,7 @@ log4j = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
-    debug 'org.springframework.webflow',
+    debug //'org.springframework.webflow',
 //          'org.springframework',
           'au.org.ala.collectory'
 //          'org.mortbay.log'
@@ -97,7 +97,7 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 
-    warn   'org.mortbay.log'
+    warn   'org.mortbay.log', 'org.springframework.webflow'
 
     info   'grails.app.controller'
 }

@@ -247,7 +247,7 @@ class DataLoaderService {
                     String role = params.contactRole
                     // is the contact an editor?
                     // default to true
-                    provider.addToContacts(contact, role?.empty ? "Contact" : role, true, "BCI loader")
+                    provider.addToContacts(contact, role?.empty ? "Contact" : role, true, true, "BCI loader")
                     // does not require a save
                 }
 

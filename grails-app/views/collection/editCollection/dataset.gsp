@@ -31,7 +31,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="numRecords"><g:message code="infoSource.numRecords.label" default="Num Records" /></label>
+                              <label for="numRecords"><g:message code="infoSource.numRecords.label" default="Number of records" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'numRecords', 'errors')}">
                                 <g:textField name="numRecords" value="${fieldValue(bean: command, field: 'numRecords')}" />
@@ -42,7 +42,7 @@
                         
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="numRecordsDigitised"><g:message code="infoSource.numRecordsDigitised.label" default="Num Records Digitised" /></label>
+                              <label for="numRecordsDigitised"><g:message code="infoSource.numRecordsDigitised.label" default="Number of records digitised" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'numRecordsDigitised', 'errors')}">
                                 <g:textField name="numRecordsDigitised" value="${fieldValue(bean: command, field: 'numRecordsDigitised')}" />
@@ -53,7 +53,7 @@
 
 <!-- web service -->    <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="webServiceUri"><g:message code="infoSource.webServiceUri.label" default="Web Service Uri" /></label>
+                              <label for="webServiceUri"><g:message code="infoSource.webServiceUri.label" default="Web service uri" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'webServiceUri', 'errors')}">
                                 <g:textField name="webServiceUri" value="${fieldValue(bean: command, field: 'webServiceUri')}" />
@@ -64,7 +64,7 @@
 
 <!-- protocol -->       <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="webServiceProtocol"><g:message code="infoSource.webServiceProtocol.label" default="Web Service Protocol" /></label>
+                              <label for="webServiceProtocol"><g:message code="infoSource.webServiceProtocol.label" default="Web service protocol" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'webServiceProtocol', 'errors')}">
                                 <g:textField name="webServiceProtocol" value="${fieldValue(bean: command, field: 'webServiceProtocol')}" />
@@ -75,7 +75,7 @@
 
 <!-- codes -->          <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="providerCodes"><g:message code="providerGroup.providerCodes.label" default="Collection code" /></label>
+                              <label for="providerCodes"><g:message code="providerGroup.providerCodes.label" default="Collection codes" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'providerCodes', 'errors')}">
                                 <g:textField name="providerCodes" value="${fieldValue(bean: command, field: 'providerCodes')}" />

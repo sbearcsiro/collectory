@@ -75,8 +75,8 @@
                             <td valign="top" class="name">
                               <label for="collectionType"><g:message code="providerGroup.collectionType.label" default="Collection Type" /></label>
                             </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'collectionType', 'errors')}">
-                                <g:select name="collectionType" from="${command.constraints.collectionType.inList}" value="${command?.collectionType}" valueMessagePrefix="providerGroup.collectionType" noSelection="['': '']" />
+                            <td valign="top" class="checkbox ${hasErrors(bean: command, field: 'collectionType', 'errors')}">
+                                <cl:checkboxSelect name="collectionType" from="${command.collectionTypes()}" value="${command?.collectionType}" multiple="yes" valueMessagePrefix="providerGroup.collectionType" noSelection="['': '']" />
                                 <cl:helpText code="collection.collectionType"/>
                             </td>
                           <td><img class="helpButton" alt="help" src="${resource(dir:'images/skin', file:'help.gif')}" onclick="toggleHelp(this);"/></td>

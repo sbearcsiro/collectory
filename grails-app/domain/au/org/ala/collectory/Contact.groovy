@@ -31,7 +31,7 @@ class Contact implements Serializable {
         lastName(nullable: true, maxSize: 255)
         phone(nullable: true, maxSize:45)
         mobile(nullable: true, maxSize:45)
-        email(nullable: true, maxSize:128)
+        email(nullable: true, maxSize:128, email: true)
         fax(nullable: true, maxSize:45)
         notes(nullable: true, maxSize: 1024)
         publish()

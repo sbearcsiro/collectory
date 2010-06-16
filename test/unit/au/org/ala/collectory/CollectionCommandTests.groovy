@@ -1,6 +1,8 @@
 package au.org.ala.collectory
 
 import grails.test.GrailsUnitTestCase
+import grails.converters.JSON
+import grails.converters.JSON.Builder
 
 /**
  * Created by markew
@@ -75,5 +77,36 @@ class CollectionCommandTests extends GrailsUnitTestCase {
         }
         assertTrue cc.hasErrors()
 
+    }
+
+    void testSubCollectionParsing() {
+        def json = '[{"name":"coll1","description":"desc1"},{"name":"coll2","description":"desc2"}]'
+        def subCollections = JSON.parse(json)
+        assertEquals 2, subCollections.size()
+        subCollections.eachWithIndex { it, index ->
+            assertEquals "coll${index+1}", it.name
+            assertEquals "desc${index+1}", it.description
+        }
+        List<String> names = []
+        List<String> descs = []
+        JSON.parse(json).each {
+            names << it.name
+            descs << it.description
+        }
+        assertEquals 2, names.size()
+        assertEquals 2, descs.size()
+        assertEquals "coll1", names[0]
+        assertEquals "coll2", names[1]
+        assertEquals "desc1", descs[0]
+        assertEquals "desc2", descs[1]
+    }
+
+    void testSubCollectionJSONBuilding() {
+        def json = '[{"name":"coll1","description":"desc1"},{"name":"coll2","description":"desc2"}]'
+        cc.loadSubCollections json
+        cc.subCollections.each {println it.name + " - " + it.description}
+        assertEquals 2, cc.subCollections.size()
+        assertEquals "coll1", cc.subCollections[0].name
+        assertEquals "desc2", cc.subCollections[1].description
     }
 }

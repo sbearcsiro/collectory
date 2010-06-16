@@ -62,19 +62,15 @@ h1 {
     margin: .8em 0 .3em 0;
 }
 
-ul {
-    padding-left: 15px;
-}
-
 .tooltip li {
     list-style-type: none;
     padding-left: 0;
 }
 
-.tooltip ul {
+/*.value ul {
     list-style-type: none;
     padding-left: 0;
-}
+}*/
 
 .hint li {
     list-style-type: none;
@@ -343,6 +339,7 @@ th.desc a {
     overflow: auto; overflow-x: hidden; border: 0px solid #000;
     list-style-type: none; margin: 0; padding:0px
 }
+
 .CheckBoxList li  {
     padding:2px;
     display: inline;
@@ -399,6 +396,9 @@ th.desc a {
     position: relative;
     left: 470px;
 }
+.buttons input.preview {
+    background: transparent;
+}
 
 /* Flow buttons */
 /* modifications to the standard grails buttons for a flatter look */
@@ -443,7 +443,7 @@ input.addAction, input.cancelAction {
 }
 
 .bodyButton input.remove {
-    background: transparent url(../images/skin/delete.png) 5px 50% no-repeat;
+    background: transparent url(../images/skin/database_delete.png) 5px 50% no-repeat;
     color: #EDECEB;
     opacity: 0.7;
     filter:alpha(opacity=70);
@@ -562,6 +562,22 @@ table.shy tr {
 
 table.shy td {
     padding: 0;
+}
+
+table.value {
+    width:80%;
+    border:1px solid #CCC;
+    margin-left:auto;
+    margin-right:auto;
+    margin-bottom:20px;"
+}
+
+table.value th {
+    background: #EDECEB;
+}
+
+td.name-align {
+    vertical-align: baseline;
 }
 
 /* MEW page heading in wizard pages */
@@ -685,7 +701,7 @@ table.preview {
 }
 
 .preview img {
-    width: 100%;
+    /*width: 100%;*/
 }
 
 .preview li {
@@ -695,4 +711,14 @@ table.preview {
 
 .preview table {
     border: 0;
+}
+
+/* MEW for sub-collections in the preview */
+p.sub {
+    margin-left: 30px;
+    font-size: 11px;
+}
+
+.subName {
+    font-style: italic;
 }

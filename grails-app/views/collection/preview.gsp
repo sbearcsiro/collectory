@@ -85,6 +85,12 @@
                   <p>Of these ${fieldValue(bean: collectionInstance, field: "scope.numRecordsDigitised")} are digitised.
                   This represents <cl:percentIfKnown dividend='${collectionInstance.scope?.numRecordsDigitised}' divisor='${collectionInstance.scope?.numRecords}' /> of the collection.</p>
                 </g:if>
+
+                <h2>Sub-collections</h2>
+                <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
+                <g:each var="sub" in="${collectionInstance.scope.listSubCollections()}" >
+                  <p class="sub"><cl:subCollectionDisplay sub="${sub}"/></p>
+                </g:each>
               </td>
               <td class="rightColumn">
                 <div>
@@ -119,13 +125,32 @@
                 <g:if test="${collectionInstance.websiteUrl}">
                   <h4>Web site</h4>
                   <div class="webSite">
-                  <a target="_blank" href="${collectionInstance.websiteUrl}">${collectionInstance.websiteUrl}</a></div>
+                    <a target="_blank" href="${collectionInstance.websiteUrl}">${collectionInstance.websiteUrl}</a>
+                  </div>
+                </g:if>
+
+                <!-- network membership -->
+                <g:if test="${collectionInstance.networkMembership}">
+                  <h4>Membership</h4>
+                  <g:if test="${collectionInstance.isMemberOf('CHAEC')}">
+                    <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
+                    <img src="${resource(dir:"images/network/",file:"butflyyl.gif")}"/>
+                  </g:if>
+                  <g:if test="${collectionInstance.isMemberOf('CHAH')}">
+                    <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
+                    <img src="${resource(dir:"images/network/",file:"CHAH_logo_col_70px_white.gif")}"/>
+                  </g:if>
+                  <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
+                    <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+                  </g:if>
+                  <g:if test="${collectionInstance.isMemberOf('AMRRN')}">
+                    <p>Member of Australian Microbial Resources Reseach Network (AMRRN)</p>
+                    <img src="${resource(dir:"images/network/",file:"amrrnlogo.png")}"/>
+                  </g:if>
                 </g:if>
 
               </td></tr>
             </table>
-
-
 
             </div>
             <div class="buttons">

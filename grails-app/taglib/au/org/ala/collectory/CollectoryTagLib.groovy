@@ -281,6 +281,21 @@ class CollectoryTagLib {
     }
 
     /**
+     * Inserts a help button which will toggle the visibility of a help div in the previous <td> element.
+     */
+    def help = { attrs ->
+        if (attrs.javascript) {
+            out << "<img style='float:right;margin-right:20px;' class='helpButton' alt='help' src='" +
+                    resource(dir:"images/skin", file:"help.gif") +
+                    "' onclick='${attrs.javascript}'/>"
+        } else {
+            out << '<img style="float:right;margin-right:20px;" class="helpButton" alt="help" src="' +
+                    resource(dir:'images/skin', file:'help.gif') +
+                    '" onclick="toggleHelp(this);"/>'
+        }
+    }
+
+    /**
      * Displays a JSON list as a comma-separated list of strings
      */
     def JSONListAsStrings = {attrs ->
@@ -327,7 +342,8 @@ class CollectoryTagLib {
      */
     def helpText = { attrs ->
         def _default = attrs.default ? attrs.default : ""
-        out << '<div class="fieldHelp" style="display:none">' + message(code:attrs.code, default: _default) + '</div>'
+        def id = attrs.id ? "id='${attrs.id}' " : ""
+        out << '<div ' + id + 'class="fieldHelp" style="display:none">' + message(code:attrs.code, default: _default) + '</div>'
     }
 
     /**
@@ -362,6 +378,49 @@ class CollectoryTagLib {
             email.replaceAll("@", strEncodedAtSign)
         }
         out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
+    }
+
+    def collectionName = { attrs ->
+        if (!attrs.name || attrs.name =~ 'Collection') {
+            out << attrs.name
+        } else {
+            out << attrs.name + " Collection"
+        }
+    }
+
+    def subCollectionDisplay = { attrs ->
+        if (attrs.sub?.description) {
+            out << "<span class='subName'>" + attrs.sub?.name + "</span>" + " - " + attrs.sub?.description
+        } else {
+            out << "<span class='subName'>" + attrs.sub?.name + "</span>"
+        }
+    }
+
+    def subCollectionList = { attrs ->
+        out << """<tr><td valign="top" class="name">${message(code:"collection.subcollections.label", default:"Sub-collections")}</td><td valign="top" class="value">"""
+        if (attrs.list) {
+            out << "<ul>"
+            JSON.parse(attrs.list).each { sub ->
+                log.info "sub: " + sub
+                out << "<li>${cl.subCollectionDisplay(sub: sub)}</li>"
+            }
+            out << "</ul>"
+        } else {
+            out << "<td>${attrs.list}</td>"
+        }
+        out << "</td></tr>"
+    }
+
+    def checkboxSelect = {attrs ->
+        out << "<ul class='CheckBoxList CheckBoxArray'>"
+        attrs.from.eachWithIndex { it, index ->
+            def checked = (it in attrs.value) ? "checked='checked'" : ""
+            out << "<li><input name='${attrs.name}' type='checkbox' ${checked}' value='${it}'/>${it}</li>"
+            if (index > 0 && ((index+1) % 6) == 0) {
+                out << "<br/>"
+            }
+        }
+        out << "</ul>"
     }
 
     /* junk */

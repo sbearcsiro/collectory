@@ -186,7 +186,7 @@ class InstitutionController {
                 log.info "Adding id: ${params.addContact}"
                 Contact contact = Contact.get(params.addContact)
                 if (contact) {
-                    flow.providerGroupInstance.addToContacts(contact, params.role, (params.isAdmin == 'true'), authenticateService.userDomain().username)
+                    flow.providerGroupInstance.addToContacts(contact, params.role, (params.isAdmin == 'true'), (params.isPrimary == 'true'), authenticateService.userDomain().username)
                 }
             }
             on("success").to "showEdit"
@@ -219,7 +219,7 @@ class InstitutionController {
                 contact.userLastModified = authenticateService.userDomain().username
                 // save immediately - review this decision
                 contact.save()
-                flow.providerGroupInstance.addToContacts(contact, params.role2, (params.isAdmin2 as String == 'true'), authenticateService.userDomain().username)
+                flow.providerGroupInstance.addToContacts(contact, params.role2, (params.isAdmin2 as String == 'true'), (params.isPrimary2 as String == 'true'), authenticateService.userDomain().username)
             }
             on("success").to "showEdit"
             on("failure") {
@@ -265,6 +265,10 @@ class InstitutionController {
                 it.dateLastModified = new Date()
                 it.userLastModified = authenticateService.userDomain().username
                 it.save()  // necessary?
+            }
+            // remove contact links (does not remove the contact)
+            ContactFor.findAllByEntityIdAndEntityType(providerGroupInstance.id, ProviderGroup.ENTITY_TYPE).each {
+                it.delete()
             }
             // now delete
             try {

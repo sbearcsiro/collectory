@@ -64,6 +64,8 @@ class ProviderGroup implements Serializable {
     String userLastModified
     Date dateFirstDataReceived
     String notes
+    String networkMembership    // a list of names of networks (CHAH, etc) that the group belongs to as JSON list
+
     static embedded = ['address', 'logoRef', 'imageRef']
 
     // collection attributes
@@ -91,7 +93,7 @@ class ProviderGroup implements Serializable {
     /* this causes stack overflow from circular validations - we don't want cascading deletes anyway */
     //static belongsTo = ProviderGroup
 
-    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact']
+    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact', 'memberOf']
 
     static constraints = {
         guid(nullable:true, maxSize:45)         // allow blank for institutions - therefore can't make unique
@@ -117,7 +119,7 @@ class ProviderGroup implements Serializable {
         userLastModified(maxSize:256)
         dateFirstDataReceived(nullable:true)
         notes(nullable:true, maxSize:2048)
-
+        networkMembership(nullable:true, maxSize:256)
         institutionType(nullable:true, maxSize:45, inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government', 'herbarium', 'historicalSociety', 'horticulturalInstitution', 'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum', 'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute', 'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'])
 
         providerCodes(nullable:true, maxSize:2048)
@@ -139,8 +141,10 @@ class ProviderGroup implements Serializable {
      * @param contact the contact
      * @param role the role this contact has for this group
      * @param isAdministrator whether this contact is allowed to administer this group
+     * @param isPrimaryContact whether this contact is the one that should be displayed as THE contact
+     * @param modifiedBy the user that made the change
      */
-    void addToContacts(Contact contact, String role, boolean isAdministrator, String modifiedBy) {
+    void addToContacts(Contact contact, String role, boolean isAdministrator, boolean isPrimaryContact, String modifiedBy) {
         // safety net - if there is no id we can't do this - will happen if the save fails without detection
         if (this.id == null) {
             return
@@ -151,6 +155,7 @@ class ProviderGroup implements Serializable {
         cf.entityType = "ProviderGroup"
         cf.role = role?.empty ? null : role
         cf.administrator = isAdministrator
+        cf.primaryContact = isPrimaryContact
         cf.userLastModified = modifiedBy
         cf.save(flush: true)
         if (cf.hasErrors()) {
@@ -192,9 +197,10 @@ class ProviderGroup implements Serializable {
             default:
                 ContactFor result = null
                 list.each {
-                    if (it.role.toLowerCase() =~ 'curator') result = it  // first choice
-                    if (!result && it.role.toLowerCase() =~ 'director') result = it  // second choice
-                    if (!result && it.role.toLowerCase() =~ 'manager') result = it  // third choice
+                    if (it.primaryContact) result = it  // definitive (as long as there is only one primary)
+                    if (it.role.toLowerCase() =~ 'curator') result = it  // second choice
+                    if (!result && it.role.toLowerCase() =~ 'director') result = it  // third choice
+                    if (!result && it.role.toLowerCase() =~ 'manager') result = it  // fourth choice
                 }
                 if (!result) result = list[0]  // just take one
                 return result
@@ -297,6 +303,9 @@ class ProviderGroup implements Serializable {
         return null
     }
 
+    boolean isMemberOf(String network) {
+        return (this.networkMembership =~ network)
+    }
 }
 
 /**

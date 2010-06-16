@@ -67,7 +67,7 @@ class BootStrap {
         // add a test user for security checking
         Contact test = new Contact(firstName: 'Mark', lastName: 'Woolston', email: 'mark.woolston@csiro.au', userLastModified: 'bootstrap').save(flush: true)
         [ame, anic, adt].each {
-            it?.addToContacts test, 'Tester', true, 'bootstrap'
+            it?.addToContacts test, 'Tester', true, false, 'bootstrap'
         }
 
         // save changes

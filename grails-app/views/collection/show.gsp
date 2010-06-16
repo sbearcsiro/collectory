@@ -44,7 +44,7 @@
 
 <!-- Collection type --><tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.collectionType.label" default="Collection type" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.collectionType")}</td>
+                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.scope.collectionType}'/></td>
                         </tr>
 
 <!-- Active -->         <tr class="prop">
@@ -74,6 +74,11 @@
                             <td valign="top" class="value"><g:formatBoolean boolean="${collectionInstance?.isALAPartner}" /></td>
                         </tr>
 
+<!-- Networks -->       <tr class="prop">
+                            <td valign="top" class="name"><g:message code="collection.networkMembership.label" default="Is a member of" /></td>
+                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.networkMembership}'/></td>
+                        </tr>
+
 <!-- Pub Desc -->       <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.pubDescription.label" default="Public description" /></td>
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "pubDescription")}</td>
@@ -83,6 +88,9 @@
                             <td valign="top" class="name"><g:message code="collection.techDescription.label" default="Technical Description" /></td>
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "techDescription")}</td>
                         </tr>
+
+<!-- sub collections -->
+                        <cl:subCollectionList list="${collectionInstance.scope.subCollections}"/>
 
 <!-- Notes -->          <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.notes.label" default="Notes" /></td>

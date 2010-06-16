@@ -156,17 +156,20 @@ class InfoSource implements Serializable {
     }
 
     void setWebServiceProtocol(String protocol) {
-        def ap = [uri: getWebServiceUri(), protocol: protocol]
-        accessParameters = ap.encodeAsJSON()
+        if (protocol && protocol != 'null') {
+            def ap = [uri: getWebServiceUri(), protocol: protocol]
+            accessParameters = ap.encodeAsJSON()
+        }
     }
 
     String getWebServiceProtocol() {
         if (accessParameters) {
             def ap = JSON.parse(accessParameters)
-            return ap.protocol
-        } else {
-            return null
+            String protocol = ap.protocol
+            if (protocol != 'null')
+                return protocol
         }
+        return null
     }
 
 }

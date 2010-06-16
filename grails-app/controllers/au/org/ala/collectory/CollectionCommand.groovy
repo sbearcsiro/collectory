@@ -33,13 +33,14 @@ class CollectionCommand implements Serializable {
     String phone
     String notes
     String providerCodes       // a comma-separated list of the codes used for this entity by the owning institution
+    List<String> networkMembership    // list of peak body names
 
     List<ProviderGroup> parents = []
 
     List<ContactFor> contacts = []
 
     // maps to CollectionScope
-    String collectionType       // type of collection e.g live, preserved, tissue, DNA
+    List<String> collectionType // type of collection e.g live, preserved, tissue, DNA
     String keywords             // a comma-separated list of keywords
     String active               // see active vocab
     String numRecords           // total number of records held that are able to be digitised
@@ -59,6 +60,9 @@ class CollectionCommand implements Serializable {
                                 // a space-separated string that can contain any number of these values:
                                 // Animalia Archaebacteria Eubacteria Fungi Plantae Protista
     String scientificNames      // comma-separated list of sci names
+
+    // sub collections modelled as two parallel lists of attributes - name + description
+    List<Map> subCollections = []  // name + description for each sub-collection
 
     // maps to InfoSource
 	String webServiceUri
@@ -92,24 +96,9 @@ class CollectionCommand implements Serializable {
         email(nullable:true, maxSize:256)
         phone(nullable:true, maxSize:45)
         notes(nullable:true, maxSize:2048)
-        collectionType(nullable: true, inList: [
-            "archival",
-            "art",
-            "audio",
-            "cellcultures",
-            "electronic",
-            "facsimiles",
-            "fossils",
-            "genetic",
-            "living",
-            "observations",
-            "preserved",
-            "products",
-            "taxonomic",
-            "texts",
-            "tissue",
-            "visual"])
+        collectionType(nullable: true)
         providerCodes(nullable:true, maxSize:2048)
+        networkMembership(nullable: true)
 
         keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
@@ -152,8 +141,29 @@ class CollectionCommand implements Serializable {
                 }
                 return ok
             })
-        scientificNames(nullable:true)
+        scientificNames()
+        subCollections()
     }
+
+    static List<String> collectionTypes() {[
+            "archival",
+            "art",
+            "audio",
+            "cellcultures",
+            "electronic",
+            "facsimiles",
+            "fossils",
+            "genetic",
+            "living",
+            "observations",
+            "preserved",
+            "products",
+            "taxonomic",
+            "texts",
+            "tissue",
+            "visual"]}
+
+    static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
 
     static List<String> kingdoms() {
         return ['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista']
@@ -190,13 +200,33 @@ class CollectionCommand implements Serializable {
         return true
     }
 
-    void addAsContact(Contact contact, String role, boolean isAdmin) {
+    void addAsContact(Contact contact) {
+        addAsContact contact, null, false
+    }
+
+    void addAsContact(Contact contact, String role, boolean administrator) {
+        // create a temp id so we have a handle - unique within this contact list, and negative so we  can detect later
+        // note: this contrivance shows we should generate ids in the app rather than in the database
+        long id = -2
+        contacts.each {
+            id = Math.min(id, it.id - 1)
+        }
         if (contact) {
-            contacts << new ContactFor(contact:contact, entityId:this.id,
-                    entityType:ProviderGroup.ENTITY_TYPE, role:role, administrator:isAdmin)
+            ContactFor cf = new ContactFor(contact:contact, entityId:this.id, entityType:ProviderGroup.ENTITY_TYPE)
+            cf.id = id
+            if (role) cf.role = role
+            cf.administrator = administrator
+            contacts << cf
             // also remove from the deleted list in case we removed it in this flow
             deletedContacts.remove(deletedContacts.find{it.contact.id == contact.id})
         }
+    }
+
+    void removeAsContact(int contactForId) {
+        // add to deleted
+        deletedContacts << contacts.find{it.id == contactForId}
+        // remove from contacts
+        contacts.remove(contacts.find{it.id == contactForId})
     }
 
     void removeAsContact(Contact contact) {
@@ -213,6 +243,21 @@ class CollectionCommand implements Serializable {
                     deletedContacts << it
                 }
             }*/
+        }
+    }
+
+    void bindSubCollections(params) {
+        def names = params.findAll { key, value ->
+            key.startsWith('name_') && value
+        }
+        def subs = names.sort().collect { key, value ->
+            def index = key.substring(5)
+            def desc = params."description_${index}"
+            return [name: value, description: desc ? desc : ""]
+        }
+        this.subCollections = []
+        subs.each {
+            this.subCollections.add it
         }
     }
 
@@ -245,6 +290,7 @@ class CollectionCommand implements Serializable {
         phone = collectionInstance.phone
         notes = collectionInstance.notes
         providerCodes = toCSVString(collectionInstance.providerCodes)
+        networkMembership = toList(collectionInstance.networkMembership)
 
         parents = collectionInstance.getParentInstitutionsOrderedByName()
 
@@ -253,7 +299,7 @@ class CollectionCommand implements Serializable {
         // load from CollectionScope
         CollectionScope collectionScope = collectionInstance.scope
         if (collectionScope) {
-            collectionType = collectionScope.collectionType
+            collectionType = toList(collectionInstance.scope.collectionType)
             keywords = toCSVString(collectionScope.keywords)
             active = collectionScope.active
             numRecords = loadInt(collectionScope.numRecords)
@@ -270,6 +316,7 @@ class CollectionCommand implements Serializable {
                 kingdomCoverage = collectionScope.kingdomCoverage.split(" ")
             }
             scientificNames = toCSVString(collectionScope.scientificNames)
+            loadSubCollections(collectionScope.subCollections)
         }
 
         // load from InfoSource
@@ -294,7 +341,7 @@ class CollectionCommand implements Serializable {
         if (!collectionInstance) {
             return false
         }
-        return updateFromCommand(collectionInstance, user)
+        return updateFromCommand(collectionInstance, user) > 0
     }
 
     /**
@@ -302,15 +349,15 @@ class CollectionCommand implements Serializable {
      *
      * @param the owning collection
      * @param user the user that modified the data
-     * @return
+     * @return the id of the created collection
      */
-    boolean create(String user) {
+    long create(String user) {
         // provider group
         def collectionInstance = new ProviderGroup(groupType: ProviderGroup.GROUP_TYPE_COLLECTION)
         return updateFromCommand(collectionInstance, user)
     }
 
-    boolean updateFromCommand(ProviderGroup collectionInstance, String user) {
+    long updateFromCommand(ProviderGroup collectionInstance, String user) {
         // TODO: should use a service call to transactionalise
         collectionInstance.properties['guid', 'name', 'acronym', 'focus',
                 'pubDescription', 'techDescription', 'notes',
@@ -319,17 +366,18 @@ class CollectionCommand implements Serializable {
         ['longitude', 'latitude'].each {
             collectionInstance."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
-        println "provider codes = ${this.providerCodes}"
+        //println "provider codes = ${this.providerCodes}"
         collectionInstance.providerCodes = toJSON(this.providerCodes)
+        collectionInstance.networkMembership = toJSON(this.networkMembership)
         // update collection scope
         // create a scope if there isn't one
         if (!collectionInstance.scope) {
             collectionInstance.scope = new CollectionScope()
         }
-        collectionInstance.scope.properties['collectionType', 'active', 'states', 'geographicDescription',
-                'startDate', 'endDate'] = this.properties
+        collectionInstance.scope.properties['active', 'states', 'geographicDescription', 'startDate', 'endDate'] = this.properties
+        collectionInstance.scope.collectionType = toJSON(this.collectionType)
         collectionInstance.scope.kingdomCoverage = this.kingdomCoverage?.join(" ")
-        println "KC=" + collectionInstance.scope.kingdomCoverage
+        //println "KC=" + collectionInstance.scope.kingdomCoverage
         ['numRecords', 'numRecordsDigitised'].each {
             collectionInstance.scope."${it}" = this."${it}" ? toInt(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
@@ -338,6 +386,22 @@ class CollectionCommand implements Serializable {
         }
         collectionInstance.scope.keywords = toJSON(this.keywords)
         collectionInstance.scope.scientificNames = toJSON(this.scientificNames)
+        collectionInstance.scope.subCollections = toJSON(this.subCollections)
+        collectionInstance.scope.dateLastModified = new Date()
+        collectionInstance.scope.userLastModified = user
+
+        collectionInstance.dateLastModified = new Date()
+        collectionInstance.userLastModified = user
+
+        // if creating a new collection we need to save first so we know the collection id for foreign keys
+        if (!this.id) {
+            collectionInstance.save(flush:true)
+            if (collectionInstance.hasErrors()) {
+                collectionInstance.errors.each {println it}
+                return 0
+            }
+        }
+
         // modify and save changes to institutions
         addedInstitutions.each {
             ProviderGroup inst = ProviderGroup.get(it)
@@ -347,7 +411,7 @@ class CollectionCommand implements Serializable {
             inst.save()
             if (inst.hasErrors()) {
                 inst.errors.each {println it}
-                return false
+                return 0
             }
         }
         deletedInstitutions.each {
@@ -358,29 +422,32 @@ class CollectionCommand implements Serializable {
             inst.save()
             if (inst.hasErrors()) {
                 inst.errors.each {println it}
-                return false
+                return 0
             }
         }
         // save changes to contacts
         contacts.each {
             // save only the new ones
-            if (!it.id) {
+            if (!it.id || it.id < 0) {
                 it.userLastModified = user
+                it.dateLastModified = new Date()
+                if (!it.entityId) it.entityId = collectionInstance.id     // may only have id once collection has been saved
                 it.save()
                 if (it.hasErrors()) {
                     it.errors.each {println it}
-                    return false
+                    return 0
                 }
             }
         }
+
         // delete the link record for any contacts that were removed
         deletedContacts.each {
-            println "deletedContact ${it} with id ${it.id}"
+            //println "deletedContact ${it} with id ${it.id}"
 //                ContactFor cf = ContactFor.get(it.id)
 //                println "ContactFor " + cf
 //                if (cf) {
                 //cf.delete(flush: true)
-                ContactFor.executeUpdate("delete ContactFor where id = ?",[it.id])
+            ContactFor.executeUpdate("delete ContactFor where id = ?",[it.id])
 //                }
         }
 
@@ -422,25 +489,31 @@ class CollectionCommand implements Serializable {
             infosource.save(flush:true)
             if (infosource.hasErrors()) {
                 infosource.errors.each {println it}
-                return false
+                return 0
             }
         }
-        collectionInstance.scope.dateLastModified = new Date()
-        collectionInstance.scope.userLastModified = user
+
         collectionInstance.scope.save(flush:true)
         if (collectionInstance.scope.hasErrors()) {
             collectionInstance.scope.errors.each {println it}
-            return false
+            return 0
         }
-        collectionInstance.dateLastModified = new Date()
-        collectionInstance.userLastModified = user
+
         collectionInstance.save(flush:true)
         if (collectionInstance.hasErrors()) {
             collectionInstance.errors.each {println it}
-            return false
+            return 0
         }
 
-        return true
+        return collectionInstance.id
+    }
+
+    List<String> toList(String json) {
+        if (json) {
+            return JSON.parse(json).collect { it.toString() }
+        } else {
+            return []
+        }
     }
 
     String toCSVString(String json) {
@@ -460,6 +533,10 @@ class CollectionCommand implements Serializable {
             return (codes as JSON).toString()
         }
         return null
+    }
+
+    String toJSON(subs) {
+        return (subs as JSON).toString()
     }
 
     String loadInt(int ii) {
@@ -485,4 +562,13 @@ class CollectionCommand implements Serializable {
     BigDecimal toBigDecimal(String value) throws NumberFormatException {
         return new BigDecimal(value)
     }
+
+    void loadSubCollections(String subs) {
+        if (subs) {
+            JSON.parse(subs).each {
+                subCollections << [name: it.name, description: it.description]
+            }
+        }
+    }
+
 }

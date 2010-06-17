@@ -36,7 +36,7 @@ class CollectionController {
             flash.message = params.message
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
-        //log.debug "Count = " + ProviderGroup.countByGroupType('Institution')
+        ActivityLog.log authenticateService.userDomain().username, Action.LIST
         [providerGroupInstanceList: ProviderGroup.findAllByGroupType("Collection", params),
                 providerGroupInstanceTotal: ProviderGroup.countByGroupType('Collection')]
     }
@@ -61,6 +61,7 @@ class CollectionController {
                 }
             }
         }
+        ActivityLog.log authenticateService.userDomain().username, Action.MYLIST
         log.info ">>${user} listing my collections"
         render(view: 'myList', model: [providerGroupInstanceList: collectionList])
     }
@@ -74,6 +75,7 @@ class CollectionController {
         }
         else {
             log.info ">>${authenticateService.userDomain().username} showing ${collectionInstance.name}"
+            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
         }
     }
@@ -87,6 +89,7 @@ class CollectionController {
         }
         else {
             log.info ">>${authenticateService.userDomain().username} previewing ${collectionInstance.name}"
+            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.PREVIEW
             [collectionInstance: collectionInstance, contact: collectionInstance.getPrimaryContact(), subCollections: collectionInstance.scope.listSubCollections()]
         }
     }
@@ -95,6 +98,7 @@ class CollectionController {
         boolean override = params.override ? params.override : false
         log.info ">>${authenticateService.userDomain().username} loading supplimentary data"
         dataLoaderService.loadSupplementaryData("/data/collectory/bootstrap/sup.json", override, authenticateService.userDomain().username)
+        ActivityLog.log authenticateService.userDomain().username, Action.DATA_LOAD
         redirect(url: "http://localhost:8080/Collectory")  //action: "list")
     }
 
@@ -107,6 +111,7 @@ class CollectionController {
         if (!params.order) params.order = "asc"
 
         log.info ">>${authenticateService.userDomain().username} searching for ${params.term}"
+        ActivityLog.log authenticateService.userDomain().username, Action.SEARCH, params.term
 
         def results = ProviderGroup.withCriteria {
             maxResults(params.max?.toInteger())
@@ -184,6 +189,7 @@ class CollectionController {
                     }
                 }
                 // delete collection
+                ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
                 providerGroupInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'collection.label', default: 'Collection'), name])}"
                 redirect(action: "list")
@@ -530,27 +536,29 @@ class CollectionController {
                 if (flow.newInst.hasErrors()) {
                     flow.newInst.errors.each {log.debug it}
                     failure()
-                }
-                log.debug "new inst id=" + flow.newInst.id
-                // if we have no id something is wrong
-                if (!flow.newInst?.id) {
-                    failure()
                 } else {
-                    // add the user as the contact
-                    def user = authenticateService.userDomain().username
-                    log.debug user
-                    if (user) {
-                        Contact c = Contact.findByEmail(user)
-                        if (c) {
-                            flow.newInst.addToContacts(c, "Editor", true, true, user)
-                            // save contact
-                            flow.newInst.save(flush: true)
+                    ActivityLog.log authenticateService.userDomain().username as String, flow.newInst.id as long, Action.CREATE_INSTITUTION
+                    log.debug "new inst id=" + flow.newInst.id
+                    // if we have no id something is wrong
+                    if (!flow.newInst?.id) {
+                        failure()
+                    } else {
+                        // add the user as the contact
+                        def user = authenticateService.userDomain().username
+                        log.debug user
+                        if (user) {
+                            Contact c = Contact.findByEmail(user)
+                            if (c) {
+                                flow.newInst.addToContacts(c, "Editor", true, true, user)
+                                // save contact
+                                flow.newInst.save(flush: true)
+                            }
                         }
+                        // add new institution to the collection
+                        flow.command.addAsParent(flow.newInst.id)
+                        // don't leave it in the flow
+                        flow.newInst = null
                     }
-                    // add new institution to the collection
-                    flow.command.addAsParent(flow.newInst.id)
-                    // don't leave it in the flow
-                    flow.newInst = null
                 }
             }.to "institution"
             on("failure") {
@@ -620,6 +628,7 @@ class CollectionController {
                 } else {
                     // save immediately - review this decision
                     contact.save()
+                    ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
                     flow.command.addAsContact(contact)
                 }
             }
@@ -638,15 +647,17 @@ class CollectionController {
                     log.info "creating collection: user = ${authenticateService.userDomain().username}"
                     long id = flow.command.create(authenticateService.userDomain().username)
                     if (id) {
+                        ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.CREATE
                         log.info ">>${authenticateService.userDomain().username} created collection ${flow.command.name} with id ${id}"
                         params.id = id
                     } else {
                         failure()
-v                    }
+v                   }
                 } else {
                     log.debug ">> colid = " + flow.colid
                     // save changes
                     flow.command.save(authenticateService.userDomain().username)
+                    ActivityLog.log authenticateService.userDomain().username as String, flow.command.id, Action.EDIT_SAVE
                     log.info ">>${authenticateService.userDomain().username} saved collection ${flow.command.name}"
                 }
             }
@@ -682,8 +693,10 @@ v                    }
                 def mode = flow.mode
                 flow.clear()
                 if (mode == 'create') {
+                    ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.CREATE_CANCEL
                     finish()
                 } else {
+                    ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.EDIT_CANCEL
                     flash.id = id
                     log.info ">> exiting to " + flash.id
                 }
@@ -739,6 +752,7 @@ v                    }
                 File f = new File(colDir, filename)
                 log.debug "saving ${filename} to ${f.absoluteFile}"
                 mhsr.transferTo(f)
+                ActivityLog.log authenticateService.userDomain().username as String, Action.UPLOAD_IMAGE, filename
             } else {
                 // TODO: handle error message
             }

@@ -72,6 +72,7 @@ class ContactController {
             contactInstance.dateLastModified = new Date()
             contactInstance.userLastModified = authenticateService.userDomain().username
             if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
+                ActivityLog.log authenticateService.userDomain().username as String, Action.DELETE, "contact ${params.id}"
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
                 redirect(action: "show", id: contactInstance.id)
             }
@@ -92,6 +93,7 @@ class ContactController {
         def contactInstance = Contact.get(params.id)
         if (contactInstance) {
             try {
+                ActivityLog.log authenticateService.userDomain().username as String, Action.DELETE, "contact ${contactInstance.buildName()}"
                 // need to delete any ContactFor links first
                 ContactFor.findAllByContact(contactInstance).each {
                     it.delete(flush: true)

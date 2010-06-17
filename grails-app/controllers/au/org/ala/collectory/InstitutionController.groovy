@@ -24,6 +24,7 @@ class InstitutionController {
         }
         else {
             log.info "Ala partner = " + institutionInstance.isALAPartner
+            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.VIEW
             [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts()]
         }
     }
@@ -63,16 +64,13 @@ class InstitutionController {
 
         done {
             action {
-                log.info "Entered done event"
-                params.each {
-                    log.info it
-                }
+                log.debug "Entered done event"
                 def children = params.children
                 children.each {
-                    log.info "Child: ${it}, ${it.class}"
+                    log.debug "Child: ${it}, ${it.class}"
                 }
                 params.parents.each {
-                    log.info "Parent: ${it}, ${it.class}"
+                    log.debug "Parent: ${it}, ${it.class}"
                 }
                 def providerGroupInstance = ProviderGroup.get(params.id)
                 if (providerGroupInstance) {
@@ -88,21 +86,25 @@ class InstitutionController {
                     // update values
                     // need to create an address obj if one doesn't exist
                     if (providerGroupInstance.address == null && (params.address?.street || params.address.city)) {
-                        log.info "creating new address"
+                        log.debug "creating new address"
                         providerGroupInstance.address = new Address()
                     }
                     if (providerGroupInstance.address) {
                         providerGroupInstance.properties['address.street', 'address.postBox', 'address.city', 'address.state', 'address.postcode', 'address.country'] = params
                     }
 
+                    // lat and long are shown as blank if the value is -1, and come back as blank which will be rejected
+                    providerGroupInstance.latitude = params.latitude ? params.latitude : ProviderGroup.NO_INFO_AVAILABLE
+                    providerGroupInstance.longitude = params.longitude ? params.longitude : ProviderGroup.NO_INFO_AVAILABLE
+
                     providerGroupInstance.properties['guid', 'name', 'acronym', 'websiteUrl', 'logoRef', 'imageRef', 'isALAPartner',
-                            'latitude', 'longitude', 'institutionType', 'state', 'email', 'phone'] = params
+                            'institutionType', 'state', 'email', 'phone'] = params
 
                     // handle images
                     MultipartFile logoFile = params.logoFile
                     if (logoFile.size) {  // will only have size if a file was selected
                         def filename = logoFile.getOriginalFilename()
-                        log.info "filename=${filename}"
+                        log.debug "filename=${filename}"
                         // update filename
                         if (providerGroupInstance.logoRef) {
                             providerGroupInstance.logoRef.file = filename
@@ -116,8 +118,9 @@ class InstitutionController {
                             def colDir = new File(webRootDir, "images/institution")
                             colDir.mkdirs()
                             File f = new File(colDir, filename)
-                            log.info "saving ${filename} to ${f.absoluteFile}"
+                            log.debug "saving ${filename} to ${f.absoluteFile}"
                             mhsr.transferTo(f)
+                            ActivityLog.log authenticateService.userDomain().username as String, Action.UPLOAD_IMAGE, filename
                         } else {
                             // TODO: handle error message
                         }
@@ -132,7 +135,7 @@ class InstitutionController {
                     MultipartFile file = params.imageFile
                     if (file.size) {  // will only have size if a file was selected
                         def filename = file.getOriginalFilename()
-                        log.info "filename=${filename}"
+                        log.debug "filename=${filename}"
                         // update filename
                         if (providerGroupInstance.imageRef) {
                             providerGroupInstance.imageRef.file = filename
@@ -146,7 +149,7 @@ class InstitutionController {
                             def colDir = new File(webRootDir, "images/institution")
                             colDir.mkdirs()
                             File f = new File(colDir, filename)
-                            log.info "saving ${filename} to ${f.absoluteFile}"
+                            log.debug "saving ${filename} to ${f.absoluteFile}"
                             mhsr.transferTo(f)
                         } else {
                             // TODO: handle error message
@@ -164,6 +167,7 @@ class InstitutionController {
                     providerGroupInstance.userLastModified = authenticateService.userDomain().username
                     if (!providerGroupInstance.hasErrors() && providerGroupInstance.save(flush: true)) {
                         flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerGroup.label', default: 'Institution'), providerGroupInstance.name])}"
+                        ActivityLog.log authenticateService.userDomain().username as String, providerGroupInstance.id, Action.EDIT_SAVE
                         return success()
                     }
                     else {
@@ -219,18 +223,19 @@ class InstitutionController {
                 contact.userLastModified = authenticateService.userDomain().username
                 // save immediately - review this decision
                 contact.save()
+                ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
                 flow.providerGroupInstance.addToContacts(contact, params.role2, (params.isAdmin2 as String == 'true'), (params.isPrimary2 as String == 'true'), authenticateService.userDomain().username)
             }
             on("success").to "showEdit"
             on("failure") {
-                // TODO: return errors
-                flash.message = "error"
+                render( view: "/institution/edit")
             }.to "showEdit"
         }
 
         cancel {
             action {
                 log.info "Cancelling"
+                ActivityLog.log authenticateService.userDomain().username as String, flow.providerGroupInstance?.id, Action.EDIT_CANCEL
                 flow.providerGroupInstance.discard()
 /*                log.info "flow.pg.id=" + flow.providerGroupInstance?.id
                 def returnId = flow.providerGroupInstance?.id
@@ -272,6 +277,7 @@ class InstitutionController {
             }
             // now delete
             try {
+                ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
                 providerGroupInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
                 redirect(action: "list")

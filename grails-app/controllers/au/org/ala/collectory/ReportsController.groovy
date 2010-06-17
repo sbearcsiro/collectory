@@ -4,9 +4,12 @@ import au.org.ala.security.Logon
 
 class ReportsController {
 
+    def authenticateService
+
     def index = { redirect(action: "show", params: params) }
 
     def show = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT
         [reports: new ReportCommand()]
     }
 

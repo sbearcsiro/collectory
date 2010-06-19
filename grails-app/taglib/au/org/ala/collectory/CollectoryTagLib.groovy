@@ -412,15 +412,15 @@ class CollectoryTagLib {
     }
 
     def checkboxSelect = {attrs ->
-        out << "<ul class='CheckBoxList CheckBoxArray'>"
+        out << "<table class='shy CheckBoxList CheckBoxArray'><tr>"
         attrs.from.eachWithIndex { it, index ->
             def checked = (it in attrs.value) ? "checked='checked'" : ""
-            out << "<li><input name='${attrs.name}' type='checkbox' ${checked}' value='${it}'/>${it}</li>"
+            out << "<td><input name='${attrs.name}' type='checkbox' ${checked}' value='${it}'/>${it}</td>"
             if (index > 0 && ((index+1) % 6) == 0) {
-                out << "<br/>"
+                out << "</tr>"
             }
         }
-        out << "</ul>"
+        out << "</tr></table>"
     }
 
     /* junk */

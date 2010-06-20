@@ -35,6 +35,14 @@ class ReportsController {
 
         def collectionsWithInfosource
 
+        def totalLogins
+        def uniqueLogins
+        def supplierLogins
+        def uniqueSupplierLogins
+        def curatorViews
+        def curatorPreviews
+        def curatorEdits
+
         def execQuery = { query ->
             def answer = ProviderGroup.executeQuery(query)
             if (answer) {
@@ -119,6 +127,18 @@ class ReportsController {
             collectionsWithNumRecordsDigitised = countNotUnknown("scope.numRecordsDigitised")
             collectionsWithDescriptions = countNotNull(["pubDescription", "techDescription"])
 
+            totalLogins = ActivityLog.countByAction(Action.LOGIN.toString())
+            uniqueLogins = ActivityLog.executeQuery("select count(distinct user) from ActivityLog where action='${Action.LOGIN.toString()}'")[0]
+
+            supplierLogins = ActivityLog.countByActionAndRoles(Action.LOGIN.toString(), 'ROLE_SUPPLIER')
+            uniqueSupplierLogins = ActivityLog.executeQuery("select count (distinct user) from ActivityLog where action='${Action.LOGIN.toString()}' and roles = 'ROLE_SUPPLIER'")[0]
+            // select count(*) from activity_log where administrator_for_entity = 1 and roles = "ROLE_SUPPLIER" and action = "viewed";
+            curatorViews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.VIEW.toString()}'" +
+                    " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+            curatorPreviews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.PREVIEW.toString()}'" +
+                    " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+            curatorEdits = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.EDIT_SAVE.toString()}'" +
+                    " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
         }
     }
 }

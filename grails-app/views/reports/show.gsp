@@ -42,6 +42,15 @@
 
                 <tr class="reportGroupTitle"><td colspan="3">Infosource summary</td></tr>
                 <tr><cl:totalAndPercent label="Collections with infosource data" with="${reports.collectionsWithInfosource}" total="${reports.totalCollections}"/></tr>
+
+                <tr class="reportGroupTitle"><td colspan="3">User activity</td></tr>
+                <tr><td>Total logins</td><td>${reports.totalLogins}</td><td></td></tr>
+                <tr><td>Unique logins</td><td>${reports.uniqueLogins}</td><td></td></tr>
+                <tr><td>Supplier logins</td><td>${reports.supplierLogins}</td><td></td></tr>
+                <tr><td>Unique supplier logins</td><td>${reports.uniqueSupplierLogins}</td><td></td></tr>
+                <tr><td>Curator views</td><td>${reports.curatorViews}</td><td></td></tr>
+                <tr><td>Curator previews</td><td>${reports.curatorPreviews}</td><td></td></tr>
+                <tr><td>Curator edits</td><td>${reports.curatorEdits}</td><td></td></tr>
               </table>
             </div>
         </div>

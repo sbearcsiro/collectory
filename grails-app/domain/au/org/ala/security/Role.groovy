@@ -5,7 +5,7 @@ import au.org.ala.security.Logon
 /**
  * Authority domain class.
  */
-class Role {
+class Role implements Serializable {
 
 	static hasMany = [people: Logon]
 

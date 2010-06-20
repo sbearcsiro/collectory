@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.webflow.core.collection.LocalAttributeMap
 import grails.converters.JSON
+import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 
 /**
  * Controller handles ProviderGroups of type Collection
@@ -47,6 +48,9 @@ class CollectionController {
         // get user's contact id
         def userContact = null
         def user = authenticateService.userDomain().username
+        def roles = AuthorizeTools.getPrincipalAuthorities().join(" ")
+        println "roles = ${roles}"
+        
         if (user) {
             userContact = Contact.findByEmail(user)
         } else {

@@ -17,8 +17,8 @@
           </g:else>
         </div>
         <div id="identForm" class="body">
-            <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
+            <g:if test="${message}">
+            <div class="message">${message}</div>
             </g:if>
             <g:hasErrors bean="${command}">
             <div class="errors">

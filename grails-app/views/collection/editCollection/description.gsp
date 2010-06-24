@@ -11,8 +11,8 @@
           <h1>Editing: ${fieldValue(bean: command, field: "name")}</h1>
         </div>
         <div class="body">
-            <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
+            <g:if test="${message}">
+            <div class="message">${message}</div>
             </g:if>
             <g:hasErrors bean="${command}">
             <div class="errors">

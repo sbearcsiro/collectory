@@ -12,8 +12,8 @@
           <h1>Editing: ${fieldValue(bean: command, field: "name")}</h1>
         </div>
         <div class="body">
-            <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
+            <g:if test="${message}">
+            <div class="message">${message}</div>
             </g:if>
             <g:hasErrors bean="${command}">
             <div class="errors">
@@ -39,7 +39,7 @@
                             </td>
                         </tr>
 
-                        <!-- network membership[ -->
+                        <!-- network membership -->
                         <tr class="prop">
                             <td valign="top" class="name">
                               <label for="networkMembership"><g:message code="providerGroup.networkMembership.label" default="Belongs to" /></label>

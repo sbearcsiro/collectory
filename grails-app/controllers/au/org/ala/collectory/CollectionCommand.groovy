@@ -3,6 +3,8 @@ package au.org.ala.collectory
 import org.codehaus.groovy.grails.validation.Validateable
 import grails.converters.JSON
 import java.text.NumberFormat
+import org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException
+import java.text.ParseException
 
 /**
  * A command class for collecting and validating a collection instance.
@@ -16,6 +18,8 @@ import java.text.NumberFormat
 class CollectionCommand implements Serializable {
     // maps to ProviderGroup
     long id                     // the DB id of the ProviderGroup that stores the collection
+    long version                // version of the collection
+    
     String guid                 // this is not the DB id but a known identifier
                                 // such as an LSID or institution code
     String name
@@ -103,11 +107,11 @@ class CollectionCommand implements Serializable {
         keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
         numRecords(nullable:true, validator: { ii -> if (!ii) return true
-            try { NumberFormat.getIntegerInstance().parse(ii) } catch (NumberFormatException e) { return ['number.invalid'] }
+            try { NumberFormat.getIntegerInstance().parse(ii) } catch (ParseException e) { return ['number.invalid'] }
             return true
         })
         numRecordsDigitised(nullable:true, validator: { ii -> if (!ii) return true
-            try { NumberFormat.getIntegerInstance().parse(ii) } catch (NumberFormatException e) { return ['number.invalid'] }
+            try { NumberFormat.getIntegerInstance().parse(ii) } catch (ParseException e) { return ['number.invalid'] }
             return true
         })
         states(nullable:true)
@@ -141,7 +145,7 @@ class CollectionCommand implements Serializable {
                 }
                 return ok
             })
-        scientificNames()
+        scientificNames(nullable:true)
         subCollections()
     }
 
@@ -274,13 +278,19 @@ class CollectionCommand implements Serializable {
 
         // load from ProviderGroup
         id = collectionId
+        version = collectionInstance.version
         guid = collectionInstance.guid
         name = collectionInstance.name
         acronym = collectionInstance.acronym
         pubDescription = collectionInstance.pubDescription
         techDescription = collectionInstance.techDescription
         focus = collectionInstance.focus
-        address = collectionInstance.address
+        if (collectionInstance.address) {
+            address = collectionInstance.address
+        } else {
+            // need an address object otherwise new address params will not be bound
+            address = new Address()
+        }
         latitude = loadBigDecimal(collectionInstance.latitude)
         longitude = loadBigDecimal(collectionInstance.longitude)
         state = collectionInstance.state
@@ -334,14 +344,18 @@ class CollectionCommand implements Serializable {
      *
      * @param the owning collection
      * @param user the user that modified the data
-     * @return
+     * @return the id of the created collection or an error code
      */
-    boolean save(String user) {
+    long save(String user) {
         def collectionInstance = ProviderGroup.get(id)
         if (!collectionInstance) {
-            return false
+            return 0
         }
-        return updateFromCommand(collectionInstance, user) > 0
+        collectionInstance.refresh()  // make sure we have the freshest version number
+        if (collectionInstance.version > this.version) {
+            return -2  // locking failure
+        }
+        return updateFromCommand(collectionInstance, user)
     }
 
     /**
@@ -362,7 +376,10 @@ class CollectionCommand implements Serializable {
         collectionInstance.properties['guid', 'name', 'acronym', 'focus',
                 'pubDescription', 'techDescription', 'notes',
                 'websiteUrl', 'imageRef',
-                'address', 'state', 'email', 'phone', 'parents'] = this.properties
+                'state', 'email', 'phone', 'parents'] = this.properties
+        if (address && !address.isEmpty()) {
+            collectionInstance.address = address
+        }
         ['longitude', 'latitude'].each {
             collectionInstance."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
@@ -395,10 +412,15 @@ class CollectionCommand implements Serializable {
 
         // if creating a new collection we need to save first so we know the collection id for foreign keys
         if (!this.id) {
-            collectionInstance.save(flush:true)
-            if (collectionInstance.hasErrors()) {
-                collectionInstance.errors.each {println it}
-                return 0
+            try {
+                collectionInstance.save(flush:true)
+                if (collectionInstance.hasErrors()) {
+                    collectionInstance.errors.each {println it}
+                    return 0
+                }
+            } catch (HibernateOptimisticLockingFailureException e) {
+                discardAll(collectionInstance)
+                return -2
             }
         }
 
@@ -408,7 +430,12 @@ class CollectionCommand implements Serializable {
             inst.addToChildren(collectionInstance)
             inst.dateLastModified = new Date()
             inst.userLastModified = user
-            inst.save()
+            try {
+                inst.save()
+            } catch (HibernateOptimisticLockingFailureException e) {
+                discardAll(collectionInstance)
+                return -2
+            }
             if (inst.hasErrors()) {
                 inst.errors.each {println it}
                 return 0
@@ -419,7 +446,12 @@ class CollectionCommand implements Serializable {
             inst.removeFromChildren(collectionInstance)
             inst.dateLastModified = new Date()
             inst.userLastModified = user
-            inst.save()
+            try {
+                inst.save()
+            } catch (HibernateOptimisticLockingFailureException e) {
+                discardAll(collectionInstance)
+                return -2
+            }
             if (inst.hasErrors()) {
                 inst.errors.each {println it}
                 return 0
@@ -442,13 +474,7 @@ class CollectionCommand implements Serializable {
 
         // delete the link record for any contacts that were removed
         deletedContacts.each {
-            //println "deletedContact ${it} with id ${it.id}"
-//                ContactFor cf = ContactFor.get(it.id)
-//                println "ContactFor " + cf
-//                if (cf) {
-                //cf.delete(flush: true)
             ContactFor.executeUpdate("delete ContactFor where id = ?",[it.id])
-//                }
         }
 
         // update infosource
@@ -486,26 +512,50 @@ class CollectionCommand implements Serializable {
         if (infosourceChanged) {
             infosource.dateLastModified = new Date()
             infosource.userLastModified = user
-            infosource.save(flush:true)
+            try {
+                infosource.save(flush:true)
+            } catch (HibernateOptimisticLockingFailureException e) {
+                discardAll(collectionInstance)
+                return -2
+            }
             if (infosource.hasErrors()) {
                 infosource.errors.each {println it}
                 return 0
             }
         }
 
-        collectionInstance.scope.save(flush:true)
+        try {
+            collectionInstance.scope.save(flush:true)
+        } catch (HibernateOptimisticLockingFailureException e) {
+            discardAll(collectionInstance)
+            return -2
+        }
         if (collectionInstance.scope.hasErrors()) {
             collectionInstance.scope.errors.each {println it}
             return 0
         }
 
-        collectionInstance.save(flush:true)
+        try {
+            collectionInstance.save(flush:true)
+        } catch (HibernateOptimisticLockingFailureException e) {
+            discardAll(collectionInstance)
+            return -2
+        }
         if (collectionInstance.hasErrors()) {
             collectionInstance.errors.each {println it}
             return 0
         }
 
         return collectionInstance.id
+    }
+
+    void discardAll(ProviderGroup collectionInstance) {
+        collectionInstance.infoSource?.discard()
+        collectionInstance.scope?.discard()
+        collectionInstance.parents.each {
+            it.discard()
+        }
+        collectionInstance.discard()
     }
 
     List<String> toList(String json) {
@@ -535,8 +585,10 @@ class CollectionCommand implements Serializable {
         return null
     }
 
-    String toJSON(subs) {
-        return (subs as JSON).toString()
+    String toJSON(list) {
+        if (list == null || list.size() == 0)
+            return null
+        return (list as JSON).toString()
     }
 
     String loadInt(int ii) {

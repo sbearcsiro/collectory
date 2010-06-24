@@ -36,6 +36,11 @@
                             
                         </tr>
 
+<!-- Networks -->       <tr class="prop">
+                            <td valign="top" class="name"><g:message code="institution.networkMembership.label" default="Is a member of" /></td>
+                            <td valign="top" class="value"><cl:JSONListAsStrings json='${institutionInstance.networkMembership}'/></td>
+                        </tr>
+
 <!-- Address -->        <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.address.label" default="Address" /></td>
 
@@ -214,6 +219,11 @@
 
                         </tr>
                     
+<!-- last edit -->      <tr class="prop">
+                            <td valign="top" class="name">Last edited</td>
+                            <td valign="top" class="value">by ${fieldValue(bean: institutionInstance, field: "userLastModified")} on ${fieldValue(bean: institutionInstance, field: "dateLastModified")}</td>
+                        </tr>
+
                     </tbody>
                 </table>
             </div>

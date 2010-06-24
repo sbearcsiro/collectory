@@ -108,7 +108,7 @@ class BootStrap {
         admin.addToPeople dave
 
         Logon pete = new Logon(username: 'peter.neville@csiro.au', userRealName: 'Peter Neville', enabled:true)
-        pete.passwd = authenticateService?.encodePassword('museum')
+        pete.passwd = authenticateService?.encodePassword('peter')
         pete.save(flush: true)
         admin.addToPeople pete
 

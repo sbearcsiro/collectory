@@ -80,17 +80,19 @@
                   <p>The total number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "scope.numRecords")}.</p>
                 </g:if>
 
-                <h2>Number of digitised specimens</h2>
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecordsDigitised') != '-1'}">
+                  <h2>Number of digitised specimens</h2>
                   <p>Of these ${fieldValue(bean: collectionInstance, field: "scope.numRecordsDigitised")} are digitised.
                   This represents <cl:percentIfKnown dividend='${collectionInstance.scope?.numRecordsDigitised}' divisor='${collectionInstance.scope?.numRecords}' /> of the collection.</p>
                 </g:if>
 
-                <h2>Sub-collections</h2>
-                <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
-                <g:each var="sub" in="${collectionInstance.scope.listSubCollections()}" >
-                  <p class="sub"><cl:subCollectionDisplay sub="${sub}"/></p>
-                </g:each>
+                <g:if test="${collectionInstance.scope.listSubCollections()?.size() > 0}">
+                  <h2>Sub-collections</h2>
+                  <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
+                  <g:each var="sub" in="${collectionInstance.scope.listSubCollections()}" >
+                    <p class="sub"><cl:subCollectionDisplay sub="${sub}"/></p>
+                  </g:each>
+                </g:if>
               </td>
               <td class="rightColumn">
                 <div>

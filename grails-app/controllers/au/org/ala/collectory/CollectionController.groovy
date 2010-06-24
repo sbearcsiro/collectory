@@ -56,8 +56,7 @@ class CollectionController {
     
     // show a single collection
     def show = {
-        log.info ">entered show with id=${params.id}"
-        log.info ">and params.cid=${params.cid}"
+        log.debug ">entered show with id=${params.id}"
         def collectionInstance = ProviderGroup.get(params.id)
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
@@ -502,14 +501,11 @@ v                   }
         // exit the flow showing the modified collection
         done {
             action {
-                params.each {log.debug it}
+                //params.each {log.debug it}
                 flow.clear()
-                flow.cid = null
-                flow.cid = params.id
-                flash.cid = null
-                log.info "flow.cid=${flow.cid}"
+                [id: params.id]
             }
-            on("success").to "exitToList"
+            on("success").to "exitToShow"
             on("failure").to "exitToList"
         }
         
@@ -524,23 +520,23 @@ v                   }
                 // no need to discard model as it's not directly managed by hibernate
                 // make sure the modified model is removed from flow
                 def mode = flow.mode
+                def id = params.id
                 flow.clear()
                 if (mode == 'create') {
                     ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.CREATE_CANCEL
-                    finish()
                 } else {
                     ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.EDIT_CANCEL
-                    log.info ">> exiting to " + params.id
+                    log.debug ">> exiting to " + params.id
                 }
+                [id: id]
             }
-            on("finish").to "exitToList"
-            on("success").to "exitToList"
+            on("success").to "exitToShow"
             on("failure").to "exitToList"
         }
 
-        exitToShow {
-            redirect(controller:"collection", action:"show", params: [id: flow.cid, cid: flash.cid])
-        }
+        exitToShow() /* workaround - see http://jira.codehaus.org/browse/GRAILS-5811  to be fixed in Grails 1.3.3 {
+            redirect(controller:"collection", action:"show", params: [id: params.id])
+        }*/
 
         exitToList {
             redirect(controller:"collection", action:"list")

@@ -3,7 +3,6 @@ package au.org.ala.collectory
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.webflow.core.collection.LocalAttributeMap
-import grails.converters.JSON
 import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 
 /**
@@ -48,9 +47,6 @@ class CollectionController {
         // get user's contact id
         def userContact = null
         def user = authenticateService.userDomain().username
-        def roles = AuthorizeTools.getPrincipalAuthorities().join(" ")
-        println "roles = ${roles}"
-        
         if (user) {
             userContact = Contact.findByEmail(user)
         } else {
@@ -72,6 +68,8 @@ class CollectionController {
     
     // show a single collection
     def show = {
+        log.info ">entered show with id=${params.id}"
+        log.info ">and params.cid=${params.cid}"
         def collectionInstance = ProviderGroup.get(params.id)
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
@@ -117,9 +115,7 @@ class CollectionController {
         log.info ">>${authenticateService.userDomain().username} searching for ${params.term}"
         ActivityLog.log authenticateService.userDomain().username, Action.SEARCH, params.term
 
-        def results = ProviderGroup.withCriteria {
-            maxResults(params.max?.toInteger())
-            firstResult(params.offset?.toInteger())
+        def results = ProviderGroup.createCriteria().list(max: params.max, offset: params.offset) {
             order(params.sort, params.order)
             eq ('groupType', 'Collection')
             or {
@@ -130,36 +126,10 @@ class CollectionController {
                 eq ('acronym', "${params.term}")
             }
         }
-        def total = ProviderGroup.withCriteria {
-            eq ('groupType', 'Collection')
-            or {
-                like ('name', "${params.term}")
-                scope {
-                    like ('keywords', "%${params.term}%")
-                }
-                eq ('acronym', "${params.term}")
-            }
-        }.size()
+
         def term = params.term
         def criteria = term ? term : "blank"        // for display purposes
-/*        params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        params.sort = params.sort ? params.sort : 'name'
-        params.order = params.order ? params.order : 'asc'
-        params.each {log.debug it}
-        def matches = ProviderGroup.findAll("""\
-            from ProviderGroup as p where p.acronym=:term \
-            or p.name like :liketerm \
-            or (p.groupType='Collection' and p.scope.keywords like :liketerm)""", [term:term, liketerm:"%${term}%"], params)
-        // def matches = ProviderGroup.findAllByNameIlikeOrAcronymIlike("%"+term+"%", "%"+term+"%", params)
-        def total = params.providerGroupInstanceTotal
-        if (!total) {
-            def all = ProviderGroup.findAll("""\
-                from ProviderGroup as p where p.acronym=:term \
-                or p.name like :liketerm \
-                or (p.groupType='Collection' and p.scope.keywords like :liketerm)""", [term:term, liketerm:"%${term}%"])
-            total = all.size()
-        }*/
-        [providerGroupInstanceList : results, providerGroupInstanceTotal: total, criteria: [criteria], term: term]
+        [providerGroupInstanceList : results, providerGroupInstanceTotal: results.getTotalCount(), criteria: [criteria], term: term]
     }
 
     def delete = {
@@ -167,6 +137,7 @@ class CollectionController {
         if (providerGroupInstance) {
             def name = providerGroupInstance.name
             log.info ">>${authenticateService.userDomain().username} deleting collection " + name
+            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
             try {
                 // remove it as a child from all parents
                 providerGroupInstance.parents.each {
@@ -193,7 +164,6 @@ class CollectionController {
                     }
                 }
                 // delete collection
-                ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
                 providerGroupInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'collection.label', default: 'Collection'), name])}"
                 redirect(action: "list")
@@ -267,12 +237,15 @@ class CollectionController {
                     }
                 } else {
                     // add the user as the contact of the collection they are creating
-                    def user = authenticateService.userDomain().username
-                    log.info ">>${user} creating a new colection"
-                    if (user) {
-                        Contact c = Contact.findByEmail(user)
-                        if (c) {
-                            cmd.addAsContact(c, "Creator", true)
+                    // but not if they are an ADMIN
+                    if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
+                        def user = authenticateService.userDomain().username
+                        log.info ">>${user} creating a new colection"
+                        if (user) {
+                            Contact c = Contact.findByEmail(user)
+                            if (c) {
+                                cmd.addAsContact(c, "Creator", true)
+                            }
                         }
                     }
                     flow.mode = mode
@@ -289,6 +262,8 @@ class CollectionController {
         ident {
             on("next") { //CollectionCommand cmd ->
                 log.debug ">> colid = " + flow.colid
+                // set empty collectionType list explicitly
+                if (!params.collectionType) params.collectionType = []
                 bindData(flow.command, params, IDENTITY_MAPPING)
                 /* WORKAROUND - you should be able to pass a list of fields to validate (so you only get errors on
                  * this page). This does not work - maybe because this is a command class rather than a domain class. */
@@ -301,6 +276,7 @@ class CollectionController {
             on("cancel").to "cancelEdit"
             on("done") {
                 params.each {log.debug it}
+                if (!params.collectionType) params.collectionType = []
                 bindData(flow.command, params, IDENTITY_MAPPING)
                 flow.command.validate()
                 if (flow.command.hasErrors()) {
@@ -356,7 +332,6 @@ class CollectionController {
         // collect website and image attributes
         reference {
             on ("next") {
-                log.debug ">> colid = " + flow.colid
                 bindReference(params, flow)
                 flow.command.validate()
                 if (flow.command.hasErrors()) {
@@ -450,6 +425,7 @@ class CollectionController {
         location {
             on ("next") {
                 bindData(flow.command, params, LOCATION_MAPPING)
+                println "city=${flow.command.address?.city}"
                 flow.command.validate()
                 if (flow.command.hasErrors()) {
                     flow.command.errors.each {log.warn it}
@@ -457,6 +433,7 @@ class CollectionController {
                 }
             }.to "reference"
             on("back") {
+                params.each {println it}
                 bindData(flow.command, params, LOCATION_MAPPING)
                 flow.command.validate()
                 if (flow.command.hasErrors()) {
@@ -548,14 +525,17 @@ class CollectionController {
                         failure()
                     } else {
                         // add the user as the contact
-                        def user = authenticateService.userDomain().username
-                        log.debug user
-                        if (user) {
-                            Contact c = Contact.findByEmail(user)
-                            if (c) {
-                                flow.newInst.addToContacts(c, "Editor", true, true, user)
-                                // save contact
-                                flow.newInst.save(flush: true)
+                        // but not if they are ADMIN
+                        if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
+                            def user = authenticateService.userDomain().username
+                            log.debug user
+                            if (user) {
+                                Contact c = Contact.findByEmail(user)
+                                if (c) {
+                                    flow.newInst.addToContacts(c, "Editor", true, true, user)
+                                    // save contact
+                                    flow.newInst.save(flush: true)
+                                }
                             }
                         }
                         // add new institution to the collection
@@ -660,26 +640,41 @@ v                   }
                 } else {
                     log.debug ">> colid = " + flow.colid
                     // save changes
-                    flow.command.save(authenticateService.userDomain().username)
-                    ActivityLog.log authenticateService.userDomain().username as String, flow.command.id, Action.EDIT_SAVE
-                    log.info ">>${authenticateService.userDomain().username} saved collection ${flow.command.name}"
+                    long id = flow.command.save(authenticateService.userDomain().username)
+                    if (id == -2) {
+                        // row was updated or deleted by another transaction
+                        log.warn "Attempted to save a stale collection record - ${flow.command.name} version ${flow.command.version}"
+                        // create new command object with fresh values
+                        CollectionCommand cmd = new CollectionCommand()
+                        cmd.load(flow.command.id)
+                        log.info ">>reloading collection ${cmd.name} for editing"
+                        flow.command = cmd
+                        flow.command.errors.rejectValue("version", "default.optimistic.locking.failure",
+                                [message(code: 'collection.label', default: 'collection')] as Object[],
+                                "Another user has updated this collection while you were editing. New values have been refreshed. You will need to reapply your changes.")
+                        return lockingFailure()
+                    } else {
+                        //ActivityLog.log authenticateService.userDomain().username as String, flow.command.id, Action.EDIT_SAVE
+                        log.info ">>${authenticateService.userDomain().username} saved collection ${flow.command.name}"
+                    }
                 }
             }
             on("success").to "done"
             on("error").to "ident"
+            on("lockingFailure").to "ident"
         }
-
+        
         // exit the flow showing the modified collection
         done {
             action {
                 params.each {log.debug it}
-                //log.debug ">> colid = " + flow.colid
-                def id = params.id
                 flow.clear()
-                flash.id = id
-                log.debug ">> flash.id = " + flash.id
+                flow.cid = null
+                flow.cid = params.id
+                flash.cid = null
+                log.info "flow.cid=${flow.cid}"
             }
-            on("success").to "exitToShow"
+            on("success").to "exitToList"
             on("failure").to "exitToList"
         }
         
@@ -688,30 +683,28 @@ v                   }
             redirect(controller:"collection", action:"list", params: [message: "Cannot edit a collection with no id specified"])
         }
 
-        // exit because the user cancelled the edit
+        // exit because the user cancelled the edit or a fatal error occurred
         cancelEdit {
             action {
                 // no need to discard model as it's not directly managed by hibernate
                 // make sure the modified model is removed from flow
-                def id = params.id
                 def mode = flow.mode
                 flow.clear()
                 if (mode == 'create') {
-                    ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.CREATE_CANCEL
+                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.CREATE_CANCEL
                     finish()
                 } else {
-                    ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.EDIT_CANCEL
-                    flash.id = id
-                    log.info ">> exiting to " + flash.id
+                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.EDIT_CANCEL
+                    log.info ">> exiting to " + params.id
                 }
             }
             on("finish").to "exitToList"
-            on("success").to "exitToShow"
+            on("success").to "exitToList"
             on("failure").to "exitToList"
         }
 
         exitToShow {
-            redirect(controller:"collection", id:flash.id, action:"show")
+            redirect(controller:"collection", action:"show", params: [id: flow.cid, cid: flash.cid])
         }
 
         exitToList {
@@ -736,6 +729,8 @@ v                   }
      * @return
      */
     boolean bindReference(GrailsParameterMap params, LocalAttributeMap flow) {
+        // must be explicit about network membership because unchecking all means there is no param returned
+        if (!params.networkMembership) params.networkMembership = []
         bindData(flow.command, params, REFERENCE_MAPPING)
         MultipartFile file = params.imageFile
         if (file.size) {  // will only have size if a file was selected

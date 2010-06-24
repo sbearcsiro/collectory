@@ -32,44 +32,50 @@ class DataLoaderService {
     def loadSupplementaryData(String filename, boolean overwriteAnyChanges, String user) {
         def cc = JSON.parse(new FileInputStream(filename), "UTF-8")
         cc.collections.each {
-            ProviderGroup pg = ProviderGroup.findByGuid(it.guid)
-            // only update if last modified by BCI loader or json loader unless overwrite is true
-            if (overwriteAnyChanges || pg.userLastModified =~ "BCI loader" || pg.userLastModified =~ "json loader") {
-                boolean changed = false
+            ProviderGroup pg
+            if (it.giud) pg = ProviderGroup.findByGuid(it.guid)
+            else pg = ProviderGroup.findByName(it.name)
+
+            boolean changed = false
+            if (!pg) {
+                // does not exist
+                pg = new ProviderGroup(name: it.name, userLastModified: user, groupType: ProviderGroup.GROUP_TYPE_COLLECTION)
+                changed = true
+            }
+            // only update if last modified by BCI loader or json loader unless overwrite is true or just created
+            if (overwriteAnyChanges || pg.userLastModified =~ "BCI loader" || pg.userLastModified =~ "json loader" || changed) {
                 it.entrySet().each {
-                    if (it.key != "guid") {
-                        // handle BigDecimal
-                        def value = it.value
-                        if (value.endsWith(" as BigDecimal")) {
-                            value = value.substring(0, value.length() - 14) as BigDecimal
+                    // handle BigDecimal
+                    def value = it.value
+                    if (value.endsWith(" as BigDecimal")) {
+                        value = value.substring(0, value.length() - 14) as BigDecimal
+                    }
+                    // handle linked and embedded classes
+                    if (it.key.indexOf('.') > 0) {
+                        String[] bits = it.key.tokenize(".")
+                        // create?
+                        if (pg?."${bits[0]}" == null) {
+                            // need to create - do it dumb for now
+                            switch (bits[0]) {
+                                case "address": pg?."${bits[0]}" = new Address(); break
+                                case "imageRef": pg?."${bits[0]}" = new Image(); break
+                                case "logoRef": pg?."${bits[0]}" = new Image(); break
+                                // others we can't create simply so leave them
+                            }
                         }
-                        // handle linked and embedded classes
-                        if (it.key.indexOf('.') > 0) {
-                            String[] bits = it.key.tokenize(".")
-                            // create?
-                            if (pg?."${bits[0]}" == null) {
-                                // need to create - do it dumb for now
-                                switch (bits[0]) {
-                                    case "address": pg?."${bits[0]}" = new Address(); break
-                                    case "imageRef": pg?."${bits[0]}" = new Image(); break
-                                    case "logoRef": pg?."${bits[0]}" = new Image(); break
-                                    // others we can't create simply so leave them
-                                }
+                        if (pg?."${bits[0]}"."${bits[1]}" != value) {
+                            pg?."${bits[0]}"."${bits[1]}" = value
+                            changed = true
+                            // needs to update last mod for linked tables (but not embedded)
+                            if (bits[0] in ["scope", "infoSource"]) {
+                                pg?."${bits[0]}".dateLastModified = new Date()
+                                pg?."${bits[0]}".userLastModified = "${user} (via json loader)"
                             }
-                            if (pg?."${bits[0]}"."${bits[1]}" != value) {
-                                pg?."${bits[0]}"."${bits[1]}" = value
-                                changed = true
-                                // needs to update last mod for linked tables (but not embedded)
-                                if (bits[0] in ["scope", "infoSource"]) {
-                                    pg?."${bits[0]}".dateLastModified = new Date()
-                                    pg?."${bits[0]}".userLastModified = "${user} (via json loader)"
-                                }
-                            }
-                        } else {
-                            if (pg?."${it.key}" != value) {
-                                pg?."${it.key}" = value
-                                changed = true
-                            }
+                        }
+                    } else {
+                        if (pg?."${it.key}" != value) {
+                            pg?."${it.key}" = value
+                            changed = true
                         }
                     }
                 }

@@ -93,7 +93,9 @@ class ProviderGroup implements Serializable {
     /* this causes stack overflow from circular validations - we don't want cascading deletes anyway */
     //static belongsTo = ProviderGroup
 
-    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact', 'memberOf']
+    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes']
+
+    static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
 
     static constraints = {
         guid(nullable:true, maxSize:45)         // allow blank for institutions - therefore can't make unique
@@ -321,6 +323,8 @@ class Address implements Serializable {
     String postcode
     String country
 
+    static transients = ['empty']
+    
     static constraints = {
         street(nullable:true)
         postBox(nullable:true)
@@ -328,6 +332,10 @@ class Address implements Serializable {
         state(nullable:true)
         postcode(nullable:true)
         country(nullable:true)
+    }
+
+    boolean isEmpty() {
+        return !(street || postBox || city || state || postcode || country)
     }
 }
 

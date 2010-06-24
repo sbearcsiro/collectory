@@ -76,7 +76,14 @@
 
 <!-- Networks -->       <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.networkMembership.label" default="Is a member of" /></td>
-                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.networkMembership}'/></td>
+                            <td valign="top" class="value">
+                              <g:if test="${collectionInstance.networkMembership}">
+                                <cl:JSONListAsStrings json='${collectionInstance.networkMembership}'/>
+                              </g:if>
+                              <g:elseif test="${collectionInstance.findPrimaryInstitution()?.networkMembership}">
+                                <cl:JSONListAsStrings json='${collectionInstance.findPrimaryInstitution().networkMembership}'/> (via Institution)
+                              </g:elseif>
+                            </td>
                         </tr>
 
 <!-- Pub Desc -->       <tr class="prop">

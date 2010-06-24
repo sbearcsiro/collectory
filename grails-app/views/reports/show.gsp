@@ -51,6 +51,67 @@
                 <tr><td>Curator views</td><td>${reports.curatorViews}</td><td></td></tr>
                 <tr><td>Curator previews</td><td>${reports.curatorPreviews}</td><td></td></tr>
                 <tr><td>Curator edits</td><td>${reports.curatorEdits}</td><td></td></tr>
+
+                <tr class="reportGroupTitle"><td>ALA Partner Institutions</td>
+                  <!-- put first member on same line as title -->
+                  <td colspan="2">
+                    <g:if test="${reports.partners.size() > 0}">${reports.partners[0].name}</g:if><g:else>None</g:else>
+                  </td></tr>
+                <g:each var="p" in="${reports.partners}" status="i">
+                  <!-- skip first member -->
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                </g:each>
+
+                <tr class="reportGroupTitle"><td>CHAH Members</td>
+                  <!-- put first member on same line as title -->
+                  <td colspan="2">
+                    <g:if test="${reports.chahMembers.size() > 0}">${reports.chahMembers[0].name}</g:if><g:else>None</g:else>
+                  </td></tr>
+                <g:each var="p" in="${reports.chahMembers}" status="i">
+                  <!-- skip first member -->
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                </g:each>
+
+                <tr class="reportGroupTitle"><td>CHAFC Members</td>
+                  <!-- put first member on same line as title -->
+                  <td colspan="2">
+                    <g:if test="${reports.chafcMembers.size() > 0}">${reports.chafcMembers[0].name}</g:if><g:else>None</g:else>
+                  </td></tr>
+                <g:each var="p" in="${reports.chafcMembers}" status="i">
+                  <!-- skip first member -->
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                </g:each>
+
+                <tr class="reportGroupTitle"><td>CHAEC Members</td>
+                  <!-- put first member on same line as title -->
+                  <td colspan="2">
+                    <g:if test="${reports.chaecMembers.size() > 0}">${reports.chaecMembers[0].name}</g:if><g:else>None</g:else>
+                  </td></tr>
+                <g:each var="p" in="${reports.chaecMembers}" status="i">
+                  <!-- skip first member -->
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                </g:each>
+
+                <tr class="reportGroupTitle"><td>AMRRN Members</td>
+                  <!-- put first member on same line as title -->
+                  <td colspan="2">
+                    <g:if test="${reports.amrrnMembers.size() > 0}">${reports.amrrnMembers[0].name}</g:if><g:else>None</g:else>
+                  </td></tr>
+                <g:each var="p" in="${reports.amrrnMembers}" status="i">
+                  <!-- skip first member -->
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                </g:each>
+
+                <tr class="reportGroupTitle"><td>CAMD Members</td>
+                  <!-- put first member on same line as title -->
+                  <td colspan="2">
+                    <g:if test="${reports.camdMembers.size() > 0}">${reports.camdMembers[0].name}</g:if><g:else>None</g:else>
+                  </td></tr>
+                <g:each var="p" in="${reports.camdMembers}" status="i">
+                  <!-- skip first member -->
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                </g:each>
+
               </table>
             </div>
         </div>

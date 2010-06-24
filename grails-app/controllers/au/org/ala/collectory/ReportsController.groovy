@@ -6,11 +6,40 @@ class ReportsController {
 
     def authenticateService
 
-    def index = { redirect(action: "show", params: params) }
+    def index = {
+        redirect action: list, params: params
+    }
 
-    def show = {
-        ActivityLog.log authenticateService.userDomain().username, Action.REPORT
-        [reports: new ReportCommand()]
+    def list = {
+        render(view: "index")
+    }
+
+    def data = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'data'
+        [reports: new ReportCommand('data')]
+    }
+
+    def activity = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'activity'
+        [reports: new ReportCommand('activity')]
+    }
+
+    def membership = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'membership'
+        [reports: new ReportCommand('membership')]
+    }
+
+    def collections = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'collections'
+        [reports: new ReportCommand('collections')]
+    }
+
+    def institutions = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'institutions'
+    }
+
+    def contacts = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'contacts'
     }
 
     class ReportCommand {
@@ -43,6 +72,13 @@ class ReportsController {
         def curatorPreviews
         def curatorEdits
 
+        def partners
+        def chahMembers
+        def chaecMembers
+        def chafcMembers
+        def amrrnMembers
+        def camdMembers
+
         def execQuery = { query ->
             def answer = ProviderGroup.executeQuery(query)
             if (answer) {
@@ -74,71 +110,88 @@ class ReportsController {
             return answer
         }
 
-        ReportCommand() {
-            totalCollections = ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
-            totalInstitutions = ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION)
-            totalContacts = Contact.count()
-            totalLogons = Logon.count()
+        ReportCommand(String set) {
+            switch (set) {
+                case 'data':
+                totalCollections = ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
+                totalInstitutions = ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION)
+                totalContacts = Contact.count()
+                totalLogons = Logon.count()
 
-            /* sql: select count(*) from collectory.provider_group
-                where not exists (select * from collectory.contact_for
-                where contact_for.entity_id = provider_group.id)
-                and provider_group.group_type = 'Collection';*/
-            collectionsWithoutContacts = execQuery("select count(*) from ProviderGroup as pg \
-                where not exists (select id from ContactFor as cf \
-                where cf.entityId = pg.id) \
-                and pg.groupType = '${ProviderGroup.GROUP_TYPE_COLLECTION}'")
+                /* sql: select count(*) from collectory.provider_group
+                    where not exists (select * from collectory.contact_for
+                    where contact_for.entity_id = provider_group.id)
+                    and provider_group.group_type = 'Collection';*/
+                collectionsWithoutContacts = execQuery("select count(*) from ProviderGroup as pg \
+                    where not exists (select id from ContactFor as cf \
+                    where cf.entityId = pg.id) \
+                    and pg.groupType = '${ProviderGroup.GROUP_TYPE_COLLECTION}'")
 
-            institutionsWithoutContacts = execQuery("select count(*) from ProviderGroup as pg \
-                where not exists (select id from ContactFor as cf \
-                where cf.entityId = pg.id) \
-                and pg.groupType = '${ProviderGroup.GROUP_TYPE_INSTITUTION}'")
+                institutionsWithoutContacts = execQuery("select count(*) from ProviderGroup as pg \
+                    where not exists (select id from ContactFor as cf \
+                    where cf.entityId = pg.id) \
+                    and pg.groupType = '${ProviderGroup.GROUP_TYPE_INSTITUTION}'")
 
-            /* sql: select count(*) from collectory.provider_group
-                where not exists (select * from collectory.contact_for, collectory.contact
-                where contact_for.entity_id = provider_group.id
-                and contact.id = contact_for.contact_id
-                and contact.email <> '')
-                and provider_group.group_type = 'Collection'; */
-            collectionsWithoutEmailContacts = execQuery("select count(*) from ProviderGroup as pg \
-                where not exists (select id from ContactFor as cf \
-                where cf.entityId = pg.id \
-                and cf.contact.email <> '') \
-                and pg.groupType = '${ProviderGroup.GROUP_TYPE_COLLECTION}'")
+                /* sql: select count(*) from collectory.provider_group
+                    where not exists (select * from collectory.contact_for, collectory.contact
+                    where contact_for.entity_id = provider_group.id
+                    and contact.id = contact_for.contact_id
+                    and contact.email <> '')
+                    and provider_group.group_type = 'Collection'; */
+                collectionsWithoutEmailContacts = execQuery("select count(*) from ProviderGroup as pg \
+                    where not exists (select id from ContactFor as cf \
+                    where cf.entityId = pg.id \
+                    and cf.contact.email <> '') \
+                    and pg.groupType = '${ProviderGroup.GROUP_TYPE_COLLECTION}'")
 
-            institutionsWithoutEmailContacts = execQuery("select count(*) from ProviderGroup as pg \
-                where not exists (select id from ContactFor as cf \
-                where cf.entityId = pg.id \
-                and cf.contact.email <> '') \
-                and pg.groupType = '${ProviderGroup.GROUP_TYPE_INSTITUTION}'")
+                institutionsWithoutEmailContacts = execQuery("select count(*) from ProviderGroup as pg \
+                    where not exists (select id from ContactFor as cf \
+                    where cf.entityId = pg.id \
+                    and cf.contact.email <> '') \
+                    and pg.groupType = '${ProviderGroup.GROUP_TYPE_INSTITUTION}'")
 
-            /* sql: select count(*) from collectory.provider_group
-                where exists (select * from collectory.info_source as src
-                where src.id = provider_group.info_source_id)
-                and provider_group.group_type = 'Collection'; */
-            collectionsWithInfosource = countNotNull("infoSource")
+                /* sql: select count(*) from collectory.provider_group
+                    where exists (select * from collectory.info_source as src
+                    where src.id = provider_group.info_source_id)
+                    and provider_group.group_type = 'Collection'; */
+                collectionsWithInfosource = countNotNull("infoSource")
 
-            collectionsWithType = countNotNull("scope.collectionType")
-            collectionsWithFocus = countNotNull("focus")
-            collectionsWithKeywords = countNotNull("scope.keywords")
-            collectionsWithProviderCodes = countNotNull("providerCodes")
-            collectionsWithGeoDescription = countNotNull("scope.geographicDescription")
-            collectionsWithNumRecords = countNotUnknown("scope.numRecords")
-            collectionsWithNumRecordsDigitised = countNotUnknown("scope.numRecordsDigitised")
-            collectionsWithDescriptions = countNotNull(["pubDescription", "techDescription"])
+                collectionsWithType = countNotNull("scope.collectionType")
+                collectionsWithFocus = countNotNull("focus")
+                collectionsWithKeywords = countNotNull("scope.keywords")
+                collectionsWithProviderCodes = countNotNull("providerCodes")
+                collectionsWithGeoDescription = countNotNull("scope.geographicDescription")
+                collectionsWithNumRecords = countNotUnknown("scope.numRecords")
+                collectionsWithNumRecordsDigitised = countNotUnknown("scope.numRecordsDigitised")
+                collectionsWithDescriptions = countNotNull(["pubDescription", "techDescription"])
+                break
 
-            totalLogins = ActivityLog.countByAction(Action.LOGIN.toString())
-            uniqueLogins = ActivityLog.executeQuery("select count(distinct user) from ActivityLog where action='${Action.LOGIN.toString()}'")[0]
+                case 'activity':
+                totalLogins = ActivityLog.countByAction(Action.LOGIN.toString())
+                uniqueLogins = ActivityLog.executeQuery("select count(distinct user) from ActivityLog where action='${Action.LOGIN.toString()}'")[0]
 
-            supplierLogins = ActivityLog.countByActionAndRoles(Action.LOGIN.toString(), 'ROLE_SUPPLIER')
-            uniqueSupplierLogins = ActivityLog.executeQuery("select count (distinct user) from ActivityLog where action='${Action.LOGIN.toString()}' and roles = 'ROLE_SUPPLIER'")[0]
-            // select count(*) from activity_log where administrator_for_entity = 1 and roles = "ROLE_SUPPLIER" and action = "viewed";
-            curatorViews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.VIEW.toString()}'" +
-                    " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
-            curatorPreviews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.PREVIEW.toString()}'" +
-                    " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
-            curatorEdits = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.EDIT_SAVE.toString()}'" +
-                    " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+                supplierLogins = ActivityLog.countByActionAndRoles(Action.LOGIN.toString(), 'ROLE_SUPPLIER')
+                uniqueSupplierLogins = ActivityLog.executeQuery("select count (distinct user) from ActivityLog where action='${Action.LOGIN.toString()}' and roles = 'ROLE_SUPPLIER'")[0]
+                // select count(*) from activity_log where administrator_for_entity = 1 and roles = "ROLE_SUPPLIER" and action = "viewed";
+                curatorViews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.VIEW.toString()}'" +
+                        " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+                curatorPreviews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.PREVIEW.toString()}'" +
+                        " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+                curatorEdits = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.EDIT_SAVE.toString()}'" +
+                        " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+                break
+                
+                case 'membership':
+                partners = ProviderGroup.findAllByIsALAPartnerAndGroupType(true, ProviderGroup.GROUP_TYPE_INSTITUTION)
+
+                chahMembers = ProviderGroup.findAllByNetworkMembershipIlike("%CHAH%",[sort:'name'])
+                chaecMembers = ProviderGroup.findAllByNetworkMembershipIlike("%CHAEC%",[sort:'name'])
+                chafcMembers = ProviderGroup.findAllByNetworkMembershipIlike("%CHAFC%",[sort:'name'])
+                amrrnMembers = ProviderGroup.findAllByNetworkMembershipIlike("%AMRRN%",[sort:'name'])
+                camdMembers = ProviderGroup.findAllByNetworkMembershipIlike("%CAMD%",[sort:'name'])
+                break
+
+            }
         }
     }
 }

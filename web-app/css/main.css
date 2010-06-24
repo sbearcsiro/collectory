@@ -331,8 +331,13 @@ th.desc a {
 }
 
 .CheckBoxList input {
-    width: auto;
     margin-right:4px;
+    width: auto;
+}
+
+input[type='checkbox'] {
+    background: transparent; /* IE */
+    border: 0;  /* IE */
 }
 
 .CheckBoxList {
@@ -522,7 +527,12 @@ input.addAction, input.cancelAction {
 }
 #login .inner .login_message {color:red;}
 .text_ {width:190px ! important; }
-#login .inner .chk {height:12px;}
+#login .inner .chk {
+    height:12px;
+    width: auto;    /* for IE */
+    border: 0;  /* for IE */
+    background: transparent;    /* for IE */
+}
 
 .login-info {
     float: right;
@@ -615,7 +625,7 @@ div.fieldHelp {
 }
 
 /* MEW for report pages */
-.reportGroupTitle td {
+.reportGroupTitle td:first-child {
     font-size: 14px;
     font-weight: bold;
     color: #666;
@@ -702,6 +712,10 @@ table.preview {
 
 .preview img {
     /*width: 100%;*/
+}
+
+.preview div {  /* for IE */
+    border: 0;
 }
 
 .preview li {

@@ -43,11 +43,16 @@
         <p class="mainText">Describe a collection that is not currently listed.</p>
       </div>
 
+      <div class="homeCell">
+        <g:link class="mainLink" controller="institution" action="list">View all institutions</g:link>
+        <p class="mainText">Browse the institutions that hold collections.</p>
+      </div>
+
     <g:ifAllGranted role="ROLE_ADMIN">
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="show">View reports</g:link>
+        <g:link class="mainLink" controller="reports" action="list">View reports</g:link>
         <p class="mainText">Browse summaries of Registry contents and usage.</p>
       </div>
 

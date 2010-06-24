@@ -14,18 +14,6 @@ class CollectionController {
 
     def scaffold = ProviderGroup
 
-    static IDENTITY_FIELDS = ['guid', 'name', 'acronym', 'collectionType', 'focus', 'active']
-    final static LinkedHashMap IDENTITY_MAPPING = [include: IDENTITY_FIELDS]
-    final static LinkedHashMap DESCRIPTION_MAPPING = [include:['pubDescription', 'techDescription', 'notes', 'keywords']]
-    //final static LinkedHashMap REFERENCE_MAPPING = [include:['websiteUrl', 'imageRef.caption', 'imageRef.attribution', 'imageRef.copyright']]
-    final static LinkedHashMap SCOPE_MAPPING = [include:['spatialRepresentationType', 'spatialResolution', 'states',
-                'geographicDescription', 'wellKnownText', 'eastCoordinate', 'westCoordinate', 'northCoordinate',
-                'southCoordinate', 'startDate', 'endDate', 'kingdomCoverage', 'scientificNames']]
-    final static LinkedHashMap DATASET_MAPPING = [include:['webServiceUri', 'webServiceProtocol', 'numRecords', 'numRecordsDigitised', 'providerCodes']]
-    final static LinkedHashMap LOCATION_MAPPING = [include:['address.street', 'address.postBox', 'address.city',
-                'address.state', 'address.postcode', 'address.country', 'latitude', 'longitude', 'altitude', 'state', 'email', 'phone']]
-    final static LinkedHashMap REFERENCE_MAPPING = [include:['websiteUrl', 'networkMembership']]
-
     def index = {
         redirect(action:"list")
     }
@@ -260,103 +248,26 @@ class CollectionController {
 
         // collect identity attributes
         ident {
-            on("next") { //CollectionCommand cmd ->
-                log.debug ">> colid = " + flow.colid
-                // set empty collectionType list explicitly
-                if (!params.collectionType) params.collectionType = []
-                bindData(flow.command, params, IDENTITY_MAPPING)
-                /* WORKAROUND - you should be able to pass a list of fields to validate (so you only get errors on
-                 * this page). This does not work - maybe because this is a command class rather than a domain class. */
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.debug it}
-                    failure()
-                }
-            }.to "description"
+            on("next", bindIdent).to "description"
             on("cancel").to "cancelEdit"
-            on("done") {
-                params.each {log.debug it}
-                if (!params.collectionType) params.collectionType = []
-                bindData(flow.command, params, IDENTITY_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "updateCollection"
-            //on('error')
+            on("done", bindIdent).to "updateCollection"
         }
 
         // collect descriptive attributes
         description {
-            on("next") {
-                log.debug ">> colid = " + flow.colid
-                bindData(flow.command, params, DESCRIPTION_MAPPING)
-                flow.command.bindSubCollections(params)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "scope"
-            on("back") {
-                bindData(flow.command, params, DESCRIPTION_MAPPING)
-                flow.command.bindSubCollections(params)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "ident"
-            on("addMore") {         // sub-collections are filled - bind data and redraw so there are 3 blank
-                bindData(flow.command, params, DESCRIPTION_MAPPING)
-                flow.command.bindSubCollections(params)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "description"
+            on("next", bindDescription).to "scope"
+            on("back", bindDescription).to "ident"
+            on("addMore", bindDescription).to "description"
             on("cancel").to "cancelEdit"
-            on("done") {
-                bindData(flow.command, params, DESCRIPTION_MAPPING)
-                flow.command.bindSubCollections(params)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    return
-                }
-            }.to "updateCollection"
+            on("done", bindDescription).to "updateCollection"
         }
 
         // collect website and image attributes
         reference {
-            on ("next") {
-                bindReference(params, flow)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "institution"
-            on("back") {
-                bindReference(params, flow)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "location"
+            on ("next", bindReference).to "institution"
+            on("back", bindReference).to "location"
             on ("cancel").to "cancelEdit"
-            on ("done") {
-                params.each{log.debug it}
-                bindReference(params, flow)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "updateCollection"
+            on ("done", bindReference).to "updateCollection"
             on ("removeImage") {
                 flow.command.imageRef = null
             }.to "reference"
@@ -364,92 +275,26 @@ class CollectionController {
 
         // collect geo, taxa and temporal scope attributes
         scope {
-            on ("next") {
-                bindData(flow.command, params, SCOPE_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "dataset"
-            on ("back") {
-                bindData(flow.command, params, SCOPE_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "description"
+            on ("next", bindScope).to "dataset"
+            on ("back", bindScope).to "description"
             on ("cancel").to "cancelEdit"
-            on ("done") {
-                bindData(flow.command, params, SCOPE_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "updateCollection"
+            on ("done", bindScope).to "updateCollection"
         }
 
         // collect dataset attributes
         dataset {
-            on ("next") {
-                bindData(flow.command, params, DATASET_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "location"
-            on("back") {
-                bindData(flow.command, params, DATASET_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "scope"
+            on ("next", bindDataset).to "location"
+            on("back", bindDataset).to "scope"
             on ("cancel").to "cancelEdit"
-            on ("done") {
-                params.each {log.debug it}
-                bindData(flow.command, params, DATASET_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "updateCollection"
+            on ("done", bindDataset).to "updateCollection"
         }
 
         // collect address, location and some contact attributes
         location {
-            on ("next") {
-                bindData(flow.command, params, LOCATION_MAPPING)
-                println "city=${flow.command.address?.city}"
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "reference"
-            on("back") {
-                params.each {println it}
-                bindData(flow.command, params, LOCATION_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "dataset"
+            on ("next", bindLocation).to "reference"
+            on("back", bindLocation).to "dataset"
             on ("cancel").to "cancelEdit"
-            on ("done") {
-                bindData(flow.command, params, LOCATION_MAPPING)
-                flow.command.validate()
-                if (flow.command.hasErrors()) {
-                    flow.command.errors.each {log.warn it}
-                    failure()
-                }
-            }.to "updateCollection"
+            on ("done", bindLocation).to "updateCollection"
         }
 
         // collect parent institution attributes
@@ -552,22 +397,12 @@ class CollectionController {
 
         // collect contacts
         contacts {
-            on ("back") {
-                bindContactsData(params, flow)
-            }.to "institution"
+            on ("back", bindContactsData).to "institution"
             on ("cancel").to "cancelEdit"
-            on ("done") {
-                bindContactsData(params, flow)
-            }.to "updateCollection"
-            on ("create") {
-                bindContactsData(params, flow)
-            }.to "createContact"
-            on ("remove") {
-                bindContactsData(params, flow)
-            }.to "removeContact"
-            on ("add") {
-                bindContactsData(params, flow)
-            }.to "addContact"
+            on ("done", bindContactsData).to "updateCollection"
+            on ("create", bindContactsData).to "createContact"
+            on ("remove", bindContactsData).to "removeContact"
+            on ("add", bindContactsData).to "addContact"
             on ("next").to "contacts"  // safety net - should not happen
         }
 
@@ -713,6 +548,33 @@ v                   }
     }
 
     /**
+     * Data binding for the edit web flow
+     */
+
+    private bindIdent = {
+        // set empty collectionType list explicitly
+        if (!params.collectionType) params.collectionType = []
+        bindData(flow.command, params, [include: ['guid', 'name', 'acronym', 'collectionType', 'focus', 'active']])
+        /* WORKAROUND - you should be able to pass a list of fields to validate (so you only get errors on
+         * this page). This does not work - maybe because this is a command class rather than a domain class. */
+        flow.command.validate()
+        if (flow.command.hasErrors()) {
+            flow.command.errors.each {log.warn it}
+            failure()
+        }
+    }
+
+    private bindDescription = {
+        bindData(flow.command, params, [include:['pubDescription', 'techDescription', 'notes', 'keywords']])
+        flow.command.bindSubCollections(params)
+        flow.command.validate()
+        if (flow.command.hasErrors()) {
+            flow.command.errors.each {log.warn it}
+            failure()
+        }
+    }
+
+    /**
      * Handle file uploads and image metadata changes.
      *
      * If a file was selected (size > 0)
@@ -728,10 +590,10 @@ v                   }
      * @param flow
      * @return
      */
-    boolean bindReference(GrailsParameterMap params, LocalAttributeMap flow) {
+    private bindReference = {
         // must be explicit about network membership because unchecking all means there is no param returned
         if (!params.networkMembership) params.networkMembership = []
-        bindData(flow.command, params, REFERENCE_MAPPING)
+        bindData(flow.command, params, [include:['websiteUrl', 'networkMembership']])
         MultipartFile file = params.imageFile
         if (file.size) {  // will only have size if a file was selected
             def filename = file.getOriginalFilename()
@@ -763,25 +625,52 @@ v                   }
             flow.command.imageRef.copyright = params.imageRef?.copyright
             //flow.command.properties['imageRef.caption', 'imageRef.attribution', 'imageRef.copyright'] = params
         }
+        flow.command.validate()
+        if (flow.command.hasErrors()) {
+            flow.command.errors.each {log.warn it}
+            failure()
+        }
+    }
+
+    private bindScope = {
+        bindData(flow.command, params, [include:['spatialRepresentationType', 'spatialResolution', 'states',
+                'geographicDescription', 'wellKnownText', 'eastCoordinate', 'westCoordinate', 'northCoordinate',
+                'southCoordinate', 'startDate', 'endDate', 'kingdomCoverage', 'scientificNames']])
+        flow.command.validate()
+        if (flow.command.hasErrors()) {
+            flow.command.errors.each {log.warn it}
+            failure()
+        }
+    }
+
+    private bindDataset = {
+        bindData(flow.command, params, [include:['webServiceUri', 'webServiceProtocol', 'numRecords', 'numRecordsDigitised', 'providerCodes']])
+        flow.command.validate()
+        if (flow.command.hasErrors()) {
+            flow.command.errors.each {log.warn it}
+            failure()
+        }
+    }
+
+    private bindLocation = {
+        bindData(flow.command, params, [include:['address.street', 'address.postBox', 'address.city',
+                'address.state', 'address.postcode', 'address.country', 'latitude', 'longitude', 'altitude', 'state', 'email', 'phone']])
+        flow.command.validate()
+        if (flow.command.hasErrors()) {
+            flow.command.errors.each {log.warn it}
+            failure()
+        }
     }
 
     /**
      * Handle multiple changes to ContactFor fields.
-     *
-     * @param params
-     * @param flow
-     * @return
      */
-    boolean bindContactsData(GrailsParameterMap params, LocalAttributeMap flow) {
-        log.debug "start"
-        params.each {log.debug it}
-        log.debug "end"
+    private bindContactsData = {
         flow.command.getContacts().each {cf ->
             cf.role = params."role_${cf.id}"
             cf.administrator = params."admin_${cf.id}" ? params."admin_${cf.id}" : false
             cf.primaryContact = params."primary_${cf.id}" ? params."primary_${cf.id}" : false
         }
-        return true
     }
 
 }

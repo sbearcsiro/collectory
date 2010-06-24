@@ -401,20 +401,27 @@ class CollectoryTagLib {
         if (attrs.list) {
             out << "<ul>"
             JSON.parse(attrs.list).each { sub ->
-                log.info "sub: " + sub
+                //log.info "sub: " + sub
                 out << "<li>${cl.subCollectionDisplay(sub: sub)}</li>"
             }
             out << "</ul>"
-        } else {
-            out << "<td>${attrs.list}</td>"
         }
         out << "</td></tr>"
     }
 
+    /**
+     * Takes the values as java list or JSON string and sets up checkboxes.
+     */
     def checkboxSelect = {attrs ->
         out << "<table class='shy CheckBoxList CheckBoxArray'><tr>"
+        //log.info "attrs.value=${attrs.value}"
         attrs.from.eachWithIndex { it, index ->
-            def checked = (it in attrs.value) ? "checked='checked'" : ""
+            def checked
+            if (attrs.value instanceof String) {
+                checked = (attrs.value.indexOf(it) >= 0) ? "checked='checked'" : ""
+            } else {
+                checked = (it in attrs.value) ? "checked='checked'" : ""
+            }
             out << "<td><input name='${attrs.name}' type='checkbox' ${checked}' value='${it}'/>${it}</td>"
             if (index > 0 && ((index+1) % 6) == 0) {
                 out << "</tr>"

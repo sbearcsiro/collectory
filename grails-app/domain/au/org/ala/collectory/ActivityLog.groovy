@@ -7,6 +7,8 @@ import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
  */
 class ActivityLog implements Serializable {
 
+    
+
     Date timestamp                              // time of the event
     String user                                 // username
     String roles                                // space separated list of roles
@@ -18,7 +20,7 @@ class ActivityLog implements Serializable {
     static transients = ['Actions']
     
     static constraints = {
-        timestamp(blank:false)
+        timestamp()
         user(blank:false)
         roles()
         entityId()

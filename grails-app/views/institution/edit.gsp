@@ -69,6 +69,19 @@
                               </tr>
                             </g:ifAllGranted>
 
+<!-- network membership -->
+                            <tr class="prop">
+                              <td valign="top" class="name">
+                                <label for="networkMembership"><g:message code="providerGroup.networkMembership.label" default="Belongs to" /></label>
+                              </td>
+                              <td valign="top" class="checkbox ${hasErrors(bean: providerGroupInstance, field: 'networkMembership', 'errors')}">
+                                <cl:checkboxSelect name="networkMembership" from="${ProviderGroup.networkTypes}" value="${providerGroupInstance?.networkMembership}" multiple="yes" valueMessagePrefix="providerGroup.networkMembership" noSelection="['': '']" />
+                                <cl:helpText code="providerGroup.networkMembership"/>
+                              </td>
+                              <td><img class="helpButton" alt="help" src="${resource(dir:'images/skin', file:'help.gif')}" onclick="toggleHelp(this);"/></td>
+                            </tr>
+
+
 <!-- address -->            <tr class="prop">
                                 <td valign="top" class="name">
                                   <g:message code="providerGroup.address.label" default="Address" />

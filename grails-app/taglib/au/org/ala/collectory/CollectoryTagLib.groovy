@@ -14,6 +14,8 @@ class CollectoryTagLib {
 
     /**
      * Decorates the role if present
+     *
+     * @attrs role the role to display
      */
     def roleIfPresent = { attrs, body ->
         out << (!attrs.role ? '' : ' - ' + attrs.role.encodeAsHTML())
@@ -21,6 +23,8 @@ class CollectoryTagLib {
 
     /**
      * Indicates user can edit if admin
+     *
+     * @attrs admin is the user an admin for the collection
      */
     def adminIfPresent = { attrs, body ->
         out << (attrs.admin ? '(Authorised to edit this collection)' : '')
@@ -28,6 +32,9 @@ class CollectoryTagLib {
 
     /**
      * Authorisation for editing is determined by roles and rights
+     *
+     * @attrs user to check
+     * @attrs collection to check
      */
     def isAuth = { attrs, body ->
         boolean authorised = false
@@ -67,6 +74,8 @@ class CollectoryTagLib {
 
     /**
      * Show number and body if it is not -1 (indicated info not available)
+     *
+     * @attrs number
      */
     def numberIfKnown = {attrs, body ->
         out << (attrs.number == -1 ? "" : attrs.number + body())
@@ -110,6 +119,9 @@ class CollectoryTagLib {
 
     /**
      * Show lsid as a link
+     *
+     * @attrs guid
+     * @attrs target
      */
     def guid = { attrs ->
         def lsid = attrs.guid
@@ -143,6 +155,10 @@ class CollectoryTagLib {
      *      title='<span class="tooltip">Furthest point East for this dataset in decimal degrees</span>'>East Coordinate
      *    </span>
      *  </label>
+     *
+     * @attrs for the label
+     * @attrs source the message code
+     * @attrs default the default message
      */
     def label = {attrs ->
         def _for = attrs.for
@@ -178,6 +194,9 @@ class CollectoryTagLib {
      *
      * To create the button disabled or hidden (for layout purposes) use the attribute show=false
      *
+     * @attrs event controls the event submitted AND the appearance of the button
+     * @attrs show whether the button is enabled
+     * @attrs value the text shown
      */
     def createFlowSubmit = {attrs ->
         def event = attrs.event
@@ -197,6 +216,9 @@ class CollectoryTagLib {
      *
      * - use attribute exclude to omit buttons, eg <cl:navButtons exclude="back" />
      * - excluded buttons are still created so they participate in layout
+     *
+     * @attrs exclude list of buttons to disable (eg back on the first page)
+     * 
      */
     def navButtons = {attrs ->
         out << """<div class="buttons flowButtons">"""
@@ -369,13 +391,21 @@ class CollectoryTagLib {
 
     /**
      * A little bit of email scrambling for dumb scrappers.
+     *
+     * Uses email attribute as email if present else uses the body.
+     *
+     * @attrs email the address to decorate
+     * @body the text to use as the link text
      */
     def emailLink = { attrs, body ->
         def strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)"
-        String email = body().toString()
+        String email = attrs.email
+        if (!email)
+            email = body().toString()
         int index = email.indexOf('@')
+        println "index=${index}"
         if (index > 0) {
-            email.replaceAll("@", strEncodedAtSign)
+            email = email.replaceAll("@", strEncodedAtSign)
         }
         out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
     }

@@ -80,6 +80,8 @@ log4j = {
     //appenders {
     //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
     //}
+
+/* normal logging */
     debug //'org.springframework.webflow',
 //          'org.springframework',
           'au.org.ala.collectory'
@@ -100,6 +102,28 @@ log4j = {
     warn   'org.mortbay.log', 'org.springframework.webflow'
 
     info   'grails.app.controller'
+
+
+/* debug logging
+    debug  'org.springframework.webflow',
+           'org.springframework',
+           'au.org.ala.collectory',
+           'grails.app.controller',
+           'org.codehaus.groovy.grails.commons', // core / classloading
+           'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+           'org.mortbay.log',
+           'net.sf.ehcache.hibernate'
+
+    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
+	       'org.codehaus.groovy.grails.web.pages', //  GSP
+	       'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+	       'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+	       'org.codehaus.groovy.grails.web.mapping', // URL mapping
+	       'org.codehaus.groovy.grails.plugins', // plugins
+           'org.springframework',
+           'org.hibernate'
+ */
+    
 }
 
 

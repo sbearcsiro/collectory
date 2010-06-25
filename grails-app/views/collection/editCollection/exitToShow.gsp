@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Redirect (workaround)</title>
-    <meta http-equiv="refresh" content="0;url=http://localhost:8080/Collectory/collection/show/${id}"/>
+    <meta http-equiv="refresh" content="0;url=/Collectory/collection/show/${id}"/>
     <META HTTP-EQUIV="EXPIRES" CONTENT="0">
     <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
   </head>

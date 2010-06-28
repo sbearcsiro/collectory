@@ -34,6 +34,10 @@ class ReportsController {
         [reports: new ReportCommand('collections')]
     }
 
+    def map = {
+        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
+    }
+
     def institutions = {
         ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'institutions'
     }
@@ -66,11 +70,13 @@ class ReportsController {
 
         def totalLogins
         def uniqueLogins
+        def uniqueLoginList
         def supplierLogins
         def uniqueSupplierLogins
         def curatorViews
         def curatorPreviews
         def curatorEdits
+        def lastLogin
 
         def partners
         def chahMembers
@@ -168,7 +174,9 @@ class ReportsController {
 
                 case 'activity':
                 totalLogins = ActivityLog.countByAction(Action.LOGIN.toString())
+                lastLogin = ActivityLog.find("from ActivityLog where  action=? order by timestamp desc limit 1", [Action.LOGIN.toString()])
                 uniqueLogins = ActivityLog.executeQuery("select count(distinct user) from ActivityLog where action='${Action.LOGIN.toString()}'")[0]
+                uniqueLoginList = ActivityLog.executeQuery("select distinct user from ActivityLog where action='${Action.LOGIN.toString()}'")
 
                 supplierLogins = ActivityLog.countByActionAndRoles(Action.LOGIN.toString(), 'ROLE_SUPPLIER')
                 uniqueSupplierLogins = ActivityLog.executeQuery("select count (distinct user) from ActivityLog where action='${Action.LOGIN.toString()}' and roles = 'ROLE_SUPPLIER'")[0]

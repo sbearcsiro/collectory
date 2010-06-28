@@ -2,7 +2,10 @@
 <html>
   <head>
     <title>Redirect (workaround)</title>
-    <meta http-equiv="refresh" content="0;url=/Collectory/collection/show/${id}"/>
+    <!-- note: the redirect url needs to be /Collectory/collection/... if the access
+         url has the Collectory context but just /collection/.. if the access url is
+         a sub-domain that transparently redirects to the context. -->
+    <meta http-equiv="refresh" content="0;url=${url}/${id}"/>
     <META HTTP-EQUIV="EXPIRES" CONTENT="0">
     <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
   </head>

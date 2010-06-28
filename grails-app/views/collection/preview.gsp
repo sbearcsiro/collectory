@@ -77,7 +77,7 @@
 
                 <h2>Number of specimens in the collection</h2>
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecords') != '-1'}">
-                  <p>The total number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "scope.numRecords")}.</p>
+                  <p>The estimated number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "scope.numRecords")}.</p>
                 </g:if>
 
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecordsDigitised') != '-1'}">

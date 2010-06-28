@@ -1,8 +1,6 @@
 package au.org.ala.collectory
 
 import org.springframework.web.multipart.MultipartFile
-import org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.webflow.core.collection.LocalAttributeMap
 import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 
 /**
@@ -503,7 +501,7 @@ v                   }
             action {
                 //params.each {log.debug it}
                 flow.clear()
-                [id: params.id]
+                [id: params.id, url: request.getContextPath() + '/collection/show']
             }
             on("success").to "exitToShow"
             on("failure").to "exitToList"
@@ -520,7 +518,6 @@ v                   }
                 // no need to discard model as it's not directly managed by hibernate
                 // make sure the modified model is removed from flow
                 def mode = flow.mode
-                def id = params.id
                 flow.clear()
                 if (mode == 'create') {
                     ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.CREATE_CANCEL
@@ -528,7 +525,7 @@ v                   }
                     ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.EDIT_CANCEL
                     log.debug ">> exiting to " + params.id
                 }
-                [id: id]
+                [id: params.id, url: request.getContextPath() + '/collection/show']
             }
             on("success").to "exitToShow"
             on("failure").to "exitToList"

@@ -183,9 +183,8 @@ class InstitutionController {
                         if (!providerGroupInstance.hasErrors() && providerGroupInstance.save(flush: true)) {
                             flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerGroup.label', default: 'Institution'), providerGroupInstance.name])}"
                             ActivityLog.log authenticateService.userDomain().username as String, providerGroupInstance.id, Action.EDIT_SAVE
-                            return success()
-                        }
-                        else {
+                            [id: params.id, url: request.getContextPath() + '/institution/show']
+                        } else {
                             return error()
                         }
                     }
@@ -194,7 +193,7 @@ class InstitutionController {
                     redirect(action: "list")
                 }
             }
-            on("success").to "exitToList"
+            on("success").to "exitToShow"
             on("error").to "showEdit"
         }
 
@@ -254,20 +253,14 @@ class InstitutionController {
                 log.info "Cancelling"
                 ActivityLog.log authenticateService.userDomain().username as String, flow.providerGroupInstance?.id, Action.EDIT_CANCEL
                 flow.providerGroupInstance.discard()
-/*                log.info "flow.pg.id=" + flow.providerGroupInstance?.id
-                def returnId = flow.providerGroupInstance?.id
-                log.info "rid=" + returnId
-                flow.clear()
-                log.info "flow.pg.id=" + flow.providerGroupInstance?.id
-                session.rid = returnId
-                log.info "session.rid=" + session.rid*/
+                [id: params.id, url: request.getContextPath() + '/institution/show']
             }
-            on("success").to "exitToList"
+            on("success").to "exitToShow"
         }
 
-        exitToShow {
-            redirect(controller:"institution", action:"show", params: [id: session.rid])
-        }
+        exitToShow() /* workaround - see http://jira.codehaus.org/browse/GRAILS-5811  to be fixed in Grails 1.3.3 {
+            redirect(controller:"institution", action:"show", params: [id: params.id])
+        }*/
 
         exitToList {
             redirect(controller:"institution", action:"list")

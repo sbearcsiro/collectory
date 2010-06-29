@@ -410,6 +410,19 @@ class CollectoryTagLib {
         out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
     }
 
+    def emailBugLink = { attrs, body ->
+        def strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)"
+        String email = attrs.email
+        if (!email)
+            email = body().toString()
+        int index = email.indexOf('@')
+        println "index=${index}"
+        if (index > 0) {
+            email = email.replaceAll("@", strEncodedAtSign)
+        }
+        out << "<a href='#' onclick=\"return sendBugEmail('${email}','${attrs.message}')\">${body()}</a>"
+    }
+
     def collectionName = { attrs ->
         if (!attrs.name || attrs.name =~ 'Collection') {
             out << attrs.name
@@ -460,14 +473,23 @@ class CollectoryTagLib {
         out << "</tr></table>"
     }
 
-    /* junk */
-    def showObject = { attrs ->
-        def obj = attrs.obj
-        out << obj?.class
-    }
-
-    def idList = { attrs ->
-        out << attrs.list.collect{it.id}.toString()
+    /**
+     * Formats free text so line feeds are honoured and urls are linked.
+     *
+     * @param attrs.noLink suppresses links
+     * @param body the text to format
+     */
+    def formattedText = {attrs, body ->
+        println "body class = ${body.class}"
+        def text = body().toString()
+        text = text.replaceAll("\n", "</p><p>")
+        if (!attrs.noLink) {
+            def urlMatch = /\bhttp:\S*\b/   // word boundary + http: + non-whitespace + word boundary
+            text = text.replaceAll(urlMatch) {
+                "<a class='external_icon' target='_blank' href='${it}'>${it}</a>"
+            }
+        }
+        out << text
     }
 
 }

@@ -36,13 +36,13 @@
             <table><colgroup><col width="70%"><col width = "30%"></colgroup>
               <tr><td class="leftColumn">
                 <h2>Description</h2>
-                <p>${fieldValue(bean: collectionInstance, field: "pubDescription")}</p>
-                <p>${fieldValue(bean: collectionInstance, field: "techDescription")}</p>
+                <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText></p>
+                <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText></p>
                 <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "scope.startDate")}' end='${fieldValue(bean: collectionInstance, field: "scope.endDate")}'/>
 
                 <h2>Taxonomic range</h2>
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'focus')}">
-                  <p>${fieldValue(bean: collectionInstance, field: "focus")}</p>
+                  <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></p>
                 </g:if>
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.kingdomCoverage')}">
                   <p>Kingdoms covered include: ${fieldValue(bean: collectionInstance, field: "scope.kingdomCoverage")}</p>
@@ -140,7 +140,7 @@
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAH')}">
                     <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
-                    <img src="${resource(dir:"images/network/",file:"CHAH_logo_col_70px_white.gif")}"/>
+                    <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(dir:"images/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
                     <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>

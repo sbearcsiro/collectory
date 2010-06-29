@@ -142,8 +142,23 @@ class InfoSource implements Serializable {
 
     // access params - form is: {"uri":"http:..","protocol":"TAPIR"}
     void setWebServiceUri(String uri) {
-        def ap = [uri: uri, protocol: getWebServiceProtocol()]
-        accessParameters = ap.encodeAsJSON()
+        Map ap = getAccessParametersAsMap()
+        if (uri && uri != 'null') {
+            // set it
+            ap.uri = uri
+        } else {
+            // remove it if it exists
+            ap.remove('uri')
+        }
+        accessParameters = (ap.size() == 0) ? null : ap.encodeAsJSON()
+    }
+
+    private Map getAccessParametersAsMap() {
+        if (accessParameters) {
+            return JSON.parse(accessParameters)
+        } else {
+            return [:]
+        }
     }
 
     String getWebServiceUri() {
@@ -156,10 +171,15 @@ class InfoSource implements Serializable {
     }
 
     void setWebServiceProtocol(String protocol) {
+        Map ap = getAccessParametersAsMap()
         if (protocol && protocol != 'null') {
-            def ap = [uri: getWebServiceUri(), protocol: protocol]
-            accessParameters = ap.encodeAsJSON()
+            // set it
+            ap.protocol = protocol
+        } else {
+            // remove it if it exists
+            ap.remove('protocol')
         }
+        accessParameters = (ap.size() == 0) ? null : ap.encodeAsJSON()
     }
 
     String getWebServiceProtocol() {

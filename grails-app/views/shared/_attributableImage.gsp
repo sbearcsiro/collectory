@@ -3,7 +3,7 @@
     <tr>
       <td colspan="2">
         <img alt="${fieldValue(bean: command, field: "imageRef.file")}"
-                src="${resource(dir:'images/'+directory, file:command.imageRef.file)}" />
+                src="${resource(absolute: 'true', dir:'data/'+directory, file:command.imageRef.file)}" />
       </td>
     </tr>
     <tr>

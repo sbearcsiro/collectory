@@ -40,7 +40,7 @@
                                       <label for="address.street"><g:message code="providerGroup.address.street.label" default="Street" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: command, field: 'address.street', 'errors')}">
-                                        <g:textField name="address.street" maxlength="128" value="${command?.address?.street}" />
+                                        <g:textField id="street" name="address.street" maxlength="128" value="${command?.address?.street}" />
                                     </td>
                                   </tr>
                                   <tr class='prop'>
@@ -56,7 +56,7 @@
                                       <label for="address.city"><g:message code="providerGroup.address.city.label" default="City" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: command, field: 'address.city', 'errors')}">
-                                        <g:textField name="address.city" maxlength="128" value="${command?.address?.city}" />
+                                        <g:textField id="city" name="address.city" maxlength="128" value="${command?.address?.city}" />
                                     </td>
                                   </tr>
                                   <tr class='prop'>
@@ -64,7 +64,7 @@
                                       <label for="address.state"><g:message code="providerGroup.address.state.label" default="State or territory" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: command, field: 'address.state', 'errors')}">
-                                        <g:textField name="address.state" maxlength="128" value="${command?.address?.state}" />
+                                        <g:textField id="state" name="address.state" maxlength="128" value="${command?.address?.state}" />
                                     </td>
                                   </tr>
                                   <tr class='prop'>
@@ -80,7 +80,7 @@
                                       <label for="address.country"><g:message code="providerGroup.address.country.label" default="Country" /></label>
                                     </td>
                                     <td valign="top" class="value ${hasErrors(bean: command, field: 'address.country', 'errors')}">
-                                        <g:textField name="address.country" maxlength="128" value="${command?.address?.country}" />
+                                        <g:textField id="country" name="address.country" maxlength="128" value="${command?.address?.country}" />
                                     </td>
                                   </tr>
                                 </table>
@@ -88,6 +88,11 @@
                               </td>
                           </tr>
 
+<!-- lookup lat/lng -->   <tr>
+                            <td colspan="2">
+                              <span class="freeButton" onclick="return codeAddress()">Click to fill in lat/long based on street address</span>
+                            </td>
+                          </tr>
                           <tr class="prop">
                               <td valign="top" class="name">
                                 <label for="latitude"><g:message code="providerGroup.latitude.label" default="Latitude" />
@@ -95,7 +100,7 @@
                                 </label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'latitude', 'errors')}">
-                                <g:textField name="latitude" value="${fieldValue(bean: command, field: 'latitude')}" />
+                                <g:textField id="latitude" name="latitude" value="${fieldValue(bean: command, field: 'latitude')}" />
                                 <cl:helpText code="collection.latitude"/>
                             </td>
                             <cl:helpTD/>
@@ -109,7 +114,7 @@
                                 </label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'longitude', 'errors')}">
-                                <g:textField name="longitude" value="${fieldValue(bean: command, field: 'longitude')}" />
+                                <g:textField id="longitude" name="longitude" value="${fieldValue(bean: command, field: 'longitude')}" />
                                 <cl:helpText code="collection.longitude"/>
                             </td>
                             <cl:helpTD/>
@@ -155,5 +160,25 @@
                 </div>
             </g:form>
         </div>
+        <script type="text/javascript">
+          function codeAddress() {
+            var address = document.getElementById('street').value + "," + document.getElementById('city').value + "," + document.getElementById('state').value + "," + document.getElementById('country').value
+            var geocoder = new google.maps.Geocoder();
+            if (geocoder) {
+              geocoder.geocode( { 'address': address}, function(results, status) {
+                if (status == google.maps.GeocoderStatus.OK) {
+                  var lat = results[0].geometry.location.lat();
+                  var lng = results[0].geometry.location.lng();
+                  document.getElementById('latitude').value = lat;
+                  document.getElementById('longitude').value = lng;
+                  return true;
+                } else {
+                  return false;
+                }
+              });
+            }
+          }
+
+        </script>
     </body>
 </html>

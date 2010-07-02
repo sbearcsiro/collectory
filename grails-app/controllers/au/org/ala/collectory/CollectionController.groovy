@@ -2,6 +2,7 @@ package au.org.ala.collectory
 
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 /**
  * Controller handles ProviderGroups of type Collection
@@ -290,6 +291,7 @@ class CollectionController {
         location {
             on ("next", bindLocation).to "reference"
             on("back", bindLocation).to "dataset"
+            on("lookup", bindLocation).to "lookupLatLng"
             on ("cancel").to "cancelEdit"
             on ("done", bindLocation).to "updateCollection"
         }
@@ -303,6 +305,14 @@ class CollectionController {
             on ("create").to "createInstitution"
             on ("remove").to "removeInstitution"
             on ("add").to "addInstitution"
+        }
+
+        lookupLatLng {
+            action {
+                flow.command.latitude = -3
+                flow.command.longitude = -3
+            }
+            on("success").to 'location'
         }
 
         // adds an existing institution as a parent
@@ -599,9 +609,11 @@ v                   }
             }
             // save the chosen file
             def mhsr = request.getFile('imageFile')
-            if (!mhsr?.empty && mhsr.size < 1024*200) {   // limit file to 200Kb
+            if (!mhsr?.empty && mhsr.size < 100000*200) {   // limit file to 200Kb
                 def webRootDir = servletContext.getRealPath("/")
-                def colDir = new File(webRootDir, "images/collection")
+                def externalStore = ConfigurationHolder.config.repository.location.images  //grailsApplication.config.getProperty('imageStore')
+                println "store = " + externalStore
+                def colDir = new File(externalStore, "collection")
                 colDir.mkdirs()
                 File f = new File(colDir, filename)
                 log.debug "saving ${filename} to ${f.absoluteFile}"

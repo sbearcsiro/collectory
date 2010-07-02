@@ -12,8 +12,8 @@
 <!--link rel="stylesheet" type="text/css" href="${resource(dir:'css',file:'superfish.css')}" media="screen" /-->
 <!--script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/jquery-1.2.6.min.js"></script>
 <script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/superfish.js"></script>
-<script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/supersubs.js"></script>
-<link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon" /-->
+<script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/supersubs.js"></script-->
+<link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
 
 <script type='text/javascript' src='http://www.ala.org.au/wp-includes/js/jquery/jquery.js?ver=1.3.2'></script>
 <script type='text/javascript' src='http://www.ala.org.au/wp-includes/js/comment-reply.js?ver=20090102'></script>
@@ -27,12 +27,13 @@
 
 <g:javascript library="application" />
 <g:javascript library="collectory" />
+<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <!--resource:include components="autoComplete, dateChooser" autoComplete="[skin: 'default']" /-->
 <gui:resources components="['toolTip']"/>
 
 </head>
  
-<body>
+<body onload="initialize()">
  
 <div id="page">
  

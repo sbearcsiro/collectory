@@ -10,6 +10,28 @@
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
+def ENV_NAME = "COLLECTORY_CONFIG"
+def default_config = "/data/collectory/config/${appName}-config.properties"
+if(!grails.config.locations || !(grails.config.locations instanceof List)) {
+    grails.config.locations = []
+}
+if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
+    println "Including configuration file specified in environment: " + System.getenv(ENV_NAME);
+    grails.config.locations = ["file:" + System.getenv(ENV_NAME)]
+} else if(System.getProperty(ENV_NAME) && new File(System.getProperty(ENV_NAME)).exists()) {
+    println "Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
+    grails.config.locations = ["file:" + System.getProperty(ENV_NAME)]
+} else if(new File(default_config).exists()) {
+    println "Including default configuration file: " + default_config;
+    def loc = ["file:" + default_config]
+    println ">> loc = " + loc
+    grails.config.locations = loc
+    println "grails.config.locations = " + grails.config.locations
+} else {
+    println "No external configuration file defined."
+}
+println "(*) grails.config.locations = ${grails.config.locations}"
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -46,19 +68,24 @@ grails.spring.bean.packages = []
 // MEW tell the framework which packages to search for @Validateable classes
 grails.validateable.packages = ['au.org.ala.collectory']
 
+// default location for images
+repository.location.images = '/data/collectory/data'
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://localhost:8080/${appName}" //"http://www.changeme.com"
+        grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://collections.ala.org.au"  //"http://localhost:8080/${appName}"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
     }
 
 }
+
+println "serverUrl = " + grails.serverURL
 
 hibernate = "off"
 

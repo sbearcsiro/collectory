@@ -1,0 +1,31 @@
+
+#map_canvas {
+    border: 1px solid gray;
+}
+
+.subhead-link a {
+    color: #777;
+    text-decoration: none;
+}
+
+.sidebar p {
+    font-size: 0.9em;
+    line-height: normal;
+    padding-bottom: 4px ! important;
+}
+
+.sidebar p.caption {
+    color: #666 ! important;
+    font-size: 0.8em;
+    line-height: normal;
+    padding-bottom: 4px ! important;
+}
+
+.sidebar h4 {
+    color: #7D8804;
+    margin-top: 20px;
+}
+
+.sidebar a {
+    font-size: 1em;
+}

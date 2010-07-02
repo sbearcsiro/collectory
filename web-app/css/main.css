@@ -727,6 +727,13 @@ table.preview {
     border: 0;
 }
 
+a.preview {
+    color: #333;
+    background: transparent;
+    font-weight: bold;
+    font-family: arial,helvetica,clean,sans-serif;
+}
+
 /* MEW for sub-collections in the preview */
 p.sub {
     margin-left: 30px;
@@ -735,4 +742,13 @@ p.sub {
 
 .subName {
     font-style: italic;
+}
+
+/* MEW some NG styles */
+a.external_icon {
+    background: url(../images/skin/external.png) center right no-repeat;
+    padding-right: 13px;
+    color: #01716E;
+    text-decoration: underline;
+    font-size: 1em;
 }

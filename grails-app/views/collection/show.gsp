@@ -23,7 +23,7 @@
                     <tbody>
                         <tr colspan="2">
                           <g:if test="${fieldValue(bean: collectionInstance, field: 'logoRef')}">
-                            <img src='${resource(dir:"images/collection/",file:fieldValue(bean: collectionInstance, field: 'logoRef.file'))}' />
+                            <img src='${resource(absolute: "true", dir:"data/collection/",file:fieldValue(bean: collectionInstance, field: 'logoRef.file'))}' />
                           </g:if>
                         </tr>
                     
@@ -54,7 +54,7 @@
 
 <!-- Focus   -->        <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.focus.label" default="Focus" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "focus")}</td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></td>
                         </tr>
                     
 <!-- Institutions -->   <tr class="prop">
@@ -88,12 +88,12 @@
 
 <!-- Pub Desc -->       <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.pubDescription.label" default="Public description" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "pubDescription")}</td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText></td>
                         </tr>
 
 <!-- Tech Desc -->      <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.techDescription.label" default="Technical Description" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "techDescription")}</td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText></td>
                         </tr>
 
 <!-- sub collections -->
@@ -101,7 +101,7 @@
 
 <!-- Notes -->          <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.notes.label" default="Notes" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "notes")}</td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "notes")}</cl:formattedText></td>
                         </tr>
 
 <!-- Keywords -->       <tr class="prop">
@@ -122,7 +122,7 @@
                                   <tr>
                                     <td colspan="2">
                                       <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
-                                              src="${resource(dir:'images/collection', file:collectionInstance.imageRef.file)}" />
+                                              src="${resource(absolute: "true", dir:'data/collection', file:collectionInstance.imageRef.file)}" />
                                     </td>
                                   </tr>
                                   <tr class="prop">
@@ -303,7 +303,7 @@
                 <g:ifAllGranted role="ROLE_ADMIN">
                   <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
                 </g:ifAllGranted>
-                <span class="button"><g:actionSubmit class="preview" action='preview' value="${message(code: 'default.button.preview.label', default: 'Preview')}" /></span>
+                <span class="button"><g:link class="preview" controller="public" action='show' id="${collectionInstance?.id}">${message(code: 'default.button.preview.label', default: 'Preview')}</g:link></span>
               </g:form>
             </div>
         </div>

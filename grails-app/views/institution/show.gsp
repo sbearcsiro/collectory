@@ -77,7 +77,7 @@
                                   <tr>
                                     <td colspan="2">
                                       <img alt="${fieldValue(bean: institutionInstance, field: "logoRef.file")}"
-                                              src="${resource(dir:'images/institution', file:institutionInstance.logoRef.file)}" />
+                                              src="${resource(absolute: "true", dir:'data/institution', file:institutionInstance.logoRef.file)}" />
                                     </td>
                                   </tr>
                                   <tr class="prop">
@@ -109,7 +109,7 @@
                                   <tr>
                                     <td colspan="2">
                                       <img alt="${fieldValue(bean: institutionInstance, field: "imageRef.file")}"
-                                              src="${resource(dir:'images/institution', file:institutionInstance.imageRef.file)}" />
+                                              src="${resource(absolute: "true", dir:'data/institution', file:institutionInstance.imageRef.file)}" />
                                     </td>
                                   </tr>
                                   <tr class="prop">

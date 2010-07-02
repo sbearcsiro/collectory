@@ -35,7 +35,24 @@ class ReportsController {
     }
 
     def map = {
+        List<CollectionLocation> locations = new ArrayList<CollectionLocation>()
+        ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION).each {
+            def loc = new CollectionLocation()
+            if (it.latitude != -1 && it.latitude != 0 && it.longitude != -1 && it.longitude != 0) {
+                loc.latitude = it.latitude
+                loc.longitude = it.longitude
+            } else if (it.address && !it.address.isEmpty()) {
+                loc.streetAddress = [it.address?.street, it.address?.city, it.address?.state, it.address?.country].join(',')
+            }
+            if (!loc.isEmpty()) {
+                loc.name = it.name
+                loc.link = it.id
+                locations << loc
+            }
+        }
         ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
+        locations.each {println "> ${it.latitude},${it.longitude} ${it.streetAddress} ${it.name}"}
+        [locations: locations]
     }
 
     def institutions = {

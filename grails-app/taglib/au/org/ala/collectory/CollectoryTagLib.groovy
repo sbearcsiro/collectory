@@ -84,13 +84,25 @@ class CollectoryTagLib {
     def ifNotBlank = {attrs ->
         if (attrs.value) {
             out << "<p>"
-            if (attrs.prefix) {
-                out << attrs.prefix
-            }
+            out << (attrs.prefix) ? attrs.prefix : ""
             out << attrs.value.encodeAsHTML()
-            if (attrs.postfix) {
-                out << attrs.postfix
+            out << (attrs.postfix) ? attrs.postfix : ""
+
+            // allow other content
+            if (attrs.value2) {
+                out << (attrs.join) ? attrs.join : ""
+                out << (attrs.prefix) ? attrs.prefix : ""
+                out << attrs.value2
+                out << (attrs.postfix) ? attrs.postfix : ""
+
+                if (attrs.value3) {
+                    out << (attrs.join) ? attrs.join : ""
+                    out << (attrs.prefix) ? attrs.prefix : ""
+                    out << attrs.value3
+                    out << (attrs.postfix) ? attrs.postfix : ""
+                }
             }
+
             out << "</p>"
         }
     }
@@ -480,7 +492,6 @@ class CollectoryTagLib {
      * @param body the text to format
      */
     def formattedText = {attrs, body ->
-        println "body class = ${body.class}"
         def text = body().toString()
         text = text.replaceAll("\n", "</p><p>")
         if (!attrs.noLink) {

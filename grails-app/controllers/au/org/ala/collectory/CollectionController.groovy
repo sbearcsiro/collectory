@@ -3,6 +3,10 @@ package au.org.ala.collectory
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.converters.JSON
+import org.hibernate.TypeMismatchException
+import java.text.NumberFormat
+import java.text.ParseException
 
 /**
  * Controller handles ProviderGroups of type Collection
@@ -56,14 +60,17 @@ class CollectionController {
     // show a single collection
     def show = {
         log.debug ">entered show with id=${params.id}"
-        def collectionInstance = ProviderGroup.get(params.id)
+        def collectionInstance = findCollection(params.id)
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
-        }
-        else {
+        } else if (collectionInstance.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION) {
+            // redirect to show institutions
+            redirect(controller: 'institution', action: 'show', id: collectionInstance.id)
+        } else {
+            // show it
             log.info ">>${authenticateService.userDomain().username} showing ${collectionInstance.name}"
-            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.VIEW
+            ActivityLog.log authenticateService.userDomain().username as String, collectionInstance.id, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
         }
     }
@@ -80,6 +87,37 @@ class CollectionController {
             ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.PREVIEW
             [collectionInstance: collectionInstance, contact: collectionInstance.getPrimaryContact(), subCollections: collectionInstance.scope.listSubCollections()]
         }
+    }
+
+    /**
+     * Return a summary as JSON.
+     * Param can be:
+     *  1. database id
+     *  2. lsid
+     *  3. acronym
+     */
+    def summary = {
+        def collectionInstance = findCollection(params.id)
+        if (collectionInstance) {
+            render collectionInstance.getSummary() as JSON
+        } else {
+            render "Error" as JSON
+        }
+    }
+
+    /**
+     * Return a summary as JSON.
+     * Params are:
+     * - institution provider code
+     * - collection provider code
+     */
+    def findCollectionFor = {
+        def inst = params.inst
+        def coll = params.coll
+        def colls = ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
+        def matches = colls.findAll() {it.matchesCollection(inst, coll)}
+        def summaries = matches.collect() {it.getSummary()}
+        render summaries as JSON
     }
 
     def loadSupplementary = {
@@ -678,4 +716,18 @@ v                   }
         }
     }
 
+    private findCollection(id) {
+        // try lsid
+        if (id instanceof String && id.startsWith('urn:lsid:')) {
+            return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+        }
+        // try id
+        try {
+            NumberFormat.getIntegerInstance().parse(id)
+            def result = ProviderGroup.read(id)
+            if (result) {return result}
+        } catch (ParseException e) {}
+        // try acronym
+        return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+    }
 }

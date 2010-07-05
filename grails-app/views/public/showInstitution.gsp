@@ -18,7 +18,7 @@
       <p><strong>Collections:</strong></p>
       <ol>
         <g:each var="c" in="${institution.getSafeChildren()}">
-          <li><g:link controller="collection" action="show" id="${c.id}">${c?.name}</g:link>: ${c?.pubDescription}</li>
+          <li><g:link controller="public" action="show" id="${c.id}">${c?.name}</g:link>: ${c?.pubDescription}</li>
         </g:each>
       </ol>
     </div><!--close section-->

@@ -1,5 +1,8 @@
 package au.org.ala.collectory
 
+import java.text.ParseException
+import java.text.NumberFormat
+
 class PublicController {
 
     def index = { redirect(action: 'list')}
@@ -9,10 +12,13 @@ class PublicController {
     }
 
     def show = {
-        def collectionInstance = ProviderGroup.get(params.id)
+        def collectionInstance = findCollection(params.id)
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
+        } else if (collectionInstance.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION) {
+            // redirect to show institutions
+            redirect(action: 'showInstitution', id: collectionInstance.id)
         } else {
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
         }
@@ -58,4 +64,18 @@ class PublicController {
         [locations: locations, collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
     }
 
+    private findCollection(id) {
+        // try lsid
+        if (id instanceof String && id.startsWith('urn:lsid:')) {
+            return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+        }
+        // try id
+        try {
+            NumberFormat.getIntegerInstance().parse(id)
+            def result = ProviderGroup.read(id)
+            if (result) {return result}
+        } catch (ParseException e) {}
+        // try acronym
+        return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+    }
 }

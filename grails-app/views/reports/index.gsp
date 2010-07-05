@@ -47,7 +47,7 @@
       </div>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="map">Show map of collections</g:link>
+        <g:link class="mainLink" controller="public" action="map">Show map of collections</g:link>
         <p class="mainText">Simple map of all collections.</p>
       </div>
 

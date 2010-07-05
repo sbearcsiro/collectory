@@ -52,7 +52,6 @@
               <p><cl:stateCoverage states='${fieldValue(bean: collectionInstance, field: "scope.states")}'/></p>
             </g:if>
             <g:if test="${collectionInstance.scope.westCoordinate != -1}">
-              <p>${fieldValue(bean: collectionInstance, field: 'scope.westCoordinate')}</p>
               <p>The western most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.westCoordinate}' degree='true'/></p>
             </g:if>
             <g:if test="${collectionInstance.scope.eastCoordinate != -1}">

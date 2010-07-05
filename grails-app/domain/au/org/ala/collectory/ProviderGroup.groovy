@@ -72,7 +72,7 @@ class ProviderGroup implements Serializable {
     String providerCodes       // the codes used for this entity by the owning institution as a JSON array
                                //  form is: ["code1", "code2"]
     String internalProviderCodes// a set of codes for internal use that override the providerCodes
-    String internalInstitutionCode
+    String internalInstitutionCodes
 
     // institution attributes
     String institutionType      // the type of institution, eg herbarium, library
@@ -93,7 +93,8 @@ class ProviderGroup implements Serializable {
     /* this causes stack overflow from circular validations - we don't want cascading deletes anyway */
     //static belongsTo = ProviderGroup
 
-    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup', 'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes']
+    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'institutionCodeForLookup',
+            'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'summary']
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
 
@@ -126,13 +127,22 @@ class ProviderGroup implements Serializable {
 
         providerCodes(nullable:true, maxSize:2048)
         internalProviderCodes(nullable:true, maxSize:2048)
-        internalInstitutionCode(nullable:true, maxSize:45)
+        internalInstitutionCodes(nullable:true, maxSize:45)
 
         projectStart(nullable:true)
         projectEnd(nullable:true)
 
         scope(nullable:true)            // should be present if type is "Collection"
         infoSource(nullable:true)
+    }
+
+    static namedQueries = {
+        collections {
+            eq(groupType, GROUP_TYPE_COLLECTION)
+        }
+        institutions {
+            eq(groupType, GROUP_TYPE_INSTITUTION)
+        }
     }
 
     /**
@@ -281,7 +291,7 @@ class ProviderGroup implements Serializable {
      * @return code or null
      */
     String getInstitutionCodeForLookup() {
-        String code = getInternalInstitutionCode()
+        String code = getInternalInstitutionCodes()
         if (!code)
             code = getAcronym()
         return code
@@ -307,6 +317,72 @@ class ProviderGroup implements Serializable {
 
     boolean isMemberOf(String network) {
         return (this.networkMembership =~ network)
+    }
+
+    /**
+     * Returns true if the passed code is included (as a whole word) in the group's provider codes or
+     * internal provider codes or if the internal codes are set to match ANY.
+     *
+     * Notes:
+     * If internal (hidden) provider codes are present the code must match them.
+     * If the internal provider codes contains the keyword "ANY", all codes will match.
+     * Matches are case insensitive.
+     * If the group is an institution, the acronym is the default provider code.
+     * Assumes provider codes are represented as JSON array strings.
+     *
+     * @param code the code to match
+     * @return true if this group has the passed code
+     */
+    boolean hasProviderCode(String code) {
+        if (internalProviderCodes && internalProviderCodes?.toLowerCase() =~ '"any"') {
+            return true
+        } else if (internalProviderCodes) {
+            return internalProviderCodes?.toLowerCase() =~ '"' + code?.toLowerCase() + '"'
+        } else if (providerCodes) {
+            return providerCodes?.toLowerCase() =~ '"' + code?.toLowerCase() + '"'
+        } else if (groupType == ProviderGroup.GROUP_TYPE_INSTITUTION) {
+            return acronym?.equalsIgnoreCase(code)
+        }
+        return false
+    }
+
+    boolean matchesCollection(String institutionCode, String collectionCode) {
+        // must be a collection
+        if (groupType != GROUP_TYPE_COLLECTION) {return false}
+        // cannot both be null or empty
+        if (!institutionCode && !collectionCode) {return false}
+        // must have collection code if it is given
+        boolean hasCollectionCode = !collectionCode || hasProviderCode(collectionCode)
+        // must have institution code if it is given
+        boolean hasInstitutionCode = false
+        if (hasCollectionCode) {
+            // internal code takes precedence
+            if (internalInstitutionCodes && institutionCode) {
+                hasInstitutionCode = internalInstitutionCodes?.toLowerCase() =~ '"' + institutionCode.toLowerCase() + '"'
+            } else {
+                hasInstitutionCode = !institutionCode || findPrimaryInstitution()?.hasProviderCode(institutionCode)
+            }
+        }
+        // must satisfy both
+        return hasCollectionCode && hasInstitutionCode
+    }
+
+    Map buildProviderCodes() {
+
+    }
+
+    CollectionSummary getSummary() {
+        CollectionSummary cs = new CollectionSummary(id: id, name: name, acronym: acronym)
+        if (guid?.startsWith('urn:lsid:')) {
+            cs.lsid = guid
+        }
+        def inst = findPrimaryInstitution()
+        if (inst) {
+            cs.institution = inst.name
+            cs.institutionId = inst.id
+        }
+        //cs.shortDescription = pubDescription  // make this more sophisticated
+        return cs
     }
 }
 

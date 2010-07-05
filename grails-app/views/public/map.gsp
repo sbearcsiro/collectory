@@ -81,7 +81,70 @@
       var geocoder;
       var map;
       function initialize() {
-        geocoder = new google.maps.Geocoder();
+        var map = new OpenLayers.Map('map_canvas');
+
+        var layer = new OpenLayers.Layer.WMS(
+            "Global Imagery",
+            "http://maps.opengeo.org/geowebcache/service/wms",
+            {layers: "bluemarble"},
+            {wrapDateLine: true}
+        );
+
+        layer.events.on({
+            'featureselected': onFeatureSelect,
+            'featureunselected': onFeatureUnselect
+        });
+
+        var statesLayer = new OpenLayers.Layer.WMS("Political States",
+            "http://maps.ala.org.au/wms",
+            {layers: "ala:as",
+            srs: 'EPSG:4326',
+            version: "1.0.0",
+            transparent: "true",
+            format: "image/png",
+            maxExtent: new OpenLayers.Bounds(112.91,-54.76,159.11,-10.06)},
+            {alpha: true}
+        );
+
+        map.addLayer(layer);
+        map.addLayer(statesLayer);
+
+        // create Google Mercator layers
+        var gmap = new OpenLayers.Layer.Google(
+            "Google Streets",
+            {'sphericalMercator': true}
+        );
+        map.addLayer(gmap);
+        var gsat = new OpenLayers.Layer.Google(
+            "Google Satellite",
+            {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
+        );
+        map.addLayer(gsat);
+        var ghyb = new OpenLayers.Layer.Google(
+            "Google Hybrid",
+            {type: G_HYBRID_MAP, 'sphericalMercator': true}
+        );
+        map.addLayer(ghyb);
+
+        map.addControl(new OpenLayers.Control.LayerSwitcher());
+
+        map.setCenter(new OpenLayers.LonLat(133, -27), 4);
+
+       // reload vector layer on zoom event
+        //map.events.register('zoomend', map, function (e) {
+        //    loadVectorLayer();
+        //});
+
+        var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
+        var feature = new OpenLayers.Feature.Vector(
+        new OpenLayers.Geometry.Point(149, -35),
+          {some:'data'},
+          {externalGraphic: "${resource(dir:'images/map/',file:'red-dot.png')}", graphicHeight: 25, graphicWidth: 21});
+        vectorLayer.addFeatures(feature);
+        map.addLayer(vectorLayer);
+        //map.zoomToMaxExtent();
+
+        /*geocoder = new google.maps.Geocoder();
         var centre = new google.maps.LatLng(-28.0, 133.0);
         var myOptions = {
           zoom: 4,
@@ -90,6 +153,7 @@
         };
         map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
 
+        
         <g:each var="loc" in="${locations}">
           <g:if test="${loc.latitude != -1 && loc.longitude != -1}">
             var latLng${loc.link} = new google.maps.LatLng(${loc.latitude}, ${loc.longitude});
@@ -120,8 +184,34 @@
             infoWindow${loc.link}.open(map, marker${loc.link});
           });
 
-        </g:each>
+        </g:each>*/
 
+      }
+
+      function onPopupClose(evt) {
+          // 'this' is the popup.
+          selectControl.unselect(this.feature);
+      }
+      function onFeatureSelect(evt) {
+          feature = evt.feature;
+          popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+                                   feature.geometry.getBounds().getCenterLonLat(),
+                                   new OpenLayers.Size(100,100),
+                                   "<h2>"+feature.attributes.title + "</h2>" +
+                                   feature.attributes.description,
+                                   null, true, onPopupClose);
+          feature.popup = popup;
+          popup.feature = feature;
+          map.addPopup(popup);
+      }
+      function onFeatureUnselect(evt) {
+          feature = evt.feature;
+          if (feature.popup) {
+              popup.feature = null;
+              map.removePopup(feature.popup);
+              feature.popup.destroy();
+              feature.popup = null;
+          }
       }
 
       function codeAddress(address) {

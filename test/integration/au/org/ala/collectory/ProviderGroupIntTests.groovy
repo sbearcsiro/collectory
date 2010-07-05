@@ -20,12 +20,18 @@ class ProviderGroupIntTests extends GrailsUnitTestCase {
 
     protected void setUp() {
         super.setUp()
-        pg1 = new ProviderGroup(guid: '237645', name: 'CSIRO', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION).save()
-        pg2 = new ProviderGroup(guid: '237646', name: 'ANU', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION).save()
-        pg3 = new ProviderGroup(guid: '237647', name: 'MA', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION).save()
-        pg4 = new ProviderGroup(guid: '237648', name: 'UOFA', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION).save()
-        pg5 = new ProviderGroup(guid: '237649', name: 'Bees', groupType: ProviderGroup.GROUP_TYPE_COLLECTION).save()
-        pg6 = new ProviderGroup(guid: '237650', name: 'Wasps', groupType: ProviderGroup.GROUP_TYPE_COLLECTION).save(flush:true)
+        pg1 = new ProviderGroup(guid: '237645', name: 'CSIRO', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
+            userLastModified: "test").save()
+        pg2 = new ProviderGroup(guid: '237646', name: 'ANU', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
+            userLastModified: "test").save()
+        pg3 = new ProviderGroup(guid: '237647', name: 'MA', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
+            userLastModified: "test").save()
+        pg4 = new ProviderGroup(guid: '237648', name: 'UOFA', groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
+            userLastModified: "test").save()
+        pg5 = new ProviderGroup(guid: '237649', name: 'Bees', groupType: ProviderGroup.GROUP_TYPE_COLLECTION,
+            userLastModified: "test").save()
+        pg6 = new ProviderGroup(guid: '237650', name: 'Wasps', groupType: ProviderGroup.GROUP_TYPE_COLLECTION,
+            userLastModified: "test").save(flush:true)
    }
 
     protected void tearDown() {
@@ -51,5 +57,30 @@ class ProviderGroupIntTests extends GrailsUnitTestCase {
 
         assertEquals 2, orderedParents.size()
         assertEquals "ANU", orderedParents[0].name
+    }
+
+    void testMatchesCollection() {
+
+        ProviderGroup inst = new ProviderGroup(
+                guid: '20',
+                name: 'Commonwealth S.. I.. R.. O..',
+                acronym: 'CSIRO',
+                groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
+                userLastModified: "test").save()
+
+        assertNotNull inst.id
+
+        ProviderGroup coll = new ProviderGroup(
+                guid: '19',
+                name: 'Bees',
+                groupType: ProviderGroup.GROUP_TYPE_COLLECTION,
+                providerCodes: '["ants", "pants", "plants"]',
+                userLastModified: "test").save()
+
+        coll.addToParents(inst)
+        coll.save()
+
+        assertTrue coll.matchesCollection('CSIRO', 'ants')
+        
     }
 }

@@ -2,10 +2,11 @@ package au.org.ala.collectory
 
 import java.text.ParseException
 import java.text.NumberFormat
+import grails.converters.JSON
 
 class PublicController {
 
-    def index = { redirect(action: 'list')}
+    def index = { redirect(action: 'map')}
 
     def list = {
         [collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
@@ -60,8 +61,51 @@ class PublicController {
             }
         }
         //ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
-        locations.each {println "> ${it.latitude},${it.longitude} ${it.streetAddress} ${it.name}"}
-        [locations: locations, collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
+        //locations.each {println "> ${it.latitude},${it.longitude} ${it.streetAddress} ${it.name}"}
+        [collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
+        //[locations: locations, collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
+    }
+
+    def mapFeatures = {
+        // temp GeoJSON string
+        /*def features = """
+     { "type": "FeatureCollection",
+      "features": [
+        { "type": "Feature",
+          "geometry": {"type": "Point", "coordinates": [149.114293, -35.274218]},
+          "properties": {"name": "ANIC"}
+        },
+        { "type": "Feature",
+          "geometry": {"type": "Point", "coordinates": [151.0414080000, -33.7465780000]},
+          "properties": {"name": "Forests NSW Insect Collection"}
+        },
+        { "type": "Feature",
+          "geometry": {"type": "Point", "coordinates": [145.2565400000, -37.8754490000]},
+          "properties": {"name": "National Collection of Fungi, Knoxfield Herbarium"}
+        },
+        { "type": "Feature",
+          "geometry": {"type": "Point", "coordinates": [147.3327940000, -42.8862830000]},
+          "properties": {"name": "Australian National Fish Collection"}
+        }
+       ]
+       }"""*/
+
+        def locations = [:]
+        locations.type = "FeatureCollection"
+        locations.features = new ArrayList()
+        List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
+        ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION).each {
+            if (it.latitude != -1 && it.latitude != 0 && it.longitude != -1 && it.longitude != 0) {
+                def loc = [:]
+                loc.type = "Feature"
+                loc.properties = [name: it.name]
+                loc.geometry = [type: "Point", coordinates: [it.longitude,it.latitude]]
+                locations.features << loc
+            }
+        }
+
+        //def json = JSON.parse(features)
+        render(locations as JSON)
     }
 
     private findCollection(id) {

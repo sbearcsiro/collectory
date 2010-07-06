@@ -81,19 +81,21 @@
       var geocoder;
       var map;
       function initialize() {
+        /*var mapOptions = "{maxResolution: 2468}";
+        var options2 = {
+            projection: new OpenLayers.Projection("EPSG:900913"),
+            units: "m",
+            maxResolution: 156543.0339,
+            maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34,
+                                             20037508.34, 20037508.34)
+        };*/
         var map = new OpenLayers.Map('map_canvas');
-
-        var layer = new OpenLayers.Layer.WMS(
+        /*var layer = new OpenLayers.Layer.WMS(
             "Global Imagery",
             "http://maps.opengeo.org/geowebcache/service/wms",
             {layers: "bluemarble"},
             {wrapDateLine: true}
         );
-
-        layer.events.on({
-            'featureselected': onFeatureSelect,
-            'featureunselected': onFeatureUnselect
-        });
 
         var statesLayer = new OpenLayers.Layer.WMS("Political States",
             "http://maps.ala.org.au/wms",
@@ -107,14 +109,16 @@
         );
 
         map.addLayer(layer);
-        map.addLayer(statesLayer);
+        map.addLayer(statesLayer);*/
 
         // create Google Mercator layers
         var gmap = new OpenLayers.Layer.Google(
             "Google Streets",
-            {'sphericalMercator': true}
+            {'sphericalMercator': true,
+             maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)}
         );
         map.addLayer(gmap);
+        map.zoomToMaxExtent();
         var gsat = new OpenLayers.Layer.Google(
             "Google Satellite",
             {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
@@ -128,63 +132,56 @@
 
         map.addControl(new OpenLayers.Control.LayerSwitcher());
 
-        map.setCenter(new OpenLayers.LonLat(133, -27), 4);
+        var proj = new OpenLayers.Projection("EPSG:4326");
+        var point = new OpenLayers.LonLat(133, -27);
 
-       // reload vector layer on zoom event
+        map.setCenter(point.transform(proj, map.getProjectionObject()), 4);
+
+        var vectors = new OpenLayers.Layer.Vector("Collections");
+        vectors.style = {externalGraphic: "${resource(dir:'images/map/',file:'orange-dot.png')}", graphicHeight: 25, graphicWidth: 25};
+        map.addLayer(vectors)
+
+        var in_options = {
+            'internalProjection': map.baseLayer.projection,
+            'externalProjection': proj
+        };
+
+        $.get("${createLink(action: 'mapFeatures')}", function(data) {
+          var features = new OpenLayers.Format.GeoJSON(in_options).read(data);
+          var bounds
+          for(var i=0; i<features.length; ++i) {
+              if (!bounds) {
+                  bounds = features[i].geometry.getBounds();
+              } else {
+                  bounds.extend(features[i].geometry.getBounds());
+              }
+          }
+          vectors.addFeatures(features);
+          //map.zoomToExtent(bounds);
+        });
+
+        /*var geojson = new OpenLayers.Layer.GML("GeoJSON", ${locations}, {
+          projection: new OpenLayers.Projection("EPSG:4326"),
+          format: OpenLayers.Format.GeoJSON
+        });
+        map.addLayer(geojson);*/
+        
+        // reload vector layer on zoom event
         //map.events.register('zoomend', map, function (e) {
         //    loadVectorLayer();
         //});
 
-        var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
+        /*var vectorLayer = new OpenLayers.Layer.Vector("Overlay");
+        var marker = new OpenLayers.Geometry.Point(149.114293, -35.274218);
+        marker.transform(proj, map.getProjectionObject());
         var feature = new OpenLayers.Feature.Vector(
-        new OpenLayers.Geometry.Point(149, -35),
+          marker,
           {some:'data'},
           {externalGraphic: "${resource(dir:'images/map/',file:'red-dot.png')}", graphicHeight: 25, graphicWidth: 21});
         vectorLayer.addFeatures(feature);
-        map.addLayer(vectorLayer);
+        map.addLayer(vectorLayer);*/
         //map.zoomToMaxExtent();
 
-        /*geocoder = new google.maps.Geocoder();
-        var centre = new google.maps.LatLng(-28.0, 133.0);
-        var myOptions = {
-          zoom: 4,
-          center: centre,
-          mapTypeId: google.maps.MapTypeId.ROADMAP
-        };
-        map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-
-        
-        <g:each var="loc" in="${locations}">
-          <g:if test="${loc.latitude != -1 && loc.longitude != -1}">
-            var latLng${loc.link} = new google.maps.LatLng(${loc.latitude}, ${loc.longitude});
-          </g:if>
-          <g:else>
-            var address = "${loc.streetAddress}";
-            var latLng${loc.link};
-            geocoder.geocode( { 'address': address }, function(results, status) {
-              if (status == google.maps.GeocoderStatus.OK) {
-                latLng${loc.link} = results[0].geometry.location;
-                var marker${loc.link} = new google.maps.Marker({
-                  position: latLng${loc.link},
-                  map: map,
-                  title: "${loc.name}"
-                });
-              }
-            });
-          </g:else>
-          var marker${loc.link} = new google.maps.Marker({
-            position: latLng${loc.link},
-            map: map,
-            title: "${loc.name}"
-          });
-          var infoWindow${loc.link} = new google.maps.InfoWindow({
-            content: "<a href='/Collectory/collection/preview/${loc.link}'>${loc.name}</a>'"
-          });
-          google.maps.event.addListener(marker${loc.link}, 'click', function() {
-            infoWindow${loc.link}.open(map, marker${loc.link});
-          });
-
-        </g:each>*/
 
       }
 

@@ -280,7 +280,12 @@
                             <ul>
                             <g:each in="${contacts}" var="c">
                                 <li><g:link controller="contact" action="show" id="${c?.contact?.id}">
-                                  ${c?.contact?.buildName()}<cl:roleIfPresent role='${c?.role}' /> <cl:adminIfPresent admin='${c?.administrator}' /></g:link></li>
+                                    ${c?.contact?.buildName()}
+                                    <cl:roleIfPresent role='${c?.role}'/>
+                                    <cl:adminIfPresent admin='${c?.administrator}'/><br/>
+                                    ${c?.contact?.phone}
+                                  </g:link>
+                                </li>
                             </g:each>
                             </ul>
                         </td>

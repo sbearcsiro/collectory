@@ -5,6 +5,7 @@ import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 import grails.converters.JSON
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class CollectoryTagLib {
 
@@ -127,6 +128,10 @@ class CollectoryTagLib {
             NumberFormat formatter = new DecimalFormat("#0.0")
             out << formatter.format(percent) << ' %'
         }
+    }
+
+    def ifLSID = {atttrs, body ->
+        out << (body().startsWith('urn:lsid:') ? body() : "")
     }
 
     /**
@@ -415,7 +420,7 @@ class CollectoryTagLib {
         if (!email)
             email = body().toString()
         int index = email.indexOf('@')
-        println "index=${index}"
+        //println "index=${index}"
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
         }
@@ -428,7 +433,7 @@ class CollectoryTagLib {
         if (!email)
             email = body().toString()
         int index = email.indexOf('@')
-        println "index=${index}"
+        //println "index=${index}"
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
         }
@@ -503,4 +508,44 @@ class CollectoryTagLib {
         out << text
     }
 
+    /**
+     * Builds the link to bio-cache records for the passed keys.
+     *
+     * @param attrs.collectionCodes coll codes as a list of strings
+     * @param attrs.institutionCodes inst codes as a list of strings
+     * @body the body of the link
+     */
+    def recordsLink = {attrs, body ->
+        // must have at least one value to build a query
+        if (attrs.institutionCodes || attrs.collectionCodes) {
+            def instClause = attrs.institutionCodes ? buildSearchClause("inst", attrs.institutionCodes) : ""
+            def collClause = attrs.collectionCodes ? buildSearchClause("coll", attrs.collectionCodes) : ""
+            collClause = (instClause && collClause) ? "&" + collClause : collClause
+            def baseUrl = ConfigurationHolder.config.biocache.baseURL
+            def url = baseUrl + "searchForCollection?" + instClause + collClause
+            out << "<a href='"
+            out << url
+            out << "'>" << body() << "</a>"
+        }
+    }
+
+    String buildSearchClause(String field, List valueList) {
+        def result = ""
+        valueList.eachWithIndex {it, i ->
+            if (i > 0) {result += "&"}
+            result += "${field}=${it}"
+        }
+        return result
+    }
+
+    def numberOf = {attrs->
+        if (attrs.number) {
+            NumberFormat formatter = new DecimalFormat(",###")
+            out << formatter.format(attrs.number)
+        } else {
+            out << "no"
+        }
+        out << " "
+        out << (attrs.number == 1 ? attrs.noun : attrs.noun + "s")
+    }
 }

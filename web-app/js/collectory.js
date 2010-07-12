@@ -79,3 +79,18 @@ function sendEmail(strEncoded) {
     }
     return false;
 }
+
+// opens email window and adds error info
+var strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)";
+function sendBugEmail(strEncoded, message) {
+    var strAddress;
+    strAddress = strEncoded.split(strEncodedAtSign);
+    strAddress = strAddress.join("@");
+    var body = document.title + ' \n(' + window.location.href + ')\n' + message;
+    var objWin = window.open ('mailto:' + strAddress + '?subject=' + document.title + '&body=' + body,'_blank');
+    if (objWin) objWin.close();
+    if (event) {
+        event.cancelBubble = true;
+    }
+    return false;
+}

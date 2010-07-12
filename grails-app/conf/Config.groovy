@@ -32,6 +32,10 @@ if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
 }
 println "(*) grails.config.locations = ${grails.config.locations}"
 
+if (!biocache.baseURL) {
+     biocache.baseURL = "http://biocache.ala.org.au/biocache-webapp/occurrences/"
+}
+
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -77,7 +81,7 @@ environments {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
     }
     development {
-        grails.serverURL = "http://collections.ala.org.au"  //"http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080/Collectory"
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

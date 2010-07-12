@@ -3,6 +3,7 @@
 	  <title>Grails Runtime Exception</title>
       <link rel="stylesheet" href="${resource(dir:'css',file:'style.css')}" type="text/css" media="screen"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
+      <g:javascript library="collectory" />
 	  <style type="text/css">
 	  		.error-message {
 	  			border: 1px solid #b2d1ff;
@@ -45,7 +46,8 @@
       <h3>An unexpected error has occurred.</h3>
       <p>If this is the first time this page has appeared, <span class="action">try the refresh button in your browser.</span></p>
       <p>If this fails, <span class="action">try to return to the <a href="/Collectory">home page</a> and start again.</span></p>
-      <p>If this page is still displayed, <span class="action">please report the incident to ALA support.</span></p>
+      <p>If this page is still displayed, <span class="action">please report the incident to ALA support.
+      <cl:emailBugLink email="support@ala.org.au" message="${exception?.message}">Click here to email ALA support</cl:emailBugLink>.</span></p>
       <p>The following is useful information that helps us discover what has happened. Please copy it into emails requesting support.</p>
       <p>You might also like to expand the more detailed information by clicking on 'Show stack trace' and copying that text to us as well.</p>
       <p>Thanks for your patience.</p>

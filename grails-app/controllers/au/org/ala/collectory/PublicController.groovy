@@ -3,6 +3,7 @@ package au.org.ala.collectory
 import java.text.ParseException
 import java.text.NumberFormat
 import grails.converters.JSON
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class PublicController {
 
@@ -14,6 +15,7 @@ class PublicController {
 
     def show = {
         def collectionInstance = findCollection(params.id)
+        //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
@@ -21,7 +23,35 @@ class PublicController {
             // redirect to show institutions
             redirect(action: 'showInstitution', id: collectionInstance.id)
         } else {
-            [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
+            // lookup number of biocache records
+            def instCodes = collectionInstance.getListOfInstitutionCodesForLookup()
+            def collCodes = collectionInstance.getListOfCollectionCodesForLookup()
+            def count = -1
+            if (instCodes || collCodes) {
+                def url = new URL(buildBiocacheQueryString(instCodes, collCodes))
+                //println "Url = " + url
+                def conn = url.openConnection()
+                conn.setConnectTimeout 3000
+                try {
+                    def json = conn.content.text
+                    //println "Response = " + json
+                    count = JSON.parse(json)?.searchResult?.totalRecords
+                    //println "Count = " + count
+                } catch (FileNotFoundException e) {
+                    log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
+                } catch (ConnectException e) {
+                    log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
+                } catch (ProtocolException e) {
+                    log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
+                } catch (SocketTimeoutException e) {
+                    log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
+                } catch (Exception e) {
+                    log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
+                }
+            } else {
+                count = 0
+            }
+            [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(), numBiocacheRecords: count]
         }
     }
 
@@ -45,25 +75,8 @@ class PublicController {
     }
 
     def map = {
-        List<CollectionLocation> locations = new ArrayList<CollectionLocation>()
-        ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION).each {
-            def loc = new CollectionLocation()
-            if (it.latitude != -1 && it.latitude != 0 && it.longitude != -1 && it.longitude != 0) {
-                loc.latitude = it.latitude
-                loc.longitude = it.longitude
-            } else if (it.address && !it.address.isEmpty()) {
-                loc.streetAddress = [it.address?.street, it.address?.city, it.address?.state, it.address?.country].join(',')
-            }
-            if (!loc.isEmpty()) {
-                loc.name = it.name
-                loc.link = it.id
-                locations << loc
-            }
-        }
         //ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
-        //locations.each {println "> ${it.latitude},${it.longitude} ${it.streetAddress} ${it.name}"}
         [collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
-        //[locations: locations, collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
     }
 
     def mapFeatures = {
@@ -89,23 +102,55 @@ class PublicController {
         }
        ]
        }"""*/
-
+        //println ">> map filters = " + params.filters
+        
         def locations = [:]
+        def showAll = params.filters == 'all'
         locations.type = "FeatureCollection"
         locations.features = new ArrayList()
         List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
         ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION).each {
-            if (it.latitude != -1 && it.latitude != 0 && it.longitude != -1 && it.longitude != 0) {
-                def loc = [:]
-                loc.type = "Feature"
-                loc.properties = [name: it.name]
-                loc.geometry = [type: "Point", coordinates: [it.longitude,it.latitude]]
-                locations.features << loc
+            // make 0 values be -1
+            def tempLat = it.latitude
+            def tempLong = it.longitude
+            def name = it.name
+            
+            def lat = (it.latitude == 0.0) ? -1 : it.latitude
+            def lon = (it.longitude == 0.0) ? -1 : it.longitude
+            // use parent institution if lat/long not defined
+            def inst = it.findPrimaryInstitution()
+            if (inst && lat == -1) {lat = inst.latitude}
+            if (inst && lon == -1) {lon = inst.longitude}
+            // only show if we have lat and long
+            if (lat != -1 && lon != -1) {
+                // and if matches current filter
+                if (showAll || matchKeywords(it.scope, params.filters)) {
+                    def loc = [:]
+                    loc.type = "Feature"
+                    loc.properties = [name: it.name, url: request.getContextPath() + "/public/show/" + it.id]
+                    loc.geometry = [type: "Point", coordinates: [it.longitude,it.latitude]]
+                    locations.features << loc
+                }
             }
         }
 
         //def json = JSON.parse(features)
         render(locations as JSON)
+    }
+
+    private boolean matchKeywords(scope, filterString) {
+        // synonyms
+        if (filterString =~ "fungi") {
+            filterString += "fungal"
+        }
+        def filters = filterString.tokenize(",")
+        for (int i = 0; i < filters.size(); i++) {
+            println "Checking filter ${filters[i]} against keywords ${scope?.keywords}"
+            if (scope?.keywords =~ filters[i]) {
+                return true;
+            }
+        }
+        return false
     }
 
     private findCollection(id) {
@@ -122,4 +167,27 @@ class PublicController {
         // try acronym
         return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
     }
+
+    private String buildBiocacheQueryString(instCodes, collCodes) {
+        // must have at least one value to build a query
+        if (instCodes || collCodes) {
+            def instClause = instCodes ? buildSearchClause("inst", instCodes) : ""
+            //println instClause
+            def collClause = collCodes ? buildSearchClause("coll", collCodes) : ""
+            //println collClause
+            def baseUrl = ConfigurationHolder.config.biocache.baseURL
+            def url = baseUrl + "searchForCollection.JSON?pageSize=0" + instClause + collClause
+        } else {
+            return ""
+        }
+    }
+
+    private String buildSearchClause(String field, List valueList) {
+        def result = ""
+        valueList.eachWithIndex {it, i ->
+            result += "&${field}=${it}"
+        }
+        return result
+    }
+
 }

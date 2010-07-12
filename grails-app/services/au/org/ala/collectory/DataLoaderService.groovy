@@ -2,7 +2,9 @@ package au.org.ala.collectory
 
 import grails.converters.*;
 import au.com.bytecode.opencsv.CSVReader
+import au.org.ala.collectory.Geocoder
 import org.codehaus.groovy.grails.web.json.JSONObject
+import au.org.ala.collectory.Geocoder.Location
 
 class DataLoaderService {
 
@@ -83,6 +85,89 @@ class DataLoaderService {
                     pg?.userLastModified = "${user} (via json loader)"
                     pg?.dateLastModified = new Date()
                     pg?.save(flush:true)
+                }
+            }
+        }
+    }
+
+    def loadAmrrnData() {
+        CSVReader reader = new CSVReader(new FileReader("/data/collectory/bootstrap/amrrn.csv"))
+        String [] nextLine;
+        String [] columns = ["name","acronym","contact","address","phone","email"]
+        while ((nextLine = reader.readNext()) != null) {
+
+            /* create a params map from the csv data */
+            def params = [:]
+            columns.eachWithIndex {it, i ->
+                params[it] = nextLine[i].trim()
+            }
+
+            if (params.name) {
+                ProviderGroup pg = ProviderGroup.findByName(params.name)
+                if (!pg) {
+                    pg = new ProviderGroup(name: params.name, userLastModified: "AMRRN loader",
+                            groupType: ProviderGroup.GROUP_TYPE_COLLECTION, acronym: params.acronym)
+                    parseAddress(params)
+                    pg.address = new Address(street: params.street, city: params.city, state: params.state,
+                        postcode: params.postcode, postBox: params.postBox)
+                    try {
+                        Location loc = Geocoder.getLocation(params.address)
+                        if (loc) {
+                            pg.longitude = new BigDecimal(loc.lon)
+                            pg.latitude = new BigDecimal(loc.lat)
+                            println ">Long: ${pg.longitude} Lat: ${pg.latitude}"
+                        }
+                    } catch (NumberFormatException e) {
+                        println "Unable to build lon/lat for ${params.address} - ${e.getMessage()}"
+                    } catch (IOException e) {
+                        println "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
+                    }
+                    pg.scope = new CollectionScope(keywords: '["microbial"]', userLastModified: "AMRRN loader")
+                    pg.save(flush:true)
+                    if (pg.hasErrors()) {
+                        println pg.name + "- " + pg.errors
+                    } else {
+                        parseName(params)
+                        Contact c = Contact.findByFirstNameAndLastName(params.firstName, params.lastName)
+                        if (!c) {
+                            c = new Contact(title: params.title, firstName: params.firstName, lastName: params.lastName,
+                                phone: params.phone, email: params.email, userLastModified: "AMRRN loader")
+                            c.save(flush:true)
+                        }
+                        if (c.hasErrors()) {
+                            println c.lastName + "- " + c.errors
+                        } else {
+                            pg.addToContacts(c, "Curator", true, true, "AMRRN loader")
+                            pg.save(flush:true)
+                        }
+                    }
+                    println "${pg.name} ${pg.longitude} ${pg.latitude}" 
+                } else {
+                    // update existing rough'n'ready
+                    parseAddress(params)
+                    pg.address = new Address(street: params.street, city: params.city, state: params.state,
+                        postcode: params.postcode, postBox: params.postBox)
+                    try {
+                        Location loc = Geocoder.getLocation(params.address)
+                        if (loc) {
+                            pg.longitude = new BigDecimal(loc.lon)
+                            pg.latitude = new BigDecimal(loc.lat)
+                            println ">Long: ${pg.longitude} Lat: ${pg.latitude}"
+                        }
+                    } catch (NumberFormatException e) {
+                        println "Unable to build lon/lat for ${params.address} - ${e.getMessage()}"
+                    } catch (IOException e) {
+                        println "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
+                    }
+                    pg.scope?.keywords = '["microbial"]'
+                    pg.scope?.userLastModified = "AMRRN loader"
+                    pg.scope?.dateLastModified = new Date()
+                    pg.userLastModified = "AMRRN loader"
+                    pg.dateLastModified = new Date()
+                    pg.save(flush:true)
+                    if (pg.hasErrors()) {
+                        println pg.name + "- " + pg.errors
+                    }
                 }
             }
         }
@@ -462,5 +547,113 @@ class DataLoaderService {
         words = words.collect{it.toLowerCase()}
         def keywords = words.findAll {!(it in ['and','not','specified'])}
         return (keywords as JSON).toString()
+    }
+
+    private void parseName(params) {
+        // parse name
+        def name = params.contact
+        // remove any trailing parentheses  -  handles cases like "Mr Tom Weir (BSc (HONS))"
+        if (name.indexOf('(') > 0) {
+            name = name.substring(0, name.indexOf('('))
+        }
+        def title = ""
+        def lastName = ""
+        def firstName = ""
+
+        def parts = name.split()
+        switch (parts.size()) {
+            case 0: break // bad
+            case 1:
+                lastName = name // only one word so make it last name
+                break
+            case 2:              // assume first + last
+                firstName = parts[0]
+                lastName = parts[1]
+                break
+            default:
+                // cater for Dr Lemmy Caution and Lemmy A Caution
+                /* Algorithm is:
+                    - make first part the title if it is recognised
+                    - make the last part the last name
+                    - dump all the remaining parts into first name
+                 */
+                if (parts[0] == "Assoc" && parts[1] == "Prof") {  //special case
+                    title = parts[0] + " " + parts[1]
+                    firstName = parts[2..parts.size() - 2].join(" ")
+                } else if (parts[0] in ["Dr", "Dr.", "Prof", "Mr", "Ms", "Mrs"]) {
+                    title = parts[0]
+                    firstName = parts[1..parts.size() - 2].join(" ")
+                } else {
+                    title = ''
+                    firstName = parts[0..parts.size() - 2].join(" ")
+                }
+                lastName = parts[parts.size() - 1]
+                break
+        }
+        if (title) {params.title = title}
+        if (firstName) {params.firstName = firstName}
+        params.lastName = lastName
+    }
+
+    private void parseAddress(params) {
+
+        def trimTrailing = {it ->
+            it = it.trim()
+            if (it[it.length()-1] == ',') {
+                it = it[0..it.length()-2]
+            }
+            it = it.trim()
+            return it
+        }
+
+        // parse address  eg Plant Pathology Branch, DPIand Fisheries, 80 meiers Rd, Indooroopilly, QLD 4069
+        String address = params.address
+        address = trimTrailing(address)
+        def postcode = address[address.length() - 4 .. address.length() - 1]
+        try {
+            Integer.parseInt(postcode)
+            address = address[0 .. address.length() - 5]
+            address = trimTrailing(address)
+        } catch (NumberFormatException e) {
+            postcode = ""
+        }
+        def state = ""
+        if (address[address.length()-2..address.length()-1] in ['WA', 'SA', 'NT', 'wa', 'sa', 'nt']) {
+            state = address[address.length()-2..address.length()-1]
+            address = address[0 .. address.length()-3]
+        } else if (address[address.length()-3..address.length()-1].toLowerCase() in ['nsw', 'act', 'qld', 'vic', 'tas']) {
+            state = address[address.length()-3..address.length()-1]
+            address = address[0 .. address.length()-4]
+        } else if (address.toLowerCase().endsWith('tasmania')) {
+            state = 'TAS'
+            address = address[0 .. address.length()-9]
+        } else if (address.toLowerCase().endsWith('south australia')) {
+            state = 'SA'
+            address = address[0 .. address.length()-16]
+        }
+        address = trimTrailing(address)
+        def bits = address.tokenize(",")
+        //bits.each {println it.trim()}
+        def city = bits[bits.size()-1].trim()
+        bits.remove(bits.size()-1)
+
+        def postBox = ""
+        def index = -1
+        bits.eachWithIndex {it, i ->
+            if (it.trim().startsWith('PO Box') || it.trim().startsWith('Locked Bag') || it.trim().startsWith('GPO')) {
+                postBox = it.trim()
+                index = i
+            }
+        }
+        if (index > 0) {
+            bits.remove(index)
+        }
+        def street = bits.join(', ')
+
+        if (street) {params.street = street}
+        if (city) {params.city = city}
+        if (state) {params.state = state}
+        if (postcode) {params.postcode = postcode}
+        if (postBox) {params.postBox = postBox}
     }
 }

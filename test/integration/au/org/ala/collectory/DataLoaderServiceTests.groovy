@@ -28,7 +28,7 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
     }
 
     void testLoadSupplimentaryData() {
-        dataLoaderService.loadSupplementaryData("/data/collectory/bootstrap/sup.json", false)
+        //dataLoaderService.loadSupplementaryData("/data/collectory/bootstrap/sup.json", false)
     }
     
     /* order of fields in BCI csv
@@ -113,5 +113,15 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
             assertEquals 1, ContactFor.count()
         }
 
+    }
+
+    void testLoadAmrrnData() {
+        dataLoaderService.loadAmrrnData()
+        ProviderGroup.findAll().each {
+            println it.guid + " " + it.name
+        }
+        assertEquals 32, ProviderGroup.findAll().size()
+        assertEquals 31, Contact.findAll().size()
+        assertEquals 32, ContactFor.findAll().size()
     }
 }

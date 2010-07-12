@@ -39,7 +39,7 @@
                   
                     <table class="value">
                       <colgroup><col width="30%"/><col width="40%"/><col width="10%"/><col width="10%"/><col width="10%"/></colgroup>
-                      <thead><th>Name</th><th>Role (for this collection)</th><th>Edit?</th><th>Primary</th><th></th></thead>
+                      <thead><th>Name</th><th>Role (for this collection)</th><th>Admin</th><th>Primary</th><th></th></thead>
                       <tbody>
 <!-- current -->          <g:each in="${command.contacts}" var="i" status="row">
                             <g:hiddenField name="contactId" value="${i?.id}"/>
@@ -56,6 +56,12 @@
                                 <span class="bodyButton"><input type="submit" style="color:#222" class="remove" value="Remove"
                                   onclick="document.getElementById('event').value = 'remove';document.getElementById('idToRemove').value = '${i?.id}';return confirm('Remove ${i?.contact?.buildName()} as a contact for this collection?');"/>
                                 </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td></td><td colspan="4">
+                                Phone: ${fieldValue(bean:i.contact, field:"phone")}
+                                Email: ${fieldValue(bean:i.contact, field:"email")}
                               </td>
                             </tr>
                           </g:each>

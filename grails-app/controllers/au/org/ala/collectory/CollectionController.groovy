@@ -128,6 +128,13 @@ class CollectionController {
         redirect(url: "http://localhost:8080/Collectory")  //action: "list")
     }
 
+    def loadAmrrnData = {
+        log.info ">>${authenticateService.userDomain().username} loading amrrn data"
+        dataLoaderService.loadAmrrnData()
+        ActivityLog.log authenticateService.userDomain().username, Action.DATA_LOAD
+        redirect(url: "http://localhost:8080/Collectory")  //action: "list")
+    }
+
     // search for collections using the supplied search term
     def searchList = {
         params.each {log.debug it}

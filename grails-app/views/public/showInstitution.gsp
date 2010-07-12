@@ -11,10 +11,9 @@
     <div id="column-one">
     <div class="section no-margin-top">
       <p><a target='_blank' href="${institution.websiteUrl}" class="external external_icon">${institution.websiteUrl}</a></p>
-      <p>${institution.guid}</p>
+      <p><cl:ifLSID>${fieldValue(bean: institution, field: "guid")}</cl:ifLSID></p>
       <p><strong>Description of Institution:</strong></p>
-      <p>The sheltered, landscaped grounds of the Royal Tasmanian Botanic Gardens hold historic plant collections and a large number of significant trees, many dating from the nineteenth century.</p>
-      <p>It also has an increasing number of important conservation collections of Tasmanian plants and the world’s only Subantarctic Plant House.</p>
+      <p><cl:formattedText>${fieldValue(bean: institution, field: "pubDescription")}</cl:formattedText></p>
       <p><strong>Collections:</strong></p>
       <ol>
         <g:each var="c" in="${institution.getSafeChildren()}">

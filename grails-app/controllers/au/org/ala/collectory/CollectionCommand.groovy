@@ -78,7 +78,7 @@ class CollectionCommand implements Serializable {
     List<ContactFor> deletedContacts = []
 
     static constraints = {
-        guid(blank:false, maxSize:45)
+        guid(nullable:true, maxSize:45)
         name(blank:false, maxSize:128)
         acronym(nullable:true, maxSize:45)
         pubDescription(nullable:true, maxSize:2048)

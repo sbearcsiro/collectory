@@ -29,3 +29,7 @@
 .sidebar a {
     font-size: 1em;
 }
+
+#header .section {
+    border-top: 0 ! important;
+}

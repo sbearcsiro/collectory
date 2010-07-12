@@ -11,4 +11,6 @@ class CollectionSummary {
     String lsid
     String institution
     String institutionId
+    List derivedInstCodes
+    List derivedCollCodes
 }

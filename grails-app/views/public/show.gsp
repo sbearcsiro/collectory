@@ -20,7 +20,7 @@
           });
         </script>
     </head>
-    <body>
+    <body class="two-column-right">
       <div id="content">
         <div id="header" class="taxon" style="margin-bottom:15px;">
           <div class="section full-width">
@@ -30,7 +30,7 @@
                 <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
                 <div style="display:none; text-align: left;">
                     <div id="lsidText" style="text-align: left;">
-                        <b><a href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
+                        <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
                         <p style="margin: 10px 0;"><cl:guid target="_blank" guid='${fieldValue(bean: collectionInstance, field: "guid")}'/></p>
                         <p style="font-size: 12px;">LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
                              significant resources including species names, concepts, occurrences, genes or proteins,
@@ -44,7 +44,9 @@
               <g:set var="institution" value="${collectionInstance.findPrimaryInstitution()}"/>
               <g:if test="${institution}">
                 <g:if test="${fieldValue(bean: institution, field: 'logoRef') && fieldValue(bean: institution, field: 'logoRef.file')}">
-                  <img style="margin-bottom: 5px; margin-right:20px; float:right;" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
+                  <g:link controller="public" action="showInstitution" id="${institution.id}">
+                    <img style="margin-bottom: 5px; margin-right:20px; float:right;" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
+                  </g:link>
                   <!--div style="clear: both;"></div-->
                 </g:if>
                 <g:else>
@@ -64,12 +66,12 @@
         <div id="overview" class="ui-tabs-panel">
           <div id="column-one">
             <div class="section no-margin-top">
-              <h3>Description</h3>
+              <h2>Description</h2>
               <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText></p>
               <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText></p>
               <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "scope.startDate")}' end='${fieldValue(bean: collectionInstance, field: "scope.endDate")}'/>
 
-              <h3>Taxonomic range</h3>
+              <h2>Taxonomic range</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'focus')}">
                 <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></p>
               </g:if>
@@ -81,41 +83,41 @@
                 <cl:JSONListAsList json='${fieldValue(bean: collectionInstance, field: "scope.scientificNames")}'/></p>
               </g:if>
 
-              <h3>Geographic range</h3>
-              <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.geographicDescription')}">
-                <p>${fieldValue(bean: collectionInstance, field: "scope.geographicDescription")}</p>
-              </g:if>
-              <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.states')}">
-                <p><cl:stateCoverage states='${fieldValue(bean: collectionInstance, field: "scope.states")}'/></p>
-              </g:if>
-              <g:if test="${collectionInstance.scope.westCoordinate != -1}">
-                <p>The western most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.westCoordinate}' degree='true'/></p>
-              </g:if>
-              <g:if test="${collectionInstance.scope.eastCoordinate != -1}">
-                <p>The eastern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.eastCoordinate}' degree='true'/></p>
-              </g:if>
-              <g:if test="${collectionInstance.scope.northCoordinate != -1}">
-                <p>The northtern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.northCoordinate}' degree='true'/></p>
-              </g:if>
-              <g:if test="${collectionInstance.scope.southCoordinate != -1}">
-                <p>The southern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.southCoordinate}' degree='true'/></p>
+              <g:if test="${collectionInstance.scope?.geographicDescription || collectionInstance.scope?.states}">
+                <h2>Geographic range</h2>
+                <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.geographicDescription')}">
+                  <p>${fieldValue(bean: collectionInstance, field: "scope.geographicDescription")}</p>
+                </g:if>
+                <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.states')}">
+                  <p><cl:stateCoverage states='${fieldValue(bean: collectionInstance, field: "scope.states")}'/></p>
+                </g:if>
+                <g:if test="${collectionInstance.scope.westCoordinate != -1}">
+                  <p>The western most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.westCoordinate}' degree='true'/></p>
+                </g:if>
+                <g:if test="${collectionInstance.scope.eastCoordinate != -1}">
+                  <p>The eastern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.eastCoordinate}' degree='true'/></p>
+                </g:if>
+                <g:if test="${collectionInstance.scope.northCoordinate != -1}">
+                  <p>The northtern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.northCoordinate}' degree='true'/></p>
+                </g:if>
+                <g:if test="${collectionInstance.scope.southCoordinate != -1}">
+                  <p>The southern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.southCoordinate}' degree='true'/></p>
+                </g:if>
               </g:if>
 
-              <!--h3>Geological age</h3-->
-
-              <h3>Number of specimens in the collection</h3>
+              <h2>Number of specimens in the collection</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecords') != '-1'}">
                 <p>The estimated number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "scope.numRecords")}.</p>
               </g:if>
 
               <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecordsDigitised') != '-1'}">
-                <h3>Number of digitised specimens</h3>
+                <h2>Number of digitised specimens</h2>
                 <p>Of these ${fieldValue(bean: collectionInstance, field: "scope.numRecordsDigitised")} are digitised.
                 This represents <cl:percentIfKnown dividend='${collectionInstance.scope?.numRecordsDigitised}' divisor='${collectionInstance.scope?.numRecords}' /> of the collection.</p>
               </g:if>
 
               <g:if test="${collectionInstance.scope.listSubCollections()?.size() > 0}">
-                <h3>Sub-collections</h3>
+                <h2>Sub-collections</h2>
                 <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
                 <g:each var="sub" in="${collectionInstance.scope.listSubCollections()}" >
                   <p class="sub"><cl:subCollectionDisplay sub="${sub}"/></p>
@@ -126,90 +128,103 @@
 
           <div id="column-two">
             <div class="section sidebar">
-              <div>
-                <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef') && fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
+              <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef') && fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
+                <div class="section">
                   <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
                           src="${resource(absolute:"true", dir:"data/collection/", file:collectionInstance.imageRef.file)}" />
                   <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</p>
                   <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p>
                   <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p>
-                </g:if>
-              </div>
-
-              <h4>Location</h4>
-              <!-- use parent location if the collection is blank -->
-              <g:set var="address" value="${collectionInstance.address}"/>
-              <g:if test="${address == null || address.isEmpty()}">
-                <g:if test="${collectionInstance.findPrimaryInstitution()}">
-                  <g:set var="address" value="${collectionInstance.findPrimaryInstitution().address}"/>
-                </g:if>
+                </div>
               </g:if>
 
-              <cl:ifNotBlank value='${address?.street}'/>
-              <cl:ifNotBlank value='${address?.postBox}'/>
-              <cl:ifNotBlank value="${address?.city}" value2="${address?.state}" value3="${address?.postcode}" join=" "/>
-              <cl:ifNotBlank value='${address?.country}'/>
+              <div class="section">
+                <h4>Location</h4>
+                <!-- use parent location if the collection is blank -->
+                <g:set var="address" value="${collectionInstance.address}"/>
+                <g:if test="${address == null || address.isEmpty()}">
+                  <g:if test="${collectionInstance.findPrimaryInstitution()}">
+                    <g:set var="address" value="${collectionInstance.findPrimaryInstitution().address}"/>
+                  </g:if>
+                </g:if>
 
-              <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "email")}'/>
-              <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "phone")}'/>
+                <cl:ifNotBlank value='${address?.street}'/>
+                <cl:ifNotBlank value='${address?.postBox}'/>
+                <cl:ifNotBlank value="${address?.city}" value2="${address?.state}" value3="${address?.postcode}" join=" "/>
+                <cl:ifNotBlank value='${address?.country}'/>
+
+                <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "email")}'/>
+                <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "phone")}'/>
+              </div>
 
               <g:set var="contact" value="${collectionInstance.getPrimaryContact()}"/>
               <g:if test="${contact}">
-                <h4>Contact</h4>
+                <div class="section">
+                  <h4>Contact</h4>
                   <p class="contactName">${contact?.contact?.buildName()}</p>
                   <p>${contact?.role}</p>
                   <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
                   <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: contact, field: "contact.fax")}'/>
                   <p>email: <cl:emailLink>${contact?.contact?.email}</cl:emailLink></p>
+                </div>
               </g:if>
 
               <!-- web site -->
               <g:if test="${collectionInstance.websiteUrl}">
-                <h4>Web site</h4>
-                <div class="webSite">
-                  <a class='external_icon' target="_blank" href="${collectionInstance.websiteUrl}">Visit the collection's website</a>
+                <div class="section">
+                  <h4>Web site</h4>
+                  <div class="webSite">
+                    <a class='external_icon' target="_blank" href="${collectionInstance.websiteUrl}">Visit the collection's website</a>
+                  </div>
                 </div>
               </g:if>
 
               <!-- network membership -->
               <g:if test="${collectionInstance.networkMembership}">
-                <h4>Membership</h4>
-                <g:if test="${collectionInstance.isMemberOf('CHAEC')}">
-                  <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
-                  <img src="${resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif")}"/>
-                </g:if>
-                <g:if test="${collectionInstance.isMemberOf('CHAH')}">
-                  <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
-                  <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
-                </g:if>
-                <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
-                  <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
-                </g:if>
-                <g:if test="${collectionInstance.isMemberOf('AMRRN')}">
-                  <p>Member of Australian Microbial Resources Reseach Network (AMRRN)</p>
-                  <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
-                </g:if>
+                <div class="section">
+                  <h4>Membership</h4>
+                  <g:if test="${collectionInstance.isMemberOf('CHAEC')}">
+                    <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
+                    <img src="${resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif")}"/>
+                  </g:if>
+                  <g:if test="${collectionInstance.isMemberOf('CHAH')}">
+                    <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
+                    <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
+                  </g:if>
+                  <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
+                    <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+                  </g:if>
+                  <g:if test="${collectionInstance.isMemberOf('AMRRN')}">
+                    <p>Member of Australian Microbial Resources Reseach Network (AMRRN)</p>
+                    <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
+                  </g:if>
+                </div>
               </g:if>
-              </div>
-              </div>
-            </div><!--overview-->
-            <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
-            </div>
-            <div id="records" class="ui-tabs-panel ui-tabs-hide">
-              <div class="section">
-                <h2>Digitised specimen records</h2>
-                <g:if test="${numBiocacheRecords != -1}">
-                  <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${cl.collectionName(name: collectionInstance.name)}.</p>
-                </g:if>
-                <cl:recordsLink
-                        institutionCodes="${collectionInstance.getListOfInstitutionCodesForLookup()}"
-                        collectionCodes="${collectionInstance.getListOfCollectionCodesForLookup()}">
-                  Click to view records for the ${cl.collectionName(name: collectionInstance.name)}.
-                </cl:recordsLink>
-                <p></p>
-                <p></p>
-              </div>
             </div>
           </div>
+          </div><!--overview-->
+          <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
+            <div class="section">
+              <img src="http://chart.apis.google.com/chart?chxl=1:|1950|1960|1970|1980|1990|2000|2010&chxr=0,0,4000&chxt=y,x&chbh=a,4,35&chs=300x225&cht=bvs&chco=A2C180&chd=s:uZOQLVS&chdlp=l&chtt=Specimens+added+per+decade" width="300" height="225" alt="Specimens added per decade" />
+              <img src="http://chart.apis.google.com/chart?chs=220x225&cht=gm&chd=t:70&chma=0,0,0,20|0,180&chtt=Percent+of+specimen+records+digitised&chts=330909,11.5" width="220" height="225" alt="Percent of specimen records digitised" />
+              <img src="http://chart.apis.google.com/chart?chs=400x225&cht=p3&chco=7777CC|76A4FB|3399CC|3366CC&chd=s:QEHCVfe&chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chdlp=t&chp=12.7&chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chma=0,0,30,10" width="400" height="225" alt="" />
+            </div>
+          </div>
+          <div id="records" class="ui-tabs-panel ui-tabs-hide">
+            <div class="section">
+              <h2>Digitised specimen records</h2>
+              <g:if test="${numBiocacheRecords != -1}">
+                <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${cl.collectionName(name: collectionInstance.name)}.</p>
+              </g:if>
+              <cl:recordsLink
+                      institutionCodes="${collectionInstance.getListOfInstitutionCodesForLookup()}"
+                      collectionCodes="${collectionInstance.getListOfCollectionCodesForLookup()}">
+                Click to view records for the ${cl.collectionName(name: collectionInstance.name)}.
+              </cl:recordsLink>
+              <p></p>
+              <p></p>
+            </div>
+          </div>
+        </div>
     </body>
 </html>

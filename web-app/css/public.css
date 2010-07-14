@@ -12,6 +12,7 @@
     font-size: 0.9em;
     line-height: normal;
     padding-bottom: 4px ! important;
+    color: #555 ! important;
 }
 
 .sidebar p.caption {
@@ -23,7 +24,6 @@
 
 .sidebar h4 {
     color: #7D8804;
-    margin-top: 20px;
 }
 
 .sidebar a {
@@ -33,3 +33,36 @@
 #header .section {
     border-top: 0 ! important;
 }
+
+/* give a little space before the LSID */
+#header h1 {
+    margin-bottom: 10px;
+}
+
+/* allow logo to rise to level of name text */
+#header .aside {
+    padding-top: 0;
+}
+
+/* reduce size of links in collection list */
+.nameList a {
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.nameList td {
+    padding: 0 20px 10px 20px;
+}
+
+/* not currently used */
+.section .info {
+    -moz-border-radius: 10px 10px 10px 10px; /* FF1+ */
+    -webkit-border-radius: 10px 10px 10px 10px; /* Saf3+, Chrome */
+    border-radius: 10px 10px 10px 10px; /* Opera 10.5, IE 9 */
+    background-color:#FAFBF5;
+    padding:0 5px 5px 5px;
+}
+/*a[target='_blank'] {
+    background: url(../images/skin/external.png) center right no-repeat;
+    padding-right: 13px;
+}*/

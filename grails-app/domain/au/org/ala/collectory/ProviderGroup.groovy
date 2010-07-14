@@ -38,6 +38,7 @@ class ProviderGroup implements Serializable {
     static final String GROUP_TYPE_COLLECTION = 'Collection'
     static final String GROUP_TYPE_INSTITUTION = 'Institution'
     static final String ENTITY_TYPE = 'ProviderGroup'
+    static final String LSID_PREFIX = 'urn:lsid:'
 
     // general attributes
     String guid                 // this is not the DB id but a known identifier
@@ -246,11 +247,14 @@ class ProviderGroup implements Serializable {
 
     /**
      * Returns true if:
-     *  a) is an istitution and isALAPartner flag is true
+     *  a) is an institution and isALAPartner flag is true
      *  b) is a collection and any parent institution is a partner
+     *  c) has membership of a collection network (hub) (assumed that all hubs are partners)
      */
     boolean getIsALAPartner() {
         if (groupType == GROUP_TYPE_COLLECTION && parents.any({it.isALAPartner}) ) {
+            return true
+        } else if (networkMembership != null && networkMembership != "[]") {
             return true
         } else {
             return this.isALAPartner
@@ -438,6 +442,16 @@ class ProviderGroup implements Serializable {
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()
         //cs.shortDescription = pubDescription  // make this more sophisticated
         return cs
+    }
+
+    String generatePermalink() {
+        if (guid?.startsWith(LSID_PREFIX)) {
+            return guid
+        } else if (acronym) {
+            return acronym
+        } else {
+            return id
+        }
     }
 }
 

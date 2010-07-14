@@ -89,8 +89,8 @@
                           </tr>
 
 <!-- lookup lat/lng -->   <tr>
-                            <td colspan="2">
-                              <span class="freeButton" onclick="return codeAddress()">Click to fill in lat/long based on street address</span>
+                            <td></td><td>
+                              <input type="button" class="classicButton" onclick="return codeAddress();" value ="Lookup"/> Click to fill in lat/long based on street address.<div style="width:100%;"> </div>
                             </td>
                           </tr>
                           <tr class="prop">

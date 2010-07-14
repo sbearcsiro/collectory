@@ -752,3 +752,41 @@ a.external_icon {
     text-decoration: underline;
     font-size: 1em;
 }
+
+/* classic button for actions like lookup */
+input.classicButton {
+    width: auto;
+    overflow: visible;
+    background-color: buttonface;
+    white-space: pre;
+    color: buttontext;
+    border: 2px outset buttonface;
+}
+input.classicButton:active {
+    background-color: buttonface;
+    white-space: pre;
+    color: buttontext;
+    border: 2px inset buttonface;
+}
+/* override YUI tabview colours
+    - also requires modifying sprite.PSD */
+
+.yui-skin-sam .yui-navset .yui-nav {
+    border: solid #9ac07a ! important;
+    border-width: 0 0 5px 0 ! important;
+}
+
+.yui-skin-sam .yui-navset .yui-nav .selected a,
+.yui-skin-sam .yui-navset .yui-nav .selected a:focus, /* no focus effect for selected */
+.yui-skin-sam .yui-navset .yui-nav .selected a:hover { /* no hover effect for selected */
+    background:#fff url(../images/skin/sprite.png) repeat-x left -1400px ! important; /* selected tab background */
+}
+
+.yui-skin-sam .yui-navset .yui-nav a:hover,
+.yui-skin-sam .yui-navset .yui-nav a:focus {
+    background:#fff url(../images/skin/sprite.png) repeat-x left -1300px ! important; /* selected tab background */
+}
+
+.yui-skin-sam .yui-navset .yui-content {
+    background-color: transparent ! important;
+}

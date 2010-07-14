@@ -15,31 +15,13 @@
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
-            <div class="dialog">
-              <div id="full">
+
+            <gui:tabView>
+              <gui:tab label="Names only">
+              <div id="names-only">
                 <table>
                   <colgroup><col width="80%"/><col width="10%"/><col width="10%"/></colgroup>
-                  <tr><td>Columns show whether the collection has an institution and a primary contact.</td>
-                    <td colspan="2"><a href="#"
-                          onclick="document.getElementById('names-only').style.display='block';document.getElementById('full').style.display='none'">
-                    (Show names only)</a></td></tr>
-                  <tr class="reportGroupTitle"><td>All collections</td><td>Inst</td><td>Cont</td></tr>
-                  <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION, [sort: 'name'])}">
-                    <tr>
-                      <td><g:link controller="collection" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link></td>
-                      <td>${c.findPrimaryInstitution()?'Y':' '}</td>
-                      <td>${c.getPrimaryContact()?'Y':' '}</td>
-                    </tr>
-                  </g:each>
-                </table>
-              </div>
-              <div id="names-only" style="display:none;">
-                <table>
-                  <colgroup><col width="80%"/><col width="10%"/><col width="10%"/></colgroup>
-                  <tr><td>Simple name list (for copy and paste)</td>
-                    <td colspan="2"><a href="#"
-                          onclick="document.getElementById('names-only').style.display='none';document.getElementById('full').style.display='block'">
-                    (Show attributes)</a></td></tr>
+                  <tr><td colspan="3">Simple name list (for copy and paste)</td></tr>
                   <tr class="reportGroupTitle"><td colspan="3">All collections</td></tr>
                   <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION, [sort: 'name'])}">
                     <tr>
@@ -50,7 +32,42 @@
                   </g:each>
                 </table>
               </div>
-            </div>
+              </gui:tab>
+
+              <gui:tab label="Attributes" active="true">
+                <div class="dialog">
+                  <table>
+                    <colgroup><col width="70%"/><col width="10%"/><col width="10%"/><col width="10%"/></colgroup>
+                    <tr><td colspan="4">Columns show whether the collection has an institution, has a primary contact and is an ALA partner.</td></tr>
+                    <tr class="reportGroupTitle"><td>All collections</td><td>Inst</td><td>Cont</td><td>ALA</td></tr>
+                    <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION, [sort: 'name'])}">
+                      <tr>
+                        <td><g:link controller="collection" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link></td>
+                        <td>${c.findPrimaryInstitution()?'Y':' '}</td>
+                        <td>${c.getPrimaryContact()?'Y':' '}</td>
+                        <td>${c.getIsALAPartner()?'Y':' '}</td>
+                      </tr>
+                    </g:each>
+                  </table>
+                </div>
+              </gui:tab>
+
+              <gui:tab label="Permalinks">
+                <div id="permalinks">
+                  <table>
+                    <colgroup><col width="70%"/><col width="30%"/></colgroup>
+                    <tr><td colspan="2">Optimal permanent links for the public collection pages.</td></tr>
+                    <tr class="reportGroupTitle"><td colspan="3">All collections</td></tr>
+                    <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION, [sort: 'name'])}">
+                      <tr>
+                        <td>${fieldValue(bean: c, field: "name")}</td>
+                        <td><cl:permalink type="collection" id="${c.generatePermalink()}"/></td>
+                      </tr>
+                    </g:each>
+                  </table>
+                </div>
+              </gui:tab>
+           </gui:tabView>
         </div>
     </body>
 </html>

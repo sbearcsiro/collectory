@@ -75,6 +75,8 @@ grails.validateable.packages = ['au.org.ala.collectory']
 // default location for images
 repository.location.images = '/data/collectory/data'
 
+def logDirectory = "/data/collectory/logs"
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
@@ -97,20 +99,22 @@ hibernate = "off"
 log4j = {
 
     appenders {
-        file name:'file', file: '/data/collectory/logs/collectory.log'
+        file name:'appLog', file: "${logDirectory}/collectory.log".toString()
+
+        // set up a log file for the stacktrace log; be sure to use .toString() with ${}
+        rollingFile name:'tomcatLog', file:"${logDirectory}/stacktrace.log".toString(), maxFileSize:'100KB'
+        'null' name:'stacktrace'
     }
 
     root {
-        error 'stdout', 'file'
-        info 'stdout', 'file'
+        // change the root logger to my tomcatLog file
+        error 'stdout', 'tomcatLog', 'appLog'
+        info 'stdout','appLog'
         additivity = true
     }
-    // Example of changing the log pattern for the default console
-    // appender:
-    //
-    //appenders {
-    //    console name:'stdout', layout:pattern(conversionPattern: '%c{2} %m%n')
-    //}
+
+    // example for sending stacktraces to my tomcatLog file
+    //error tomcatLog:'StackTrace'
 
 /* normal logging */
     debug //'org.springframework.webflow',

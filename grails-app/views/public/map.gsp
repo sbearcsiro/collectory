@@ -5,14 +5,18 @@
         <meta name="layout" content="ala" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Natural history collections</title>
-        <!--script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script-->
+        <script type="text/javascript">
+          $(document).ready(function() {
+            initialize();
+          });
+        </script>
     </head>
-    <body onload="initialize()">
+    <body>
     <div id="content">
       <div id="header">
         <!--div>Breadcrumbs here...</div-->
         <div class="section full-width no-margin-top">
-          <h1>Australian natural history collections</h1>
+          <h1>Australia's natural history collections</h1>
           <p style="margin-left:15px;">Explore the natural history collections of Australia. Learn about the institution, the collections they hold
           and view records of specimens that have been digitised.</p>
           <g:if test="${flash.message}">
@@ -63,9 +67,19 @@
       
       <div id="list" class="ui-tabs-panel ui-tabs-hide">
         <div class="section no-margin-top">
-          <div id="names">
+          <div class="nameList" id="names">
+            <div style="padding: 0 20px 0 20px;">
+              <p>This list may include collections that do not appear on the collections map (due to lack of location information).
+              Currently only the collections of ALA partners are shown.
+              Over time this list will expand to include all natural history collections in Australia.
+              The collections are listed alphabetically. Click on a collection name to see more details including the
+              digitised specimen records for the collection.</p>
+            </div>
             <table class='shy'>
-              <g:each var="c" in="${collections}" status="i">
+              <!-- some shenanigans to order alphabetically in columns -->
+              <g:set var="half" value="${Math.ceil(collections.size()/2)}"/>
+              <g:each var="unused" in="${collections}" status="i">
+                <g:set var="c" value="${(i%2 == 0) ? collections[(int)i/2] : collections[(int)(half + (i-1)/2)]}"/>
                 <g:if test="${i%2 == 0}">
                   <tr>
                 </g:if>
@@ -75,6 +89,7 @@
                 </g:if>
               </g:each>
             </table>
+            <p></p>
           </div>
         </div>
       </div>

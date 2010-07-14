@@ -6,6 +6,10 @@
     </head>
     
     <body>
+      <div style="float:right;">
+        <g:link class="mainLink" controller="public" action="map">View public site</g:link>
+        <!--img src="${resource(dir:'images/ala',file:'ala-logo-small-white.gif')}"/-->
+      </div>
       <div id="welcome">
         <h3>Natural History Collections Management</h3> <p>Information about Australian biodiversity collections can be added and updated here.</p>
       </div>
@@ -57,13 +61,18 @@
       </div>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="role" action="list">Manage roles</g:link>
-        <p class="mainText">Define who can do what by role.</p>
+        <g:link class="mainLink" controller="contact" action="list">Manage contacts</g:link>
+        <p class="mainText">View and edit all known contacts for collections and institutions.</p>
       </div>
 
       <div class="homeCell">
         <g:link class="mainLink" controller="logon" action="list">Manage logons</g:link>
         <p class="mainText">Create and maintain user accounts.</p>
+      </div>
+
+      <div class="homeCell">
+        <g:link class="mainLink" controller="role" action="list">Manage roles</g:link>
+        <p class="mainText">Define who can do what by role.</p>
       </div>
 
       <div class="homeCell">

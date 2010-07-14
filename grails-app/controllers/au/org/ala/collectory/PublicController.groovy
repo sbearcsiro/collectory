@@ -60,12 +60,7 @@ class PublicController {
     }
 
     def showInstitution = {
-        def institution
-        if (params.code) {
-            institution = ProviderGroup.findByAcronymAndGroupType(params.code, ProviderGroup.GROUP_TYPE_INSTITUTION)
-        } else if (params.id) {
-            institution = ProviderGroup.get(params.id)
-        }
+        def institution = findInstitution(params.id)
         if (!institution) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.code ? params.code : params.id])}"
             redirect(action: "list")
@@ -76,66 +71,86 @@ class PublicController {
 
     def map = {
         //ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
-        [collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
+        def partnerCollections = ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION,[sort:"name"]).findAll {
+            it.getIsALAPartner() == true
+        }
+        [collections: partnerCollections]
     }
 
     def mapFeatures = {
-        // temp GeoJSON string
-        /*def features = """
-     { "type": "FeatureCollection",
-      "features": [
-        { "type": "Feature",
-          "geometry": {"type": "Point", "coordinates": [149.114293, -35.274218]},
-          "properties": {"name": "ANIC"}
-        },
-        { "type": "Feature",
-          "geometry": {"type": "Point", "coordinates": [151.0414080000, -33.7465780000]},
-          "properties": {"name": "Forests NSW Insect Collection"}
-        },
-        { "type": "Feature",
-          "geometry": {"type": "Point", "coordinates": [145.2565400000, -37.8754490000]},
-          "properties": {"name": "National Collection of Fungi, Knoxfield Herbarium"}
-        },
-        { "type": "Feature",
-          "geometry": {"type": "Point", "coordinates": [147.3327940000, -42.8862830000]},
-          "properties": {"name": "Australian National Fish Collection"}
-        }
-       ]
-       }"""*/
-        //println ">> map filters = " + params.filters
-        
         def locations = [:]
         def showAll = params.filters == 'all'
         locations.type = "FeatureCollection"
         locations.features = new ArrayList()
         List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
         ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION).each {
-            // make 0 values be -1
-            def tempLat = it.latitude
-            def tempLong = it.longitude
-            def name = it.name
-            
-            def lat = (it.latitude == 0.0) ? -1 : it.latitude
-            def lon = (it.longitude == 0.0) ? -1 : it.longitude
-            // use parent institution if lat/long not defined
-            def inst = it.findPrimaryInstitution()
-            if (inst && lat == -1) {lat = inst.latitude}
-            if (inst && lon == -1) {lon = inst.longitude}
-            // only show if we have lat and long
-            if (lat != -1 && lon != -1) {
-                // and if matches current filter
-                if (showAll || matchKeywords(it.scope, params.filters)) {
-                    def loc = [:]
-                    loc.type = "Feature"
-                    loc.properties = [name: it.name, url: request.getContextPath() + "/public/show/" + it.id]
-                    loc.geometry = [type: "Point", coordinates: [it.longitude,it.latitude]]
-                    locations.features << loc
+            // only show ALA partners
+            if (it.getIsALAPartner()) {
+                // make 0 values be -1
+                def lat = (it.latitude == 0.0) ? -1 : it.latitude
+                def lon = (it.longitude == 0.0) ? -1 : it.longitude
+                // use parent institution if lat/long not defined
+                def inst = it.findPrimaryInstitution()
+                if (inst && lat == -1) {lat = inst.latitude}
+                if (inst && lon == -1) {lon = inst.longitude}
+                // only show if we have lat and long
+                if (lat != -1 && lon != -1) {
+                    // and if matches current filter
+                    if (showAll || matchKeywords(it.scope, params.filters)) {
+                        def loc = [:]
+                        loc.type = "Feature"
+                        loc.properties = [name: it.name, url: request.getContextPath() + "/public/show/" + it.id]
+                        loc.geometry = [type: "Point", coordinates: [it.longitude,it.latitude]]
+                        locations.features << loc
+                    }
                 }
             }
         }
 
         //def json = JSON.parse(features)
         render(locations as JSON)
+    }
+
+    def chart = {
+        /* temporal:
+         * http://chart.apis.google.com/chart
+           ?chxl=1:|1950|1960|1970|1980|1990|2000|2010
+           &chxr=0,0,4000
+           &chxt=y,x
+           &chbh=a,4,35
+           &chs=300x225
+           &cht=bvs
+           &chco=A2C180
+           &chd=s:uZOQLVS
+           &chdlp=l
+           &chtt=Specimens+added+per+decade */
+
+        /* percent digitised:
+         * http://chart.apis.google.com/chart
+           ?chs=300x150
+           &cht=gm
+           &chd=t:70
+           &chtt=Percent+of+specimen+records+digitised
+           &chts=676767,12 */
+
+        /* taxa:
+         * http://chart.apis.google.com/chart
+           ?chs=400x150
+           &cht=p3
+           &chco=7777CC|76A4FB|3399CC|3366CC
+           &chd=s:QEHCVfe
+           &chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae
+           &chdlp=t
+           &chp=12.7
+           &chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae
+           &chma=175
+         */
+
+        // some dummy data for now:
+        def data = [:]
+        data.decades = ["1950":"1010","1960":"2020","1970":"1515","1980":"2929","1990":"200","2000":"3000","2010":"3300"]
+        data.orders = ["Angiosperms":"10,210","Dicots":"8,510","Monocots":"1,700","Gymnosperms":"75","Pteridophytes":"320","Mosses":"250","Algae":"50"]
+        render(data as JSON)
     }
 
     private boolean matchKeywords(scope, filterString) {
@@ -155,7 +170,7 @@ class PublicController {
 
     private findCollection(id) {
         // try lsid
-        if (id instanceof String && id.startsWith('urn:lsid:')) {
+        if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
             return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
         }
         // try id
@@ -166,6 +181,21 @@ class PublicController {
         } catch (ParseException e) {}
         // try acronym
         return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+    }
+
+    private findInstitution(id) {
+        // try lsid
+        if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
+            return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_INSTITUTION)
+        }
+        // try id
+        try {
+            NumberFormat.getIntegerInstance().parse(id)
+            def result = ProviderGroup.read(id)
+            if (result) {return result}
+        } catch (ParseException e) {}
+        // try acronym
+        return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_INSTITUTION)
     }
 
     private String buildBiocacheQueryString(instCodes, collCodes) {

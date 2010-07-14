@@ -130,7 +130,7 @@ class CollectoryTagLib {
         }
     }
 
-    def ifLSID = {atttrs, body ->
+    def ifLSID = {attrs, body ->
         out << (body().startsWith('urn:lsid:') ? body() : "")
     }
 
@@ -149,7 +149,7 @@ class CollectoryTagLib {
             target = ""
         }
         if (lsid =~ 'lsid') {  // contains
-            out << "<a${target} href='http://biocol.org/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
+            out << "<a${target} class='external_icon' href='http://biocol.org/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
         } else {
             out << lsid.encodeAsHTML()
         }
@@ -547,5 +547,20 @@ class CollectoryTagLib {
         }
         out << " "
         out << (attrs.number == 1 ? attrs.noun : attrs.noun + "s")
+    }
+
+    def permalink = {attrs, body ->
+        def context
+        switch (attrs.type) {
+            case 'institution': context = '/public/showInstitution/'; break
+            case 'collection': context = '/public/show/'; break
+            default: context = '/public/show/'; break
+        }
+        if (context) {
+            def url = ConfigurationHolder.config.grails.serverURL + context + attrs.id
+            out << "<a href='${url}'>"
+            out << ((body() != "") ? body() : context + attrs.id)
+            out << "</a>"
+        }
     }
 }

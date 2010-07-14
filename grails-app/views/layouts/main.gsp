@@ -29,11 +29,11 @@
 <g:javascript library="collectory" />
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <!--resource:include components="autoComplete, dateChooser" autoComplete="[skin: 'default']" /-->
-<gui:resources components="['toolTip']"/>
+<gui:resources components="['tabView']"/>
 
 </head>
  
-<body onload="initialize()">
+<body class="yui-skin-sam">
  
 <div id="page">
  

@@ -65,7 +65,7 @@
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.website_url.label" default="Websiteurl" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "websiteUrl")}</td>
+                            <td valign="top" class="value"><g:link url="${institutionInstance.websiteUrl}">${fieldValue(bean: institutionInstance, field: "websiteUrl")}</g:link></td>
                             
                         </tr>
                     

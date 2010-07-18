@@ -98,8 +98,8 @@ class InstitutionController {
                         }
 
                         // lat and long are shown as blank if the value is -1, and come back as blank which will be rejected
-                        providerGroupInstance.latitude = params.latitude ? params.latitude : ProviderGroup.NO_INFO_AVAILABLE
-                        providerGroupInstance.longitude = params.longitude ? params.longitude : ProviderGroup.NO_INFO_AVAILABLE
+                        providerGroupInstance.latitude = params.latitude ? new BigDecimal(params.latitude) : ProviderGroup.NO_INFO_AVAILABLE
+                        providerGroupInstance.longitude = params.longitude ? new BigDecimal(params.longitude) : ProviderGroup.NO_INFO_AVAILABLE
 
                         providerGroupInstance.properties['guid', 'name', 'acronym', 'websiteUrl', 'logoRef', 'imageRef', 'isALAPartner',
                                 'institutionType', 'state', 'email', 'phone'] = params

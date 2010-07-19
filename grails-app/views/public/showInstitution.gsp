@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
     <script type="text/javascript">
       $(document).ready(function() {
-        $('#nav-tabs > ul').tabs();
+         greyInitialValues();
 
         $("a#lsid").fancybox({
                     'hideOnContentClick' : false,
@@ -52,12 +52,12 @@
       <div class="section no-margin-top">
         <g:if test="${institution.pubDescription}">
           <h2>Description of Institution</h2>
-          <p><cl:formattedText>${fieldValue(bean: institution, field: "pubDescription")}</cl:formattedText></p>
+          <cl:formattedText>${fieldValue(bean: institution, field: "pubDescription")}</cl:formattedText>
         </g:if>
         <h2>Collections</h2>
         <ol>
           <g:each var="c" in="${institution.getSafeChildren()}">
-            <li><g:link controller="public" action="show" id="${c.id}">${c?.name}</g:link> ${c?.pubDescription}</li>
+            <li><g:link controller="public" action="show" id="${c.id}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
           </g:each>
         </ol>
       </div><!--close section-->

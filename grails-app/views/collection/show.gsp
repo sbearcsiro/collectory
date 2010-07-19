@@ -81,7 +81,7 @@
                                 <cl:JSONListAsStrings json='${collectionInstance.networkMembership}'/>
                               </g:if>
                               <g:elseif test="${collectionInstance.findPrimaryInstitution()?.networkMembership}">
-                                <cl:JSONListAsStrings json='${collectionInstance.findPrimaryInstitution().networkMembership}'/> (via Institution)
+                                Institution is member of <cl:JSONListAsStrings json='${collectionInstance.findPrimaryInstitution().networkMembership}'/> but the collection is not.
                               </g:elseif>
                             </td>
                         </tr>

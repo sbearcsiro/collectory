@@ -1,45 +1,8 @@
-/* Filter checkboxes */
-function setAll() {
-  var boxes = document.getElementsByName('filter');
-  for (i=0;i<boxes.length;i++) {
-    boxes[i].checked = document.getElementById('all').checked;
-  }
-  filterChange();
-}
+/*
+ * Mapping - plot collection locations
+ */
 
-function getAll() {
-  if (document.getElementById('all').checked) {
-    return "all";
-  }
-  var boxes = document.getElementsByName('filter');
-  var checked = "";
-  for (i=0;i<boxes.length;i++) {
-    if (boxes[i].checked) {
-      checked += boxes[i].value + ",";
-    }
-  }
-  return checked;
-}
-
-function filterChange() {
-  // set state of 'select all' box
-  var all = true;
-  var boxes = document.getElementsByName('filter');
-  for (i=0;i<boxes.length;i++) {
-    if (!boxes[i].checked) {
-      all = false;
-    }
-  }
-  if (document.getElementById('all').checked && !all) {
-    document.getElementById('all').checked = false;
-  } else if (!document.getElementById('all').checked && all) {
-    document.getElementById('all').checked = true;
-  }
-  reloadData();
-}
-/* END filter checkboxes */
-
-/* Plot collection locations */
+/* some globals */
 // the map
 var map;
 
@@ -52,10 +15,18 @@ var proj_options;
 // the data layer
 var vectors;
 
+// the pin image
 var externalGraphicUrl;
+
+// the ajax url for getting filtered features
 var featuresUrl;
 
+/* initialise the map */
+/* note this must be called from body.onload() not jQuery document.ready() as the latter is too early */
 function initMap(serverUrl) {
+
+  // serverUrl is the base url for the site eg http://collections.ala.org.au in production
+  // cannot use relative url as the context path varies with environment
   externalGraphicUrl = serverUrl + "/images/map/orange-dot.png";
   featuresUrl = serverUrl + "/public/mapFeatures";
     
@@ -67,7 +38,7 @@ function initMap(serverUrl) {
   map.addControl(new OpenLayers.Control.ZoomPanel());
   map.addControl(new OpenLayers.Control.PanPanel());
 
-  // create Google Mercator layers
+  // create Google base layers
   var gmap = new OpenLayers.Layer.Google(
       "Google Streets",
       {'sphericalMercator': true,
@@ -88,7 +59,7 @@ function initMap(serverUrl) {
   // zoom map
   map.zoomToMaxExtent();
 
-  // add layer switcher for now
+  // add layer switcher for now - review later
   map.addControl(new OpenLayers.Control.LayerSwitcher());
 
   // centre the map on Australia
@@ -104,8 +75,10 @@ function initMap(serverUrl) {
   // create a layer for markers and set style
   vectors = new OpenLayers.Layer.Vector("Collections");
   vectors.style = {externalGraphic: externalGraphicUrl, graphicHeight: 25, graphicWidth: 25};
+
+  // listen for feature selection
   vectors.events.register("featureselected", vectors, selected);
-  map.addLayer(vectors)
+  map.addLayer(vectors);
 
   // control for hover labels
   var hoverControl = new OpenLayers.Control.SelectFeature(vectors, {
@@ -121,7 +94,7 @@ function initMap(serverUrl) {
   map.addControl(hoverControl);
   hoverControl.activate();
 
-  // control for selecting features
+  // control for selecting features (on click)
   var control = new OpenLayers.Control.SelectFeature(vectors, {
     clickout: true
   });
@@ -132,129 +105,153 @@ function initMap(serverUrl) {
   reloadData();
 }
 
-/* data loader */
+/* load features via ajax call */
 function reloadData() {
   $.get(featuresUrl, {filters: getAll()}, dataRequestHandler);
-  /*OpenLayers.Request.GET({
-    url: featuresUrl,
-    params: {filters: getAll()},
-    callback: dataRequestHandler
-  });*/
-  /*$.get("${createLink(action: 'mapFeatures')}", function(data) {
-    var features = new OpenLayers.Format.GeoJSON(proj_options).read(data);
-    vectors.addFeatures(features);
-  });*/
 }
 
-// handlers
+/* handler for loading features */
 function dataRequestHandler(data) {
-  vectors.destroyFeatures();
-  var features = new OpenLayers.Format.GeoJSON(proj_options).read(data);
-  var numFeatures = features.length;
-  document.getElementById('numFeatures').innerHTML = numFeatures;
-  vectors.addFeatures(features);
+    // clear existing
+    vectors.destroyFeatures();
+    // parse returned json
+    var features = new OpenLayers.Format.GeoJSON(proj_options).read(data);
+    // update display of number of features
+    document.getElementById('numFeatures').innerHTML = features.length;
+    // add features to map
+    vectors.addFeatures(features);
 }
-/* END plot collection locations */
 
+/* hover handlers */
 function hoverOff(evt) {
     feature = evt.feature;
     if (feature != null && feature.popup != null) {
         map.removePopup(feature.popup);
         feature.destroyPopup(feature.popup);
-        //alert("off");
     }
 }
 
 function hoverOn(evt) {
   feature = evt.feature;
-  //if (feature.popup == null) {
-    //clearPopups();
     var popup = new OpenLayers.Popup.FramedCloud(feature.attributes.id,
                         feature.geometry.getBounds().getCenterLonLat(),
                         new OpenLayers.Size(10, 10),
                         feature.attributes.name,
                         null,
                         false);
-    //popup.closeOnMove(true);
+    // attach to feature
     feature.popup = popup;
+    // add to map
     map.addPopup(popup);
+    // fit to content
     popup.updateSize();
+}
 
+/* click (select) handlers */
+function selected(evt) {
+    feature = evt.feature;
+
+    // get rid of any dags - hopefully
+    clearPopups();
+
+    // double check that none are hanging around
+    if (feature.popup != null) {
+        map.removePopup(feature.popup);
+    }
+
+    // build content
+    var address = "";
+    if (feature.attributes.address != null && feature.attributes.address != "") {
+        address = "<br/>" + feature.attributes.address;
+    }
+    var desc = feature.attributes.desc;
+    if (desc != null && desc != "") {
+        desc = "<br/>" + desc;
+    } else {
+        desc = "";
+    }
+
+    // create popoup
+    var popup = new OpenLayers.Popup.FramedCloud("featurePopup",
+            feature.geometry.getBounds().getCenterLonLat(),
+            new OpenLayers.Size(50, 100),
+            "<a href='" + feature.attributes.url + "'>"
+                    + feature.attributes.name + "</a>"
+                    + "<span class='abstract'>" + "<em>" + address + "</em>"
+                    + desc + "</span>",
+            null, true, onPopupClose);
+
+    // control shape
+    popup.maxSize = new OpenLayers.Size(300, 500);
+
+    // add to feature
     feature.popup = popup;
     popup.feature = feature;
+
+    // add to map
     map.addPopup(popup);
-    //feature.style.externalGraphic = "${resource(dir:'images/map/',file:'orange-dot.png')}";
-  //} else {
-    //map.removePopup(feature.popup);
-    //feature.destroyPopup(feature.popup);
-    //feature.style.externalGraphic = "${resource(dir:'images/map/',file:'red-dot.png')}";
-  //}
-}
-
-function clearPopups() {
-    var pops = map.popups
-    for (pop in pops) {
-        map.removePopup(pop)
-    }
-}
-
-/* Feature popups */
-function selected (evt) {
-  clearPopups();
-  feature = evt.feature;
-  if (feature.popup != null) {
-    map.removePopup(feature.popup);
-  };
-  var address = "";
-  if (feature.attributes.address != null && feature.attributes.address != "") {
-      address = "<br/>" + feature.attributes.address;
-  };
-  var desc = feature.attributes.desc;
-  if (desc != null && desc != "") {
-      desc = "<br/>" + desc;
-  } else {
-      desc = "";
-  }
-  var popup = new OpenLayers.Popup.FramedCloud("featurePopup",
-                           feature.geometry.getBounds().getCenterLonLat(),
-                           new OpenLayers.Size(50,100),
-                           "<a href='" + feature.attributes.url + "'>"
-                                   + feature.attributes.name + "</a>"
-                                   + "<span class='abstract'>" + "<em>" + address + "</em>"
-                                   + desc + "</span>",
-                           null, true, onPopupClose);
-    popup.maxSize = new OpenLayers.Size(300, 500);
-  //popup.closeOnMove = true;
-  feature.popup = popup;
-  popup.feature = feature;
-  map.addPopup(popup);
 }
 
 function onPopupClose(evt) {
-  map.removePopup(this);
+    //evt.feature.removePopup(this);
+    map.removePopup(this);
 }
-/* END feature popups */
 
-/* geocode */
-function codeAddress(address) {
-  if (geocoder) {
-    geocoder.geocode( { 'address': address}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-        var marker = new google.maps.Marker({
-            map: map,
-            position: results[0].geometry.location,
-            title: "Mark's house"
-        });
-        var infoWindow = new google.maps.InfoWindow({
-          content: "Mark lives here"
-        });
-
-        google.maps.event.addListener(marker, 'click', function() {
-          infoWindow.open(map, marker);
-        });
-      } else {
-        alert("Geocode was not successful for the following reason: " + status);
-      }
-    });
-  }
+function clearPopups() {
+    for (pop in map.popups) {
+        map.removePopup(pop)
+    }
+    // maybe iterate features and clear popups?
 }
+
+/* END plot collection locations */
+
+/*
+ * Helpers for managing Filter checkboxes
+ */
+
+// set all boxes checked and trigger change handler
+function setAll() {
+    var boxes = document.getElementsByName('filter');
+    for (i = 0; i < boxes.length; i++) {
+        boxes[i].checked = document.getElementById('all').checked;
+    }
+    filterChange();
+}
+
+// build comma-separated string representing all selected boxes
+function getAll() {
+    if (document.getElementById('all').checked) {
+        return "all";
+    }
+    var boxes = document.getElementsByName('filter');
+    var checked = "";
+    for (i = 0; i < boxes.length; i++) {
+        if (boxes[i].checked) {
+            checked += boxes[i].value + ",";
+        }
+    }
+    return checked;
+}
+
+// handler for selection change
+function filterChange() {
+    // set state of 'select all' box
+    var all = true;
+    var boxes = document.getElementsByName('filter');
+    for (i = 0; i < boxes.length; i++) {
+        if (!boxes[i].checked) {
+            all = false;
+        }
+    }
+    if (document.getElementById('all').checked && !all) {
+        document.getElementById('all').checked = false;
+    } else if (!document.getElementById('all').checked && all) {
+        document.getElementById('all').checked = true;
+    }
+
+    // reload features based on new filter selections
+    reloadData();
+}
+/* END filter checkboxes */
+

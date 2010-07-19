@@ -39,6 +39,7 @@ class ProviderGroup implements Serializable {
     static final String GROUP_TYPE_INSTITUTION = 'Institution'
     static final String ENTITY_TYPE = 'ProviderGroup'
     static final String LSID_PREFIX = 'urn:lsid:'
+    static final int ABSTRACT_LENGTH = 250
 
     // general attributes
     String guid                 // this is not the DB id but a known identifier
@@ -95,7 +96,8 @@ class ProviderGroup implements Serializable {
     //static belongsTo = ProviderGroup
 
     static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
-            'providerCodesByPrecedence', 'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'summary']
+            'providerCodesByPrecedence', 'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes',
+            'summary', 'mappable']
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
 
@@ -242,7 +244,7 @@ class ProviderGroup implements Serializable {
                 false
             }
         }
-        return result
+        return result.sort{it.name}
     }
 
     /**
@@ -265,10 +267,18 @@ class ProviderGroup implements Serializable {
         return name.substring(0, Math.min(60, name.size()))
     }
 
+    /**
+     * Returns a list of all institutions sorted alphabetically.
+     * @return
+     */
     static List listInstitutions() {
         return ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION, [sort:'name'])
     }
 
+    /**
+     * Returns a list of all institutions that are parents of this group sorted alphabetically.
+     * @return
+     */
     List getParentInstitutionsOrderedByName() {
         return new ArrayList<ProviderGroup>(this.getParents()).sort{item-> item.name}
     }
@@ -366,6 +376,9 @@ class ProviderGroup implements Serializable {
     }
 
     boolean isMemberOf(String network) {
+        if (!this.networkMembership) {
+            return false
+        }
         return (this.networkMembership =~ network)
     }
 
@@ -403,6 +416,13 @@ class ProviderGroup implements Serializable {
         return false
     }
 
+    /**
+     * Tests whether this collection matches the supplied provider codes.
+     *
+     * @param institutionCode
+     * @param collectionCode
+     * @return
+     */
     boolean matchesCollection(String institutionCode, String collectionCode) {
         // must be a collection
         if (groupType != GROUP_TYPE_COLLECTION) {return false}
@@ -424,10 +444,18 @@ class ProviderGroup implements Serializable {
         return hasCollectionCode && hasInstitutionCode
     }
 
-    Map buildProviderCodes() {
-
-    }
-
+    /**
+     * Returns a summary of the collection including:
+     * - id
+     * - name
+     * - acronym
+     * - lsid if available
+     * - primary institution (id & name) if available
+     * - description
+     * - provider codes for matching with biocache records
+     *
+     * @return a CollectionSummary
+     */
     CollectionSummary getSummary() {
         CollectionSummary cs = new CollectionSummary(id: id, name: name, acronym: acronym)
         if (guid?.startsWith('urn:lsid:')) {
@@ -440,10 +468,68 @@ class ProviderGroup implements Serializable {
         }
         cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()
-        //cs.shortDescription = pubDescription  // make this more sophisticated
+        cs.shortDescription = makeAbstract()
         return cs
     }
 
+    /**
+     * Trims the passed string to the specified length breaking at word boundaries and adding an elipsis if trimmed.
+     */
+    def trimLength = {trimString, stringLength ->
+
+        String concatenateString = "..."
+        List separators = [".", " "]
+
+        if (stringLength && (trimString?.length() > stringLength)) {
+            trimString = trimString.substring(0, stringLength - concatenateString.length())
+            String separator = separators.findAll{trimString.contains(it)}?.min{trimString.lastIndexOf(it)}
+            if(separator){
+                trimString = trimString.substring(0, trimString.lastIndexOf(separator))
+            }
+            trimString += concatenateString
+        }
+        return trimString
+    }
+
+    /**
+     * Returns descriptive text trimmed to the default abstract length.
+     *
+     * @return abstract
+     */
+    String makeAbstract() {
+        makeAbstract(ABSTRACT_LENGTH)
+    }
+
+    /**
+     * Returns descriptive text trimmed to the specified length.
+     *
+     * @return abstract
+     */
+    String makeAbstract(int length) {
+        String chunk = ""
+        if (pubDescription) {
+            chunk = pubDescription
+        } else if (techDescription) {
+            chunk = techDescription
+        } else if (focus) {
+            chunk = focus
+        }
+        if (chunk.size() < length) {
+            return (chunk) ? chunk : ""
+        } else {
+            return trimLength(chunk, length)
+        }
+    }
+
+    /**
+     * Returns the identifier part of a link that is optimised for permanence.
+     *
+     * Prioity is:
+     * 1. lsid
+     * 2. acronym
+     * 3. DB id
+     * @return an identifier
+     */
     String generatePermalink() {
         if (guid?.startsWith(LSID_PREFIX)) {
             return guid
@@ -452,6 +538,24 @@ class ProviderGroup implements Serializable {
         } else {
             return id
         }
+    }
+
+    /**
+     * Returns true if the group can be mapped.
+     *
+     * Can be mapped if the group or its primary institution have valid lat and long.
+     * @return
+     */
+    boolean isMappable() {
+        if (latitude != 0.0 && latitude != -1 && longitude != 0.0 && longitude != -1) {
+            return true
+        }
+        // use parent institution if lat/long not defined
+        def inst = findPrimaryInstitution()
+        if (inst && inst.latitude != 0.0 && inst.latitude != -1 && inst.longitude != 0.0 && inst.longitude != -1) {
+            return true
+        }
+        return false
     }
 }
 
@@ -481,6 +585,19 @@ class Address implements Serializable {
 
     boolean isEmpty() {
         return !(street || postBox || city || state || postcode || country)
+    }
+
+    List<String> nonEmptyAddressElements() {
+        List<String> elements = []
+        if (street) {elements << street}
+        if (city) {elements << city}
+        if (state) {elements << state}
+        if (postcode) {elements << postcode}
+        return elements
+    }
+
+    String buildAddress() {
+        return nonEmptyAddressElements().join(" ")
     }
 }
 

@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.InfoSource" %>
+<%@ page import="java.text.DecimalFormat; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.InfoSource" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -9,7 +9,7 @@
         <script type="text/javascript">
           $(document).ready(function() {
             $('#nav-tabs > ul').tabs();
-
+            greyInitialValues();
             $("a#lsid").fancybox({
                     'hideOnContentClick' : false,
                     'titleShow' : false,
@@ -23,43 +23,41 @@
     <body class="two-column-right">
       <div id="content">
         <div id="header" class="taxon" style="margin-bottom:15px;">
+          <!--Breadcrumbs-->
+          <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${collectionInstance.name}</span></div>
           <div class="section full-width">
             <div class="hrgroup col-9">
-                <h1 class="family"><i>${fieldValue(bean:collectionInstance,field:'name')}</i></h1>
-                <h2>${collectionInstance.findPrimaryInstitution()?.name}</h2>
-                <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
-                <div style="display:none; text-align: left;">
-                    <div id="lsidText" style="text-align: left;">
-                        <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
-                        <p style="margin: 10px 0;"><cl:guid target="_blank" guid='${fieldValue(bean: collectionInstance, field: "guid")}'/></p>
-                        <p style="font-size: 12px;">LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
-                             significant resources including species names, concepts, occurrences, genes or proteins,
-                             or data objects that encode information about them. To put it simply,
-                            LSIDs are a way to identify and locate pieces of biological information on the web. </p>
-                    </div>
-                </div>
+              <h1 class="family"><i>${fieldValue(bean:collectionInstance,field:'name')}</i></h1>
+              <g:set var="inst" value="${collectionInstance.findPrimaryInstitution()}"/>
+              <g:if test="${inst}">
+                <h2><g:link action="showInstitution" id="${inst.id}">${inst.name}</g:link></h2>
+              </g:if>
+              <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
+              <div style="display:none; text-align: left;">
+                  <div id="lsidText" style="text-align: left;">
+                      <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
+                      <p style="margin: 10px 0;"><cl:guid target="_blank" guid='${fieldValue(bean: collectionInstance, field: "guid")}'/></p>
+                      <p style="font-size: 12px;">LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
+                           significant resources including species names, concepts, occurrences, genes or proteins,
+                           or data objects that encode information about them. To put it simply,
+                          LSIDs are a way to identify and locate pieces of biological information on the web. </p>
+                  </div>
+              </div>
             </div>
-            <div class="aside col-3">
+            <div class="aside col-2">
               <!-- institution -->
-              <g:set var="institution" value="${collectionInstance.findPrimaryInstitution()}"/>
-              <g:if test="${institution}">
-                <g:if test="${fieldValue(bean: institution, field: 'logoRef') && fieldValue(bean: institution, field: 'logoRef.file')}">
-                  <g:link controller="public" action="showInstitution" id="${institution.id}">
-                    <img style="margin-bottom: 5px; margin-right:20px; float:right;" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
-                  </g:link>
+              <g:if test="${inst?.logoRef?.file}">
+                <g:link action="showInstitution" id="${inst.id}">
+                  <img style="padding-top: 10px; margin-right:0; float:right;" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: inst, field: 'logoRef.file'))}' />
+                </g:link>
                   <!--div style="clear: both;"></div-->
-                </g:if>
-                <g:else>
-                  <p class='subhead-link'><g:link controller="public" action="showInstitution" id="${institution.id}">${fieldValue(bean: institution, field: "name")}</g:link></p>
-                </g:else>
               </g:if>
             </div>
           </div>
           <div id="nav-tabs">
             <ul class="ui-tabs-nav">
                 <li class="ui-tabs-selected"><a href="#overview">Overview</a></li>
-                <li><a href="#statistics">Statistics</a></li>
-                <li><a href="#records">Records</a></li>
+                <li><a href="#statistics">Records & Statistics</a></li>
             </ul>
           </div>
         </div><!--close header-->
@@ -67,13 +65,13 @@
           <div id="column-one">
             <div class="section no-margin-top">
               <h2>Description</h2>
-              <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText></p>
-              <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText></p>
+              <cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText>
+              <cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText>
               <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "scope.startDate")}' end='${fieldValue(bean: collectionInstance, field: "scope.endDate")}'/>
 
               <h2>Taxonomic range</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'focus')}">
-                <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></p>
+                <cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText>
               </g:if>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.kingdomCoverage')}">
                 <p>Kingdoms covered include: ${fieldValue(bean: collectionInstance, field: "scope.kingdomCoverage")}</p>
@@ -205,24 +203,30 @@
           </div><!--overview-->
           <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
             <div class="section">
-              <img src="http://chart.apis.google.com/chart?chxl=1:|1950|1960|1970|1980|1990|2000|2010&chxr=0,0,4000&chxt=y,x&chbh=a,4,35&chs=300x225&cht=bvs&chco=A2C180&chd=s:uZOQLVS&chdlp=l&chtt=Specimens+added+per+decade" width="300" height="225" alt="Specimens added per decade" />
-              <img src="http://chart.apis.google.com/chart?chs=220x225&cht=gm&chd=t:70&chma=0,0,0,20|0,180&chtt=Percent+of+specimen+records+digitised&chts=330909,11.5" width="220" height="225" alt="Percent of specimen records digitised" />
-              <img src="http://chart.apis.google.com/chart?chs=400x225&cht=p3&chco=7777CC|76A4FB|3399CC|3366CC&chd=s:QEHCVfe&chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chdlp=t&chp=12.7&chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chma=0,0,30,10" width="400" height="225" alt="" />
-            </div>
-          </div>
-          <div id="records" class="ui-tabs-panel ui-tabs-hide">
-            <div class="section">
               <h2>Digitised specimen records</h2>
-              <g:if test="${numBiocacheRecords != -1}">
-                <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${cl.collectionName(name: collectionInstance.name)}.</p>
-              </g:if>
-              <cl:recordsLink
-                      institutionCodes="${collectionInstance.getListOfInstitutionCodesForLookup()}"
-                      collectionCodes="${collectionInstance.getListOfCollectionCodesForLookup()}">
-                Click to view records for the ${cl.collectionName(name: collectionInstance.name)}.
-              </cl:recordsLink>
-              <p></p>
-              <p></p>
+              <div style="float:left;">
+                <g:if test="${numBiocacheRecords != -1}">
+                  <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${cl.collectionName(name: collectionInstance.name)}.</p>
+                  <g:if test="${percentBiocacheRecords != -1}">
+                    <p>This represents ${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.</p>
+                  </g:if>
+                </g:if>
+                <cl:recordsLink collection="${collectionInstance}">Click to view records for the ${cl.collectionName(name: collectionInstance.name)}.
+                </cl:recordsLink>
+              </div>
+              <div style="float:right;text-align:center;padding-right:60px;margin-top:-20px;">
+                <g:if test="${percentBiocacheRecords != -1}">
+                  <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as digitised records" />
+                  <p class="caption"><cl:formatPercent percent="${percentBiocacheRecords}"/>% of records<br/>available for viewing.</p>
+                </g:if>
+              </div>
+            </div>
+            <div class="section">
+              <h3>Statistics of digitised specimens in this collection.</h3>
+              <div><p>Static example charts - not actual data!</p>
+                <img src="http://chart.apis.google.com/chart?chxl=1:|1950|1960|1970|1980|1990|2000|2010&chxr=0,0,4000&chxt=y,x&chbh=a,4,35&chs=300x225&cht=bvs&chco=A2C180&chd=s:uZOQLVS&chdlp=l&chtt=Specimens+added+per+decade" width="300" height="225" alt="Specimens added per decade" />
+                <img src="http://chart.apis.google.com/chart?chs=400x225&cht=p3&chco=7777CC|76A4FB|3399CC|3366CC&chd=s:QEHCVfe&chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chdlp=t&chp=12.7&chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chma=0,0,30,10" width="400" height="225" alt="" />
+              </div>
             </div>
           </div>
         </div>

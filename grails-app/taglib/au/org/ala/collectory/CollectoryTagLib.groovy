@@ -108,7 +108,28 @@ class CollectoryTagLib {
         }
     }
 
-    def percentIfKnown = {attrs ->
+    def formatPercent = { attrs ->
+        double percent
+        try {
+            percent = attrs.percent as double
+        } catch (Exception e) {
+            //out << e.message
+            return
+        }
+        NumberFormat formatter
+        if (percent == 0.0) {
+            formatter = new DecimalFormat("#0")
+        } else if (percent < 0.1) {
+            formatter = new DecimalFormat("#0.00")
+        } else if (percent > 50.0) {
+            formatter = new DecimalFormat("#0")
+        } else {
+            formatter = new DecimalFormat("#0.0")
+        }
+        out << formatter.format(percent)
+    }
+
+    def percentIfKnown = { attrs ->
         double dividend
         double divisor
         try {
@@ -498,44 +519,33 @@ class CollectoryTagLib {
      */
     def formattedText = {attrs, body ->
         def text = body().toString()
-        text = text.replaceAll("\n", "</p><p>")
-        if (!attrs.noLink) {
-            def urlMatch = /\bhttp:\S*\b/   // word boundary + http: + non-whitespace + word boundary
-            text = text.replaceAll(urlMatch) {
-                "<a class='external_icon' target='_blank' href='${it}'>${it}</a>"
+        if (text) {
+            text = text.replaceAll("\n", "</p><p>")
+            if (!attrs.noLink) {
+                def urlMatch = /\bhttp:\S*\b/   // word boundary + http: + non-whitespace + word boundary
+                text = text.replaceAll(urlMatch) {
+                    "<a class='external_icon' target='_blank' href='${it}'>${it}</a>"
+                }
             }
+            out << "<p>${text}</p>"
         }
-        out << text
     }
 
     /**
-     * Builds the link to bio-cache records for the passed keys.
+     * Builds the link to bio-cache records for the passed collection.
      *
-     * @param attrs.collectionCodes coll codes as a list of strings
-     * @param attrs.institutionCodes inst codes as a list of strings
+     * @param collection the collectio to search for
      * @body the body of the link
      */
     def recordsLink = {attrs, body ->
         // must have at least one value to build a query
-        if (attrs.institutionCodes || attrs.collectionCodes) {
-            def instClause = attrs.institutionCodes ? buildSearchClause("inst", attrs.institutionCodes) : ""
-            def collClause = attrs.collectionCodes ? buildSearchClause("coll", attrs.collectionCodes) : ""
-            collClause = (instClause && collClause) ? "&" + collClause : collClause
+        if (attrs.collection) {
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "searchForCollection?" + instClause + collClause
+            def url = baseUrl + "searchForCollection?q=" + attrs.collection?.generatePermalink()
             out << "<a href='"
             out << url
             out << "'>" << body() << "</a>"
         }
-    }
-
-    String buildSearchClause(String field, List valueList) {
-        def result = ""
-        valueList.eachWithIndex {it, i ->
-            if (i > 0) {result += "&"}
-            result += "${field}=${it}"
-        }
-        return result
     }
 
     def numberOf = {attrs->
@@ -563,4 +573,5 @@ class CollectoryTagLib {
             out << "</a>"
         }
     }
+
 }

@@ -36,13 +36,13 @@
             <table><colgroup><col width="70%"><col width = "30%"></colgroup>
               <tr><td class="leftColumn">
                 <h2>Description</h2>
-                <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText></p>
-                <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText></p>
+                <cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText>
+                <cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText>
                 <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "scope.startDate")}' end='${fieldValue(bean: collectionInstance, field: "scope.endDate")}'/>
 
                 <h2>Taxonomic range</h2>
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'focus')}">
-                  <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></p>
+                  <cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText>
                 </g:if>
                 <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.kingdomCoverage')}">
                   <p>Kingdoms covered include: ${fieldValue(bean: collectionInstance, field: "scope.kingdomCoverage")}</p>

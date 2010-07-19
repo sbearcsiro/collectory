@@ -1,13 +1,4 @@
 
-#map_canvas {
-    border: 1px solid gray;
-}
-
-.subhead-link a {
-    color: #777;
-    text-decoration: none;
-}
-
 .sidebar p {
     font-size: 0.9em;
     line-height: normal;
@@ -30,38 +21,20 @@
     font-size: 1em;
 }
 
-#header .section {
-    border-top: 0 ! important;
-}
-
-/* give a little space before the LSID */
-#header h1 {
-    margin-bottom: 10px;
-}
-
 /* allow logo to rise to level of name text */
 #header .aside {
     padding-top: 0;
 }
 
-/* reduce size of links in collection list */
-.nameList a {
-    font-size: 14px;
-    text-decoration: none;
-}
+/* error messages
+.message {
+    background: #f3f8fc url(../images/skin/information.png) 8px 50% no-repeat;
+    border: 1px solid #b2d1ff;
+    color: #006dba;
+    margin: 10px 0 5px 0;
+    padding: 5px 5px 5px 30px
+}*/
 
-.nameList td {
-    padding: 0 20px 10px 20px;
-}
-
-/* not currently used */
-.section .info {
-    -moz-border-radius: 10px 10px 10px 10px; /* FF1+ */
-    -webkit-border-radius: 10px 10px 10px 10px; /* Saf3+, Chrome */
-    border-radius: 10px 10px 10px 10px; /* Opera 10.5, IE 9 */
-    background-color:#FAFBF5;
-    padding:0 5px 5px 5px;
-}
 /*a[target='_blank'] {
     background: url(../images/skin/external.png) center right no-repeat;
     padding-right: 13px;

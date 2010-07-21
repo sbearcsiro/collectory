@@ -15,9 +15,6 @@ var proj_options;
 // the data layer
 var vectors;
 
-// the pin image
-var externalGraphicUrl;
-
 // the ajax url for getting filtered features
 var featuresUrl;
 
@@ -25,84 +22,103 @@ var featuresUrl;
 /* note this must be called from body.onload() not jQuery document.ready() as the latter is too early */
 function initMap(serverUrl) {
 
-  // serverUrl is the base url for the site eg http://collections.ala.org.au in production
-  // cannot use relative url as the context path varies with environment
-  externalGraphicUrl = serverUrl + "/images/map/orange-dot.png";
-  featuresUrl = serverUrl + "/public/mapFeatures";
-    
-  // create the map
-  map = new OpenLayers.Map('map_canvas',{maxResolution: 2468,controls: []});
+    // serverUrl is the base url for the site eg http://collections.ala.org.au in production
+    // cannot use relative url as the context path varies with environment
+    var featureGraphicUrl = serverUrl + "/images/map/orange-dot.png";
+    var clusterGraphicUrl = serverUrl + "/images/map/orange-dot-multiple.png";
+    featuresUrl = serverUrl + "/public/mapFeatures";
 
-  // restrict mouse wheel chaos
-  map.addControl(new OpenLayers.Control.Navigation({zoomWheelEnabled:false}));
-  map.addControl(new OpenLayers.Control.ZoomPanel());
-  map.addControl(new OpenLayers.Control.PanPanel());
+    // create the map
+    map = new OpenLayers.Map('map_canvas', {maxResolution: 2468,controls: []});
 
-  // create Google base layers
-  var gmap = new OpenLayers.Layer.Google(
-      "Google Streets",
-      {'sphericalMercator': true,
-       maxExtent: new OpenLayers.Bounds(-20037508.34,-20037508.34,20037508.34,20037508.34)}
-  );
-  map.addLayer(gmap);
-  var gsat = new OpenLayers.Layer.Google(
-      "Google Satellite",
-      {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
-  );
-  map.addLayer(gsat);
-  var ghyb = new OpenLayers.Layer.Google(
-      "Google Hybrid",
-      {type: G_HYBRID_MAP, 'sphericalMercator': true}
-  );
-  map.addLayer(ghyb);
+    // restrict mouse wheel chaos
+    map.addControl(new OpenLayers.Control.Navigation({zoomWheelEnabled:false}));
+    map.addControl(new OpenLayers.Control.ZoomPanel());
+    map.addControl(new OpenLayers.Control.PanPanel());
 
-  // zoom map
-  map.zoomToMaxExtent();
+    // create Google base layers
+    var gmap = new OpenLayers.Layer.Google(
+            "Google Streets",
+        {'sphericalMercator': true,
+        maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)}
+            );
+    map.addLayer(gmap);
+    var gsat = new OpenLayers.Layer.Google(
+            "Google Satellite",
+    {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
+            );
+    map.addLayer(gsat);
+    var ghyb = new OpenLayers.Layer.Google(
+            "Google Hybrid",
+    {type: G_HYBRID_MAP, 'sphericalMercator': true}
+            );
+    map.addLayer(ghyb);
 
-  // add layer switcher for now - review later
-  map.addControl(new OpenLayers.Control.LayerSwitcher());
+    // zoom map
+    map.zoomToMaxExtent();
 
-  // centre the map on Australia
-  var point = new OpenLayers.LonLat(133, -28.2);
-  map.setCenter(point.transform(proj, map.getProjectionObject()), 4);
+    // add layer switcher for now - review later
+    map.addControl(new OpenLayers.Control.LayerSwitcher());
 
-  // set projection options
-  proj_options = {
-    'internalProjection': map.baseLayer.projection,
-    'externalProjection': proj
-  };
+    // centre the map on Australia
+    var point = new OpenLayers.LonLat(133, -28.2);
+    map.setCenter(point.transform(proj, map.getProjectionObject()), 4);
 
-  // create a layer for markers and set style
-  vectors = new OpenLayers.Layer.Vector("Collections");
-  vectors.style = {externalGraphic: externalGraphicUrl, graphicHeight: 25, graphicWidth: 25};
+    // set projection options
+    proj_options = {
+        'internalProjection': map.baseLayer.projection,
+        'externalProjection': proj
+    };
 
-  // listen for feature selection
-  vectors.events.register("featureselected", vectors, selected);
-  map.addLayer(vectors);
+    // create a style that handles clusters
+    var style = new OpenLayers.Style({
+        externalGraphic: "${pin}",
+        graphicHeight: "${size}",
+        graphicWidth: "${size}"
+    }, {
+        context: {
+            pin: function(feature) {
+                return (feature.cluster) ? clusterGraphicUrl : featureGraphicUrl;
+            },
+            size: function(feature) {
+                return (feature.cluster) ? 25 : 23;
+            }
+        }
+    });
 
-  // control for hover labels
-  var hoverControl = new OpenLayers.Control.SelectFeature(vectors, {
-    hover: true,
-    highlightOnly: true,
-    renderIntent: "default",
-    eventListeners: {
-      //beforefeaturehighlighted: hoverOn,
-      featurehighlighted: hoverOn,
-      featureunhighlighted: hoverOff
-    }
-  });
-  map.addControl(hoverControl);
-  hoverControl.activate();
+    // create a layer for markers and set style
+    var clusterStrategy = new OpenLayers.Strategy.Cluster({distance: 10, threshold: 2});
+    vectors = new OpenLayers.Layer.Vector("Collections", {
+        strategies: [clusterStrategy],
+        styleMap: new OpenLayers.StyleMap({"default": style})});
 
-  // control for selecting features (on click)
-  var control = new OpenLayers.Control.SelectFeature(vectors, {
-    clickout: true
-  });
-  map.addControl(control);
-  control.activate();
+    // listen for feature selection
+    vectors.events.register("featureselected", vectors, selected);
+    map.addLayer(vectors);
 
-  // initial data load
-  reloadData();
+    // control for hover labels
+    var hoverControl = new OpenLayers.Control.SelectFeature(vectors, {
+        hover: true,
+        highlightOnly: true,
+        renderIntent: "default",
+        eventListeners: {
+            //beforefeaturehighlighted: hoverOn,
+            featurehighlighted: hoverOn,
+            featureunhighlighted: hoverOff
+        }
+    });
+    //map.addControl(hoverControl);
+    //hoverControl.activate();
+
+    // control for selecting features (on click)
+    var control = new OpenLayers.Control.SelectFeature(vectors, {
+        clickout: true
+    });
+    map.addControl(control);
+    control.activate();
+
+    // initial data load
+    reloadData();
 }
 
 /* load features via ajax call */
@@ -133,10 +149,22 @@ function hoverOff(evt) {
 
 function hoverOn(evt) {
   feature = evt.feature;
+    var content = "";
+    if (feature.cluster) {
+        content = "<ul class='hoverPop'>";
+        for(var c = 0; c < feature.cluster.length; c++) {
+            content += "<li>"
+                    + feature.cluster[c].attributes.name
+                    + "</li>";
+        }
+        content += "</ul>";
+    } else {
+        content = feature.attributes.name;
+    }
     var popup = new OpenLayers.Popup.FramedCloud(feature.attributes.id,
                         feature.geometry.getBounds().getCenterLonLat(),
                         new OpenLayers.Size(10, 10),
-                        feature.attributes.name,
+                        content,
                         null,
                         false);
     // attach to feature
@@ -160,31 +188,46 @@ function selected(evt) {
     }
 
     // build content
-    var address = "";
-    if (feature.attributes.address != null && feature.attributes.address != "") {
-        address = "<br/>" + feature.attributes.address;
-    }
-    var desc = feature.attributes.desc;
-    if (desc != null && desc != "") {
-        desc = "<br/>" + desc;
+    var content = "";
+    if (feature.cluster) {
+        content = "Multiple collections at this location:<ul>";
+        for(var c = 0; c < feature.cluster.length; c++) {
+            content += "<li>"
+                    + "<a href='" + feature.cluster[c].attributes.url + "'>"
+                    + feature.cluster[c].attributes.name + "</a>"
+                    + "</li>";
+        }
+        content += "</ul>";
     } else {
-        desc = "";
+        var address = "";
+        if (feature.attributes.address != null && feature.attributes.address != "") {
+            address = "<br/>" + feature.attributes.address;
+        }
+        var desc = feature.attributes.desc;
+        if (desc != null && desc != "") {
+            desc = "<br/>" + desc;
+        } else {
+            desc = "";
+        }
+        content = "<a href='" + feature.attributes.url + "'>"
+                    + feature.attributes.name + "</a>"
+                    + "<span class='abstract'>" + "<em>" + address + "</em>"
+                    + desc + "</span>"
     }
-
+    
     // create popoup
     var popup = new OpenLayers.Popup.FramedCloud("featurePopup",
             feature.geometry.getBounds().getCenterLonLat(),
             new OpenLayers.Size(50, 100),
-            "<a href='" + feature.attributes.url + "'>"
-                    + feature.attributes.name + "</a>"
-                    + "<span class='abstract'>" + "<em>" + address + "</em>"
-                    + desc + "</span>",
+            content,
             null, true, onPopupClose);
 
     // control shape
-    popup.maxSize = new OpenLayers.Size(300, 500);
-
-    // add to feature
+    if (!feature.cluster) {
+        popup.maxSize = new OpenLayers.Size(300, 500);
+    }
+    //popup.maxSize = feature.cluster ? new OpenLayers.Size(300, 500) : new OpenLayers.Size(300, 500);
+    //popup.closeOnMove = true;
     feature.popup = popup;
     popup.feature = feature;
 

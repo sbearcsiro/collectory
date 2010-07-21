@@ -26,6 +26,16 @@
     padding-top: 0;
 }
 
+/* eliminate excess space below list in map popups */
+.olFramedCloudPopupContent ul {
+    padding-bottom: 0;
+}
+
+/* control space in map hover */
+ul.hoverPop {
+    font-size: smaller;
+}
+
 /* error messages
 .message {
     background: #f3f8fc url(../images/skin/information.png) 8px 50% no-repeat;

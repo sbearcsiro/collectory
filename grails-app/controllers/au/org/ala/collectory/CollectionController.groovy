@@ -101,7 +101,9 @@ class CollectionController {
         if (collectionInstance) {
             render collectionInstance.getSummary() as JSON
         } else {
-            render "Error" as JSON
+            log.error "Unable to find collection for id = ${params.id}"
+            def error = ["error":"unable to find collection for id = " + params.id]
+            render error as JSON
         }
     }
 

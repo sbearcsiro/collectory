@@ -113,7 +113,7 @@ class PublicController {
                                 address: it.address?.buildAddress(),
                                 desc: it.makeAbstract(),
                                 url: request.getContextPath() + "/public/show/" + it.id]
-                        loc.geometry = [type: "Point", coordinates: [it.longitude,it.latitude]]
+                        loc.geometry = [type: "Point", coordinates: [lon,lat]]
                         locations.features << loc
                     }
                 }

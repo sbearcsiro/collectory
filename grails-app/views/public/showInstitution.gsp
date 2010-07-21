@@ -23,6 +23,8 @@
   <body class="two-column-right">
     <div id="content">
       <div id="header" class="taxon" style="margin-bottom:15px;">
+        <!--Breadcrumbs-->
+        <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${fieldValue(bean:institution,field:'name')}</span></div>
         <div class="section full-width">
           <div class="hrgroup col-9">
             <h1>${fieldValue(bean:institution,field:'name')}</h1>
@@ -51,7 +53,7 @@
       <div id="column-one">
       <div class="section no-margin-top">
         <g:if test="${institution.pubDescription}">
-          <h2>Description of Institution</h2>
+          <h2>Description</h2>
           <cl:formattedText>${fieldValue(bean: institution, field: "pubDescription")}</cl:formattedText>
         </g:if>
         <h2>Collections</h2>

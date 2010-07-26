@@ -14,7 +14,7 @@ class PublicController {
         'mammals': ['mammal'],
         'reptiles': ['reptile','herpetology'],
         'invertebrates': ['insect','insects','spiders','arachnids','invertebrate'],
-        'plants': ['angiosperms','plant','plantae'],
+        'plants': ['angiosperms','plant','plantae','herbarium','herbaria'],
         'fungi': ['fungus'],
         'ferns': ['fern'],
         'microbes': ['microbe','microbial','protista']

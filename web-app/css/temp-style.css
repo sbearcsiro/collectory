@@ -1,0 +1,25 @@
+/* temporary styling for map */
+#page-collections-map #map_canvas {
+    border:1px solid #e8eace;
+    width:738px ! important;
+    height:470px;
+}
+
+.fudge {
+    width: 235px ! important;
+}
+
+.abstract {
+    font-size: smaller;
+}
+
+/* h2 link used for institution name on collection page - trad link is overwhelming */
+#header h2 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* map column is set to 329 for some reason. Wraps any text above or below the map.*/
+.map-column {
+    width:auto !important;
+}

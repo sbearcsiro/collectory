@@ -61,14 +61,14 @@
               </li>
               <p><span id='numFeatures'></span></p>
             </ul>
-            <p><img src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
             <!--div><textarea class="output" id="output"></textarea></div-->
           </div><!--close section-->
         </div><!--close column-one-->
-        <div id="column-two">
+        <div id="column-two" class="map-column">
           <div class="section">
-            <span id='numVisible'></span>
+            <span id='numVisible' style="padding-left:10px;"></span>
             <div id="map_canvas"></div>
+            <p style="padding-left:150px;"><img style="vertical-align: middle;" src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
           </div><!--close section-->
         </div><!--close column-two-->
       </div><!--close map-->

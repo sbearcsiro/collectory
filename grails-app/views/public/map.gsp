@@ -43,17 +43,23 @@
       <div id="map">
         <div id="column-one" class="fudge">
           <div class="section">
-            <p style="padding:5px 10px 0 10px">Show only collections that are members of these Council of Heads organisations:</p>
+            <p style="padding:5px 10px 0 10px">Show collections for these groups:</p>
             <ul id="map-collections">
               <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onchange="setAll()"/><label for="all">Select all</label>
-                <ul>
-                  <li><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="CHAH"/>Herbaria (CHAH)</li>
-                  <li><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="CHAEC"/>Entomology (CHAEC)</li>
-                  <li><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="CHAFC"/>Fauna (CHAFC)</li>
-                  <li><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="AMRRN"/>Microbes (CHACM)</li>
+                <ul class="taxaBreakdown">
+                  <li id="birdsBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="birds"/>Birds</li>
+                  <li id="mammalsBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="mammals"/>Mammals</li>
+                  <li id="fishBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="fish"/>Fish</li>
+                  <li id="frogsBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="frogs"/>Frogs</li>
+                  <li id="reptilesBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="reptiles"/>Reptiles</li>
+                  <li id="invertsBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="invertebrates"/>Invertebrates</li>
+                  <li id="plantsBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="plants"/>Flowering plants</li>
+                  <li id="fungiBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="fungi"/>Fungi</li>
+                  <li id="fernsBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="ferns"/>Ferns</li>
+                  <li id="microbesBreakdown"><input style="margin-right:8px;" onchange="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes"/>Microbes</li>
                 </ul>
               </li>
-              <span id='numFeatures'></span>&nbsp;collections are selected.<br/><!-- nbsp required for IE -->
+              <p><span id='numFeatures'></span></p>
             </ul>
             <p><img src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
             <!--div><textarea class="output" id="output"></textarea></div-->
@@ -61,7 +67,7 @@
         </div><!--close column-one-->
         <div id="column-two">
           <div class="section">
-            <span id='numVisible'></span>&nbsp;collections are currently visible on the map.
+            <span id='numVisible'></span>
             <div id="map_canvas"></div>
           </div><!--close section-->
         </div><!--close column-two-->

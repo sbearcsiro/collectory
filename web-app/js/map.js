@@ -141,7 +141,13 @@ function dataRequestHandler(data) {
     // parse returned json
     var features = new OpenLayers.Format.GeoJSON(proj_options).read(data);
     // update display of number of features
-    document.getElementById('numFeatures').innerHTML = features.length;
+    var innerFeatures = "";
+    switch (features.length) {
+        case 0: innerFeatures = "No collections are selected."; break;
+        case 1: innerFeatures = features.length + " collection is selected."; break;
+        default: innerFeatures = features.length + " collections are selected."; break;
+    }
+    document.getElementById('numFeatures').innerHTML = innerFeatures;
     // add features to map
     vectors.addFeatures(features);
     // fire moved to initialise number visible
@@ -202,7 +208,13 @@ function moved(evt) {
         }
     }
     // update display of number of features visible
-    document.getElementById('numVisible').innerHTML = visibleCount;
+    var innerFeatures = "";
+    switch (visibleCount) {
+        case 0: innerFeatures = "No collections are currently visible on the map."; break;
+        case 1: innerFeatures = visibleCount + " collection is currently visible on the map."; break;
+        default: innerFeatures = visibleCount + " collections are currently visible on the map."; break;
+    }
+    document.getElementById('numVisible').innerHTML = innerFeatures;
 }
 
 /* click (select) handlers */

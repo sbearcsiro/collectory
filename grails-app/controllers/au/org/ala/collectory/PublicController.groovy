@@ -7,6 +7,19 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class PublicController {
 
+    def keywordSynonyms = [
+        'birds':['ornithology','bird'],
+        'fish': ['ichthyology'],
+        'frogs': ['amphibians','herpetology','frog'],
+        'mammals': ['mammal'],
+        'reptiles': ['reptile','herpetology'],
+        'invertebrates': ['insect','insects','spiders','arachnids','invertebrate'],
+        'plants': ['angiosperms','plant','plantae'],
+        'fungi': ['fungus'],
+        'ferns': ['fern'],
+        'microbes': ['microbe','microbial','protista']
+    ]
+
     def index = { redirect(action: 'map')}
 
     def list = {
@@ -123,7 +136,7 @@ class PublicController {
                 // only show if we have lat and long
                 if (lat != -1 && lon != -1) {
                     // and if matches current filter
-                    if (showAll || matchNetwork(it, params.filters)) {
+                    if (showAll || matchTaxa(it.scope, params.filters)) {
                         def loc = [:]
                         loc.type = "Feature"
                         loc.properties = [
@@ -195,6 +208,25 @@ class PublicController {
             println "Checking filter ${filters[i]} against keywords ${scope?.keywords}"
             if (scope?.keywords =~ filters[i]) {
                 return true;
+            }
+        }
+        return false
+    }
+
+    private boolean matchTaxa(scope, filterString) {
+        def filters = filterString.tokenize(",")
+        for (filter in filters) {
+            //println "Checking filter ${filter} against keywords ${scope?.keywords}"
+            if (scope?.keywords =~ filter) {
+                return true;
+            } else {
+                // check synonyms
+                List synonyms = keywordSynonyms.get(filter)
+                for (synonym in synonyms) {
+                    if (scope?.keywords =~ synonym) {
+                        return true;
+                    }
+                }
             }
         }
         return false

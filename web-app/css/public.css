@@ -41,6 +41,30 @@ ul.hoverPop {
     padding-bottom: 0;
 }
 
+/* images for taxa breakdown */
+ul.taxaBreakdown li {
+    height: 35px;
+}
+
+ul.taxaBreakdown input {
+    margin-top: 11px;
+}
+
+#map-collections p {
+    margin-top: 20px;
+}
+
+#fishBreakdown { background:url("../images/taxa/pisces.gif")  no-repeat; padding-left:40px; background-position: left;}
+#birdsBreakdown { background:url("../images/taxa/aves.png") no-repeat; padding-left:40px; background-position: left;}
+#frogsBreakdown { background:url("../images/taxa/amphibia.png") no-repeat; padding-left:40px; background-position: left;}
+#reptilesBreakdown { background:url("../images/taxa/reptilia.png") no-repeat ; padding-left:40px; background-position: left;}
+#mammalsBreakdown { background:url("../images/taxa/mammalia.png") no-repeat; padding-left:40px; background-position: left;}
+#invertsBreakdown { background:url("../images/taxa/arthropoda.png") no-repeat; padding-left:40px; background-position: left;}
+#plantsBreakdown { background:url("../images/taxa/flower.png") no-repeat; padding-left:40px; background-position: left;}
+#fernsBreakdown { background:url("../images/taxa/fern.png") no-repeat; padding-left:40px; background-position: left;}
+#fungiBreakdown { background:url("../images/taxa/fungi.png") no-repeat; padding-left:40px; background-position: left;}
+#microbesBreakdown { background:url("../images/taxa/microbe.png") no-repeat; padding-left:40px; background-position: left;}
+
 /* error messages
 .message {
     background: #f3f8fc url(../images/skin/information.png) 8px 50% no-repeat;

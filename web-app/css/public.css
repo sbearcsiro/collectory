@@ -54,6 +54,10 @@ ul.taxaBreakdown input {
     margin-top: 20px;
 }
 
+#map-collections {
+    padding-left: 15px;
+}
+
 #fishBreakdown { background:url("../images/taxa/pisces.gif")  no-repeat; padding-left:40px; background-position: left;}
 #birdsBreakdown { background:url("../images/taxa/aves.png") no-repeat; padding-left:40px; background-position: left;}
 #frogsBreakdown { background:url("../images/taxa/amphibia.png") no-repeat; padding-left:40px; background-position: left;}
@@ -64,6 +68,23 @@ ul.taxaBreakdown input {
 #fernsBreakdown { background:url("../images/taxa/fern.png") no-repeat; padding-left:40px; background-position: left;}
 #fungiBreakdown { background:url("../images/taxa/fungi.png") no-repeat; padding-left:40px; background-position: left;}
 #microbesBreakdown { background:url("../images/taxa/microbe.png") no-repeat; padding-left:40px; background-position: left;}
+
+.olControlPanel {
+    position:relative;
+    top:130px;
+    left: 7px;
+    display:block;
+    width:  24px;
+    height: 24px;
+    margin: 5px;
+/*    background-color:red;*/
+}
+
+.olControlPanel .resetZoomItemActive {
+    width:  22px;
+    height: 22px;
+    background-image: url("../images/map/australia.png");
+}
 
 /* error messages
 .message {

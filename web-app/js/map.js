@@ -125,6 +125,16 @@ function initMap(serverUrl) {
     map.addControl(control);
     control.activate();
 
+    // creaye custom button to zoom extents to Australia
+    var button = new OpenLayers.Control.Button({
+        displayClass: "resetZoom",
+        title: "Zoom to Australia",
+        trigger: resetZoom
+    });
+    var panel = new OpenLayers.Control.Panel({defaultControl: button});
+    panel.addControls([button]);
+    map.addControl(panel);
+
     // initial data load
     reloadData();
 }
@@ -289,6 +299,11 @@ function clearPopups() {
     // maybe iterate features and clear popups?
 }
 
+function resetZoom() {
+    // centre the map on Australia
+    var point = new OpenLayers.LonLat(133, -28.2);
+    map.setCenter(point.transform(proj, map.getProjectionObject()), 4);
+}
 /* END plot collection locations */
 
 /*

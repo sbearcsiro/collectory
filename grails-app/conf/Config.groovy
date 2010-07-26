@@ -33,7 +33,7 @@ if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
 println "(*) grails.config.locations = ${grails.config.locations}"
 
 if (!biocache.baseURL) {
-     biocache.baseURL = "http://biocache.ala.org.au/biocache-webapp/occurrences/"
+     biocache.baseURL = "http://biocache.ala.org.au/"
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination

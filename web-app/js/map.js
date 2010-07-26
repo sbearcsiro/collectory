@@ -29,7 +29,11 @@ function initMap(serverUrl) {
     featuresUrl = serverUrl + "/public/mapFeatures";
 
     // create the map
-    map = new OpenLayers.Map('map_canvas', {maxResolution: 2468,controls: []});
+    map = new OpenLayers.Map('map_canvas', {
+        maxResolution: 2468,
+        /*maxExtent: new OpenLayers.Bounds(-10037508.34, -10037508.34, 10037508.34, 10037508.34),*/
+        controls: []
+    });
 
     // restrict mouse wheel chaos
     map.addControl(new OpenLayers.Control.Navigation({zoomWheelEnabled:false}));
@@ -40,17 +44,18 @@ function initMap(serverUrl) {
     var gmap = new OpenLayers.Layer.Google(
             "Google Streets",
         {'sphericalMercator': true,
-        maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)}
-            );
+          numZoomLevels: 24,
+          maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
+        });
     map.addLayer(gmap);
     var gsat = new OpenLayers.Layer.Google(
             "Google Satellite",
-    {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 22}
+    {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 24}
             );
     map.addLayer(gsat);
     var ghyb = new OpenLayers.Layer.Google(
             "Google Hybrid",
-    {type: G_HYBRID_MAP, 'sphericalMercator': true}
+    {type: G_HYBRID_MAP, 'sphericalMercator': true, numZoomLevels: 24}
             );
     map.addLayer(ghyb);
 
@@ -96,6 +101,9 @@ function initMap(serverUrl) {
     vectors.events.register("featureselected", vectors, selected);
     map.addLayer(vectors);
 
+    // listen for changes to visible region
+    map.events.register("moveend", map, moved);
+    
     // control for hover labels
     var hoverControl = new OpenLayers.Control.SelectFeature(vectors, {
         hover: true,
@@ -136,6 +144,8 @@ function dataRequestHandler(data) {
     document.getElementById('numFeatures').innerHTML = features.length;
     // add features to map
     vectors.addFeatures(features);
+    // fire moved to initialise number visible
+    moved(null);
 }
 
 /* hover handlers */
@@ -173,6 +183,26 @@ function hoverOn(evt) {
     map.addPopup(popup);
     // fit to content
     popup.updateSize();
+}
+
+/* move (zoom pan) handler */
+function moved(evt) {
+    // determine how many individual features are visible
+    var visibleCount = 0;
+    for (var c = 0; c < vectors.features.length; c++) {
+        var f = vectors.features[c];
+        if (f.onScreen(true)) {
+            if (f.cluster) {
+                // for clusters count each feature
+                visibleCount += f.cluster.length;
+            } else {
+                // single feature
+                visibleCount++;
+            }
+        }
+    }
+    // update display of number of features visible
+    document.getElementById('numVisible').innerHTML = visibleCount;
 }
 
 /* click (select) handlers */

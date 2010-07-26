@@ -541,7 +541,7 @@ class CollectoryTagLib {
         // must have at least one value to build a query
         if (attrs.collection) {
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "searchForCollection?q=" + attrs.collection?.generatePermalink()
+            def url = baseUrl + "occurrences/searchForCollection?q=" + attrs.collection?.generatePermalink()
             out << "<a href='"
             out << url
             out << "'>" << body() << "</a>"
@@ -574,4 +574,41 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Show distribution map if there are provider codes
+     *
+     * @param inst list of institution codes
+     * @param coll list of collection codes
+     * @body html fragment to include above map
+     */
+    def distributionImg = {attrs, body ->
+        def codes = ""
+        if (attrs.inst && !attrs.inst.empty) {
+            attrs.inst.each {codes += "&institution_code=" + it}
+        }
+        if (attrs.coll && !attrs.coll.empty) {
+            attrs.coll.each {codes += "&collection_code=" + it}
+        }
+        if (codes) {
+            // replace first & with ?
+            codes = "?" + codes.substring(1)
+            out << "<div>${body()}<img src='http://spatial.ala.org.au/alaspatial/ws/density/map${codes}' width='400' /></div>"
+        }
+    }
+
+    def decadeBreakdown = {attrs ->
+        if (attrs.data) {
+            def labels = ""
+            def values = ""
+            out << "<ul>"
+            attrs.data.toArray().each {
+                labels += "|" + it.label
+                values += it.count + ","
+                out << "<li>${it.label}: ${it.count}</li>"
+            }
+            values = "1,16,44,22,66,19,2"
+            out << "</ul>"
+            out << "<img src='http://chart.apis.google.com/chart?chxl=1:|1870|1880|1890|1900|1910|1920|1930&chxt=y,x&chbh=a&chs=300x225&cht=bvg&chco=A2C180&chd=t:${values}&chtt=Vertical+bar+chart' width='300' height='225' alt='Vertical bar chart' />"
+        }
+    }
 }

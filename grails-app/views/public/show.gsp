@@ -1,4 +1,4 @@
-<%@ page import="java.text.DecimalFormat; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.InfoSource" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.InfoSource" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -19,6 +19,7 @@
                 });
           });
         </script>
+        <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
     </head>
     <body class="two-column-right">
       <div id="content">
@@ -221,14 +222,78 @@
                 </g:if>
               </div>
             </div>
-            <div class="section">
-              <h3>Statistics of digitised specimens in this collection.</h3>
-              <div><p>Static example charts - not actual data!</p>
-                <img src="http://chart.apis.google.com/chart?chxl=1:|1950|1960|1970|1980|1990|2000|2010&chxr=0,0,4000&chxt=y,x&chbh=a,4,35&chs=300x225&cht=bvs&chco=A2C180&chd=s:uZOQLVS&chdlp=l&chtt=Specimens+added+per+decade" width="300" height="225" alt="Specimens added per decade" />
-                <img src="http://chart.apis.google.com/chart?chs=400x225&cht=p3&chco=7777CC|76A4FB|3399CC|3366CC&chd=s:QEHCVfe&chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chdlp=t&chp=12.7&chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chma=0,0,30,10" width="400" height="225" alt="" />
+            <g:if test="${numBiocacheRecords > 0}">
+              <div class="section">
+                <h3>Distribution of occurrence records for this collection</h3>
+                <div>
+                  <cl:distributionImg inst="${collectionInstance.getListOfInstitutionCodesForLookup()}" coll="${collectionInstance.getListOfCollectionCodesForLookup()}"/>
+                </div>
+                <h3>Statistics of digitised specimens in this collection.</h3>
+                <div id="chart" style="display: inline;padding-right: 20px;"></div>
+                <!--img src="http://chart.apis.google.com/chart?chs=400x225&cht=p3&chco=7777CC|76A4FB|3399CC|3366CC&chd=s:QEHCVfe&chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chdlp=t&chp=12.7&chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chma=0,0,30,10" width="400" height="225" alt="" /-->
+                </div>
               </div>
-            </div>
+            </g:if>
           </div>
         </div>
+      <script type="text/javascript">
+        var queryString = '';
+        var dataUrl = '';
+
+        function onLoadCallback() {
+          if (dataUrl.length > 0) {
+            var query = new google.visualization.Query(dataUrl);
+            query.setQuery(queryString);
+            query.send(handleQueryResponse);
+          } else {
+//            var dataJson = {"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":[{"c":[{"v":"","f":null},{"v":1,"f":null}]}{"c":[{"v":"1880","f":null},{"v":16,"f":null}]}{"c":[{"v":"","f":null},{"v":44,"f":null}]}{"c":[{"v":"1900","f":null},{"v":137,"f":null}]}{"c":[{"v":"","f":null},{"v":186,"f":null}]}{"c":[{"v":"1920","f":null},{"v":563,"f":null}]}{"c":[{"v":"","f":null},{"v":1830,"f":null}]}{"c":[{"v":"1940","f":null},{"v":1857,"f":null}]}{"c":[{"v":"","f":null},{"v":7468,"f":null}]}{"c":[{"v":"1960","f":null},{"v":10633,"f":null}]}{"c":[{"v":"","f":null},{"v":15199,"f":null}]}{"c":[{"v":"1980","f":null},{"v":9472,"f":null}]}{"c":[{"v":"","f":null},{"v":4592,"f":null}]},{"c":[{"v":"2000","f":null},{"v":381,"f":null}]}{"c":[{"v":"","f":null},{"v":0,"f":null}]}]};
+            dataUrl = "${ConfigurationHolder.config.grails.serverURL}/public/breakdown/${collectionInstance.id}";
+            $.get(dataUrl, {}, breakdownRequestHandler);
+          }
+        }
+
+        function breakdownRequestHandler(response) {
+          var data = new google.visualization.DataTable(response);
+          if (data.getNumberOfRows() > 0) {
+            draw(data);
+          }
+        }
+
+        function draw(dataTable) {
+          var vis = new google.visualization.ImageChart(document.getElementById('chart'));
+          var options = {};
+
+          // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
+          // The grouping is irrelevant here since there is only one numeric column.
+          options.cht = 'bvg';
+
+          // Add a data range.
+          var min = 0;
+          var max = dataTable.getTableProperty('max');
+          options.chds = min + ',' + max;
+
+          // Chart title and style
+          options.chtt = 'Additions by decade';  // chart title
+          options.chts = '7D8804,15';
+
+          //options.chxt = 'x,x,y';
+          //options.chxl = '2:|Decade';
+          //options.chxp = '0,50';
+
+          vis.draw(dataTable, options);
+        }
+
+        function handleQueryResponse(response) {
+          if (response.isError()) {
+            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+            return;
+          }
+          draw(response.getDataTable());
+        }
+
+        google.load("visualization", "1", {packages:["imagechart"]});
+        google.setOnLoadCallback(onLoadCallback);
+
+      </script>
     </body>
 </html>

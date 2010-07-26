@@ -27,10 +27,9 @@ class PublicController {
         } else {
             // lookup number of biocache records
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
+            def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
 
             def count = -1
-            //println "Url = " + url
             def conn = new URL(url).openConnection()
             conn.setConnectTimeout 3000
             try {
@@ -38,25 +37,49 @@ class PublicController {
                 //println "Response = " + json
                 count = JSON.parse(json)?.searchResult?.totalRecords
                 //println "Count = " + count
-            } catch (FileNotFoundException e) {
-                log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
-            } catch (ConnectException e) {
-                log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
-            } catch (ProtocolException e) {
-                log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
-            } catch (SocketTimeoutException e) {
-                log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
             } catch (Exception e) {
-                log.error "Failed to lookup record count. ${e.getMessage()} URL= ${url}."
+                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
             }
             def percent = -1
             if (count != -1 && collectionInstance.scope?.numRecords > 0) {
                 percent = (count*100)/collectionInstance.scope.numRecords
             }
+
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
                     numBiocacheRecords: count, percentBiocacheRecords: percent]
         }
     }
+
+    def breakdown = {
+        def collectionInstance = findCollection(params.id)
+        //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
+        if (!collectionInstance) {
+            log.error "Unable to find collection for id = ${params.id}"
+            def error = ["error":"unable to find collection for id = " + params.id]
+            render error as JSON
+        } else if (collectionInstance.groupType != ProviderGroup.GROUP_TYPE_COLLECTION) {
+            log.error "Group with id = ${params.id} is not a collection"
+            def error = ["error":"Group with id = " + params.id + "is not a collection"]
+            render error as JSON
+        } else {
+            /* get decade breakdown */
+            def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${collectionInstance.id}.json";
+            def conn = new URL(decadeUrl).openConnection()
+            conn.setConnectTimeout 3000
+            def dataTable = null
+            try {
+                def json = conn.content.text
+                //println "Response = " + json
+                def decades = JSON.parse(json)?.decades
+                dataTable = buildDataTable(decades)
+                //println "dataTable = " + dataTable
+            } catch (Exception e) {
+                log.error "Failed to lookup decade breakdown. ${e.getMessage()} URL= ${decadeUrl}."
+            }
+            render dataTable
+        }
+    }
+
 
     def listInstitutions = {
         [institutions: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION)]
@@ -77,10 +100,6 @@ class PublicController {
         def partnerCollections = ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION,[sort:"name"]).findAll {
             it.getIsALAPartner() == true
         }
-        //log.info ">>Map action called"
-        //partnerCollections.each {
-        //    println it.name
-        //}
         [collections: partnerCollections]
     }
 
@@ -91,7 +110,7 @@ class PublicController {
         locations.type = "FeatureCollection"
         locations.features = new ArrayList()
         List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
-        ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION).each {
+        ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION,[sort:"name"]).each {
             // only show ALA partners
             if (it.getIsALAPartner()) {
                 // make 0 values be -1
@@ -244,4 +263,35 @@ class PublicController {
         return result
     }
 
+
+    /**
+     * // input of form: [count:1, fieldValue:null1870, prefix:null, label:1870],
+     *                   [count:16, fieldValue:null1880, prefix:null, label:1880],
+     *                   [count:44, fieldValue:null1890, prefix:null, label:1890]
+       // output of form: {"cols":[
+            {"id":"","label":"","pattern":"","type":"string"},
+            {"id":"","label":"","pattern":"","type":"number"}],
+         "rows":[
+            {"c":[{"v":"1870","f":null},{"v":1,"f":null}]},
+            {"c":[{"v":"1880","f":null},{"v":16,"f":null}]},
+            {"c":[{"v":"1890","f":null},{"v":44,"f":null}]},
+            ],
+        "p":null}
+     *
+     * @param input
+     * @return
+     */
+    private String buildDataTable(input) {
+        int maximum = 0
+        boolean stagger = input.size() > 6
+        String result = """{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":["""
+        input.eachWithIndex {it, index ->
+            maximum = Math.max(maximum, it.count)
+            def label = (stagger && (index % 2) == 0) ? "" : it.label
+            result += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
+            result += (index == input.size()) ? "" : ","
+        }
+        result += '],"p":{"max":' + maximum + '}}'
+        return result
+    }
 }

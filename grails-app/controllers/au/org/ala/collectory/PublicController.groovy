@@ -134,7 +134,7 @@ class PublicController {
                 if (inst && lat == -1) {lat = inst.latitude}
                 if (inst && lon == -1) {lon = inst.longitude}
                 // only show if we have lat and long
-                if (lat != -1 && lon != -1) {
+                //if (lat != -1 && lon != -1) {
                     // and if matches current filter
                     if (showAll || matchTaxa(it.scope, params.filters)) {
                         def loc = [:]
@@ -142,13 +142,14 @@ class PublicController {
                         loc.properties = [
                                 name: it.name,
                                 id: it.id,
+                                isMappable: it.isMappable(),
                                 address: it.address?.buildAddress(),
                                 desc: it.makeAbstract(),
                                 url: request.getContextPath() + "/public/show/" + it.id]
                         loc.geometry = [type: "Point", coordinates: [lon,lat]]
                         locations.features << loc
                     }
-                }
+                //}
             }
         }
 

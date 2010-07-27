@@ -25,7 +25,8 @@
         <div class="section full-width">
           <div class="hrgroup">
             <h1>Australia's natural history collections</h1>
-            <p>Learn about the institution, the collections they hold and view records of specimens that have been digitised.</p>
+            <p>Learn about the institution, the collections they hold and view records of specimens that have been digitised. Currently only the collections of ALA partners are shown.
+              Over time this list will expand to include all natural history collections in Australia.</p>
             <g:if test="${flash.message}">
               <div class="message">${flash.message}</div>
             </g:if>
@@ -40,7 +41,7 @@
           </ul>
       </div>
 
-      <div id="map">
+      <div><!-- wrap map and list-->
         <div id="column-one" class="fudge">
           <div class="section">
             <p style="padding:5px 10px 0 10px">Show collections for these groups:</p>
@@ -64,41 +65,36 @@
             <!--div><textarea class="output" id="output"></textarea></div-->
           </div><!--close section-->
         </div><!--close column-one-->
-        <div id="column-two" class="map-column">
-          <div class="section">
-            <span id='numVisible' style="padding-left:10px;"></span>
-            <div id="map_canvas"></div>
-            <p style="padding-left:150px;"><img style="vertical-align: middle;" src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
-          </div><!--close section-->
-        </div><!--close column-two-->
-      </div><!--close map-->
+        <div id="map">
+          <div id="column-two" class="map-column">
+            <div class="section">
+              <span id='numVisible' style="padding-left:10px;"></span> <span id="numUnMappable"></span>
+              <div id="map_canvas"></div>
+              <p style="padding-left:150px;"><img style="vertical-align: middle;" src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
+            </div><!--close section-->
+          </div><!--close column-two-->
+        </div><!--close map-->
 
-      <div id="list">
-        <div id="column-one" class="full-width">
-          <div class="nameList section" id="names">
-            <p>This list may include collections that do not appear on the collections map (due to lack of location information).
-            Currently only the collections of ALA partners are shown.
-            Over time this list will expand to include all natural history collections in Australia.
-            The collections are listed alphabetically. Click on a collection name to see more details including the
-            digitised specimen records for the collection.</p>
-            <p>${collections.size()} collections listed. Collections not shown on the map are marked <img style="vertical-align:middle" src="${resource(dir:'images', file:'nomap.gif')}"/>.</p>
-            <ul>
-              <g:set var="half" value="${Math.ceil(collections.size()/2)}"/>
-              <g:each var="c" in="${collections}" status="i">
-                <li>
-                  <g:link controller="public" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link>
-                  <g:if test="${!c.isMappable()}">
-                    <img style="vertical-align:middle" src="${resource(dir:'images', file:'nomap.gif')}"/>
-                  </g:if>
-                </li>
-                <g:if test="${i == half}">
-                  </ul><ul>
-                </g:if>
-              </g:each>
-            </ul>
-          </div><!--close nameList-->
-        </div><!--close column-one-->
-      </div><!--close list-->
+        <div id="list">
+          <div id="column-two" class="list-column">
+            <div class="nameList section" id="names">
+              <p><span id="numFilteredCollections">No collections are selected</span>. Click on a collection name to see more details including the digitised specimen records for the collection.
+              Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images', file:'nomap.gif')}"/>.</p>
+              <ul id="filtered-list" style="padding-left:15px;">
+                <g:each var="c" in="${collections}" status="i">
+                  <li>
+                    <g:link controller="public" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link>
+                    <g:if test="${!c.isMappable()}">
+                      <img style="vertical-align:middle" src="${resource(dir:'images', file:'nomap.gif')}"/>
+                    </g:if>
+                  </li>
+                </g:each>
+              </ul>
+            </div><!--close nameList-->
+          </div><!--close column-one-->
+        </div><!--close list-->
+
+      </div><!--close map/list div-->
 
     </div><!--close content-->
   </body>

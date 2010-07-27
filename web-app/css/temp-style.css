@@ -23,3 +23,11 @@
 .map-column {
     width:auto !important;
 }
+.list-column {
+    width:755px !important;
+}
+
+/* move tabs across to where they relate to tabbed content */
+#nav-tabs li a[href='#map'] {
+    margin-left: 230px;
+}

@@ -15,6 +15,9 @@ var proj_options;
 // the data layer
 var vectors;
 
+// the server base url
+var baseUrl;
+
 // the ajax url for getting filtered features
 var featuresUrl;
 
@@ -24,9 +27,10 @@ function initMap(serverUrl) {
 
     // serverUrl is the base url for the site eg http://collections.ala.org.au in production
     // cannot use relative url as the context path varies with environment
-    var featureGraphicUrl = serverUrl + "/images/map/orange-dot.png";
-    var clusterGraphicUrl = serverUrl + "/images/map/orange-dot-multiple.png";
-    featuresUrl = serverUrl + "/public/mapFeatures";
+    baseUrl = serverUrl;
+    var featureGraphicUrl = baseUrl + "/images/map/orange-dot.png";
+    var clusterGraphicUrl = baseUrl + "/images/map/orange-dot-multiple.png";
+    featuresUrl = baseUrl + "/public/mapFeatures";
 
     // create the map
     map = new OpenLayers.Map('map_canvas', {
@@ -41,22 +45,29 @@ function initMap(serverUrl) {
     map.addControl(new OpenLayers.Control.PanPanel());
 
     // create Google base layers
+    var extent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34);
     var gmap = new OpenLayers.Layer.Google(
             "Google Streets",
-        {'sphericalMercator': true,
-          numZoomLevels: 24,
-          maxExtent: new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34)
-        });
+            {'sphericalMercator': true,
+              numZoomLevels: 24,
+              maxExtent: extent
+            });
     map.addLayer(gmap);
     var gsat = new OpenLayers.Layer.Google(
             "Google Satellite",
-    {type: G_SATELLITE_MAP, 'sphericalMercator': true, numZoomLevels: 24}
-            );
+            {type: G_SATELLITE_MAP,
+            'sphericalMercator': true,
+             numZoomLevels: 24,
+             maxExtent: extent
+            });
     map.addLayer(gsat);
     var ghyb = new OpenLayers.Layer.Google(
             "Google Hybrid",
-    {type: G_HYBRID_MAP, 'sphericalMercator': true, numZoomLevels: 24}
-            );
+            {type: G_HYBRID_MAP,
+            'sphericalMercator': true,
+             numZoomLevels: 24,
+             maxExtent: extent
+            });
     map.addLayer(ghyb);
 
     // zoom map
@@ -125,7 +136,7 @@ function initMap(serverUrl) {
     map.addControl(control);
     control.activate();
 
-    // creaye custom button to zoom extents to Australia
+    // create custom button to zoom extents to Australia
     var button = new OpenLayers.Control.Button({
         displayClass: "resetZoom",
         title: "Zoom to Australia",
@@ -148,8 +159,34 @@ function reloadData() {
 function dataRequestHandler(data) {
     // clear existing
     vectors.destroyFeatures();
+
     // parse returned json
     var features = new OpenLayers.Format.GeoJSON(proj_options).read(data);
+
+    // update list
+    updateList(features);
+
+    // add features to map
+    vectors.addFeatures(features);
+
+    // remove non-mappable collections
+    var unMappable = new Array();
+    for (var i = 0; i < features.length; i++) {
+        if (!features[i].attributes.isMappable) {
+            unMappable.push(features[i]);
+        }
+    }
+    vectors.destroyFeatures(unMappable);
+
+    // update number of unmappable collections
+    var unMappedText = "";
+    switch (unMappable.length) {
+        case 0: unMappedText = ""; break;
+        case 1: unMappedText = "1 collection cannot be mapped."; break;
+        default: unMappedText = unMappable.length + " collections cannot be mapped."; break;
+    }
+    document.getElementById('numUnMappable').innerHTML = unMappedText;
+
     // update display of number of features
     var innerFeatures = "";
     switch (features.length) {
@@ -158,10 +195,31 @@ function dataRequestHandler(data) {
         default: innerFeatures = features.length + " collections are selected."; break;
     }
     document.getElementById('numFeatures').innerHTML = innerFeatures;
-    // add features to map
-    vectors.addFeatures(features);
+
     // fire moved to initialise number visible
     moved(null);
+}
+
+function updateList(features) {
+    // update display of number of features
+    var innerFeatures = "";
+    switch (features.length) {
+        case 0: innerFeatures = "No collections are selected"; break;
+        case 1: innerFeatures = features.length + " collection is listed"; break;
+        default: innerFeatures = features.length + " collections are listed alphabetically"; break;
+    }
+    document.getElementById('numFilteredCollections').innerHTML = innerFeatures;
+
+    var innerHtml = "";
+    for (var i = 0; i < features.length; i++) {
+        innerHtml = innerHtml + "<li>";
+        innerHtml = innerHtml + "<a href=" + baseUrl + "/public/show/" + features[i].attributes.id + ">" + features[i].attributes.name + "</a>";
+        if (!features[i].attributes.isMappable) {
+          innerHtml = innerHtml + "<img style='vertical-align:middle' src='" + baseUrl + "/images/nomap.gif'/>";
+        }
+        innerHtml = innerHtml + "</li>";
+    }
+    document.getElementById('filtered-list').innerHTML = innerHtml;
 }
 
 /* hover handlers */

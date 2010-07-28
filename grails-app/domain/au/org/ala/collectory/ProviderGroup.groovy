@@ -139,13 +139,9 @@ class ProviderGroup implements Serializable {
         infoSource(nullable:true)
     }
 
-    static namedQueries = {
-        collections {
-            eq(groupType, GROUP_TYPE_COLLECTION)
-        }
-        institutions {
-            eq(groupType, GROUP_TYPE_INSTITUTION)
-        }
+    // default sort order
+    static mapping = {
+        sort: 'name'
     }
 
     /**
@@ -500,7 +496,7 @@ class ProviderGroup implements Serializable {
     InstitutionSummary getInstitutionSummary() {
         InstitutionSummary is = init(new InstitutionSummary()) as InstitutionSummary
         is.derivedInstCodes = getProviderCodesByPrecedenceAsList()
-        is.collections = children.collect {if (it.groupType==GROUP_TYPE_COLLECTION) [it.id, it.name]}
+        is.collections = getSafeChildren().collect {if (it.groupType==GROUP_TYPE_COLLECTION) [it.id, it.name]}
         return is
     }
 

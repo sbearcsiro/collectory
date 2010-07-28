@@ -4,7 +4,7 @@ import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.JSON
-import org.hibernate.TypeMismatchException
+
 import java.text.NumberFormat
 import java.text.ParseException
 
@@ -99,7 +99,7 @@ class CollectionController {
     def summary = {
         def collectionInstance = findCollection(params.id)
         if (collectionInstance) {
-            render collectionInstance.getSummary() as JSON
+            render collectionInstance.getCollectionSummary() as JSON
         } else {
             log.error "Unable to find collection for id = ${params.id}"
             def error = ["error":"unable to find collection for id = " + params.id]
@@ -118,23 +118,8 @@ class CollectionController {
         def coll = params.coll
         def colls = ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
         def matches = colls.findAll() {it.matchesCollection(inst, coll)}
-        def summaries = matches.collect() {it.getSummary()}
+        def summaries = matches.collect() {it.getCollectionSummary()}
         render summaries as JSON
-    }
-
-    def loadSupplementary = {
-        boolean override = params.override ? params.override : false
-        log.info ">>${authenticateService.userDomain().username} loading supplimentary data"
-        dataLoaderService.loadSupplementaryData("/data/collectory/bootstrap/sup.json", override, authenticateService.userDomain().username)
-        ActivityLog.log authenticateService.userDomain().username, Action.DATA_LOAD
-        redirect(url: "http://localhost:8080/Collectory")  //action: "list")
-    }
-
-    def loadAmrrnData = {
-        log.info ">>${authenticateService.userDomain().username} loading amrrn data"
-        dataLoaderService.loadAmrrnData()
-        ActivityLog.log authenticateService.userDomain().username, Action.DATA_LOAD
-        redirect(url: "http://localhost:8080/Collectory")  //action: "list")
     }
 
     // search for collections using the supplied search term

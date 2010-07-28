@@ -97,7 +97,7 @@ class ProviderGroup implements Serializable {
 
     static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
             'providerCodesByPrecedence', 'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes',
-            'summary', 'mappable']
+            'collectionSummary', 'institutionSummary', 'mappable']
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
 
@@ -303,6 +303,24 @@ class ProviderGroup implements Serializable {
         }
     }
 
+    /**
+     * Returns a list of provider codes with the highest precedence.
+     *
+     * Does NOT interpret the ANY keyword, ie returns it for caller to interpret.
+     *
+     * @return List of String
+     */
+    private List<String> getProviderCodesByPrecedenceAsList() {
+        String codes = getProviderCodesByPrecedence()
+        // return empty list if the keyword 'ANY' is present
+        if (codes) {
+            def jsonArray = JSON.parse(codes)
+            return jsonArray.collect {it}
+        } else {
+            return []
+        }
+    }
+
     /*
      * Returns the list of collection codes that can be used to look up specimen records
      *
@@ -454,13 +472,10 @@ class ProviderGroup implements Serializable {
      * - description
      * - provider codes for matching with biocache records
      *
-     * @return a CollectionSummary
+     * @return CollectionSummary
      */
-    CollectionSummary getSummary() {
-        CollectionSummary cs = new CollectionSummary(id: id, name: name, acronym: acronym)
-        if (guid?.startsWith('urn:lsid:')) {
-            cs.lsid = guid
-        }
+    CollectionSummary getCollectionSummary() {
+        CollectionSummary cs = init(new CollectionSummary())
         def inst = findPrimaryInstitution()
         if (inst) {
             cs.institution = inst.name
@@ -468,8 +483,36 @@ class ProviderGroup implements Serializable {
         }
         cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()
-        cs.shortDescription = makeAbstract()
         return cs
+    }
+
+    /**
+     * Returns a summary of the institution including:
+     * - id
+     * - name
+     * - acronym
+     * - lsid if available
+     * - description
+     * - provider codes for matching with biocache records
+     *
+     * @return InstitutionSummary
+     */
+    InstitutionSummary getInstitutionSummary() {
+        InstitutionSummary is = init(new InstitutionSummary()) as InstitutionSummary
+        is.derivedInstCodes = getProviderCodesByPrecedenceAsList()
+        is.collections = children.collect {if (it.groupType==GROUP_TYPE_COLLECTION) [it.id, it.name]}
+        return is
+    }
+
+    private ProviderGroupSummary init(pgs) {
+        pgs.id = id
+        pgs.name = name
+        pgs.acronym = acronym
+        pgs.shortDescription = makeAbstract()
+        if (guid?.startsWith('urn:lsid:')) {
+            pgs.lsid = guid
+        }
+        return pgs
     }
 
     /**

@@ -6,7 +6,7 @@
 <body>
 
 	<div class="nav">
-		<span class="menuButton"><a class="home" href="${createLinkTo(dir:'')}">Home</a></span>
+		<span class="menuButton"><cl:homeLink/></span>
 		<span class="menuButton"><g:link class="list" action="list">Logon List</g:link></span>
 	</div>
 

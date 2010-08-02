@@ -611,4 +611,8 @@ class CollectoryTagLib {
             out << "<img src='http://chart.apis.google.com/chart?chxl=1:|1870|1880|1890|1900|1910|1920|1930&chxt=y,x&chbh=a&chs=300x225&cht=bvg&chco=A2C180&chd=t:${values}&chtt=Vertical+bar+chart' width='300' height='225' alt='Vertical bar chart' />"
         }
     }
+
+    def homeLink = {
+        out << '<a class="home" href="' + createLink(uri:"/admin") + '">Home</a>'
+    }
 }

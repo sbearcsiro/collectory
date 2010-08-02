@@ -7,7 +7,7 @@
     
     <body>
       <div class="nav">
-          <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+          <span class="menuButton"><cl:homeLink/></span>
       </div>
       <div id="welcome">
         <h3>Natural History Collections Reports</h3> <p>Information about the quantity, quality and usage of the ALA's biodiversity collections.</p>

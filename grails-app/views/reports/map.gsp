@@ -9,7 +9,7 @@
     </head>
     <body onload="initialize()">
         <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+            <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
         </div>
         <div class="body">

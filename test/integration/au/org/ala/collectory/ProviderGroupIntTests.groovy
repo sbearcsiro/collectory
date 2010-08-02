@@ -59,28 +59,4 @@ class ProviderGroupIntTests extends GrailsUnitTestCase {
         assertEquals "ANU", orderedParents[0].name
     }
 
-    void testMatchesCollection() {
-
-        ProviderGroup inst = new ProviderGroup(
-                guid: '20',
-                name: 'Commonwealth S.. I.. R.. O..',
-                acronym: 'CSIRO',
-                groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
-                userLastModified: "test").save()
-
-        assertNotNull inst.id
-
-        ProviderGroup coll = new ProviderGroup(
-                guid: '19',
-                name: 'Bees',
-                groupType: ProviderGroup.GROUP_TYPE_COLLECTION,
-                providerCodes: '["ants", "pants", "plants"]',
-                userLastModified: "test").save()
-
-        coll.addToParents(inst)
-        coll.save()
-
-        assertTrue coll.matchesCollection('CSIRO', 'ants')
-        
-    }
 }

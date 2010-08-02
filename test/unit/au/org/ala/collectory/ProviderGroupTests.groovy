@@ -48,16 +48,4 @@ class ProviderGroupTests extends GrailsUnitTestCase {
         assertTrue pg.hasProviderCode('ants')
     }
 
-    void testMatchesCollection() {
-        ProviderGroup pg = new ProviderGroup(
-                guid: '237645',
-                name: 'Bees',
-                groupType: ProviderGroup.GROUP_TYPE_COLLECTION,
-                providerCodes: '["ants", "pants", "plants"]',
-                internalInstitutionCodes: '["CSIRO"]')
-
-        assertTrue pg.matchesCollection('csiro', 'ants')
-
-        // other tests require relationships - see integration tests
-    }
 }

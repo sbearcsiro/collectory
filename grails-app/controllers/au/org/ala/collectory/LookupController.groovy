@@ -8,26 +8,32 @@ class LookupController {
 
     def index = { }
 
+    def collection = {
+        def inst = params.inst
+        def coll = params.coll
+        if (!inst) {
+            def error = ["error":"must specify an institution code as parameter inst"]
+            render error as JSON
+        }
+        if (!coll) {
+            def error = ["error":"must specify a collection code as parameter coll"]
+            render error as JSON
+        }
+        def pg = ProviderMap.findMatch(inst, coll)
+        if (pg) {
+            render pg.getCollectionSummary() as JSON
+        } else {
+            def error = ["error":"unable to find collection with inst code = ${inst} and coll code = ${coll}"]
+            render error as JSON
+        }
+    }
+
     def findInstitution = {
         def inst
         if (params.id) {
             inst = find(params.id, ProviderGroup.GROUP_TYPE_INSTITUTION)
         } else if (params.code) {
-            def results = ProviderGroup.createCriteria().list() {
-                eq ('groupType', 'Institution')
-                or {
-                    like ('internalProviderCodes', "%\"${params.code}\"%")
-                    like ('internalProviderCodes', "%\"any\"%")
-                    like ('providerCodes', "%\"${params.code}\"%")
-                    eq ('acronym', "${params.code}")
-                }
-            }
-            // TODO: double check as the above is a bit loose
-            //goodResults = results.collect {if (it.matches)}
-            // TODO: handle multiple hits
-            if (results.size() > 0) {
-                inst = results[0]
-            }
+            inst = ProviderMap.findInstitution(params.code)
         } else {
             def error = ["error":"no code or id passed in request"]
             render error as JSON

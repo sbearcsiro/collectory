@@ -191,6 +191,24 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                    <label for="dateLastModified"><g:message code="providerGroup.dateLastModified.label" default="Date Last Modified" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'dateLastModified', 'errors')}">
+                                    <g:datePicker name="dateLastModified" precision="day" value="${providerGroupInstance?.dateLastModified}"  />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="userLastModified"><g:message code="providerGroup.userLastModified.label" default="User Last Modified" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'userLastModified', 'errors')}">
+                                    <g:textArea name="userLastModified" cols="40" rows="5" value="${providerGroupInstance?.userLastModified}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                     <label for="dateFirstDataReceived"><g:message code="providerGroup.dateFirstDataReceived.label" default="Date First Data Received" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'dateFirstDataReceived', 'errors')}">
@@ -209,6 +227,15 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
+                                    <label for="networkMembership"><g:message code="providerGroup.networkMembership.label" default="Network Membership" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'networkMembership', 'errors')}">
+                                    <g:textArea name="networkMembership" cols="40" rows="5" value="${providerGroupInstance?.networkMembership}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
                                     <label for="institutionType"><g:message code="providerGroup.institutionType.label" default="Institution Type" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'institutionType', 'errors')}">
@@ -218,28 +245,28 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="collectionType"><g:message code="providerGroup.collectionType.label" default="Collection Type" /></label>
-                                </td>
-                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'collectionType', 'errors')}">
-                                    <g:select name="collectionType" from="${providerGroupInstance.constraints.collectionType.inList}" value="${providerGroupInstance?.collectionType}" valueMessagePrefix="providerGroup.collectionType" noSelection="['': '']" />
-                                </td>
-                            </tr>
-                        
-                            <tr class="prop">
-                                <td valign="top" class="name">
-                                    <label for="providerCollectionCode"><g:message code="providerGroup.providerCollectionCode.label" default="Provider Collection Code" /></label>
+                                    <label for="providerCodes"><g:message code="providerGroup.providerCodes.label" default="Provider Codes" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'providerCodes', 'errors')}">
-                                    <g:textField name="providerCollectionCode" maxlength="45" value="${providerGroupInstance?.providerCodes}" />
+                                    <g:textArea name="providerCodes" cols="40" rows="5" value="${providerGroupInstance?.providerCodes}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="collectionNumRecords"><g:message code="providerGroup.collectionNumRecords.label" default="Collection Num Records" /></label>
+                                    <label for="internalProviderCodes"><g:message code="providerGroup.internalProviderCodes.label" default="Internal Provider Codes" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'collectionNumRecords', 'errors')}">
-                                    <g:textField name="collectionNumRecords" value="${fieldValue(bean: providerGroupInstance, field: 'collectionNumRecords')}" />
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'internalProviderCodes', 'errors')}">
+                                    <g:textArea name="internalProviderCodes" cols="40" rows="5" value="${providerGroupInstance?.internalProviderCodes}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="internalInstitutionCodes"><g:message code="providerGroup.internalInstitutionCodes.label" default="Internal Institution Codes" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'internalInstitutionCodes', 'errors')}">
+                                    <g:textField name="internalInstitutionCodes" maxlength="45" value="${providerGroupInstance?.internalInstitutionCodes}" />
                                 </td>
                             </tr>
                         
@@ -258,6 +285,69 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'projectEnd', 'errors')}">
                                     <g:datePicker name="projectEnd" precision="day" value="${providerGroupInstance?.projectEnd}" noSelection="['': '']" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="scope"><g:message code="providerGroup.scope.label" default="Scope" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'scope', 'errors')}">
+                                    <g:select name="scope.id" from="${au.org.ala.collectory.CollectionScope.list()}" optionKey="id" value="${providerGroupInstance?.scope?.id}" noSelection="['null': '']" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="infoSource"><g:message code="providerGroup.infoSource.label" default="Info Source" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'infoSource', 'errors')}">
+                                    <g:select name="infoSource.id" from="${au.org.ala.collectory.InfoSource.list()}" optionKey="id" value="${providerGroupInstance?.infoSource?.id}" noSelection="['null': '']" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="collectionSummary"><g:message code="providerGroup.collectionSummary.label" default="Collection Summary" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'collectionSummary', 'errors')}">
+                                    
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="institutionSummary"><g:message code="providerGroup.institutionSummary.label" default="Institution Summary" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'institutionSummary', 'errors')}">
+                                    
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="mappable"><g:message code="providerGroup.mappable.label" default="Mappable" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'mappable', 'errors')}">
+                                    <g:checkBox name="mappable" value="${providerGroupInstance?.mappable}" />
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="primaryContact"><g:message code="providerGroup.primaryContact.label" default="Primary Contact" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'primaryContact', 'errors')}">
+                                    
+                                </td>
+                            </tr>
+                        
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <label for="trimLength"><g:message code="providerGroup.trimLength.label" default="Trim Length" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'trimLength', 'errors')}">
+                                    
                                 </td>
                             </tr>
                         

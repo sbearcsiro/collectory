@@ -1,11 +1,9 @@
 package au.org.ala.collectory
 
 /**
- * Created by markew
- * Date: Jul 28, 2010
- * Time: 3:32:16 PM
+ * @.history 2-8-2010 removed inst codes as these are now related only to collections (can be added back with a different mechanism if required)
  */
 class InstitutionSummary extends ProviderGroupSummary {
-    List derivedInstCodes
+//    List derivedInstCodes
     List collections
 }

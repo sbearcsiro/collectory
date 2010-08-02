@@ -29,6 +29,7 @@ import grails.converters.JSON
  * .@history 2010-04-23 MEW Replaced String location with BigDecimal latitude, longitude and String altitude
  * .@history 2010-05-27 MEW Refactored model
  * .@history 2010-06-02 MEW Renamed providerCodes, changed to list, added internal mirror field
+ * .@history 2010-07-02 MEW Replaced providerCodes with ProviderCode and ProviderMap tables
  *
  */
 
@@ -70,12 +71,6 @@ class ProviderGroup implements Serializable {
 
     static embedded = ['address', 'logoRef', 'imageRef']
 
-    // collection attributes
-    String providerCodes       // the codes used for this entity by the owning institution as a JSON array
-                               //  form is: ["code1", "code2"]
-    String internalProviderCodes// a set of codes for internal use that override the providerCodes
-    String internalInstitutionCodes
-
     // institution attributes
     String institutionType      // the type of institution, eg herbarium, library
 
@@ -91,12 +86,14 @@ class ProviderGroup implements Serializable {
 
     // may have any number of parents and children
     static hasMany = [ parents: ProviderGroup, children: ProviderGroup ]
-
     /* this causes stack overflow from circular validations - we don't want cascading deletes anyway */
     //static belongsTo = ProviderGroup
 
-    static transients = ['providerCodeList', 'listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
-            'providerCodesByPrecedence', 'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes',
+    // maps to exactly one providerMap
+    static hasOne = [providerMap: ProviderMap]
+
+    static transients = ['listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
+            'primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes',
             'collectionSummary', 'institutionSummary', 'mappable']
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
@@ -127,10 +124,6 @@ class ProviderGroup implements Serializable {
         notes(nullable:true, maxSize:2048)
         networkMembership(nullable:true, maxSize:256)
         institutionType(nullable:true, maxSize:45, inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government', 'herbarium', 'historicalSociety', 'horticulturalInstitution', 'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum', 'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute', 'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'])
-
-        providerCodes(nullable:true, maxSize:2048)
-        internalProviderCodes(nullable:true, maxSize:2048)
-        internalInstitutionCodes(nullable:true, maxSize:45)
 
         projectStart(nullable:true)
         projectEnd(nullable:true)
@@ -279,65 +272,19 @@ class ProviderGroup implements Serializable {
         return new ArrayList<ProviderGroup>(this.getParents()).sort{item-> item.name}
     }
 
-    /**
-     * Returns the JSON string of provider codes with the highest precedence.
-     *
-     * @return JSON array of strings
-     */
-    private String getProviderCodesByPrecedence() {
-        switch (this.groupType) {
-            case GROUP_TYPE_INSTITUTION:
-                if (internalProviderCodes) return internalProviderCodes
-                if (providerCodes) return providerCodes
-                if (acronym) return "[${acronym}]"
-                return ""
-            case GROUP_TYPE_COLLECTION:
-                if (internalProviderCodes) return internalProviderCodes
-                return providerCodes
-            default:
-                return ""
-        }
-    }
-
-    /**
-     * Returns a list of provider codes with the highest precedence.
-     *
-     * Does NOT interpret the ANY keyword, ie returns it for caller to interpret.
-     *
-     * @return List of String
-     */
-    private List<String> getProviderCodesByPrecedenceAsList() {
-        String codes = getProviderCodesByPrecedence()
-        // return empty list if the keyword 'ANY' is present
-        if (codes) {
-            def jsonArray = JSON.parse(codes)
-            return jsonArray.collect {it}
-        } else {
-            return []
-        }
-    }
-
     /*
      * Returns the list of collection codes that can be used to look up specimen records
      *
      * stored form of codes is: ["code1", "code2"]
+     *
      * @return the list of codes - may be empty
+     *
+     * @.history 2-8-2010 changed to use code/map tables
      */
     List<String> getListOfCollectionCodesForLookup() {
-        if (groupType == GROUP_TYPE_COLLECTION) {
-            String codes = getProviderCodesByPrecedence()
-            // return empty list if the keyword 'ANY' is present
-            if (containsAny(codes)) {
-                return []
-            }
-            if (codes) {
-                def jsonArray = JSON.parse(codes)
-                return jsonArray.collect {it}
-            } else {
-                return []
-            }
+        if (this.providerMap) {
+            return this.providerMap.getCollectionCodes().collect {it.code}
         } else {
-            // may wish to combine all collection codes from child collections in the future
             return []
         }
     }
@@ -347,25 +294,12 @@ class ProviderGroup implements Serializable {
      * It is intended that this method is called on a collection.
      *
      * @return the list of codes - may be empty
+     *
+     * @.history 2-8-2010 changed to use code/map tables
      */
     List<String> getListOfInstitutionCodesForLookup() {
-        String codes = ""
-        // institution codes that are defined in the collection take precedence
-        if (this.internalInstitutionCodes) {
-            codes = getInternalInstitutionCodes()
-        } else {
-            def inst = findPrimaryInstitution()
-            if (inst) {
-                codes = inst.getProviderCodesByPrecedence();
-            }
-        }
-        // return empty list if the keyword 'ANY' is present
-        if (containsAny(codes)) {
-            return []
-        }
-        if (codes) {
-            def jsonArray = JSON.parse(codes)
-            return jsonArray.collect {it}
+        if (this.providerMap) {
+            return this.providerMap.getInstitutionCodes().collect {it.code}
         } else {
             return []
         }
@@ -404,61 +338,6 @@ class ProviderGroup implements Serializable {
     }
 
     /**
-     * Returns true if the passed code is included (as a whole word) in the group's provider codes or
-     * internal provider codes or if the internal codes are set to match ANY.
-     *
-     * Notes:
-     * If internal (hidden) provider codes are present the code must match them.
-     * If the internal provider codes contains the keyword "ANY", all codes will match.
-     * Matches are case insensitive.
-     * If the group is an institution, the acronym is the default provider code.
-     * Assumes provider codes are represented as JSON array strings.
-     *
-     * @param code the code to match
-     * @return true if this group has the passed code
-     */
-    boolean hasProviderCode(String code) {
-        if (internalProviderCodes && containsAny(internalProviderCodes)) {
-            return true
-        } else if (internalProviderCodes) {
-            return internalProviderCodes?.toLowerCase() =~ '"' + code?.toLowerCase() + '"'
-        } else if (providerCodes) {
-            return providerCodes?.toLowerCase() =~ '"' + code?.toLowerCase() + '"'
-        } else if (groupType == ProviderGroup.GROUP_TYPE_INSTITUTION) {
-            return acronym?.equalsIgnoreCase(code)
-        }
-        return false
-    }
-
-    /**
-     * Tests whether this collection matches the supplied provider codes.
-     *
-     * @param institutionCode
-     * @param collectionCode
-     * @return
-     */
-    boolean matchesCollection(String institutionCode, String collectionCode) {
-        // must be a collection
-        if (groupType != GROUP_TYPE_COLLECTION) {return false}
-        // cannot both be null or empty
-        if (!institutionCode && !collectionCode) {return false}
-        // must have collection code if it is given
-        boolean hasCollectionCode = !collectionCode || hasProviderCode(collectionCode)
-        // must have institution code if it is given
-        boolean hasInstitutionCode = false
-        if (hasCollectionCode) {
-            // internal code takes precedence
-            if (internalInstitutionCodes && institutionCode) {
-                hasInstitutionCode = internalInstitutionCodes?.toLowerCase() =~ '"' + institutionCode.toLowerCase() + '"'
-            } else {
-                hasInstitutionCode = !institutionCode || findPrimaryInstitution()?.hasProviderCode(institutionCode)
-            }
-        }
-        // must satisfy both
-        return hasCollectionCode && hasInstitutionCode
-    }
-
-    /**
      * Returns a summary of the collection including:
      * - id
      * - name
@@ -492,10 +371,11 @@ class ProviderGroup implements Serializable {
      * - provider codes for matching with biocache records
      *
      * @return InstitutionSummary
+     *
+     * @.history 2-8-2010 removed inst codes as these are now related only to collections (can be added back with a different mechanism if required)
      */
     InstitutionSummary getInstitutionSummary() {
         InstitutionSummary is = init(new InstitutionSummary()) as InstitutionSummary
-        is.derivedInstCodes = getProviderCodesByPrecedenceAsList()
         is.collections = getSafeChildren().collect {if (it.groupType==GROUP_TYPE_COLLECTION) [it.id, it.name]}
         return is
     }

@@ -85,6 +85,11 @@
         <p class="mainText">Only if you know what you are doing.</p>
         <p class="mainText"><g:link controller="admin" action="loadSupplementary" params="[override:true]">with override</g:link></p>
       </div>
+
+      <div class="homeCell">
+        <g:link class="mainLink" controller="admin" action="export">Export all data as JSON</g:link>
+        <p class="mainText">All tables exported verbatim as JSON</p>
+      </div>
     </g:ifAllGranted>
       <!--div class="homeCell">
         <h4 class="inline">Add an institution</h4>

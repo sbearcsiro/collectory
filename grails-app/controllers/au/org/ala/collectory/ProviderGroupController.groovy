@@ -2,8 +2,6 @@ package au.org.ala.collectory
 
 class ProviderGroupController {
 
-    def authenticateService
-    
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
     def index = {
@@ -18,14 +16,11 @@ class ProviderGroupController {
     def create = {
         def providerGroupInstance = new ProviderGroup()
         providerGroupInstance.properties = params
-        providerGroupInstance.userLastModified = authenticateService.userDomain().username
         return [providerGroupInstance: providerGroupInstance]
     }
 
     def save = {
         def providerGroupInstance = new ProviderGroup(params)
-        providerGroupInstance.dateLastModified = new Date()
-        providerGroupInstance.userLastModified = authenticateService.userDomain().username
         if (providerGroupInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), providerGroupInstance.id])}"
             redirect(action: "show", id: providerGroupInstance.id)
@@ -59,8 +54,6 @@ class ProviderGroupController {
 
     def update = {
         def providerGroupInstance = ProviderGroup.get(params.id)
-        providerGroupInstance.dateLastModified = new Date()
-        providerGroupInstance.userLastModified = authenticateService.userDomain().username
         if (providerGroupInstance) {
             if (params.version) {
                 def version = params.version.toLong()

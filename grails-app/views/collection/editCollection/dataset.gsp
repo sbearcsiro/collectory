@@ -73,16 +73,11 @@
                             <cl:helpTD/>
                         </tr>
 
-<!-- codes -->          <tr class="prop">
+<!-- codes -->          <!--tr class="prop">
                             <td valign="top" class="name">
                               <label for="providerCodes"><g:message code="providerGroup.providerCodes.label" default="Collection codes" /></label>
                             </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'providerCodes', 'errors')}">
-                                <g:textField name="providerCodes" value="${fieldValue(bean: command, field: 'providerCodes')}" />
-                                <cl:helpText code="providerGroup.providerCodes"/>
-                            </td>
-                            <cl:helpTD/>
-                        </tr>
+                        </tr-->
 
                         </tbody>
                     </table>

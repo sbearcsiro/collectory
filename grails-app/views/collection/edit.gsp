@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}">Home</a></span>
+            <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
         </div>
@@ -295,14 +295,14 @@
                                 </td>
                             </tr>
                         
-                            <tr class="prop">
+                            <!--  tr class="prop">
                                 <td valign="top" class="name">
                                   <label for="providerCollectionCode"><g:message code="providerGroup.providerCollectionCode.label" default="Provider Collection Code" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerGroupInstance, field: 'providerCodes', 'errors')}">
                                     <g:textField name="providerCollectionCode" maxlength="45" value="${providerGroupInstance?.providerCodes}" />
                                 </td>
-                            </tr>
+                            </tr-->
                         
                             <tr class="prop">
                                 <td valign="top" class="name">

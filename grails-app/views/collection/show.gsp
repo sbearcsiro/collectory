@@ -8,7 +8,7 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><a class="home" href="${createLink(uri: '/')}">Home</a></span>
+            <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
@@ -268,10 +268,9 @@
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "infoSource.webServiceProtocol")}</td>
                         </tr>
 
-<!-- provider codes --> <tr class="prop">
+<!-- provider codes --> <!--tr class="prop">
                             <td valign="top" class="name"><g:message code="providerGroup.providerCodes.label" default="Collection codes" /></td>
-                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.providerCodes}'/></td>
-                        </tr>
+                        </tr-->
 
 <!-- Contacts -->       <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.contacts.label" default="Contacts" /></td>

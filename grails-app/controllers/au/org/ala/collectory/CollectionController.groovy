@@ -686,7 +686,7 @@ v                   }
     }
 
     private bindDataset = {
-        bindData(flow.command, params, [include:['webServiceUri', 'webServiceProtocol', 'numRecords', 'numRecordsDigitised', 'providerCodes']])
+        bindData(flow.command, params, [include:['webServiceUri', 'webServiceProtocol', 'numRecords', 'numRecordsDigitised']])
         flow.command.validate()
         if (flow.command.hasErrors()) {
             flow.command.errors.each {log.warn it}

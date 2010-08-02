@@ -36,7 +36,10 @@ class CollectionCommand implements Serializable {
     String email
     String phone
     String notes
+
+    /* Not used until we implement code editing within edit collection */
     String providerCodes       // a comma-separated list of the codes used for this entity by the owning institution
+
     List<String> networkMembership    // list of peak body names
 
     List<ProviderGroup> parents = []
@@ -299,7 +302,7 @@ class CollectionCommand implements Serializable {
         email = collectionInstance.email
         phone = collectionInstance.phone
         notes = collectionInstance.notes
-        providerCodes = toCSVString(collectionInstance.providerCodes)
+        //providerCodes = toCSVString(collectionInstance.providerCodes)
         networkMembership = toList(collectionInstance.networkMembership)
 
         parents = collectionInstance.getParentInstitutionsOrderedByName()
@@ -383,8 +386,7 @@ class CollectionCommand implements Serializable {
         ['longitude', 'latitude'].each {
             collectionInstance."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
-        //println "provider codes = ${this.providerCodes}"
-        collectionInstance.providerCodes = toJSON(this.providerCodes)
+        //collectionInstance.providerCodes = toJSON(this.providerCodes)
         collectionInstance.networkMembership = toJSON(this.networkMembership)
         // update collection scope
         // create a scope if there isn't one

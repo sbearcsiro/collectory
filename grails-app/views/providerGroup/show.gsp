@@ -163,6 +163,20 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.dateLastModified.label" default="Date Last Modified" /></td>
+                            
+                            <td valign="top" class="value"><g:formatDate date="${providerGroupInstance?.dateLastModified}" /></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.userLastModified.label" default="User Last Modified" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "userLastModified")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="providerGroup.dateFirstDataReceived.label" default="Date First Data Received" /></td>
                             
                             <td valign="top" class="value"><g:formatDate date="${providerGroupInstance?.dateFirstDataReceived}" /></td>
@@ -177,6 +191,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.networkMembership.label" default="Network Membership" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "networkMembership")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="providerGroup.institutionType.label" default="Institution Type" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "institutionType")}</td>
@@ -184,23 +205,23 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.collectionType.label" default="Collection Type" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "collectionType")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.providerCollectionCode.label" default="Provider Collection Code" /></td>
+                            <td valign="top" class="name"><g:message code="providerGroup.providerCodes.label" default="Provider Codes" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "providerCodes")}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.collectionNumRecords.label" default="Collection Num Records" /></td>
+                            <td valign="top" class="name"><g:message code="providerGroup.internalProviderCodes.label" default="Internal Provider Codes" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "collectionNumRecords")}</td>
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "internalProviderCodes")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.internalInstitutionCodes.label" default="Internal Institution Codes" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "internalInstitutionCodes")}</td>
                             
                         </tr>
                     
@@ -215,6 +236,20 @@
                             <td valign="top" class="name"><g:message code="providerGroup.projectEnd.label" default="Project End" /></td>
                             
                             <td valign="top" class="value"><g:formatDate date="${providerGroupInstance?.projectEnd}" /></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.scope.label" default="Scope" /></td>
+                            
+                            <td valign="top" class="value"><g:link controller="collectionScope" action="show" id="${providerGroupInstance?.scope?.id}">${providerGroupInstance?.scope?.encodeAsHTML()}</g:link></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.infoSource.label" default="Info Source" /></td>
+                            
+                            <td valign="top" class="value"><g:link controller="infoSource" action="show" id="${providerGroupInstance?.infoSource?.id}">${providerGroupInstance?.infoSource?.encodeAsHTML()}</g:link></td>
                             
                         </tr>
                     
@@ -245,15 +280,9 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.sources.label" default="Sources" /></td>
+                            <td valign="top" class="name"><g:message code="providerGroup.collectionSummary.label" default="Collection Summary" /></td>
                             
-                            <td valign="top" style="text-align: left;" class="value">
-                                <ul>
-                                <g:each in="${providerGroupInstance.sources}" var="s">
-                                    <li><g:link controller="infoSource" action="show" id="${s.id}">${s?.encodeAsHTML()}</g:link></li>
-                                </g:each>
-                                </ul>
-                            </td>
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "collectionSummary")}</td>
                             
                         </tr>
                     
@@ -261,6 +290,62 @@
                             <td valign="top" class="name"><g:message code="providerGroup.contacts.label" default="Contacts" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "contacts")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.institutionSummary.label" default="Institution Summary" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "institutionSummary")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.listOfCollectionCodesForLookup.label" default="List Of Collection Codes For Lookup" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "listOfCollectionCodesForLookup")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.listOfInstitutionCodesForLookup.label" default="List Of Institution Codes For Lookup" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "listOfInstitutionCodesForLookup")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.mappable.label" default="Mappable" /></td>
+                            
+                            <td valign="top" class="value"><g:formatBoolean boolean="${providerGroupInstance?.mappable}" /></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.parentInstitutionsOrderedByName.label" default="Parent Institutions Ordered By Name" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "parentInstitutionsOrderedByName")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.primaryContact.label" default="Primary Contact" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "primaryContact")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.safeChildren.label" default="Safe Children" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "safeChildren")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerGroup.trimLength.label" default="Trim Length" /></td>
+                            
+                            <td valign="top" class="value">${fieldValue(bean: providerGroupInstance, field: "trimLength")}</td>
                             
                         </tr>
                     

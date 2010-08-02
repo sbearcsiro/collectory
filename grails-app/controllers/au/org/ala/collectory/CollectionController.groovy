@@ -98,6 +98,7 @@ class CollectionController {
      */
     def summary = {
         def collectionInstance = findCollection(params.id)
+        println ">> summary id = " + params.id
         if (collectionInstance) {
             render collectionInstance.getCollectionSummary() as JSON
         } else {
@@ -116,10 +117,14 @@ class CollectionController {
     def findCollectionFor = {
         def inst = params.inst
         def coll = params.coll
-        def colls = ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
-        def matches = colls.findAll() {it.matchesCollection(inst, coll)}
-        def summaries = matches.collect() {it.getCollectionSummary()}
-        render summaries as JSON
+        def pg = ProviderMap.findMatch(inst, coll)
+        if (pg) {
+            render pg.getCollectionSummary() as JSON
+        } else {
+            log.error "Unable to find collection for inst code = ${params.inst} and coll code = ${params.coll}"
+            def error = ["error":"unable to find collection for inst code = ${params.inst} and coll code = ${params.coll}"]
+            render error as JSON
+        }
     }
 
     // search for collections using the supplied search term

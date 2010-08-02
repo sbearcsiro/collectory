@@ -23,13 +23,13 @@
         <!--Breadcrumbs-->
         <div id="breadcrumb"><a href="http://test.ala.org.au">Home</a> <a href="http://test.ala.org.au/explore/">Explore</a><span class="current">Natural History Collections</span></div>
         <div class="section full-width">
+          <g:if test="${flash.message}">
+            <div class="message">${flash.message}</div>
+          </g:if>
           <div class="hrgroup">
             <h1>Australia's natural history collections</h1>
             <p>Learn about the institution, the collections they hold and view records of specimens that have been digitised. Currently only the collections of ALA partners are shown.
               Over time this list will expand to include all natural history collections in Australia.</p>
-            <g:if test="${flash.message}">
-              <div class="message">${flash.message}</div>
-            </g:if>
           </div><!--close hrgroup-->
         </div><!--close section-->
       </div><!--close header-->

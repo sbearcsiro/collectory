@@ -130,6 +130,7 @@ class ProviderGroup implements Serializable {
 
         scope(nullable:true)            // should be present if type is "Collection"
         infoSource(nullable:true)
+        providerMap(nullable:true)
     }
 
     // default sort order

@@ -80,8 +80,9 @@ class PublicController {
             def conn = new URL(decadeUrl).openConnection()
             conn.setConnectTimeout 3000
             def dataTable = null
+            def json
             try {
-                def json = conn.content.text
+                json = conn.content.text
                 //println "Response = " + json
                 def decades = JSON.parse(json)?.decades
                 dataTable = buildDataTable(decades)
@@ -89,7 +90,13 @@ class PublicController {
             } catch (Exception e) {
                 log.error "Failed to lookup decade breakdown. ${e.getMessage()} URL= ${decadeUrl}."
             }
-            render dataTable
+            if (dataTable) {
+                render dataTable
+            } else {
+                log.warn "unable to build data table from decade json = " + json
+                def error = ["error":"Unable to build data table from decade json"]
+                render error as JSON
+            }
         }
     }
 

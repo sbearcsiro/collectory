@@ -182,7 +182,7 @@ class ReportsController {
                 collectionsWithType = countNotNull("scope.collectionType")
                 collectionsWithFocus = countNotNull("focus")
                 collectionsWithKeywords = countNotNull("scope.keywords")
-                collectionsWithProviderCodes = countNotNull("providerCodes")
+                collectionsWithProviderCodes = ProviderMap.count()
                 collectionsWithGeoDescription = countNotNull("scope.geographicDescription")
                 collectionsWithNumRecords = countNotUnknown("scope.numRecords")
                 collectionsWithNumRecordsDigitised = countNotUnknown("scope.numRecordsDigitised")

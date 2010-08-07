@@ -27,6 +27,8 @@
                 <g:hiddenField name="version" value="${providerGroupInstance?.version}" />
                 <!-- event field is used by submit buttons to pass the web flow event (rather than using the text of the button as the event name) -->
                 <g:hiddenField id="event" name="_eventId" value="done" />
+                <g:hiddenField id="logoFile" name="_logoFile" value="${providerGroupInstance?.logoRef?.file}" />
+                <g:hiddenField id="imageFile" name="_imageFile" value="${providerGroupInstance?.imageRef?.file}" />
                 <div class="dialog">
                     <table>
                         <tbody>
@@ -68,6 +70,39 @@
                                   </td>
                               </tr>
                             </g:ifAllGranted>
+
+<!-- pub description -->    <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="pubDescription"><g:message code="providerGroup.pubDescription.label" default="Public Description" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: command, field: 'pubDescription', 'errors')}">
+                                    <g:textArea name="pubDescription" cols="40" rows="5" value="${providerGroupInstance?.pubDescription}" />
+                                    <cl:helpText code="institution.pubDescription"/>
+                                  </td>
+                                  <cl:helpTD/>
+                            </tr>
+
+<!-- tech description -->   <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="techDescription"><g:message code="providerGroup.techDescription.label" default="Technical Description" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: command, field: 'techDescription', 'errors')}">
+                                    <g:textArea name="techDescription" cols="40" rows="5" value="${providerGroupInstance?.techDescription}" />
+                                    <cl:helpText code="institution.techDescription"/>
+                                  </td>
+                                  <cl:helpTD/>
+                            </tr>
+
+<!-- focus -->              <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="focus"><g:message code="providerGroup.focus.label" default="Contribution to ALA" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: command, field: 'focus', 'errors')}">
+                                    <g:textArea name="focus" cols="40" rows="5" value="${providerGroupInstance?.focus}" />
+                                    <cl:helpText code="institution.focus"/>
+                                </td>
+                              <cl:helpTD/>
+                            </tr>
 
 <!-- network membership -->
                             <tr class="prop">

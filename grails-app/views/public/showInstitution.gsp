@@ -55,6 +55,11 @@
         <g:if test="${institution.pubDescription}">
           <h2>Description</h2>
           <cl:formattedText>${fieldValue(bean: institution, field: "pubDescription")}</cl:formattedText>
+          <cl:formattedText>${fieldValue(bean: institution, field: "techDescription")}</cl:formattedText>
+        </g:if>
+        <g:if test="${institution.focus}">
+          <h2>Contribution to the Atlas</h2>
+          <cl:formattedText>${fieldValue(bean: institution, field: "focus")}</cl:formattedText>
         </g:if>
         <h2>Collections</h2>
         <ol>
@@ -70,7 +75,7 @@
         <g:if test="${fieldValue(bean: institution, field: 'imageRef') && fieldValue(bean: institution, field: 'imageRef.file')}">
           <div class="section">
             <img alt="${fieldValue(bean: institution, field: "imageRef.file")}"
-                    src="${resource(absolute:"true", dir:"data/collection/", file:institution.imageRef.file)}" />
+                    src="${resource(absolute:"true", dir:"data/institution/", file:institution.imageRef.file)}" />
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.caption")}</p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.attribution")}</p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.copyright")}</p>

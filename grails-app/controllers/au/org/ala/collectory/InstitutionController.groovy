@@ -2,6 +2,7 @@ package au.org.ala.collectory
 
 import org.springframework.web.multipart.MultipartFile
 import grails.converters.JSON
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class InstitutionController {
 
@@ -52,6 +53,7 @@ class InstitutionController {
             render(view: "/institution/edit", model: [providerGroupInstance: flow.providerGroupInstance])
             on("done").to "done"
             on("cancel").to "cancel"
+            /* TODO: removing images destroys changes as we are not binding params to the model - need a command object solution */
             on ("removeImage") {
                 flow.providerGroupInstance.imageRef = null
             }.to "showEdit"
@@ -66,6 +68,8 @@ class InstitutionController {
         done {
             action {
                 log.debug "Entered done event"
+                //params.each {println it}
+                
                 def children = params.children
                 children.each {
                     log.debug "Child: ${it}, ${it.class}"
@@ -102,7 +106,19 @@ class InstitutionController {
                         providerGroupInstance.longitude = params.longitude ? new BigDecimal(params.longitude) : ProviderGroup.NO_INFO_AVAILABLE
 
                         providerGroupInstance.properties['guid', 'name', 'acronym', 'websiteUrl', 'logoRef', 'imageRef', 'isALAPartner',
-                                'institutionType', 'state', 'email', 'phone'] = params
+                                'institutionType', 'state', 'email', 'phone', 'pubDescription', 'techDescription', 'focus'] = params
+
+                        // handle removed images
+                        // file name is only in params if it has been added - cannot detect deleteion from the params
+                        // therefore use the hidden field in params
+                        println "_logoRef = " + params._logoFile
+                        if (!params._logoFile) {
+                            providerGroupInstance.logoRef = null
+                        }
+                        println "_imageRef = " + params._imageFile
+                        if (!params._imageFile) {
+                            providerGroupInstance.imageRef = null
+                        }
 
                         // network membership can be returned as a String if there is a single value or a String []
                         if (params.networkMembership) {
@@ -117,7 +133,7 @@ class InstitutionController {
 
                         // handle images
                         MultipartFile logoFile = params.logoFile
-                        if (logoFile.size) {  // will only have size if a file was selected
+                        if (logoFile?.size) {  // will only have size if a file was selected
                             def filename = logoFile.getOriginalFilename()
                             log.debug "filename=${filename}"
                             // update filename
@@ -129,8 +145,8 @@ class InstitutionController {
                             // save the chosen file
                             def mhsr = request.getFile('logoFile')
                             if (!mhsr?.empty && mhsr.size < 1024*200) {   // limit file to 200Kb
-                                def webRootDir = servletContext.getRealPath("/")
-                                def colDir = new File(webRootDir, "images/institution")
+                                def externalStore = ConfigurationHolder.config.repository.location.images
+                                def colDir = new File(externalStore, "institution")
                                 colDir.mkdirs()
                                 File f = new File(colDir, filename)
                                 log.debug "saving ${filename} to ${f.absoluteFile}"
@@ -148,7 +164,7 @@ class InstitutionController {
                         }
 
                         MultipartFile file = params.imageFile
-                        if (file.size) {  // will only have size if a file was selected
+                        if (file?.size) {  // will only have size if a file was selected
                             def filename = file.getOriginalFilename()
                             log.debug "filename=${filename}"
                             // update filename
@@ -160,8 +176,8 @@ class InstitutionController {
                             // save the chosen file
                             def mhsr = request.getFile('imageFile')
                             if (!mhsr?.empty && mhsr.size < 1024*200) {   // limit file to 200Kb
-                                def webRootDir = servletContext.getRealPath("/")
-                                def colDir = new File(webRootDir, "images/institution")
+                                def externalStore = ConfigurationHolder.config.repository.location.images
+                                def colDir = new File(externalStore, "institution")
                                 colDir.mkdirs()
                                 File f = new File(colDir, filename)
                                 log.debug "saving ${filename} to ${f.absoluteFile}"
@@ -302,4 +318,5 @@ class InstitutionController {
             redirect(action: "list")
         }
     }
+
 }

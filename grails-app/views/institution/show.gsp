@@ -24,16 +24,27 @@
                     
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.guid.label" default="Guid" /></td>
-                                
                             <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "guid")}</td>
-                                
                         </tr>
                     
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.acronym.label" default="Acronym" /></td>
-                            
                             <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "acronym")}</td>
-                            
+                        </tr>
+
+<!-- Pub Desc -->       <tr class="prop">
+                            <td valign="top" class="name"><g:message code="institution.pubDescription.label" default="Public description" /></td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "pubDescription")}</cl:formattedText></td>
+                        </tr>
+
+<!-- Tech Desc -->      <tr class="prop">
+                            <td valign="top" class="name"><g:message code="institution.techDescription.label" default="Technical Description" /></td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "techDescription")}</cl:formattedText></td>
+                        </tr>
+
+<!-- Contribution-->    <tr class="prop">
+                            <td valign="top" class="name"><g:message code="institution.focus.label" default="Contribution to ALA" /></td>
+                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "focus")}</cl:formattedText></td>
                         </tr>
 
 <!-- Networks -->       <tr class="prop">

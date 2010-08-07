@@ -512,22 +512,52 @@ class CollectoryTagLib {
     }
 
     /**
-     * Formats free text so line feeds are honoured and urls are linked.
+     * Formats free text so line feeds are honoured
+     *  and urls are linked
+     *  and lists are supported using wiki markup.
      *
      * @param attrs.noLink suppresses links
+     * @param attrs.noList suppresses lists
      * @param body the text to format
      */
     def formattedText = {attrs, body ->
         def text = body().toString()
         if (text) {
-            text = text.replaceAll("\n", "</p><p>")
             if (!attrs.noLink) {
                 def urlMatch = /\bhttp:\S*\b/   // word boundary + http: + non-whitespace + word boundary
                 text = text.replaceAll(urlMatch) {
                     "<a class='external_icon' target='_blank' href='${it}'>${it}</a>"
                 }
             }
-            out << "<p>${text}</p>"
+
+            if (!attrs.noList) {
+                // replace list markup first
+                def lines = text.tokenize("\r\n")
+                def inList = false
+                def newText = ""
+                lines.each {
+                    if (it[0] == '*') {
+                        def item = "<li>" + it.substring(1,it.length()) + "</li>"
+                        if (inList) {
+                            it = item
+                        } else {
+                            inList = true
+                            it = "<ul>" + item
+                        }
+                    } else {
+                        it = "<p>" + it + "</p>"
+                        if (inList) {
+                            inList = false
+                            it = "</ul>" + it
+                        }
+                    }
+                    newText += it
+                }
+                if (inList) { newText = newText + "</ul>"}
+                text = newText
+            }
+
+            out << text
         }
     }
 

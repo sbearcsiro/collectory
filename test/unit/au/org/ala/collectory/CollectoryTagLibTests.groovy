@@ -33,25 +33,9 @@ class CollectoryTagLibTests extends TagLibUnitTestCase {
         assertEquals '', tagLib.out.toString()
     }
 
-/*
-    void testNumberIfKnown() {
-        tagLib.numberIfKnown(number: -12) { number ->
-            out << number
-            '&deg;'
+    /*void testFormattedText_1() {
+        tagLib.formattedText(body:"line1line2") { result ->
+            out << result
         }
-        assertEquals '-12&deg;', tagLib.out.toString()
-    }
-*/
-
-    /*void testIdList() {
-        List list = [new IdHelper(name: 'wally', id: 1), new IdHelper(name: 'wally', id: 2), new IdHelper(name: 'wally', id: 3)]
-        assertEquals '[1, 2, 3]', list.collect {it?.id}
-    
-        tagLib.idList(list: list) { l ->
-            out << l
-        }
-        assertEquals '[1,2,3]', tagLib.out.toString()
-
     }*/
-
 }

@@ -9,6 +9,7 @@ class UrlMappings {
       "/institution/view/$id?"(controller:'public', action:'showInstitution')
       "/lookup/institution/code/$code"(controller:'lookup', action:'findInstitution')
       "/lookup/institution/$id"(controller:'lookup', action:'findInstitution')
+      "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
       "/"(view:"/public/map")
 	  "500"(view:'/error')

@@ -647,9 +647,7 @@ v                   }
             // save the chosen file
             def mhsr = request.getFile('imageFile')
             if (!mhsr?.empty && mhsr.size < 100000*200) {   // limit file to 200Kb
-                def webRootDir = servletContext.getRealPath("/")
                 def externalStore = ConfigurationHolder.config.repository.location.images  //grailsApplication.config.getProperty('imageStore')
-                println "store = " + externalStore
                 def colDir = new File(externalStore, "collection")
                 colDir.mkdirs()
                 File f = new File(colDir, filename)

@@ -1,6 +1,6 @@
 package au.org.ala.collectory
 
-import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
+//import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
@@ -9,7 +9,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class CollectoryTagLib {
 
-    def authenticateService
+    //def authenticateService
 
     static namespace = 'cl'
 
@@ -39,7 +39,7 @@ class CollectoryTagLib {
      */
     def isAuth = { attrs, body ->
         boolean authorised = false
-        if (AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
+        /*if (AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
             authorised = true
         } else {
             Contact c = Contact.findByEmail(attrs.user)
@@ -48,11 +48,11 @@ class CollectoryTagLib {
                 authorised = cf?.administrator
             }
         }
-        if (authorised) {
+        if (authorised) {*/
             out << body()
-        } else {
+        /*} else {
             out << ' You are not authorised to change this collection '// + debugString
-        }
+        }*/
     }
 
     def showDecimal = { attrs ->
@@ -213,10 +213,10 @@ class CollectoryTagLib {
         } else {
             out << gui.toolTip(text: tooltipText, labelText)
         }
-    
+
         out << "</label>"
     }
-    
+
     /**
      * Generates submit buttons for web flows.
      *
@@ -256,7 +256,7 @@ class CollectoryTagLib {
      * - excluded buttons are still created so they participate in layout
      *
      * @attrs exclude list of buttons to disable (eg back on the first page)
-     * 
+     *
      */
     def navButtons = {attrs ->
         out << """<div class="buttons flowButtons">"""

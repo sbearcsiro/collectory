@@ -14,15 +14,15 @@
         <h3>Natural History Collections Management</h3> <p>Information about Australian biodiversity collections can be added and updated here.</p>
       </div>
 
-      <g:isNotLoggedIn>
+      <!--isNotLoggedIn>
         <div class="homeCell">
           <h4 class="inline">Please log in</h4>
             <span class="buttons" style="float: right;">
-              <g:link controller="login">&nbsp;Log in&nbsp;</g:link>
+              <link controller="login">&nbsp;Log in&nbsp;</link>
             </span>
           <p>You must log in to manage collection records</p>
         </div>
-      </g:isNotLoggedIn>
+      </isNotLoggedIn-->
 
       <div class="homeCell">
         <g:link class="mainLink" controller="collection" action="list">View all collections</g:link>
@@ -52,7 +52,7 @@
         <p class="mainText">Browse the institutions that hold collections.</p>
       </div>
 
-    <g:ifAllGranted role="ROLE_ADMIN">
+    <!--g:ifAllGranted role="ROLE_ADMIN"-->
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">
@@ -90,23 +90,7 @@
         <g:link class="mainLink" controller="admin" action="export">Export all data as JSON</g:link>
         <p class="mainText">All tables exported verbatim as JSON</p>
       </div>
-    </g:ifAllGranted>
-      <!--div class="homeCell">
-        <h4 class="inline">Add an institution</h4>
-          <p></p>
-          <span class="buttons" >
-            <g:link controller="institution" action="list">Show institutions</g:link>
-          </span>
-      </div>
-
-      <div class="homeCell">
-        <h4 class="inline">Add a contact person</h4>
-          <p></p>
-          <span class="buttons" >
-            <g:link controller="contact" action="create">Add a contact</g:link>
-          </span>
-      </div-->
-
+    <!--/g:ifAllGranted-->
       
 
     </body>

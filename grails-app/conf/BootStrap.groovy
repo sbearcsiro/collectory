@@ -1,11 +1,7 @@
 import au.org.ala.collectory.ProviderGroup
 import au.org.ala.collectory.Image
 import au.org.ala.collectory.Contact
-import au.org.ala.security.Logon
-import au.org.ala.security.Role
-import au.org.ala.security.SecRequestMap
 import grails.util.GrailsUtil
-import au.org.ala.collectory.Address
 
 class BootStrap {
 
@@ -16,7 +12,7 @@ class BootStrap {
     def init = { servletContext ->
         // load data if there is none present
         if (Logon.count() == 0 && GrailsUtil.environment != "test") {
-            loadTestData()
+            //loadTestData()
         }
     }
 
@@ -76,7 +72,7 @@ class BootStrap {
             it?.save(flush:true)
         }
 
-        /* add some access control */
+        /* add some access control
 
         // roles
         Role admin = new Role(authority: 'ROLE_ADMIN', description: 'Allows full control of all collectory data').save(flush: true)
@@ -121,6 +117,6 @@ class BootStrap {
         lemmy.passwd = authenticateService?.encodePassword('test')
         lemmy.save(flush: true)
         supplier.addToPeople lemmy
-
+*/
     }
 } 

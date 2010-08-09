@@ -9,6 +9,7 @@ package au.org.ala.collectory
  */
 class ProviderGroupSummary {
     long id
+    String uid
     String name
     String acronym
     String shortDescription

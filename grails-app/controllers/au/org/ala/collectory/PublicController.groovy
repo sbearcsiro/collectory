@@ -22,21 +22,20 @@ class PublicController {
 
     def index = { redirect(action: 'map')}
 
-    def list = {
-        [collections: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)]
+    def tagTest = {
+        [testValue: 'test1']
     }
 
-    def vis = {}
-    
+    def list = {
+        [collections: Collection.list([sort:'name'])]
+    }
+
     def show = {
         def collectionInstance = findCollection(params.id)
         //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params?.id])}"
             redirect(controller: "public", action: "map")
-        } else if (collectionInstance.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION) {
-            // redirect to show institutions
-            redirect(action: 'showInstitution', id: collectionInstance.id)
         } else {
             // lookup number of biocache records
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
@@ -54,8 +53,8 @@ class PublicController {
                 log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
             }
             def percent = -1
-            if (count != -1 && collectionInstance.scope?.numRecords > 0) {
-                percent = (count*100)/collectionInstance.scope.numRecords
+            if (count != -1 && collectionInstance.numRecords > 0) {
+                percent = (count*100)/collectionInstance.numRecords
             }
 
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
@@ -70,13 +69,10 @@ class PublicController {
             log.error "Unable to find collection for id = ${params.id}"
             def error = ["error":"unable to find collection for id = " + params.id]
             render error as JSON
-        } else if (collectionInstance.groupType != ProviderGroup.GROUP_TYPE_COLLECTION) {
-            log.error "Group with id = ${params.id} is not a collection"
-            def error = ["error":"Group with id = " + params.id + "is not a collection"]
-            render error as JSON
         } else {
             /* get decade breakdown */
-            def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${collectionInstance.id}.json";
+            def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${collectionInstance.generatePermalink()}.json";
+            println decadeUrl
             def conn = new URL(decadeUrl).openConnection()
             conn.setConnectTimeout 3000
             def dataTable = null
@@ -102,7 +98,7 @@ class PublicController {
 
 
     def listInstitutions = {
-        [institutions: ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION)]
+        [institutions: Institution.list()]
     }
 
     def showInstitution = {
@@ -117,7 +113,7 @@ class PublicController {
 
     def map = {
         //ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
-        def partnerCollections = ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION,[sort:"name"]).findAll {
+        def partnerCollections = Collection.list([sort:"name"]).findAll {
             it.getIsALAPartner() == true
         }
         [collections: partnerCollections]
@@ -130,26 +126,26 @@ class PublicController {
         locations.type = "FeatureCollection"
         locations.features = new ArrayList()
         List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
-        ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION,[sort:"name"]).each {
+        Collection.list([sort:"name"]).each {
             // only show ALA partners
             if (it.getIsALAPartner()) {
                 // make 0 values be -1
                 def lat = (it.latitude == 0.0) ? -1 : it.latitude
                 def lon = (it.longitude == 0.0) ? -1 : it.longitude
                 // use parent institution if lat/long not defined
-                def inst = it.findPrimaryInstitution()
+                def inst = it.getInstitution()
                 if (inst && lat == -1) {lat = inst.latitude}
                 if (inst && lon == -1) {lon = inst.longitude}
                 // only show if we have lat and long
                 //if (lat != -1 && lon != -1) {
                     // and if matches current filter
-                    if (showAll || matchTaxa(it.scope, params.filters)) {
+                    if (showAll || matchTaxa(it.keywords, params.filters)) {
                         def loc = [:]
                         loc.type = "Feature"
                         loc.properties = [
                                 name: it.name,
                                 id: it.id,
-                                isMappable: it.isMappable(),
+                                isMappable: it.canBeMapped(),
                                 address: it.address?.buildAddress(),
                                 desc: it.makeAbstract(),
                                 url: request.getContextPath() + "/public/show/" + it.id]
@@ -206,7 +202,7 @@ class PublicController {
         render(data as JSON)
     }
 
-    private boolean matchKeywords(scope, filterString) {
+    private boolean matchKeywords(keywords, filterString) {
         // synonyms
         if (filterString =~ "fungi") {
             filterString += "fungal"
@@ -214,24 +210,24 @@ class PublicController {
         def filters = filterString.tokenize(",")
         for (int i = 0; i < filters.size(); i++) {
             println "Checking filter ${filters[i]} against keywords ${scope?.keywords}"
-            if (scope?.keywords =~ filters[i]) {
+            if (keywords =~ filters[i]) {
                 return true;
             }
         }
         return false
     }
 
-    private boolean matchTaxa(scope, filterString) {
+    private boolean matchTaxa(keywords, filterString) {
         def filters = filterString.tokenize(",")
         for (filter in filters) {
             //println "Checking filter ${filter} against keywords ${scope?.keywords}"
-            if (scope?.keywords =~ filter) {
+            if (keywords =~ filter) {
                 return true;
             } else {
                 // check synonyms
                 List synonyms = keywordSynonyms.get(filter)
                 for (synonym in synonyms) {
-                    if (scope?.keywords =~ synonym) {
+                    if (keywords =~ synonym) {
                         return true;
                     }
                 }
@@ -254,31 +250,39 @@ class PublicController {
     private findCollection(id) {
         // try lsid
         if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
-            return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+            return Collection.findByGuid(id)
+        }
+        // try uid
+        if (id instanceof String && id.startsWith(Collection.ENTITY_PREFIX)) {
+            return Collection.findByUid(id)
         }
         // try id
         try {
             NumberFormat.getIntegerInstance().parse(id)
-            def result = ProviderGroup.read(id)
+            def result = Collection.read(id)
             if (result) {return result}
         } catch (ParseException e) {}
         // try acronym
-        return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+        return Collection.findByAcronym(id)
     }
 
     private findInstitution(id) {
         // try lsid
         if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
-            return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_INSTITUTION)
+            return Institution.findByGuid(id)
+        }
+        // try uid
+        if (id instanceof String && id.startsWith(Institution.ENTITY_PREFIX)) {
+            return Institution.findByUid(id)
         }
         // try id
         try {
             NumberFormat.getIntegerInstance().parse(id)
-            def result = ProviderGroup.read(id)
+            def result = Institution.read(id)
             if (result) {return result}
         } catch (ParseException e) {}
         // try acronym
-        return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_INSTITUTION)
+        return Institution.findByAcronym(id)
     }
 
     private String buildBiocacheQueryString(instCodes, collCodes) {

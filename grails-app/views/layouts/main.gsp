@@ -46,13 +46,13 @@
 	</div><!-- end header -->
  
 <div class="login-info">
-    <g:isLoggedIn>
+    <!--g:isLoggedIn>
         <span id="logged-in">Logged in as ${loggedInUserInfo(field:'username')}</span>
-        <g:link controller="logout">Logout</g:link>
-    </g:isLoggedIn>
+        <g:link controller="logout">Logout</:link>
+    </:isLoggedIn>
     <g:isNotLoggedIn>
-        <g:link controller="login">Log in</g:link>
-    </g:isNotLoggedIn>
+        <g:link controller="login">Log in</:link>
+    </:isNotLoggedIn-->
 </div><browser:isMsie><div style="clear:both"></div></browser:isMsie><!-- fix IE float bug-->
   
 <div id="content" class="clearfix">
@@ -95,16 +95,6 @@
 </div><!-- end footer -->
  
 </div><!-- end page -->
- 
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript"> 
-var pageTracker = _gat._getTracker("UA-4355440-1");
-pageTracker._initData();
-pageTracker._trackPageview();
-</script>
  
 </body>
 </html>

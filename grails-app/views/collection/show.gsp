@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.InfoSource" %>
+<%@ page import="au.org.ala.collectory.Collection" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -44,12 +44,12 @@
 
 <!-- Collection type --><tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.collectionType.label" default="Collection type" /></td>
-                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.scope.collectionType}'/></td>
+                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.collectionType}'/></td>
                         </tr>
 
 <!-- Active -->         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.active.label" default="Active" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.active")}</td>
+                            <td valign="top" class="name"><g:message code="active.label" default="Active" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "active")}</td>
                         </tr>
 
 <!-- Focus   -->        <tr class="prop">
@@ -57,15 +57,10 @@
                             <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></td>
                         </tr>
                     
-<!-- Institutions -->   <tr class="prop">
+<!-- Institution -->   <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.institutions.label" default="Institutions" /></td>
-
                             <td valign="top" style="text-align: left;" class="value">
-                                <ul>
-                                <g:each in="${collectionInstance.parents}" var="p">
-                                    <li><g:link controller="institution" action="show" id="${p.id}">${p?.name}</g:link></li>
-                                </g:each>
-                                </ul>
+                               <li><g:link controller="institution" action="show" id="${collectionInstance.institution?.id}">${collectionInstance.institution?.name}</g:link></li>
                             </td>
                         </tr>
 
@@ -97,7 +92,7 @@
                         </tr>
 
 <!-- sub collections -->
-                        <cl:subCollectionList list="${collectionInstance.scope.subCollections}"/>
+                        <cl:subCollectionList list="${collectionInstance.subCollections}"/>
 
 <!-- Notes -->          <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.notes.label" default="Notes" /></td>
@@ -105,8 +100,8 @@
                         </tr>
 
 <!-- Keywords -->       <tr class="prop">
-                          <td valign="top" class="name"><g:message code="infoSource.keywords.label" default="Keywords" /></td>
-                          <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.scope.keywords}'/></td>
+                          <td valign="top" class="name"><g:message code="keywords.label" default="Keywords" /></td>
+                          <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.keywords}'/></td>
                         </tr>
                     
 <!-- Web site -->       <tr class="prop">
@@ -147,73 +142,73 @@
                         </tr>
 
 <!-- States -->         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.states.label" default="States" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.states")}</td>
+                            <td valign="top" class="name"><g:message code="states.label" default="States" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "states")}</td>
                         </tr>
 
 <!-- Geo descrip -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.geographicDescription.label" default="Geographic Description" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.geographicDescription")}</td>
+                            <td valign="top" class="name"><g:message code="geographicDescription.label" default="Geographic Description" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "geographicDescription")}</td>
                         </tr>
 
 <!-- East coord -->     <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.eastCoordinate.label" default="East Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.scope.eastCoordinate}' degree='true'/></td>
+                            <td valign="top" class="name"><g:message code="eastCoordinate.label" default="East Coordinate" /></td>
+                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.eastCoordinate}' degree='true'/></td>
                         </tr>
 
 <!-- West coord -->     <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.westCoordinate.label" default="West Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.scope.westCoordinate}' degree='true'/></td>
+                            <td valign="top" class="name"><g:message code="westCoordinate.label" default="West Coordinate" /></td>
+                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.westCoordinate}' degree='true'/></td>
                         </tr>
 
 <!-- North coord -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.northCoordinate.label" default="North Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.scope.northCoordinate}' degree='true'/></td>
+                            <td valign="top" class="name"><g:message code="northCoordinate.label" default="North Coordinate" /></td>
+                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.northCoordinate}' degree='true'/></td>
                         </tr>
 
 <!-- South coord -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.southCoordinate.label" default="South Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.scope.southCoordinate}' degree='true'/></td>
+                            <td valign="top" class="name"><g:message code="southCoordinate.label" default="South Coordinate" /></td>
+                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.southCoordinate}' degree='true'/></td>
                         </tr>
 
 <!-- Start date -->     <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.startDate.label" default="Start Date" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.startDate")}</td>
+                            <td valign="top" class="name"><g:message code="startDate.label" default="Start Date" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "startDate")}</td>
                         </tr>
 
 <!-- End date -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.endDate.label" default="End Date" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.endDate")}</td>
+                            <td valign="top" class="name"><g:message code="endDate.label" default="End Date" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "endDate")}</td>
                         </tr>
 
 <!-- Kingdom cover-->   <tr class="prop">
-                          <td valign="top" class="name"><g:message code="infoSource.kingdomCoverage.label" default="Kingdom Coverage" /></td>
-                          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "scope.kingdomCoverage")}</td>
+                          <td valign="top" class="name"><g:message code="kingdomCoverage.label" default="Kingdom Coverage" /></td>
+                          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "kingdomCoverage")}</td>
                         </tr>
 
 <!-- sci names -->      <tr class="prop">
-                          <td valign="top" class="name"><g:message code="infoSource.scientificNames.label" default="Scientific Names" /></td>
-                          <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scope.scientificNames")}'/></td>
+                          <td valign="top" class="name"><g:message code="scientificNames.label" default="Scientific Names" /></td>
+                          <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/></td>
                         </tr>
 
 <!-- Num records -->    <tr class="prop">
-                          <td valign="top" class="name"><g:message code="infoSource.numRecords.label" default="Num Records" /></td>
+                          <td valign="top" class="name"><g:message code="numRecords.label" default="Num Records" /></td>
                           <td valign="top" class="value">
-                            <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecords') != '-1'}">${fieldValue(bean: collectionInstance, field: "scope.numRecords")}</g:if>
+                            <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">${fieldValue(bean: collectionInstance, field: "numRecords")}</g:if>
                           </td>
                         </tr>
 
 <!--Records digitised--><tr class="prop">
-                          <td valign="top" class="name"><g:message code="infoSource.numRecordsDigitised.label" default="Num Records Digitised" /></td>
+                          <td valign="top" class="name"><g:message code="numRecordsDigitised.label" default="Num Records Digitised" /></td>
                           <td valign="top" class="value">
-                            <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecordsDigitised') != '-1'}">${fieldValue(bean: collectionInstance, field: "scope.numRecordsDigitised")}</g:if>
+                            <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")}</g:if>
                           </td>
                         </tr>
 
 <!--% digitised -->     <tr class="prop">
-                          <td valign="top" class="name"><g:message code="infoSource.percentDigitised.label" default="Percent Digitised" /></td>
+                          <td valign="top" class="name"><g:message code="percentDigitised.label" default="Percent Digitised" /></td>
                           <td valign="top" class="value">
-                            <cl:percentIfKnown dividend='${collectionInstance.scope.numRecordsDigitised}' divisor='${collectionInstance.scope.numRecords}' />
+                            <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}' />
                           </td>
                         </tr>
 
@@ -258,15 +253,11 @@
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "phone")}</td>
                         </tr>
                     
-<!-- web service -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.webServiceUri.label" default="Web Service Uri" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "infoSource.webServiceUri")}</td>
-                        </tr>
+<!-- web service -->    <!--tr class="prop">
+                        </tr-->
 
-<!-- protocol -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="infoSource.webServiceProtocol.label" default="Web Service Protocol" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "infoSource.webServiceProtocol")}</td>
-                        </tr>
+<!-- protocol -->       <!--tr class="prop">
+                        </tr-->
 
 <!-- provider codes --> <!--tr class="prop">
                             <td valign="top" class="name"><g:message code="providerGroup.providerCodes.label" default="Collection codes" /></td>
@@ -292,7 +283,7 @@
                     
 <!-- last edit -->      <tr class="prop">
                             <td valign="top" class="name">Last edited</td>
-                            <td valign="top" class="value">by ${fieldValue(bean: collectionInstance, field: "userLastModified")} on ${fieldValue(bean: collectionInstance, field: "dateLastModified")}</td>
+                            <td valign="top" class="value">by ${fieldValue(bean: collectionInstance, field: "userLastModified")} on ${fieldValue(bean: collectionInstance, field: "lastUpdated")}</td>
                         </tr>
 
                     </tbody>
@@ -301,12 +292,8 @@
             <div class="buttons">
               <g:form>
                 <g:hiddenField name="id" value="${collectionInstance?.id}" />
-                <cl:isAuth user="${loggedInUserInfo(field:'username')}" collection="${collectionInstance?.id}">
                   <span class="button"><g:actionSubmit class="edit" action='editCollection' value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
-                </cl:isAuth>
-                <g:ifAllGranted role="ROLE_ADMIN">
                   <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
-                </g:ifAllGranted>
                 <span class="button"><g:link class="preview" controller="public" action='show' id="${collectionInstance?.id}">${message(code: 'default.button.preview.label', default: 'Preview')}</g:link></span>
               </g:form>
             </div>

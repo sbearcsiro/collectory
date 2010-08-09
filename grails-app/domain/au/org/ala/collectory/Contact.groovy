@@ -16,14 +16,9 @@ class Contact implements Serializable {
     String notes
     boolean publish = true    // controls whether the contact is listed on web site
 
-    Date dateCreated = new Date()
-    Date dateLastModified = new Date()
+    Date dateCreated
+    Date lastUpdated
     String userLastModified
-    
-    //static hasMany = {groups: ProviderGroup}    // the groups this is a contact for
-
-    //static belongsTo = ProviderGroup            // this means the ProviderGroup is responsible for persisting
-                                      // relationships and only the ProviderGroup can cascade saves
 
     static constraints = {
         title(nullable:true, maxSize: 10, inList: ["Dr", "Prof", "Mr", "Ms", "Mrs", "Assoc Prof"])
@@ -35,8 +30,6 @@ class Contact implements Serializable {
         fax(nullable: true, maxSize:45)
         notes(nullable: true, maxSize: 1024)
         publish()
-        dateCreated(nullable:true)
-        dateLastModified()
         userLastModified(maxSize:256)
     }
 

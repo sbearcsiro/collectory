@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<%@ page import="au.org.ala.collectory.Collection" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -19,12 +19,8 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <g:render template="collectionList"
-                    model="[collectionInstanceList: providerGroupInstanceList.findAll{it.groupType == ProviderGroup.GROUP_TYPE_COLLECTION}]"
+                    model="[collectionInstanceList: providerGroupInstanceList]"
                     params="[term: '${term}']"/>
-            <g:if test="${providerGroupInstanceList.findAll{it.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION}.size() > 0}">
-              <h1><g:message code="institution.searchList.label" args="${criteria}" default="Institutions" /></h1>
-              <g:render template="/shared/institutionList" model="[institutionInstanceList: providerGroupInstanceList.findAll{it.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION}]"/>
-            </g:if>
             <div class="paginateButtons">
                 <g:paginate controller="collection" action="searchList" params="${[term:term]}" total="${providerGroupInstanceTotal}" />
             </div>

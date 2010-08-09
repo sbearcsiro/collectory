@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.InfoSource" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat; au.org.ala.collectory.Collection; au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -29,7 +29,7 @@
           <div class="section full-width">
             <div class="hrgroup col-9">
               <h1 class="family"><i>${fieldValue(bean:collectionInstance,field:'name')}</i></h1>
-              <g:set var="inst" value="${collectionInstance.findPrimaryInstitution()}"/>
+              <g:set var="inst" value="${collectionInstance.getInstitution()}"/>
               <g:if test="${inst}">
                 <h2><g:link action="showInstitution" id="${inst.id}">${inst.name}</g:link></h2>
               </g:if>
@@ -68,57 +68,57 @@
               <h2>Description</h2>
               <cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText>
               <cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText>
-              <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "scope.startDate")}' end='${fieldValue(bean: collectionInstance, field: "scope.endDate")}'/>
+              <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "startDate")}' end='${fieldValue(bean: collectionInstance, field: "endDate")}'/>
 
               <h2>Taxonomic range</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'focus')}">
                 <cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText>
               </g:if>
-              <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.kingdomCoverage')}">
-                <p>Kingdoms covered include: ${fieldValue(bean: collectionInstance, field: "scope.kingdomCoverage")}</p>
+              <g:if test="${fieldValue(bean: collectionInstance, field: 'kingdomCoverage')}">
+                <p>Kingdoms covered include: ${fieldValue(bean: collectionInstance, field: "kingdomCoverage")}</p>
               </g:if>
-              <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.scientificNames')}">
+              <g:if test="${fieldValue(bean: collectionInstance, field: 'scientificNames')}">
                 <p>Specimens in the ${collectionInstance.name} include members from the following taxa:<br/>
-                <cl:JSONListAsList json='${fieldValue(bean: collectionInstance, field: "scope.scientificNames")}'/></p>
+                <cl:JSONListAsList json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/></p>
               </g:if>
 
-              <g:if test="${collectionInstance.scope?.geographicDescription || collectionInstance.scope?.states}">
+              <g:if test="${collectionInstance?.geographicDescription || collectionInstance.states}">
                 <h2>Geographic range</h2>
-                <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.geographicDescription')}">
-                  <p>${fieldValue(bean: collectionInstance, field: "scope.geographicDescription")}</p>
+                <g:if test="${fieldValue(bean: collectionInstance, field: 'geographicDescription')}">
+                  <p>${fieldValue(bean: collectionInstance, field: "geographicDescription")}</p>
                 </g:if>
-                <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.states')}">
-                  <p><cl:stateCoverage states='${fieldValue(bean: collectionInstance, field: "scope.states")}'/></p>
+                <g:if test="${fieldValue(bean: collectionInstance, field: 'states')}">
+                  <p><cl:stateCoverage states='${fieldValue(bean: collectionInstance, field: "states")}'/></p>
                 </g:if>
-                <g:if test="${collectionInstance.scope.westCoordinate != -1}">
-                  <p>The western most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.westCoordinate}' degree='true'/></p>
+                <g:if test="${collectionInstance.westCoordinate != -1}">
+                  <p>The western most extent of the collection is: <cl:showDecimal value='${collectionInstance.westCoordinate}' degree='true'/></p>
                 </g:if>
-                <g:if test="${collectionInstance.scope.eastCoordinate != -1}">
-                  <p>The eastern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.eastCoordinate}' degree='true'/></p>
+                <g:if test="${collectionInstance.eastCoordinate != -1}">
+                  <p>The eastern most extent of the collection is: <cl:showDecimal value='${collectionInstance.eastCoordinate}' degree='true'/></p>
                 </g:if>
-                <g:if test="${collectionInstance.scope.northCoordinate != -1}">
-                  <p>The northtern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.northCoordinate}' degree='true'/></p>
+                <g:if test="${collectionInstance.northCoordinate != -1}">
+                  <p>The northtern most extent of the collection is: <cl:showDecimal value='${collectionInstance.northCoordinate}' degree='true'/></p>
                 </g:if>
-                <g:if test="${collectionInstance.scope.southCoordinate != -1}">
-                  <p>The southern most extent of the collection is: <cl:showDecimal value='${collectionInstance.scope?.southCoordinate}' degree='true'/></p>
+                <g:if test="${collectionInstance.southCoordinate != -1}">
+                  <p>The southern most extent of the collection is: <cl:showDecimal value='${collectionInstance.southCoordinate}' degree='true'/></p>
                 </g:if>
               </g:if>
 
               <h2>Number of specimens in the collection</h2>
-              <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecords') != '-1'}">
-                <p>The estimated number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "scope.numRecords")}.</p>
+              <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">
+                <p>The estimated number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
               </g:if>
 
-              <g:if test="${fieldValue(bean: collectionInstance, field: 'scope.numRecordsDigitised') != '-1'}">
+              <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">
                 <h2>Number of digitised specimens</h2>
-                <p>Of these ${fieldValue(bean: collectionInstance, field: "scope.numRecordsDigitised")} are digitised.
-                This represents <cl:percentIfKnown dividend='${collectionInstance.scope?.numRecordsDigitised}' divisor='${collectionInstance.scope?.numRecords}' /> of the collection.</p>
+                <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are digitised.
+                This represents <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}' /> of the collection.</p>
               </g:if>
 
-              <g:if test="${collectionInstance.scope.listSubCollections()?.size() > 0}">
+              <g:if test="${collectionInstance.listSubCollections()?.size() > 0}">
                 <h2>Sub-collections</h2>
                 <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
-                <g:each var="sub" in="${collectionInstance.scope.listSubCollections()}" >
+                <g:each var="sub" in="${collectionInstance.listSubCollections()}" >
                   <p class="sub"><cl:subCollectionDisplay sub="${sub}"/></p>
                 </g:each>
               </g:if>
@@ -142,8 +142,8 @@
                 <!-- use parent location if the collection is blank -->
                 <g:set var="address" value="${collectionInstance.address}"/>
                 <g:if test="${address == null || address.isEmpty()}">
-                  <g:if test="${collectionInstance.findPrimaryInstitution()}">
-                    <g:set var="address" value="${collectionInstance.findPrimaryInstitution().address}"/>
+                  <g:if test="${collectionInstance.getInstitution()}">
+                    <g:set var="address" value="${collectionInstance.getInstitution().address}"/>
                   </g:if>
                 </g:if>
 
@@ -207,12 +207,12 @@
               <h2>Digitised specimen records</h2>
               <div style="float:left;">
                 <g:if test="${numBiocacheRecords != -1}">
-                  <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${cl.collectionName(name: collectionInstance.name)}.</p>
+                  <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${collectionInstance.name}.</p>
                   <g:if test="${percentBiocacheRecords != -1}">
-                    <p>This represents ${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.</p>
+                    <p>This represents <cl:formatPercent percent="${percentBiocacheRecords}"/>% of all specimens in the collection.</p>
                   </g:if>
                 </g:if>
-                <cl:recordsLink collection="${collectionInstance}">Click to view records for the ${cl.collectionName(name: collectionInstance.name)}.
+                <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/>
                 </cl:recordsLink>
               </div>
               <div style="float:right;text-align:center;padding-right:60px;margin-top:-20px;">
@@ -229,8 +229,7 @@
                   <cl:distributionImg inst="${collectionInstance.getListOfInstitutionCodesForLookup()}" coll="${collectionInstance.getListOfCollectionCodesForLookup()}"/>
                 </div>
                 <h3>Statistics of digitised specimens in this collection.</h3>
-                <div id="chart" style="display: inline;padding-right: 20px;"></div>
-                <!--img src="http://chart.apis.google.com/chart?chs=400x225&cht=p3&chco=7777CC|76A4FB|3399CC|3366CC&chd=s:QEHCVfe&chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chdlp=t&chp=12.7&chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae&chma=0,0,30,10" width="400" height="225" alt="" /-->
+                <div id="chart" style="display: inline;padding-right: 20px;">
                 </div>
               </div>
             </g:if>
@@ -246,7 +245,6 @@
             query.setQuery(queryString);
             query.send(handleQueryResponse);
           } else {
-//            var dataJson = {"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":[{"c":[{"v":"","f":null},{"v":1,"f":null}]}{"c":[{"v":"1880","f":null},{"v":16,"f":null}]}{"c":[{"v":"","f":null},{"v":44,"f":null}]}{"c":[{"v":"1900","f":null},{"v":137,"f":null}]}{"c":[{"v":"","f":null},{"v":186,"f":null}]}{"c":[{"v":"1920","f":null},{"v":563,"f":null}]}{"c":[{"v":"","f":null},{"v":1830,"f":null}]}{"c":[{"v":"1940","f":null},{"v":1857,"f":null}]}{"c":[{"v":"","f":null},{"v":7468,"f":null}]}{"c":[{"v":"1960","f":null},{"v":10633,"f":null}]}{"c":[{"v":"","f":null},{"v":15199,"f":null}]}{"c":[{"v":"1980","f":null},{"v":9472,"f":null}]}{"c":[{"v":"","f":null},{"v":4592,"f":null}]},{"c":[{"v":"2000","f":null},{"v":381,"f":null}]}{"c":[{"v":"","f":null},{"v":0,"f":null}]}]};
             dataUrl = "${ConfigurationHolder.config.grails.serverURL}/public/breakdown/${collectionInstance.id}";
             $.get(dataUrl, {}, breakdownRequestHandler);
           }

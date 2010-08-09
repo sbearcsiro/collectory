@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.CollectionCommand" %>
+<%@ page import="au.org.ala.collectory.Institution; au.org.ala.collectory.CollectionCommand" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -32,11 +32,11 @@
                   <cl:navButtons />
                   <p class="wizardHeading">Indicate the institutions that administer this collection</p>
 
-<!-- current -->        <span style="margin-left:50px;"><g:message code="providerGroup.existingContacts.label" default="Current institutions" /></span>
+<!-- current -->        <span style="margin-left:50px;"><g:message code="providerGroup.existingContacts.label" default="Current institution" /></span>
                         <table style="width:80%;border:1px solid #CCC;margin-left:auto;margin-right:auto;margin-bottom:20px;">
                             <tbody>
 
-                          <g:each in="${command.parents}" var="i" status="row">
+                          <g:each in="${command.institution}" var="i" status="row">
                             <tr class="prop">
                               <td valign="top" class="name">${i?.name}</td>
                               <td valign="top" class="name">${i?.acronym}</td>
@@ -61,7 +61,7 @@
                       <tr class="prop">
                         <td valign="top" class="name">Select</td>
                         <td valign="top" class="value">
-                          <g:select name="addInstitution" from="${ProviderGroup.listInstitutions()}" optionKey="id" noSelection="${['null':'Select one to add']}" />
+                          <g:select name="addInstitution" from="${Institution.list([sort:'name'])}" optionKey="id" noSelection="${['null':'Select one to add']}" />
                         </td>
                       </tr>
 
@@ -111,7 +111,7 @@
                           <label for="institutionType"><g:message code="institution.institutionType.label" default="Institution Type" /></label>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: newInst, field: 'institutionType', 'errors')}">
-                          <g:select name="institutionType" from="${ProviderGroup.constraints.institutionType.inList}" valueMessagePrefix="providerGroup.institutionType" noSelection="['': '']"  value="${fieldValue(bean: newInst, field:'institutionType')}"/>
+                          <g:select name="institutionType" from="${Institution.constraints.institutionType.inList}" valueMessagePrefix="institution.institutionType" noSelection="['': '']"  value="${fieldValue(bean: newInst, field:'institutionType')}"/>
                         </td>
                       </tr>
 

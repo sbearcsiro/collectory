@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<%@ page import="au.org.ala.collectory.Collection" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -16,9 +16,9 @@
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}"><div class="message">${flash.message}</div></g:if>
             <g:if test="${message}"><div class="message">${message}</div></g:if>
-            <g:render template="collectionList" model="[collectionInstanceList: providerGroupInstanceList]"/>
+            <g:render template="collectionList" model="[collectionInstanceList: collInstanceList]"/>
             <div class="paginateButtons">
-                <g:paginate controller="collection" action="list" total="${providerGroupInstanceTotal}" />
+                <g:paginate controller="collection" action="list" total="${collInstanceTotal}" />
             </div>
         </div>
     </body>

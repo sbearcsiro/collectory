@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.ProviderGroup"%>
+<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.Institution"%>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -63,7 +63,7 @@
         </g:if>
         <h2>Collections</h2>
         <ol>
-          <g:each var="c" in="${institution.getSafeChildren()}">
+          <g:each var="c" in="${institution.getCollections()}">
             <li><g:link controller="public" action="show" id="${c.id}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
           </g:each>
         </ol>
@@ -75,7 +75,7 @@
         <g:if test="${fieldValue(bean: institution, field: 'imageRef') && fieldValue(bean: institution, field: 'imageRef.file')}">
           <div class="section">
             <img alt="${fieldValue(bean: institution, field: "imageRef.file")}"
-                    src="${resource(absolute:"true", dir:"data/institution/", file:institution.imageRef.file)}" />
+                    src="${resource(absolute:"true", dir:"data/collection/", file:institution.imageRef.file)}" />
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.caption")}</p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.attribution")}</p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.copyright")}</p>

@@ -1,21 +1,14 @@
 package au.org.ala.collectory
 
-import org.springframework.web.multipart.MultipartFile
-import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.JSON
-
 import java.text.NumberFormat
 import java.text.ParseException
+import org.springframework.web.multipart.MultipartFile
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
-/**
- * Controller handles ProviderGroups of type Collection
- */
 class CollectionController {
 
-    def authenticateService, dataLoaderService
-
-    def scaffold = ProviderGroup
+    def idGeneratorService
 
     def index = {
         redirect(action:"list")
@@ -27,14 +20,13 @@ class CollectionController {
             flash.message = params.message
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
-        ActivityLog.log authenticateService.userDomain().username, Action.LIST
-        [providerGroupInstanceList: ProviderGroup.findAllByGroupType("Collection", params),
-                providerGroupInstanceTotal: ProviderGroup.countByGroupType('Collection')]
+//        ActivityLog.log authenticateService.userDomain().username, Action.LIST
+        [collInstanceList: Collection.list(params),
+                collInstanceTotal: Collection.count()]
     }
 
-    def myList = {
+/*    def myList = {
         // do not paginate this list - unlikely to be large
-        // TODO: rewrite using HQL   def colls = ProviderGroup.findAll("from ProviderGroup as pg inner join pg.contacts as cf where pg.groupType = 'Collection' and cf.contactId = ${params.id}")
         // get user's contact id
         def userContact = null
         def user = authenticateService.userDomain().username
@@ -46,7 +38,7 @@ class CollectionController {
         def collectionList = []
         if (userContact) {
             ContactFor.findAllByContact(userContact).each {
-                ProviderGroup pg = ProviderGroup.findById(it.entityId)
+                Collection pg = Collection.findById(it.entityId)
                 if (pg) {
                     collectionList << pg
                 }
@@ -55,8 +47,8 @@ class CollectionController {
         ActivityLog.log authenticateService.userDomain().username, Action.MYLIST
         log.info ">>${user} listing my collections"
         render(view: 'myList', model: [providerGroupInstanceList: collectionList])
-    }
-    
+    }*/
+
     // show a single collection
     def show = {
         log.debug ">entered show with id=${params.id}"
@@ -64,28 +56,11 @@ class CollectionController {
         if (!collectionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
-        } else if (collectionInstance.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION) {
-            // redirect to show institutions
-            redirect(controller: 'institution', action: 'show', id: collectionInstance.id)
         } else {
             // show it
-            log.info ">>${authenticateService.userDomain().username} showing ${collectionInstance.name}"
-            ActivityLog.log authenticateService.userDomain().username as String, collectionInstance.id, Action.VIEW
+//            log.info ">>${authenticateService.userDomain().username} showing ${collectionInstance.name}"
+//            ActivityLog.log authenticateService.userDomain().username as String, collectionInstance.id, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
-        }
-    }
-
-    // preview a single collection
-    def preview = {
-        def collectionInstance = ProviderGroup.get(params.id)
-        if (!collectionInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
-            redirect(action: "list")
-        }
-        else {
-            log.info ">>${authenticateService.userDomain().username} previewing ${collectionInstance.name}"
-            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.PREVIEW
-            [collectionInstance: collectionInstance, contact: collectionInstance.getPrimaryContact(), subCollections: collectionInstance.scope.listSubCollections()]
         }
     }
 
@@ -93,14 +68,15 @@ class CollectionController {
      * Return a summary as JSON.
      * Param can be:
      *  1. database id
-     *  2. lsid
-     *  3. acronym
+     *  2. uid
+     *  3. lsid
+     *  4. acronym
      */
     def summary = {
-        def collectionInstance = findCollection(params.id)
+        Collection collectionInstance = findCollection(params.id)
         println ">> summary id = " + params.id
         if (collectionInstance) {
-            render collectionInstance.getCollectionSummary() as JSON
+            render collectionInstance.buildSummary() as JSON
         } else {
             log.error "Unable to find collection for id = ${params.id}"
             def error = ["error":"unable to find collection for id = " + params.id]
@@ -111,18 +87,25 @@ class CollectionController {
     /**
      * Return a summary as JSON.
      * Params are:
-     * - institution provider code
-     * - collection provider code
+     * inst - institution provider code
+     * coll - collection provider code
      */
     def findCollectionFor = {
         def inst = params.inst
         def coll = params.coll
-        def pg = ProviderMap.findMatch(inst, coll)
-        if (pg) {
-            render pg.getCollectionSummary() as JSON
+        if (!inst) {
+            def error = ["error":"must specify an institution code as parameter inst"]
+            render error as JSON
+        }
+        if (!coll) {
+            def error = ["error":"must specify a collection code as parameter coll"]
+            render error as JSON
+        }
+        Collection col = ProviderMap.findMatch(inst, coll)
+        if (col) {
+            render col.buildSummary() as JSON
         } else {
-            log.error "Unable to find collection for inst code = ${params.inst} and coll code = ${params.coll}"
-            def error = ["error":"unable to find collection for inst code = ${params.inst} and coll code = ${params.coll}"]
+            def error = ["error":"unable to find collection with inst code = ${inst} and coll code = ${coll}"]
             render error as JSON
         }
     }
@@ -135,17 +118,14 @@ class CollectionController {
         if (!params.sort) params.sort = "name"
         if (!params.order) params.order = "asc"
 
-        log.info ">>${authenticateService.userDomain().username} searching for ${params.term}"
-        ActivityLog.log authenticateService.userDomain().username, Action.SEARCH, params.term
+//        log.info ">>${authenticateService.userDomain().username} searching for ${params.term}"
+//        ActivityLog.log authenticateService.userDomain().username, Action.SEARCH, params.term
 
-        def results = ProviderGroup.createCriteria().list(max: params.max, offset: params.offset) {
+        def results = Collection.createCriteria().list(max: params.max, offset: params.offset) {
             order(params.sort, params.order)
-            eq ('groupType', 'Collection')
             or {
                 like ('name', "%${params.term}%")
-                scope {
-                    like ('keywords', "%${params.term}%")
-                }
+                like ('keywords', "%${params.term}%")
                 eq ('acronym', "${params.term}")
             }
         }
@@ -156,63 +136,43 @@ class CollectionController {
     }
 
     def delete = {
-        ProviderGroup providerGroupInstance = ProviderGroup.get(params.id)
-        if (providerGroupInstance) {
-            def name = providerGroupInstance.name
-            log.info ">>${authenticateService.userDomain().username} deleting collection " + name
-            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
+        Collection col = Collection.get(params.id)
+        if (col) {
+            def name = col.name
+//            log.info ">>${authenticateService.userDomain().username} deleting collection " + name
+//            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
             try {
-                // remove it as a child from all parents
-                providerGroupInstance.parents.each {
-                    log.info "Removing collection " + name + " from parent " + it.name
-                    it.removeFromChildren providerGroupInstance
-                    it.dateLastModified = new Date()
-                    it.userLastModified = authenticateService.userDomain().username
+                // remove it as a child from parent institution
+                if (col.institution) {
+                    log.info "Removing collection " +  name + " from parent " + col.institution.name
+                    col.institution.removeFromChildren col
+//                    it.userLastModified = authenticateService.userDomain().username
                     it.save()
                 }
                 // remove contact links (does not remove the contact)
-                ContactFor.findAllByEntityIdAndEntityType(providerGroupInstance.id, ProviderGroup.ENTITY_TYPE).each {
+                ContactFor.findAllByEntityUid(col.uid).each {
                     log.info "Removing link to contact " + it.contact?.buildName()
                     it.delete()
                 }
-                // remove collection scope
-                log.info "Deleting collection scope for " + name
-                providerGroupInstance.scope?.delete()
                 // remove infoSource if only one
-                InfoSource info = providerGroupInstance.infoSource
+/*                InfoSource info = providerGroupInstance.infoSource
                 if (info) {
                     if (ProviderGroup.findAllByInfoSource(info).size() == 1) {
                         log.info "Deleting infosource for " + name
                         info.delete()
                     }
-                }
+                }*/
                 // delete collection
-                providerGroupInstance.delete(flush: true)
+                col.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'collection.label', default: 'Collection'), name])}"
                 redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'collection.label', default: 'Collection'), name])}"
                 redirect(action: "show", id: params.id)
             }
-        }
-        else {
+        } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
-        }
-    }
-
-
-    def sciterms = {
-        def terms = [1:'john', 2:'jon', 3:'jane', 4:'james', 5:'jamie']
-
-        render(contentType: "text/xml") {
-            terms.each { term ->
-                result() {
-                    name(term.value)
-                    id(term.key)
-                }
-            }
         }
     }
 
@@ -252,16 +212,16 @@ class CollectionController {
                         return noId()
                     }
                     if (!cmd.load(flow.colid)) {
-                        log.info ">>${authenticateService.userDomain().username} shown error when trying to edit collection id=${flow.colid}"
+//                        log.info ">>${authenticateService.userDomain().username} shown error when trying to edit collection id=${flow.colid}"
                         flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), flow.colid])}"
                         failure()
                     } else {
-                        log.info ">>${authenticateService.userDomain().username} editing collection ${cmd.name}"
+//                        log.info ">>${authenticateService.userDomain().username} editing collection ${cmd.name}"
                     }
                 } else {
                     // add the user as the contact of the collection they are creating
                     // but not if they are an ADMIN
-                    if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
+/*                    if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
                         def user = authenticateService.userDomain().username
                         log.info ">>${user} creating a new colection"
                         if (user) {
@@ -270,7 +230,7 @@ class CollectionController {
                                 cmd.addAsContact(c, "Creator", true)
                             }
                         }
-                    }
+                    }*/
                     flow.mode = mode
                 }
                 [command: cmd]
@@ -361,7 +321,7 @@ class CollectionController {
                     failure()
                 } else {
                     log.debug "Adding id: ${params.addInstitution}"
-                    flow.command.addAsParent(params.long("addInstitution"))
+                    flow.command.institution = Institution.get(params.long("addInstitution"))
                 }
             }
             on("success").to "institution"
@@ -375,10 +335,8 @@ class CollectionController {
         // removes an institution as a parent
         removeInstitution {
             action {
-                log.debug "> entered removeInstitution"
-                params.each {log.debug it}
                 log.debug "Removing id: ${params.id}"
-                flow.command.removeAsParent(params.long("id"))
+                flow.command.institution = null
             }
             on("success").to "institution"
         }
@@ -388,10 +346,9 @@ class CollectionController {
             action {
                 log.debug "> entered createInstitution"
                 params.each {log.debug it}
-                ProviderGroup inst = new ProviderGroup(params)
-                inst.groupType = ProviderGroup.GROUP_TYPE_INSTITUTION
-                inst.dateLastModified = new Date()
-                inst.userLastModified = authenticateService.userDomain().username + "(created)"
+                Institution inst = new Institution(params)
+                inst.uid = idGeneratorService.getNextInstitutionId()
+//                inst.userLastModified = authenticateService.userDomain().username + "(created)"
                 inst.validate()
                 if (inst.hasErrors()) {
                     flow.newInst = inst
@@ -407,7 +364,7 @@ class CollectionController {
                     flow.newInst.errors.each {log.debug it}
                     failure()
                 } else {
-                    ActivityLog.log authenticateService.userDomain().username as String, flow.newInst.id as long, Action.CREATE_INSTITUTION
+//                    ActivityLog.log authenticateService.userDomain().username as String, flow.newInst.id as long, Action.CREATE_INSTITUTION
                     log.debug "new inst id=" + flow.newInst.id
                     // if we have no id something is wrong
                     if (!flow.newInst?.id) {
@@ -415,7 +372,7 @@ class CollectionController {
                     } else {
                         // add the user as the contact
                         // but not if they are ADMIN
-                        if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
+ /*                       if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
                             def user = authenticateService.userDomain().username
                             log.debug user
                             if (user) {
@@ -426,9 +383,9 @@ class CollectionController {
                                     flow.newInst.save(flush: true)
                                 }
                             }
-                        }
+                        }*/
                         // add new institution to the collection
-                        flow.command.addAsParent(flow.newInst.id)
+                        flow.command.institution = flow.newInst
                         // don't leave it in the flow
                         flow.newInst = null
                     }
@@ -491,7 +448,7 @@ class CollectionController {
                 } else {
                     // save immediately - review this decision
                     contact.save()
-                    ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
+//                    ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
                     flow.command.addAsContact(contact)
                 }
             }
@@ -508,10 +465,10 @@ class CollectionController {
                 def mode = flow.mode
                 if (mode == "create") {
                     log.info "creating collection: user = ${authenticateService.userDomain().username}"
-                    long id = flow.command.create(authenticateService.userDomain().username)
+                    long id = flow.command.create('temp', idGeneratorService.getNextCollectionId())//authenticateService.userDomain().username)
                     if (id) {
-                        ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.CREATE
-                        log.info ">>${authenticateService.userDomain().username} created collection ${flow.command.name} with id ${id}"
+//                        ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.CREATE
+ //                       log.info ">>${authenticateService.userDomain().username} created collection ${flow.command.name} with id ${id}"
                         params.id = id
                     } else {
                         failure()
@@ -519,7 +476,7 @@ v                   }
                 } else {
                     log.debug ">> colid = " + flow.colid
                     // save changes
-                    long id = flow.command.save(authenticateService.userDomain().username)
+                    long id = flow.command.save('temp')//authenticateService.userDomain().username)
                     if (id == -2) {
                         // row was updated or deleted by another transaction
                         log.warn "Attempted to save a stale collection record - ${flow.command.name} version ${flow.command.version}"
@@ -534,7 +491,7 @@ v                   }
                         return lockingFailure()
                     } else {
                         //ActivityLog.log authenticateService.userDomain().username as String, flow.command.id, Action.EDIT_SAVE
-                        log.info ">>${authenticateService.userDomain().username} saved collection ${flow.command.name}"
+//                        log.info ">>${authenticateService.userDomain().username} saved collection ${flow.command.name}"
                     }
                 }
             }
@@ -542,7 +499,7 @@ v                   }
             on("error").to "ident"
             on("lockingFailure").to "ident"
         }
-        
+
         // exit the flow showing the modified collection
         done {
             action {
@@ -553,7 +510,7 @@ v                   }
             on("success").to "exitToShow"
             on("failure").to "exitToList"
         }
-        
+
         // exit because the specified collection doesn't exist
         noSuchCollection {
             redirect(controller:"collection", action:"list", params: [message: "Cannot edit a collection with no id specified"])
@@ -567,9 +524,9 @@ v                   }
                 def mode = flow.mode
                 flow.clear()
                 if (mode == 'create') {
-                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.CREATE_CANCEL
+//                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.CREATE_CANCEL
                 } else {
-                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.EDIT_CANCEL
+//                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.EDIT_CANCEL
                     log.debug ">> exiting to " + params.id
                 }
                 [id: params.id, url: request.getContextPath() + '/collection/show']
@@ -653,7 +610,7 @@ v                   }
                 File f = new File(colDir, filename)
                 log.debug "saving ${filename} to ${f.absoluteFile}"
                 mhsr.transferTo(f)
-                ActivityLog.log authenticateService.userDomain().username as String, Action.UPLOAD_IMAGE, filename
+//                ActivityLog.log authenticateService.userDomain().username as String, Action.UPLOAD_IMAGE, filename
             } else {
                 // TODO: handle error message
             }
@@ -715,16 +672,21 @@ v                   }
 
     private findCollection(id) {
         // try lsid
-        if (id instanceof String && id.startsWith('urn:lsid:')) {
-            return ProviderGroup.findByGuidAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+        if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
+            return Collection.findByGuid(id)
+        }
+        // try uid
+        if (id instanceof String && id.startsWith(Collection.ENTITY_PREFIX)) {
+            return Collection.findByUid(id)
         }
         // try id
         try {
             NumberFormat.getIntegerInstance().parse(id)
-            def result = ProviderGroup.read(id)
+            def result = Collection.read(id)
             if (result) {return result}
         } catch (ParseException e) {}
         // try acronym
-        return ProviderGroup.findByAcronymAndGroupType(id, ProviderGroup.GROUP_TYPE_COLLECTION)
+        return Collection.findByAcronym(id)
     }
+
 }

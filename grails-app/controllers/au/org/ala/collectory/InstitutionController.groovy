@@ -1,32 +1,32 @@
 package au.org.ala.collectory
 
-import org.springframework.web.multipart.MultipartFile
 import grails.converters.JSON
+import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class InstitutionController {
 
-    def authenticateService
+//    def authenticateService
 
-    def scaffold = ProviderGroup
+    def scaffold = Institution
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
         //println "Count = " + ProviderGroup.countByGroupType('Institution')
-        [institutionInstanceList: ProviderGroup.findAllByGroupType("Institution", params),
-                institutionInstanceTotal: ProviderGroup.countByGroupType('Institution')]
+        [institutionInstanceList: Institution.list(params),
+                institutionInstanceTotal: Institution.count()]
     }
 
     def show = {
-        def institutionInstance = ProviderGroup.get(params.id)
+        def institutionInstance = Institution.get(params.id)
         if (!institutionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
             redirect(action: "list")
         }
         else {
             log.info "Ala partner = " + institutionInstance.isALAPartner
-            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.VIEW
+//            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.VIEW
             [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts()]
         }
     }
@@ -35,7 +35,7 @@ class InstitutionController {
         start {
             action {
                 //log.info "> entered start"
-                def institutionInstance = ProviderGroup.get(params.id)
+                def institutionInstance = Institution.get(params.id)
                 if (!institutionInstance) {
                     flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
                     redirect(action: "list")
@@ -46,7 +46,6 @@ class InstitutionController {
             }
             on("success").to "showEdit"
             on("failure").to "exitToList"
-            on(NumberFormatException).to "exitToList"
         }
 
         showEdit {
@@ -69,7 +68,7 @@ class InstitutionController {
             action {
                 log.debug "Entered done event"
                 //params.each {println it}
-                
+
                 def children = params.children
                 children.each {
                     log.debug "Child: ${it}, ${it.class}"
@@ -77,35 +76,35 @@ class InstitutionController {
                 params.parents.each {
                     log.debug "Parent: ${it}, ${it.class}"
                 }
-                def providerGroupInstance = ProviderGroup.get(params.id)
-                if (providerGroupInstance) {
-                    providerGroupInstance.refresh()  // this seems necessary to get the current version
-                    log.debug "db version = ${providerGroupInstance.version}"
+                Institution inst = Institution.get(params.id)
+                if (inst) {
+                    inst.refresh()  // this seems necessary to get the current version
+                    log.debug "db version = ${inst.version}"
                     log.debug "params version = ${params.version}"
-                    if (params.version && providerGroupInstance.version > params.version.toLong()) {
-                        log.warn "Attempted to save a stale institution record - ${providerGroupInstance.name} version ${providerGroupInstance.version}"
-                        providerGroupInstance.errors.rejectValue("version", "default.optimistic.locking.failure",
+                    if (params.version && inst.version > params.version.toLong()) {
+                        log.warn "Attempted to save a stale institution record - ${inst.name} version ${inst.version}"
+                        inst.errors.rejectValue("version", "default.optimistic.locking.failure",
                                 [message(code: 'providerGroup.label', default: 'ProviderGroup')] as Object[],
                                 "Another user has updated this ProviderGroup while you were editing. New values have been refreshed. You will need to reapply your changes.")
                         flow.providerGroupInstance.discard()
-                        flow.providerGroupInstance = providerGroupInstance
+                        flow.providerGroupInstance = inst
                         return error()
                     } else {
                         // update values
                         // need to create an address obj if one doesn't exist
-                        if (providerGroupInstance.address == null && (params.address?.street || params.address.city)) {
+                        if (inst.address == null && (params.address?.street || params.address.city)) {
                             log.debug "creating new address"
-                            providerGroupInstance.address = new Address()
+                            inst.address = new Address()
                         }
-                        if (providerGroupInstance.address) {
-                            providerGroupInstance.properties['address.street', 'address.postBox', 'address.city', 'address.state', 'address.postcode', 'address.country'] = params
+                        if (inst.address) {
+                            inst.properties['address.street', 'address.postBox', 'address.city', 'address.state', 'address.postcode', 'address.country'] = params
                         }
 
                         // lat and long are shown as blank if the value is -1, and come back as blank which will be rejected
-                        providerGroupInstance.latitude = params.latitude ? new BigDecimal(params.latitude) : ProviderGroup.NO_INFO_AVAILABLE
-                        providerGroupInstance.longitude = params.longitude ? new BigDecimal(params.longitude) : ProviderGroup.NO_INFO_AVAILABLE
+                        inst.latitude = params.latitude ? new BigDecimal(params.latitude) : ProviderGroup.NO_INFO_AVAILABLE
+                        inst.longitude = params.longitude ? new BigDecimal(params.longitude) : ProviderGroup.NO_INFO_AVAILABLE
 
-                        providerGroupInstance.properties['guid', 'name', 'acronym', 'websiteUrl', 'logoRef', 'imageRef', 'isALAPartner',
+                        inst.properties['guid', 'name', 'acronym', 'websiteUrl', 'logoRef', 'imageRef', 'isALAPartner',
                                 'institutionType', 'state', 'email', 'phone', 'pubDescription', 'techDescription', 'focus'] = params
 
                         // handle removed images
@@ -113,11 +112,11 @@ class InstitutionController {
                         // therefore use the hidden field in params
                         println "_logoRef = " + params._logoFile
                         if (!params._logoFile) {
-                            providerGroupInstance.logoRef = null
+                            inst.logoRef = null
                         }
                         println "_imageRef = " + params._imageFile
                         if (!params._imageFile) {
-                            providerGroupInstance.imageRef = null
+                            inst.imageRef = null
                         }
 
                         // network membership can be returned as a String if there is a single value or a String []
@@ -128,7 +127,7 @@ class InstitutionController {
                             } else {
                                 list = new ArrayList() << params.networkMembership
                             }
-                            providerGroupInstance.networkMembership = (list as JSON).toString();
+                            inst.networkMembership = (list as JSON).toString();
                         }
 
                         // handle images
@@ -137,10 +136,10 @@ class InstitutionController {
                             def filename = logoFile.getOriginalFilename()
                             log.debug "filename=${filename}"
                             // update filename
-                            if (providerGroupInstance.logoRef) {
-                                providerGroupInstance.logoRef.file = filename
+                            if (inst.logoRef) {
+                                inst.logoRef.file = filename
                             } else {
-                                providerGroupInstance.logoRef = new Image(file: filename)
+                                inst.logoRef = new Image(file: filename)
                             }
                             // save the chosen file
                             def mhsr = request.getFile('logoFile')
@@ -156,11 +155,11 @@ class InstitutionController {
                                 // TODO: handle error message
                             }
                         }
-                        if (providerGroupInstance.logoRef) {
+                        if (inst.logoRef) {
                             // just handle changes in the image metadata
-                            providerGroupInstance.logoRef.caption = params.logoRef?.caption
-                            providerGroupInstance.logoRef.attribution = params.logoRef?.attribution
-                            providerGroupInstance.logoRef.copyright = params.logoRef?.copyright
+                            inst.logoRef.caption = params.logoRef?.caption
+                            inst.logoRef.attribution = params.logoRef?.attribution
+                            inst.logoRef.copyright = params.logoRef?.copyright
                         }
 
                         MultipartFile file = params.imageFile
@@ -168,10 +167,10 @@ class InstitutionController {
                             def filename = file.getOriginalFilename()
                             log.debug "filename=${filename}"
                             // update filename
-                            if (providerGroupInstance.imageRef) {
-                                providerGroupInstance.imageRef.file = filename
+                            if (inst.imageRef) {
+                                inst.imageRef.file = filename
                             } else {
-                                providerGroupInstance.imageRef = new Image(file: filename)
+                                inst.imageRef = new Image(file: filename)
                             }
                             // save the chosen file
                             def mhsr = request.getFile('imageFile')
@@ -186,19 +185,18 @@ class InstitutionController {
                                 // TODO: handle error message
                             }
                         }
-                        if (providerGroupInstance.imageRef) {
+                        if (inst.imageRef) {
                             // just handle changes in the image metadata
-                            providerGroupInstance.imageRef.caption = params.imageRef?.caption
-                            providerGroupInstance.imageRef.attribution = params.imageRef?.attribution
-                            providerGroupInstance.imageRef.copyright = params.imageRef?.copyright
+                            inst.imageRef.caption = params.imageRef?.caption
+                            inst.imageRef.attribution = params.imageRef?.attribution
+                            inst.imageRef.copyright = params.imageRef?.copyright
                         }
 
                         // save
-                        providerGroupInstance.dateLastModified = new Date()
-                        providerGroupInstance.userLastModified = authenticateService.userDomain().username
-                        if (!providerGroupInstance.hasErrors() && providerGroupInstance.save(flush: true)) {
-                            flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerGroup.label', default: 'Institution'), providerGroupInstance.name])}"
-                            ActivityLog.log authenticateService.userDomain().username as String, providerGroupInstance.id, Action.EDIT_SAVE
+                        inst.userLastModified = 'temp'//authenticateService.userDomain().username
+                        if (!inst.hasErrors() && inst.save(flush: true)) {
+                            flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerGroup.label', default: 'Institution'), inst.name])}"
+//                            ActivityLog.log authenticateService.userDomain().username as String, inst.id, Action.EDIT_SAVE
                             [id: params.id, url: request.getContextPath() + '/institution/show']
                         } else {
                             return error()
@@ -255,7 +253,7 @@ class InstitutionController {
                 contact.userLastModified = authenticateService.userDomain().username
                 // save immediately - review this decision
                 contact.save()
-                ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
+//                ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
                 flow.providerGroupInstance.addToContacts(contact, params.role2, (params.isAdmin2 as String == 'true'), (params.isPrimary2 as String == 'true'), authenticateService.userDomain().username)
             }
             on("success").to "showEdit"
@@ -267,7 +265,7 @@ class InstitutionController {
         cancel {
             action {
                 log.info "Cancelling"
-                ActivityLog.log authenticateService.userDomain().username as String, flow.providerGroupInstance?.id, Action.EDIT_CANCEL
+//                ActivityLog.log authenticateService.userDomain().username as String, flow.providerGroupInstance?.id, Action.EDIT_CANCEL
                 flow.providerGroupInstance.discard()
                 [id: params.id, url: request.getContextPath() + '/institution/show']
             }
@@ -285,7 +283,7 @@ class InstitutionController {
     }
 
     def delete = {
-        def providerGroupInstance = ProviderGroup.get(params.id)
+        def providerGroupInstance = Institution.get(params.id)
         if (providerGroupInstance) {
             /* need to remove it as a parent from all children
                - in practice this means removing all rows of the link table that reference this institution
@@ -293,17 +291,16 @@ class InstitutionController {
              */
             providerGroupInstance.children.each {
                 it.removeFromParents providerGroupInstance
-                it.dateLastModified = new Date()
-                it.userLastModified = authenticateService.userDomain().username
+                it.userLastModified = 'temp'//authenticateService.userDomain().username
                 it.save()  // necessary?
             }
             // remove contact links (does not remove the contact)
-            ContactFor.findAllByEntityIdAndEntityType(providerGroupInstance.id, ProviderGroup.ENTITY_TYPE).each {
+            ContactFor.findAllByEntityUid(providerGroupInstance.uid).each {
                 it.delete()
             }
             // now delete
             try {
-                ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
+//                ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
                 providerGroupInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
                 redirect(action: "list")

@@ -16,8 +16,10 @@ import java.text.ParseException
 // this annotation wires the validate/errors methods/properties
 @Validateable
 class CollectionCommand implements Serializable {
-    // maps to ProviderGroup
-    long id                     // the DB id of the ProviderGroup that stores the collection
+
+    // maps to Collection
+    long id                     // the DB id of the collection
+    String uid
     long version                // version of the collection
     
     String guid                 // this is not the DB id but a known identifier
@@ -42,11 +44,10 @@ class CollectionCommand implements Serializable {
 
     List<String> networkMembership    // list of peak body names
 
-    List<ProviderGroup> parents = []
+    Institution institution     // th eowning institution
 
     List<ContactFor> contacts = []
 
-    // maps to CollectionScope
     List<String> collectionType // type of collection e.g live, preserved, tissue, DNA
     String keywords             // a comma-separated list of keywords
     String active               // see active vocab
@@ -76,8 +77,6 @@ class CollectionCommand implements Serializable {
     String webServiceProtocol
 
     // operational fields
-    List<Long> addedInstitutions = []
-    List<Long> deletedInstitutions = []
     List<ContactFor> deletedContacts = []
 
     static constraints = {
@@ -106,6 +105,8 @@ class CollectionCommand implements Serializable {
         collectionType(nullable: true)
         providerCodes(nullable:true, maxSize:2048)
         networkMembership(nullable: true)
+
+        institution(nullable:true)
 
         keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
@@ -176,37 +177,6 @@ class CollectionCommand implements Serializable {
         return ['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista']
     }
 
-    boolean addAsParent(long institutionId) {
-        ProviderGroup inst = ProviderGroup.get(institutionId)
-        if (!inst) {
-            return false
-        }
-        parents << inst
-        // also remove from the deleted list in case we removed it in this flow
-        deletedInstitutions.remove(inst.id)
-        // NOTE that the collection must be added to the institution as a child and the institution must also be saved
-        // when we commit (to preserve the child link)
-        // to do this we need to carry a list of added institutions
-        addedInstitutions << inst.id
-        return true
-    }
-
-    boolean removeAsParent(long institutionId) {
-        ProviderGroup inst = ProviderGroup.get(institutionId)
-        if (!inst) {
-            return false
-        }
-        //parents - inst  // this syntax should work but doesn't
-        parents.remove(inst)
-        // also remove from the added list in case we added it in this flow
-        addedInstitutions.remove(inst.id)
-        // NOTE that the collection must be removed as a child of the institution and the institution must also be saved
-        // when we commit
-        // to do this we need to carry a list of removed institutions
-        deletedInstitutions << inst.id
-        return true
-    }
-
     void addAsContact(Contact contact) {
         addAsContact contact, null, false
     }
@@ -219,7 +189,7 @@ class CollectionCommand implements Serializable {
             id = Math.min(id, it.id - 1)
         }
         if (contact) {
-            ContactFor cf = new ContactFor(contact:contact, entityId:this.id, entityType:ProviderGroup.ENTITY_TYPE)
+            ContactFor cf = new ContactFor(contact:contact, entityId:this.uid, entityType:Collection.ENTITY_TYPE)
             cf.id = id
             if (role) cf.role = role
             cf.administrator = administrator
@@ -269,7 +239,7 @@ class CollectionCommand implements Serializable {
     }
 
     boolean load(long collectionId) {
-        def collectionInstance = ProviderGroup.get(collectionId)
+        Collection collectionInstance = Collection.get(collectionId)
         if (!collectionInstance) {
             return false
         }
@@ -279,8 +249,9 @@ class CollectionCommand implements Serializable {
         //this.properties['guid', 'name'] = collectionInstance.properties.entrySet()
         //println "cmd props = " + this.properties['guid', 'name']
 
-        // load from ProviderGroup
+        // load from Collection
         id = collectionId
+        uid = collectionInstance.uid
         version = collectionInstance.version
         guid = collectionInstance.guid
         name = collectionInstance.name
@@ -305,39 +276,35 @@ class CollectionCommand implements Serializable {
         //providerCodes = toCSVString(collectionInstance.providerCodes)
         networkMembership = toList(collectionInstance.networkMembership)
 
-        parents = collectionInstance.getParentInstitutionsOrderedByName()
+        institution = collectionInstance.institution
 
         contacts = collectionInstance.getContacts()
 
-        // load from CollectionScope
-        CollectionScope collectionScope = collectionInstance.scope
-        if (collectionScope) {
-            collectionType = toList(collectionInstance.scope.collectionType)
-            keywords = toCSVString(collectionScope.keywords)
-            active = collectionScope.active
-            numRecords = loadInt(collectionScope.numRecords)
-            numRecordsDigitised = loadInt(collectionScope.numRecordsDigitised)
-            states = collectionScope.states
-            geographicDescription = collectionScope.geographicDescription
-            eastCoordinate = loadBigDecimal(collectionScope.eastCoordinate)
-            westCoordinate = loadBigDecimal(collectionScope.westCoordinate)
-            northCoordinate = loadBigDecimal(collectionScope.northCoordinate)
-            southCoordinate = loadBigDecimal(collectionScope.southCoordinate)
-            startDate = collectionScope.startDate
-            endDate = collectionScope.endDate
-            if (collectionScope.kingdomCoverage) {
-                kingdomCoverage = collectionScope.kingdomCoverage.split(" ")
-            }
-            scientificNames = toCSVString(collectionScope.scientificNames)
-            loadSubCollections(collectionScope.subCollections)
+        collectionType = toList(collectionInstance.collectionType)
+        keywords = toCSVString(collectionInstance.keywords)
+        active = collectionInstance.active
+        numRecords = loadInt(collectionInstance.numRecords)
+        numRecordsDigitised = loadInt(collectionInstance.numRecordsDigitised)
+        states = collectionInstance.states
+        geographicDescription = collectionInstance.geographicDescription
+        eastCoordinate = loadBigDecimal(collectionInstance.eastCoordinate)
+        westCoordinate = loadBigDecimal(collectionInstance.westCoordinate)
+        northCoordinate = loadBigDecimal(collectionInstance.northCoordinate)
+        southCoordinate = loadBigDecimal(collectionInstance.southCoordinate)
+        startDate = collectionInstance.startDate
+        endDate = collectionInstance.endDate
+        if (collectionInstance.kingdomCoverage) {
+            kingdomCoverage = collectionInstance.kingdomCoverage.split(" ")
         }
+        scientificNames = toCSVString(collectionInstance.scientificNames)
+        loadSubCollections(collectionInstance.subCollections)
 
         // load from InfoSource
-        InfoSource infosource = collectionInstance.infoSource
-        if (infosource) {
-            webServiceUri = infosource.getWebServiceUri()
-            webServiceProtocol = infosource.getWebServiceProtocol()
-        }
+//        InfoSource infosource = collectionInstance.infoSource
+//        if (infosource) {
+//            webServiceUri = infosource.getWebServiceUri()
+//            webServiceProtocol = infosource.getWebServiceProtocol()
+//        }
 
         return true
     }
@@ -350,7 +317,7 @@ class CollectionCommand implements Serializable {
      * @return the id of the created collection or an error code
      */
     long save(String user) {
-        def collectionInstance = ProviderGroup.get(id)
+        def collectionInstance = Collection.get(id)
         if (!collectionInstance) {
             return 0
         }
@@ -368,18 +335,19 @@ class CollectionCommand implements Serializable {
      * @param user the user that modified the data
      * @return the id of the created collection
      */
-    long create(String user) {
+    long create(String user, String uid) {
         // provider group
-        def collectionInstance = new ProviderGroup(groupType: ProviderGroup.GROUP_TYPE_COLLECTION)
+        def collectionInstance = new Collection()
+        collectionInstance.uid = uid
         return updateFromCommand(collectionInstance, user)
     }
 
-    long updateFromCommand(ProviderGroup collectionInstance, String user) {
+    long updateFromCommand(Collection collectionInstance, String user) {
         // TODO: should use a service call to transactionalise
         collectionInstance.properties['guid', 'name', 'acronym', 'focus',
-                'pubDescription', 'techDescription', 'notes',
-                'websiteUrl', 'imageRef',
-                'state', 'email', 'phone', 'parents'] = this.properties
+                'pubDescription', 'techDescription', 'notes', 'institution',
+                'websiteUrl', 'imageRef', 'state', 'email', 'phone', 'parents',
+                'active', 'states', 'geographicDescription', 'startDate', 'endDate'] = this.properties
         if (address && !address.isEmpty()) {
             collectionInstance.address = address
         }
@@ -388,28 +356,18 @@ class CollectionCommand implements Serializable {
         }
         //collectionInstance.providerCodes = toJSON(this.providerCodes)
         collectionInstance.networkMembership = toJSON(this.networkMembership)
-        // update collection scope
-        // create a scope if there isn't one
-        if (!collectionInstance.scope) {
-            collectionInstance.scope = new CollectionScope()
-        }
-        collectionInstance.scope.properties['active', 'states', 'geographicDescription', 'startDate', 'endDate'] = this.properties
-        collectionInstance.scope.collectionType = toJSON(this.collectionType)
-        collectionInstance.scope.kingdomCoverage = this.kingdomCoverage?.join(" ")
-        //println "KC=" + collectionInstance.scope.kingdomCoverage
+        collectionInstance.collectionType = toJSON(this.collectionType)
+        collectionInstance.kingdomCoverage = this.kingdomCoverage?.join(" ")
         ['numRecords', 'numRecordsDigitised'].each {
-            collectionInstance.scope."${it}" = this."${it}" ? toInt(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
+            collectionInstance."${it}" = this."${it}" ? toInt(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
         ['eastCoordinate', 'westCoordinate', 'northCoordinate', 'southCoordinate'].each {
-            collectionInstance.scope."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
+            collectionInstance."${it}" = this."${it}" ? toBigDecimal(this."${it}") : ProviderGroup.NO_INFO_AVAILABLE // set value where null -> -1
         }
-        collectionInstance.scope.keywords = toJSON(this.keywords)
-        collectionInstance.scope.scientificNames = toJSON(this.scientificNames)
-        collectionInstance.scope.subCollections = toJSON(this.subCollections)
-        collectionInstance.scope.dateLastModified = new Date()
-        collectionInstance.scope.userLastModified = user
+        collectionInstance.keywords = toJSON(this.keywords)
+        collectionInstance.scientificNames = toJSON(this.scientificNames)
+        collectionInstance.subCollections = toJSON(this.subCollections)
 
-        collectionInstance.dateLastModified = new Date()
         collectionInstance.userLastModified = user
 
         // if creating a new collection we need to save first so we know the collection id for foreign keys
@@ -426,39 +384,6 @@ class CollectionCommand implements Serializable {
             }
         }
 
-        // modify and save changes to institutions
-        addedInstitutions.each {
-            ProviderGroup inst = ProviderGroup.get(it)
-            inst.addToChildren(collectionInstance)
-            inst.dateLastModified = new Date()
-            inst.userLastModified = user
-            try {
-                inst.save()
-            } catch (HibernateOptimisticLockingFailureException e) {
-                discardAll(collectionInstance)
-                return -2
-            }
-            if (inst.hasErrors()) {
-                inst.errors.each {println it}
-                return 0
-            }
-        }
-        deletedInstitutions.each {
-            ProviderGroup inst = ProviderGroup.get(it)
-            inst.removeFromChildren(collectionInstance)
-            inst.dateLastModified = new Date()
-            inst.userLastModified = user
-            try {
-                inst.save()
-            } catch (HibernateOptimisticLockingFailureException e) {
-                discardAll(collectionInstance)
-                return -2
-            }
-            if (inst.hasErrors()) {
-                inst.errors.each {println it}
-                return 0
-            }
-        }
         // save changes to contacts
         contacts.each {
             // save only the new ones
@@ -480,10 +405,10 @@ class CollectionCommand implements Serializable {
         }
 
         // update infosource
-        def infosourceChanged = false
+        /*def infosourceChanged = false
         InfoSource infosource = collectionInstance.infoSource
         if (infosource == null) {
-            /* create new if there are some values to save */
+            // create new if there are some values to save
             if (webServiceUri || webServiceProtocol) {
                 // create new infosource
                 infosource = new InfoSource(title: "created for " + collectionInstance.name)
@@ -494,8 +419,8 @@ class CollectionCommand implements Serializable {
                 collectionInstance.infoSource = infosource
             }
         } else if (infosource.getWebServiceUri() != webServiceUri || infosource.getWebServiceProtocol() != webServiceProtocol) {
-            /* infosources may serve many collections, therefore we don't want to modify it
-             * unless this is its only collection */
+            // infosources may serve many collections, therefore we don't want to modify it
+            // unless this is its only collection
             // does the infosource have other collections?
             if (infosource.collections.size() > 1) {
                 // it does - so make a clone to host our modifications
@@ -524,18 +449,7 @@ class CollectionCommand implements Serializable {
                 infosource.errors.each {println it}
                 return 0
             }
-        }
-
-        try {
-            collectionInstance.scope.save(flush:true)
-        } catch (HibernateOptimisticLockingFailureException e) {
-            discardAll(collectionInstance)
-            return -2
-        }
-        if (collectionInstance.scope.hasErrors()) {
-            collectionInstance.scope.errors.each {println it}
-            return 0
-        }
+        }*/
 
         try {
             collectionInstance.save(flush:true)
@@ -551,12 +465,9 @@ class CollectionCommand implements Serializable {
         return collectionInstance.id
     }
 
-    void discardAll(ProviderGroup collectionInstance) {
-        collectionInstance.infoSource?.discard()
-        collectionInstance.scope?.discard()
-        collectionInstance.parents.each {
-            it.discard()
-        }
+    void discardAll(Collection collectionInstance) {
+//        collectionInstance.infoSource?.discard()
+        collectionInstance.institution.discard()
         collectionInstance.discard()
     }
 

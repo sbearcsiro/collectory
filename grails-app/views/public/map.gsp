@@ -79,13 +79,13 @@
           <div id="column-two" class="list-column">
             <div class="nameList section" id="names">
               <p><span id="numFilteredCollections">No collections are selected</span>. Click on a collection name to see more details including the digitised specimen records for the collection.
-              Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images', file:'nomap.gif')}"/>.</p>
+              Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>.</p>
               <ul id="filtered-list" style="padding-left:15px;">
                 <g:each var="c" in="${collections}" status="i">
                   <li>
                     <g:link controller="public" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link>
-                    <g:if test="${!c.isMappable()}">
-                      <img style="vertical-align:middle" src="${resource(dir:'images', file:'nomap.gif')}"/>
+                    <g:if test="${!c.canBeMapped()}">
+                      <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>
                     </g:if>
                   </li>
                 </g:each>

@@ -8,8 +8,7 @@ package au.org.ala.collectory
 class ContactFor implements Serializable {
 
     Contact contact
-    long entityId
-    String entityType
+    String entityUid
     String role
     boolean administrator = false
     boolean primaryContact = false
@@ -20,10 +19,9 @@ class ContactFor implements Serializable {
 
     ContactFor () {}
 
-    ContactFor (Contact contact, long entityId, String entityType, String role, boolean isAdministrator, boolean isPrimaryContact) {
+    ContactFor (Contact contact, String entityUid, String role, boolean isAdministrator, boolean isPrimaryContact) {
         this.contact = contact
-        this.entityId = entityId
-        this.entityType = entityType
+        this.entityUid = entityUid
         this.role = role
         this.administrator = isAdministrator
         this.primaryContact = isPrimaryContact
@@ -31,13 +29,12 @@ class ContactFor implements Serializable {
     
     static mapping = {
         contact index: 'contact_id_idx'
-        entityId index: 'entity_id_idx'
+        entityUid index: 'entity_uid_idx'
     }
 
     static constraints = {
         contact()
-        entityId()
-        entityType(blank:false, inList: [ProviderGroup.ENTITY_TYPE, InfoSource.ENTITY_TYPE])
+        entityUid(blank:false)
         role(nullable:true, maxSize:128)
         dateCreated()
         dateLastModified()
@@ -47,8 +44,7 @@ class ContactFor implements Serializable {
 
     def print() {
         ["Contact id: " + contact.id,
-         "Entity id: " + entityId,
-         "Entity type: " + entityType,
+         "Entity uid: " + entityUid,
          "Role: " + role,
          "isAdmin: " + administrator,
          "isPrimary: " + primaryContact]

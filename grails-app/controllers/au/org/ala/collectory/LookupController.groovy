@@ -19,9 +19,9 @@ class LookupController {
             def error = ["error":"must specify a collection code as parameter coll"]
             render error as JSON
         }
-        def pg = ProviderMap.findMatch(inst, coll)
-        if (pg) {
-            render pg.getCollectionSummary() as JSON
+        Collection col = ProviderMap.findMatch(inst, coll)
+        if (col) {
+            render col.buildSummary() as JSON
         } else {
             def error = ["error":"unable to find collection with inst code = ${inst} and coll code = ${coll}"]
             render error as JSON
@@ -29,37 +29,59 @@ class LookupController {
     }
 
     def findInstitution = {
-        def inst
+        println "entered"
+        Institution inst = null
         if (params.id) {
-            inst = find(params.id, ProviderGroup.GROUP_TYPE_INSTITUTION)
-        } else if (params.code) {
-            inst = ProviderMap.findInstitution(params.code)
+            inst = findInstitution(params.id)
         } else {
             def error = ["error":"no code or id passed in request"]
             render error as JSON
         }
         if (inst) {
-            render inst.getInstitutionSummary() as JSON
+            render inst.buildSummary() as JSON
         } else {
-            log.error "Unable to find institution. id = ${params.id}, code = ${params.code}"
-            def error = ["error":"unable to find institution - id = ${params.id}, code = ${params.code}"]
+            log.error "Unable to find institution. id = ${params.id}"
+            def error = ["error":"unable to find institution - id = ${params.id}"]
             render error as JSON
         }
     }
 
-    private find(id, groupType) {
+    private findInstitution(id) {
         // try lsid
         if (id instanceof String && id.startsWith('urn:lsid:')) {
-            return ProviderGroup.findByGuidAndGroupType(id, groupType)
+            return Institution.findByGuid(id)
+        }
+        // try uid
+        if (id instanceof String && id.startsWith(Institution.ENTITY_PREFIX)) {
+            return Institution.findByUid(id)
         }
         // try id
         try {
             NumberFormat.getIntegerInstance().parse(id)
-            def result = ProviderGroup.read(id)
+            def result = Institution.read(id)
             if (result) {return result}
         } catch (ParseException e) {}
         // try acronym
-        return ProviderGroup.findByAcronymAndGroupType(id, groupType)
+        return Institution.findByAcronym(id)
+    }
+
+    private findCollection(id) {
+        // try lsid
+        if (id instanceof String && id.startsWith('urn:lsid:')) {
+            return Collection.findByGuid(id)
+        }
+        // try uid
+        if (id instanceof String && id.startsWith(Collection.ENTITY_PREFIX)) {
+            return Collection.findByUid(id)
+        }
+        // try id
+        try {
+            NumberFormat.getIntegerInstance().parse(id)
+            def result = Collection.read(id)
+            if (result) {return result}
+        } catch (ParseException e) {}
+        // try acronym
+        return Collection.findByAcronym(id)
     }
 
 }

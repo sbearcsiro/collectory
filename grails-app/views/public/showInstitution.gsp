@@ -76,7 +76,7 @@
           <div class="section">
             <img alt="${fieldValue(bean: institution, field: "imageRef.file")}"
                     src="${resource(absolute:"true", dir:"data/collection/", file:institution.imageRef.file)}" />
-            <p class="caption">${fieldValue(bean: institution, field: "imageRef.caption")}</p>
+            <p class="caption"><cl:formattedText>${fieldValue(bean: institution, field: "imageRef.caption")}</cl:formattedText></p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.attribution")}</p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.copyright")}</p>
           </div>

@@ -5,12 +5,325 @@ import au.com.bytecode.opencsv.CSVReader
 import au.org.ala.collectory.Geocoder
 import org.codehaus.groovy.grails.web.json.JSONObject
 import au.org.ala.collectory.Geocoder.Location
+import groovy.sql.Sql
+import java.text.SimpleDateFormat
 
 class DataLoaderService {
 
     def institutionCodeLoaderService
+    def idGeneratorService
+    javax.sql.DataSource dataSource
 
     boolean transactional = false
+
+    /** import to new structure **/
+    /* BEFORE calling this you should import the contacts and provider codes (with the same ids as the import source) */
+    def importJson() {
+        def imp = JSON.parse(new FileInputStream('/data/collectory/bootstrap/export.json'), "UTF-8")
+        def sql = new Sql(dataSource)
+
+        // clear contactFor
+        sql.execute("delete from contact_for")
+
+        def contactMap = [:]
+        imp.contactFor.each {
+            // store in map until we load corresponding group
+            def entityId = it.entityId
+            List contactFors = contactMap.get(entityId) as List
+            contactFors = (contactFors)?:[]
+            contactFors.add  it
+            contactMap.put(entityId, contactFors)
+            //println "added contact ${it.contact.id} to entity ${entityId}"
+        }
+        /*imp.contact.each {
+            Contact ct = new Contact()
+            ct.id = it.id
+            ct.firstName = load(it.firstName)
+            ct.lastName = load(it.lastName)
+            ct.phone = load(it.phone)
+            ct.fax = load(it.fax)
+            ct.title = load(it.title)
+            ct.email = load(it.email)
+            ct.userLastModified = load(it.userLastModified)
+            ct.notes = load(it.notes)
+            ct.mobile = load(it.mobile)
+            // no point in these as Grails overrides them
+            ct.dateCreated = loadDate(it.dateCreated)
+            ct.lastUpdated = loadDate(it.dateLastModified)
+
+            if (ct.hasErrors()) {
+                ct.errors.each {println it}
+            } else {
+                ct.save()
+            }
+        }*/
+        // clear institutions
+        sql.execute("delete from provider_map_provider_code")
+        sql.execute("delete from provider_map")
+        sql.execute("delete from collection")
+        sql.execute("delete from institution")
+
+        // keep map of institutions keyed by original id so we can link collections
+        def institutionMap = [:]
+
+        imp.providerGroup.each {
+            if (it.groupType == 'Institution') {
+                def originalId = it.id
+                println ">>processing ${it.name} original id = ${it.id}"
+
+                Institution ins = new Institution()
+                ins.name = it.name
+                ins.institutionType = load(it.institutionType)
+                ins.guid = load(it.guid)
+                ins.uid = load(it.uid)
+                ins.userLastModified = "Imported (previous update by ${it.userLastModified})"
+                ins.isALAPartner = it.isALAPartner
+                ins.networkMembership = it.networkMembership
+                ins.address = loadAddress(it.address) as Address
+                ins.logoRef = loadImage(it.logoRef) as Image
+                ins.imageRef = loadImage(it.imageRef) as Image
+                ins.latitude = it.latitude as BigDecimal
+                ins.longitude = it.longitude as BigDecimal
+                ins.phone = load(it.phone)
+                ins.email = load(it.email)
+                ins.acronym = load(it.acronym)
+                ins.websiteUrl = load(it.websiteUrl)
+                ins.state = load(it.state)
+                ins.pubDescription = load(it.pubDescription)
+                ins.techDescription = load(it.techDescription)
+
+                ins.validate()
+                if (ins.hasErrors()) {
+                    ins.errors.each {println it}
+                } else {
+                    ins.save()
+                    // store in map until we load child collections
+                    institutionMap.put(originalId, ins)
+
+                    // add contacts
+                    List contactFors = contactMap.get(originalId) as List
+                    if (contactFors?.size()) {
+                        println "found ${contactFors.size()} contacts for ${ins.name}"
+                    }
+                    contactFors.each{
+                        ContactFor cf = new ContactFor(userLastModified: "Imported (previous update by ${it.userLastModified})")
+                        Contact c = Contact.get(it.contact.id)
+                        if (!c) {
+                            log.error "failed to find contact with id = ${it.contact.id}"
+                        } else {
+                            cf.contact = c
+                            cf.role = load(it.role)
+                            cf.administrator = it.administrator
+                            cf.primaryContact = it.primaryContact
+                            cf.entityUid = ins.uid
+
+                            cf.validate()
+                            if (cf.hasErrors()) {
+                                cf.errors.each {println it}
+                            } else {
+                                cf.save()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // keep map of collections scopes keyed by original id so we can link to collections
+        def scopeMap = [:]
+        imp.collectionScope.each {
+            scopeMap.put(it.id, it)
+        }
+
+        /* load collections */
+
+        // keep map of collections keyed by original id so we can link providerMaps
+        def collectionMap = [:]
+
+        imp.providerGroup.each {
+            if (it.groupType == 'Collection') {
+                def originalId = it.id
+                println ">>processing ${it.name} original id = ${it.id}"
+
+                Collection col = new Collection()
+                col.name = it.name
+                col.guid = load(it.guid)
+                col.uid = load(it.uid)
+                col.userLastModified = "Imported (previous update by ${it.userLastModified})"
+                col.isALAPartner = it.isALAPartner
+                col.networkMembership = it.networkMembership
+                col.address = loadAddress(it.address) as Address
+                col.logoRef = loadImage(it.logoRef) as Image
+                col.imageRef = loadImage(it.imageRef) as Image
+                col.latitude = it.latitude as BigDecimal
+                col.longitude = it.longitude as BigDecimal
+                col.phone = load(it.phone)
+                col.email = load(it.email)
+                col.acronym = load(it.acronym)
+                col.websiteUrl = load(it.websiteUrl)
+                col.state = load(it.state)
+                col.pubDescription = load(it.pubDescription)
+                col.techDescription = load(it.techDescription)
+                col.focus = load(it.focus)
+
+                // load values from scope
+                def scope = scopeMap.get(it.scope.id)
+                if (scope) {
+                    col.startDate = load(scope.startDate)
+                    col.endDate = load(scope.endDate)
+                    col.collectionType = load(scope.collectionType)
+                    col.kingdomCoverage = load(scope.kingdomCoverage)
+                    col.keywords = load(scope.keywords)
+                    col.scientificNames = load(scope.scientificNames)
+                    col.eastCoordinate = scope.eastCoordinate as BigDecimal
+                    col.westCoordinate = scope.westCoordinate as BigDecimal
+                    col.northCoordinate = scope.northCoordinate as BigDecimal
+                    col.southCoordinate = scope.southCoordinate as BigDecimal
+                    col.states = load(scope.states)
+                    col.numRecords = scope.numRecords
+                    col.numRecordsDigitised = scope.numRecordsDigitised
+                    col.active = load(scope.active)
+                    col.geographicDescription = load(scope.geographicDescription)
+                    col.subCollections = load(scope.subCollections)
+                }
+
+                col.validate()
+                if (col.hasErrors()) {
+                    col.errors.each {println it}
+                } else {
+                    col.save()
+                    // store in map until we load provider maps
+                    collectionMap.put(originalId, col)
+
+                    // add institution
+                    List insts = it.parents
+                    switch (insts.size()) {
+                        case 0: break
+                        case 1:
+                            Institution inst = institutionMap.get(insts[0].id) as Institution
+                            if (inst) {
+                                col.institution = inst
+                            }
+                            break
+                        default: println "Multiple parents for collection ${col.name}"
+                    }
+
+                    // add contacts
+                    List contactFors = contactMap.get(originalId) as List
+                    if (contactFors?.size()) {
+                        println "found ${contactFors.size()} contacts for ${col.name}"
+                    }
+                    contactFors.each{
+                        ContactFor cf = new ContactFor(userLastModified: "Imported (previous update by ${it.userLastModified})")
+                        Contact c = Contact.get(it.contact.id)
+                        if (!c) {
+                            log.error "failed to find contact with id = ${it.contact.id}"
+                        } else {
+                            cf.contact = c
+                            cf.role = load(it.role)
+                            cf.administrator = it.administrator
+                            cf.primaryContact = it.primaryContact
+                            cf.entityUid = col.uid
+
+                            cf.validate()
+                            if (cf.hasErrors()) {
+                                cf.errors.each {println it}
+                            } else {
+                                cf.save()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /* load provider maps */
+
+        imp.providerMap.each {
+            ProviderMap pm = new ProviderMap()
+            //pm.userLastModified = "Imported (previous update by ${it.userLastModified})"
+            pm.exact = it.exact
+            pm.matchAnyCollectionCode = it.matchAnyCollectionCode
+            Collection col = collectionMap.get(it.providerGroup?.id) as Collection
+            if (col) {
+                pm.collection = col
+
+                // institution codes
+                List instCodes = it.institutionCodes
+                instCodes.each {
+                    pm.addToInstitutionCodes(ProviderCode.get(it.id))
+                }
+                // collection codes
+                List collCodes = it.collectionCodes
+                collCodes.each {
+                    pm.addToCollectionCodes(ProviderCode.get(it.id))
+                }
+                pm.validate()
+                if (pm.hasErrors()) {
+                    pm.errors.each {println it}
+                } else {
+                    pm.save()
+                }
+
+            } else {
+                println "failed to find collection with id = ${it.providerGroup?.id}"
+            }
+        }
+
+        println "Imported ${Institution.count()} institutions."
+        println "Imported ${Collection.count()} collections."
+        println "Linked ${ContactFor.count()} contacts for entities."
+        println "Linked ${ProviderMap.count()} provider maps for collections."
+    }
+
+    private Object load(Object it) {
+        if (it) {
+            if (it.toString() != 'null') {
+                return it
+            }
+        }
+        return null
+    }
+
+    private Object loadAddress(Object it) {
+        if (it) {
+            if (it.toString() != 'null') {
+                Address ad = new Address()
+                ad.street = load(it.street)
+                ad.city = load(it.city)
+                ad.postBox = load(it.postBox)
+                ad.postcode = load(it.postcode)
+                ad.state = load(it.state)
+                ad.country = load(it.country)
+                return ad
+            }
+        }
+        return null
+    }
+
+    private Object loadImage(Object it) {
+        if (it) {
+            if (it.toString() != 'null') {
+                Image img = new Image()
+                img.file = load(it.file)
+                img.caption = load(it.caption)
+                img.attribution = load(it.attribution)
+                img.copyright = load(it.copyright)
+                return img
+            }
+        }
+        return null
+    }
+
+    private Date loadDate(String it) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+        return sdf.parse(it.substring(0,it.length()-1))
+    }
+
+
+
+
+    /** old BCI imports **/
 
     /* List of field names as BCI names
      * LSID,RECORD_ID,CREATED,MODIFIED,NAME,CODE,KIND,TAXON_SCOPE,GEO_SCOPE,SIZE,SIZE_APPROX_INT,FOUNDED_YEAR,NOTES,CONTACT_PERSON,CONTACT_POSITION,CONTACT_PHONE,CONTACT_FAX,CONTACT_EMAIL,WEB_SITE,WEB_SERVICE_URI,WEB_SERVICE_TYPE,LOCATION_DEPARTMENT,LOCATION_STREET,LOCATION_POST_BOX,LOCATION_CITY,LOCATION_STATE,LOCATION_POSTCODE,LOCATION_COUNTRY_NAME,LOCATION_COUNTRY_ISO,LOCATION_LONG,LOCATION_LAT,LOCATION_ALT,LOCATION_NOTES,INSTITUTION_NAME,INSTITUTION_TYPE,INSTITUTION_URI,DESCRIPTION_TECH,DESCRIPTION_PUB,URL
@@ -41,7 +354,7 @@ class DataLoaderService {
             boolean changed = false
             if (!pg) {
                 // does not exist
-                pg = new ProviderGroup(name: it.name, userLastModified: user, groupType: ProviderGroup.GROUP_TYPE_COLLECTION)
+                pg = new Collection(name: it.name, userLastModified: user, uid: idGeneratorService.getNextCollectionId())
                 changed = true
             }
             // only update if last modified by BCI loader or json loader unless overwrite is true or just created
@@ -105,8 +418,8 @@ class DataLoaderService {
             if (params.name) {
                 ProviderGroup pg = ProviderGroup.findByName(params.name)
                 if (!pg) {
-                    pg = new ProviderGroup(name: params.name, userLastModified: "AMRRN loader",
-                            groupType: ProviderGroup.GROUP_TYPE_COLLECTION, acronym: params.acronym)
+                    pg = new Collection(name: params.name, userLastModified: "AMRRN loader",
+                            uid: idGeneratorService.getNextCollectionId(), acronym: params.acronym)
                     parseAddress(params)
                     pg.address = new Address(street: params.street, city: params.city, state: params.state,
                         postcode: params.postcode, postBox: params.postBox)
@@ -233,22 +546,23 @@ class DataLoaderService {
                  *          add as parent to collection
                  * save
                  */
+                ProviderGroup provider
                 
-                /* provider */
-                ProviderGroup provider = new ProviderGroup()
-                // load some values
-                provider.properties["guid","name","acronym","focus","notes","websiteUrl","longitude","latitude",
-                        "altitude","techDescription","pubDescription"] = params
-                provider.address = new Address()
-                provider.address.properties["street","postBox","city","state","postcode","country"] = params
-                provider.userLastModified = "BCI loader"
-
                 // check whether it's really an institution
-                if (recogniseInstitution(provider.name)) {
+                if (recogniseInstitution(params.name)) {
+                    /* provider */
+                    provider = new Institution()
+                    // load some values
+                    provider.properties["guid","name","acronym","focus","notes","websiteUrl","longitude","latitude",
+                            "altitude","techDescription","pubDescription"] = params
+                    provider.address = new Address()
+                    provider.address.properties["street","postBox","city","state","postcode","country"] = params
+                    provider.userLastModified = "BCI loader"
+
                     String institutionName = standardiseInstitutionName(provider.name)
                     /* institution */
                     // see if an institution with this name has already been saved
-                    def institution = ProviderGroup.findByNameAndGroupType(institutionName, ProviderGroup.GROUP_TYPE_INSTITUTION)
+                    def institution = Institution.findByName(institutionName)
                     if (institution) {
                         // update it with these richer details
                         println "updating existing institution ${institution.name} with collection-level data"
@@ -264,8 +578,8 @@ class DataLoaderService {
                         // discard existing provider object and make this the provider (so we can do common processing later)
                         provider = institution
                     } else {
+                        provider.uid = idGeneratorService.getNextInstitutionId()
                         provider.name = institutionName
-                        provider.groupType = ProviderGroup.GROUP_TYPE_INSTITUTION
                         provider.institutionType = massageInstitutionType(params.institutionType)
                         if (!provider.institutionType)
                             provider.institutionType = massageInstitutionType(params.kind)
@@ -281,14 +595,23 @@ class DataLoaderService {
                         provider.isALAPartner = isALAPartner(institutionName)
                     }
                 } else {
+                    /* provider */
+                    provider = new Collection(uid: idGeneratorService.getNextCollectionId())
+                    // load some values
+                    provider.properties["guid","name","acronym","focus","notes","websiteUrl","longitude","latitude",
+                            "altitude","techDescription","pubDescription"] = params
+                    provider.address = new Address()
+                    provider.address.properties["street","postBox","city","state","postcode","country"] = params
+                    provider.userLastModified = "BCI loader"
+
                     /* collection */
-                    provider.groupType = ProviderGroup.GROUP_TYPE_COLLECTION
                     provider.scope = new CollectionScope()
                     provider.scope.properties["geographicDescription","startDate"] = params
                     provider.scope.keywords = extractKeywords(params)
                     provider.scope.numRecords = buildSize(params)
                     provider.scope.userLastModified = "BCI loader"
-                    // create or assign infosource only if there is some data
+
+                    /*/ create or assign infosource only if there is some data
                     String webServiceUri = params.webServiceUri
                     String webServiceType = params.webServiceProtocol
 
@@ -314,7 +637,7 @@ class DataLoaderService {
                                 println it
                             }
                         }
-                    }
+                    }*/
 
                 }
 
@@ -343,7 +666,7 @@ class DataLoaderService {
                 }
 
                 // only handle owning institutions if this is a collection
-                if (provider.groupType == ProviderGroup.GROUP_TYPE_COLLECTION) {
+                if (provider instanceof Collection) {
                     /* institution */
                     String institutionName = standardiseInstitutionName(params.institutionName)
                     // only process if it has a name
@@ -361,8 +684,7 @@ class DataLoaderService {
                                 institution.websiteUrl = params.institutionUri
                         } else {
                             println ">> Creating institution ${institutionName} for collection ${provider.name}"
-                            institution = new ProviderGroup()
-                            institution.groupType = "Institution"
+                            institution = new Institution(uid: idGeneratorService.getNextInstitutionId())
                             institution.name = institutionName
                             // fudge the institution guid for now
                             institution.guid = institutionGuid++

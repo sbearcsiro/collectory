@@ -19,7 +19,7 @@ class ContactGroupTests extends GrailsUnitTestCase {
         mark.save(flush: true)
         if (mark.hasErrors()) mark.errors.each {println it}
         // an entity of type ProviderGroup
-        group = new ProviderGroup(guid: "ABC", name: "XYZ", groupType: "Institution", userLastModified: "test").save(flush: true)
+        group = new Institution(guid: "ABC", uid:'in13', name: "XYZ", userLastModified: "test").save(flush: true)
         if (group.hasErrors()) group.errors.each {println it}
    }
 
@@ -35,7 +35,7 @@ class ContactGroupTests extends GrailsUnitTestCase {
         assertEquals 0, ContactFor.count()
 
         // create a contact link
-        new ContactFor(contact: pete, entityId: group.id, entityType: "ProviderGroup", role: "Manager",
+        new ContactFor(contact: pete, entityUid: group.uid, role: "Manager",
                 administrator: true, primaryContact: true, userLastModified: "test").save(flush: true)
 
         assertEquals 1, ContactFor.count()
@@ -48,7 +48,7 @@ class ContactGroupTests extends GrailsUnitTestCase {
         ContactFor cf = contacts.get(0)
         println cf.print()
 
-        new ContactFor(contact: mark, entityId: group.id, entityType: "ProviderGroup", role: "Asst Manager",
+        new ContactFor(contact: mark, entityUid: group.uid, role: "Asst Manager",
                 administrator: true, primaryContact: false, userLastModified: "test").save(flush: true)
 
         // retrieve links for an entity
@@ -58,9 +58,9 @@ class ContactGroupTests extends GrailsUnitTestCase {
 
     void testGroupContactsManualAdd() {
         // create contact links manually
-        new ContactFor(contact: pete, entityId: group.id, entityType: "ProviderGroup", role: "Manager",
+        new ContactFor(contact: pete, entityUid: group.uid, role: "Manager",
                 administrator: true, primaryContact: true, userLastModified: "test").save(flush: true)
-        new ContactFor(contact: mark, entityId: group.id, entityType: "ProviderGroup", role: "Asst Manager",
+        new ContactFor(contact: mark, entityUid: group.uid, role: "Asst Manager",
                 administrator: true, primaryContact: false, userLastModified: "test").save(flush: true)
 
         // test getContacts
@@ -100,7 +100,7 @@ class ContactGroupTests extends GrailsUnitTestCase {
     // tests to see if the dynamic wiring in integration tests breaks the isAdministrator call
     void testIsAdministrator() {
         // create a contact link
-        new ContactFor(contact: pete, entityId: group.id, entityType: "ProviderGroup", role: "Manager",
+        new ContactFor(contact: pete, entityUid: group.uid, role: "Manager",
                 administrator: true, primaryContact: true, userLastModified: "test").save(flush: true)
 
         assertEquals 1, ContactFor.count()
@@ -114,7 +114,7 @@ class ContactGroupTests extends GrailsUnitTestCase {
 
     void testSearchByUser() {
         // create a contact link
-        new ContactFor(contact: pete, entityId: group.id, entityType: "ProviderGroup", role: "Manager",
+        new ContactFor(contact: pete, entityUid: group.uid, role: "Manager",
                 administrator: true, primaryContact: true, userLastModified: "test").save(flush: true)
 
         def userContact = Contact.findByEmail("pete@csiro.au")

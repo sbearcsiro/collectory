@@ -1,4 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
  
 <head profile="http://gmpg.org/xfn/11">
@@ -46,13 +47,13 @@
 	</div><!-- end header -->
  
 <div class="login-info">
-    <!--g:isLoggedIn>
-        <span id="logged-in">Logged in as ${loggedInUserInfo(field:'username')}</span>
-        <g:link controller="logout">Logout</:link>
-    </:isLoggedIn>
-    <g:isNotLoggedIn>
-        <g:link controller="login">Log in</:link>
-    </:isNotLoggedIn-->
+    <cl:isLoggedIn>
+        <span id="logged-in">Logged in as <cl:loggedInUsername/></span>
+        <a href="http://auth.ala.org.au/cas/logout?url=${ConfigurationHolder.config.security.cas.serverName}/${ConfigurationHolder.config.security.cas.context}">Logout</a>
+    </cl:isLoggedIn>
+    <cl:isNotLoggedIn>
+        <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}/${ConfigurationHolder.config.security.cas.context}/admin">Logout</a>
+    </cl:isNotLoggedIn>
 </div><browser:isMsie><div style="clear:both"></div></browser:isMsie><!-- fix IE float bug-->
   
 <div id="content" class="clearfix">

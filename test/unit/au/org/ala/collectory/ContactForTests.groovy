@@ -11,8 +11,7 @@ class ContactForTests extends GrailsUnitTestCase {
 
         cf = new ContactFor(
             contact: [id: 4, lastName: "Caution"] as Contact,  // mock list as Contact class 
-            entityId: 27,
-            entityType: "Institution",
+            entityUid: 'in27',
             role: "Manager",
             administrator: true,
             primaryContact: true)
@@ -26,8 +25,7 @@ class ContactForTests extends GrailsUnitTestCase {
     void testPrint() {
         assertEquals([
             "Contact id: 4",
-            "Entity id: 27",
-            "Entity type: Institution",
+            "Entity id: in27",
             "Role: Manager",
             "isAdmin: true",
             "isPrimary: true"]

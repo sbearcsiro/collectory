@@ -23,7 +23,6 @@
                 <tr><td>Collections</td><td>${reports.totalCollections}</td><td></td></tr>
                 <tr><td>Institutions</td><td>${reports.totalInstitutions}</td><td></td></tr>
                 <tr><td>Contacts</td><td>${reports.totalContacts}</td><td></td></tr>
-                <tr><td>Login accounts</td><td>${reports.totalLogons}</td><td></td></tr>
 
                 <tr class="reportGroupTitle"><td colspan="3">Collection data quality</td></tr>
                 <tr><cl:totalAndPercent label="Collections with no collection type" without="${reports.collectionsWithType}" total="${reports.totalCollections}"/></tr>
@@ -40,9 +39,6 @@
                 <tr><cl:totalAndPercent label="Collections with no email contacts" with="${reports.collectionsWithoutEmailContacts}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Institutions with no contacts" with="${reports.institutionsWithoutContacts}" total="${reports.totalInstitutions}"/></tr>
                 <tr><cl:totalAndPercent label="Institutions with no email contacts" with="${reports.institutionsWithoutEmailContacts}" total="${reports.totalInstitutions}"/></tr>
-
-                <tr class="reportGroupTitle"><td colspan="3">Infosource summary</td></tr>
-                <tr><cl:totalAndPercent label="Collections with infosource data" with="${reports.collectionsWithInfosource}" total="${reports.totalCollections}"/></tr>
 
               </table>
             </div>

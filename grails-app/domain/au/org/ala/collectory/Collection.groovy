@@ -156,6 +156,7 @@ class Collection extends ProviderGroup implements Serializable {
         if (institution) {
             cs.institution = institution.name
             cs.institutionId = institution.id
+            cs.institutionUid = institution.uid
         }
         cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()

@@ -13,20 +13,19 @@ class InstitutionController {
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
-        //println "Count = " + ProviderGroup.countByGroupType('Institution')
         [institutionInstanceList: Institution.list(params),
                 institutionInstanceTotal: Institution.count()]
     }
 
     def show = {
-        def institutionInstance = Institution.get(params.id)
+        def institutionInstance = get(params.id)
         if (!institutionInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
             redirect(action: "list")
         }
         else {
             log.info "Ala partner = " + institutionInstance.isALAPartner
-//            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.VIEW
+            ActivityLog.log username(), institutionInstance.uid, Action.VIEW
             [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts()]
         }
     }
@@ -34,8 +33,7 @@ class InstitutionController {
     def editInstitutionFlow = {
         start {
             action {
-                //log.info "> entered start"
-                def institutionInstance = Institution.get(params.id)
+                def institutionInstance = get(params.id)
                 if (!institutionInstance) {
                     flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
                     redirect(action: "list")
@@ -150,7 +148,7 @@ class InstitutionController {
                                 File f = new File(colDir, filename)
                                 log.debug "saving ${filename} to ${f.absoluteFile}"
                                 mhsr.transferTo(f)
-                                ActivityLog.log authenticateService.userDomain().username as String, Action.UPLOAD_IMAGE, filename
+                                ActivityLog.log username(), Action.UPLOAD_IMAGE, filename
                             } else {
                                 // TODO: handle error message
                             }
@@ -196,7 +194,7 @@ class InstitutionController {
                         inst.userLastModified = 'temp'//authenticateService.userDomain().username
                         if (!inst.hasErrors() && inst.save(flush: true)) {
                             flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerGroup.label', default: 'Institution'), inst.name])}"
-//                            ActivityLog.log authenticateService.userDomain().username as String, inst.id, Action.EDIT_SAVE
+                            ActivityLog.log username(), inst.uid, Action.EDIT_SAVE
                             [id: params.id, url: request.getContextPath() + '/institution/show']
                         } else {
                             return error()
@@ -253,7 +251,7 @@ class InstitutionController {
                 contact.userLastModified = authenticateService.userDomain().username
                 // save immediately - review this decision
                 contact.save()
-//                ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
+                ActivityLog.log username(), contact.id, Action.CREATE_CONTACT
                 flow.providerGroupInstance.addToContacts(contact, params.role2, (params.isAdmin2 as String == 'true'), (params.isPrimary2 as String == 'true'), authenticateService.userDomain().username)
             }
             on("success").to "showEdit"
@@ -283,7 +281,7 @@ class InstitutionController {
     }
 
     def delete = {
-        def providerGroupInstance = Institution.get(params.id)
+        def providerGroupInstance = get(params.id)
         if (providerGroupInstance) {
             /* need to remove it as a parent from all children
                - in practice this means removing all rows of the link table that reference this institution
@@ -314,6 +312,18 @@ class InstitutionController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
             redirect(action: "list")
         }
+    }
+
+    private Institution get(id) {
+        if (params.id?.toString()?.startsWith(Institution.ENTITY_PREFIX)) {
+            return Institution.findByUid(params.id)
+        } else {
+            return Institution.get(params.id)
+        }
+    }
+
+    private String username() {
+        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
     }
 
 }

@@ -6,6 +6,7 @@ package au.org.ala.collectory
 class CollectionSummary extends ProviderGroupSummary {
     String institution
     String institutionId
+    String institutionUid
     List derivedInstCodes
     List derivedCollCodes
 }

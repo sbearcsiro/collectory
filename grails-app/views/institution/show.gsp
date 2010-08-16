@@ -1,5 +1,5 @@
 
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<%@ page import="au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -23,10 +23,15 @@
                     <tbody>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="institution.uid.label" default="uid" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "uid")}</td>
+                        </tr>
+                    
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.guid.label" default="Guid" /></td>
                             <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "guid")}</td>
                         </tr>
-                    
+
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.acronym.label" default="Acronym" /></td>
                             <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "acronym")}</td>
@@ -129,7 +134,7 @@
                                   </tr>
                                   <tr class="prop">
                                       <td valign="top" class="name"><g:message code="institution.image_ref.file.label" default="Caption" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "imageRef.caption")}</td>
+                                      <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "imageRef.caption")}</cl:formattedText></td>
                                   </tr>
                                   <tr class="prop">
                                       <td valign="top" class="name"><g:message code="institution.image_ref.file.label" default="Attribution" /></td>
@@ -183,13 +188,6 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.dateFirstDataReceived.label" default="Date First Data Received" /></td>
-                            
-                            <td valign="top" class="value"><g:formatDate date="${institutionInstance?.dateFirstDataReceived}" /></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="institution.notes.label" default="Notes" /></td>
                             
                             <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "notes")}</td>
@@ -208,7 +206,7 @@
                             
                             <td valign="top" style="text-align: left;" class="value">
                                 <ul>
-                                <g:each in="${institutionInstance.getSafeChildren()}" var="c">
+                                <g:each in="${institutionInstance.getCollections()}" var="c">
                                     <li><g:link controller="collection" action="show" id="${c.id}">${c?.name}</g:link></li>
                                 </g:each>
                                 </ul>
@@ -232,7 +230,7 @@
                     
 <!-- last edit -->      <tr class="prop">
                             <td valign="top" class="name">Last edited</td>
-                            <td valign="top" class="value">by ${fieldValue(bean: institutionInstance, field: "userLastModified")} on ${fieldValue(bean: institutionInstance, field: "dateLastModified")}</td>
+                            <td valign="top" class="value">by ${fieldValue(bean: institutionInstance, field: "userLastModified")} on ${fieldValue(bean: institutionInstance, field: "lastUpdated")}</td>
                         </tr>
 
                     </tbody>
@@ -241,12 +239,12 @@
             <div class="buttons">
                 <g:form url="[action:'editInstitution']">
                   <g:hiddenField name="id" value="${institutionInstance?.id}" />
-                  <cl:isAuth user="${loggedInUserInfo(field:'username')}" collection="${collectionInstance?.id}">
+                  <cl:isAuth uid="${institutionInstance?.uid}">
                     <span class="button"><g:actionSubmit class="edit" action='editInstitution' value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
                   </cl:isAuth>
-                  <g:ifAllGranted role="ROLE_ADMIN">
+                  <cl:ifGranted role="ROLE_ADMIN">
                     <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
-                  </g:ifAllGranted>
+                  </cl:ifGranted>
                 </g:form>
             </div>
         </div>

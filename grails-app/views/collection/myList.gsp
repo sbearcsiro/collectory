@@ -17,10 +17,10 @@
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
-            <g:render template="collectionList" model="[collectionInstanceList: providerGroupInstanceList.findAll{it.groupType == ProviderGroup.GROUP_TYPE_COLLECTION}]"/>
-            <g:if test="${providerGroupInstanceList.findAll{it.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION}.size() > 0}">
+            <g:render template="collectionList" model="[collectionInstanceList: collections]"/>
+            <g:if test="${institutions.size() > 0}">
               <h1><g:message code="institutions.myList.label" default="My institutions" /></h1>
-              <g:render template="/shared/institutionList" model="[institutionInstanceList: providerGroupInstanceList.findAll{it.groupType == ProviderGroup.GROUP_TYPE_INSTITUTION}]"/>
+              <g:render template="/shared/institutionList" model="[institutionInstanceList: institutions]"/>
             </g:if>
         </div>
     </body>

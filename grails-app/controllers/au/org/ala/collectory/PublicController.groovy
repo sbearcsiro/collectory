@@ -41,7 +41,7 @@ class PublicController {
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
             def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
 
-            def count = -1
+            def count = 0
             def conn = new URL(url).openConnection()
             conn.setConnectTimeout 3000
             try {
@@ -52,8 +52,8 @@ class PublicController {
             } catch (Exception e) {
                 log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
             }
-            def percent = -1
-            if (count != -1 && collectionInstance.numRecords > 0) {
+            def percent = 0
+            if (count != 0 && collectionInstance.numRecords > 0) {
                 percent = (count*100)/collectionInstance.numRecords
             }
 

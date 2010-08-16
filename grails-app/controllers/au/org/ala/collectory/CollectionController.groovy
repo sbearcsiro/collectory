@@ -20,34 +20,35 @@ class CollectionController {
             flash.message = params.message
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
-//        ActivityLog.log authenticateService.userDomain().username, Action.LIST
+        ActivityLog.log username(), Action.LIST
         [collInstanceList: Collection.list(params),
                 collInstanceTotal: Collection.count()]
     }
 
-/*    def myList = {
+    def myList = {
         // do not paginate this list - unlikely to be large
         // get user's contact id
         def userContact = null
-        def user = authenticateService.userDomain().username
+        def user = username()
         if (user) {
             userContact = Contact.findByEmail(user)
-        } else {
-            redirect(controller: 'login', action: 'auth')
-        }
-        def collectionList = []
-        if (userContact) {
-            ContactFor.findAllByContact(userContact).each {
-                Collection pg = Collection.findById(it.entityId)
-                if (pg) {
-                    collectionList << pg
+            def collectionList = []
+            def institutionList = []
+            if (userContact) {
+                ContactFor.findAllByContact(userContact).each {
+                    ProviderGroup pg = ProviderGroup._get(it.entityUid)
+                    if (pg?.entityType() == Collection.ENTITY_TYPE) {
+                        collectionList << pg
+                    } else if (pg?.entityType() == Institution.ENTITY_TYPE) {
+                        institutionList << pg
+                    }
                 }
             }
+            ActivityLog.log username(), Action.MYLIST
+            log.info ">>${user} listing my collections and institution"
+            render(view: 'myList', model: [collections: collectionList, institutions: institutionList])
         }
-        ActivityLog.log authenticateService.userDomain().username, Action.MYLIST
-        log.info ">>${user} listing my collections"
-        render(view: 'myList', model: [providerGroupInstanceList: collectionList])
-    }*/
+    }
 
     // show a single collection
     def show = {
@@ -58,8 +59,8 @@ class CollectionController {
             redirect(action: "list")
         } else {
             // show it
-//            log.info ">>${authenticateService.userDomain().username} showing ${collectionInstance.name}"
-//            ActivityLog.log authenticateService.userDomain().username as String, collectionInstance.id, Action.VIEW
+            log.info ">>${username()} showing ${collectionInstance.name}"
+            ActivityLog.log username() as String, collectionInstance.uid, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
         }
     }
@@ -118,8 +119,8 @@ class CollectionController {
         if (!params.sort) params.sort = "name"
         if (!params.order) params.order = "asc"
 
-//        log.info ">>${authenticateService.userDomain().username} searching for ${params.term}"
-//        ActivityLog.log authenticateService.userDomain().username, Action.SEARCH, params.term
+        log.info ">>${username()} searching for ${params.term}"
+        ActivityLog.log username(), Action.SEARCH, params.term
 
         def results = Collection.createCriteria().list(max: params.max, offset: params.offset) {
             order(params.sort, params.order)
@@ -139,14 +140,14 @@ class CollectionController {
         Collection col = Collection.get(params.id)
         if (col) {
             def name = col.name
-//            log.info ">>${authenticateService.userDomain().username} deleting collection " + name
-//            ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
+            log.info ">>${username()} deleting collection " + name
+            ActivityLog.log username(), col.uid, Action.DELETE
             try {
                 // remove it as a child from parent institution
                 if (col.institution) {
                     log.info "Removing collection " +  name + " from parent " + col.institution.name
                     col.institution.removeFromChildren col
-//                    it.userLastModified = authenticateService.userDomain().username
+                    it.userLastModified = username()
                     it.save()
                 }
                 // remove contact links (does not remove the contact)
@@ -212,25 +213,25 @@ class CollectionController {
                         return noId()
                     }
                     if (!cmd.load(flow.colid)) {
-//                        log.info ">>${authenticateService.userDomain().username} shown error when trying to edit collection id=${flow.colid}"
+                        log.info ">>${username()} shown error when trying to edit collection id=${flow.colid}"
                         flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), flow.colid])}"
                         failure()
                     } else {
-//                        log.info ">>${authenticateService.userDomain().username} editing collection ${cmd.name}"
+                        log.info ">>${username()} editing collection ${cmd.name}"
                     }
                 } else {
                     // add the user as the contact of the collection they are creating
                     // but not if they are an ADMIN
-/*                    if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
-                        def user = authenticateService.userDomain().username
-                        log.info ">>${user} creating a new colection"
+                    if (request.isUserInRole('ROLE_ADMIN')) {
+                        def user = username()
+                        log.info ">>${user} creating a new collection"
                         if (user) {
                             Contact c = Contact.findByEmail(user)
                             if (c) {
                                 cmd.addAsContact(c, "Creator", true)
                             }
                         }
-                    }*/
+                    }
                     flow.mode = mode
                 }
                 [command: cmd]
@@ -348,7 +349,7 @@ class CollectionController {
                 params.each {log.debug it}
                 Institution inst = new Institution(params)
                 inst.uid = idGeneratorService.getNextInstitutionId()
-//                inst.userLastModified = authenticateService.userDomain().username + "(created)"
+                inst.userLastModified = username() + "(created)"
                 inst.validate()
                 if (inst.hasErrors()) {
                     flow.newInst = inst
@@ -364,7 +365,7 @@ class CollectionController {
                     flow.newInst.errors.each {log.debug it}
                     failure()
                 } else {
-//                    ActivityLog.log authenticateService.userDomain().username as String, flow.newInst.id as long, Action.CREATE_INSTITUTION
+                    ActivityLog.log username() as String, flow.newInst.uid as String, Action.CREATE_INSTITUTION
                     log.debug "new inst id=" + flow.newInst.id
                     // if we have no id something is wrong
                     if (!flow.newInst?.id) {
@@ -372,8 +373,8 @@ class CollectionController {
                     } else {
                         // add the user as the contact
                         // but not if they are ADMIN
- /*                       if (!AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
-                            def user = authenticateService.userDomain().username
+                        if (!request.isUserInRole('ROLE_ADMIN')) {
+                            def user = username()
                             log.debug user
                             if (user) {
                                 Contact c = Contact.findByEmail(user)
@@ -383,7 +384,7 @@ class CollectionController {
                                     flow.newInst.save(flush: true)
                                 }
                             }
-                        }*/
+                        }
                         // add new institution to the collection
                         flow.command.institution = flow.newInst
                         // don't leave it in the flow
@@ -436,7 +437,7 @@ class CollectionController {
             action {
                 Contact contact = new Contact(params)
                 contact.dateLastModified = new Date()
-                contact.userLastModified = authenticateService.userDomain().username + "(created)"
+                contact.userLastModified = username() + "(created)"
                 contact.validate()
                 if ([params.firstName, params.lastName, params.phone, params.mobile, params.email].join() == "") {
                     contact.errors.reject("contact.fields.noData.message", "Name, phone, mobile and email in new contact cannot all be blank")
@@ -448,7 +449,7 @@ class CollectionController {
                 } else {
                     // save immediately - review this decision
                     contact.save()
-//                    ActivityLog.log authenticateService.userDomain().username as String, contact.id, Action.CREATE_CONTACT
+                    ActivityLog.log username() as String, contact.id as String, Action.CREATE_CONTACT
                     flow.command.addAsContact(contact)
                 }
             }
@@ -464,11 +465,11 @@ class CollectionController {
                 log.debug "> saving changes"
                 def mode = flow.mode
                 if (mode == "create") {
-                    log.info "creating collection: user = ${authenticateService.userDomain().username}"
-                    long id = flow.command.create('temp', idGeneratorService.getNextCollectionId())//authenticateService.userDomain().username)
+                    log.info "creating collection: user = ${username()}"
+                    long id = flow.command.create('temp', idGeneratorService.getNextCollectionId())//username())
                     if (id) {
-//                        ActivityLog.log authenticateService.userDomain().username as String, id as long, Action.CREATE
- //                       log.info ">>${authenticateService.userDomain().username} created collection ${flow.command.name} with id ${id}"
+                        ActivityLog.log username() as String, flow.command.uid as String, Action.CREATE
+                        log.info ">>${username()} created collection ${flow.command.name} with id ${id}"
                         params.id = id
                     } else {
                         failure()
@@ -476,7 +477,7 @@ v                   }
                 } else {
                     log.debug ">> colid = " + flow.colid
                     // save changes
-                    long id = flow.command.save('temp')//authenticateService.userDomain().username)
+                    long id = flow.command.save(username())
                     if (id == -2) {
                         // row was updated or deleted by another transaction
                         log.warn "Attempted to save a stale collection record - ${flow.command.name} version ${flow.command.version}"
@@ -490,8 +491,8 @@ v                   }
                                 "Another user has updated this collection while you were editing. New values have been refreshed. You will need to reapply your changes.")
                         return lockingFailure()
                     } else {
-                        //ActivityLog.log authenticateService.userDomain().username as String, flow.command.id, Action.EDIT_SAVE
-//                        log.info ">>${authenticateService.userDomain().username} saved collection ${flow.command.name}"
+                        ActivityLog.log username() as String, flow.command.uid as String, Action.EDIT_SAVE
+                        log.info ">>${username()} saved collection ${flow.command.name}"
                     }
                 }
             }
@@ -522,11 +523,12 @@ v                   }
                 // no need to discard model as it's not directly managed by hibernate
                 // make sure the modified model is removed from flow
                 def mode = flow.mode
+                def uid = flow.command.uid
                 flow.clear()
                 if (mode == 'create') {
-//                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.CREATE_CANCEL
+                    ActivityLog.log username(), uid as String, Action.CREATE_CANCEL
                 } else {
-//                    ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.EDIT_CANCEL
+                    ActivityLog.log username(), uid as String, Action.EDIT_CANCEL
                     log.debug ">> exiting to " + params.id
                 }
                 [id: params.id, url: request.getContextPath() + '/collection/show']
@@ -610,7 +612,7 @@ v                   }
                 File f = new File(colDir, filename)
                 log.debug "saving ${filename} to ${f.absoluteFile}"
                 mhsr.transferTo(f)
-//                ActivityLog.log authenticateService.userDomain().username as String, Action.UPLOAD_IMAGE, filename
+                ActivityLog.log username() as String, Action.UPLOAD_IMAGE, filename
             } else {
                 // TODO: handle error message
             }
@@ -687,6 +689,18 @@ v                   }
         } catch (ParseException e) {}
         // try acronym
         return Collection.findByAcronym(id)
+    }
+
+    private Collection get(id) {
+        if (params.id?.toString()?.startsWith(Collection.ENTITY_PREFIX)) {
+            return Collection.findByUid(params.id)
+        } else {
+            return Collection.get(params.id)
+        }
+    }
+    
+    private String username() {
+        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
     }
 
 }

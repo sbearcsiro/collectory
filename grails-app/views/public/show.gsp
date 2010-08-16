@@ -54,6 +54,7 @@
                   <!--div style="clear: both;"></div-->
               </g:if>
             </div>
+            <div style="clear:both;"></div>
           </div>
           <div id="nav-tabs">
             <ul class="ui-tabs-nav">

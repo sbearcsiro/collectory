@@ -31,10 +31,15 @@
                             <td valign="top" class="name" style="width: 300px"><g:message code="collection.name.label" default="Name" /></td>
                             <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "name")}</td>
                         </tr>
-                    
+
 <!-- GUID    -->        <tr class="prop">
                             <td valign="top" class="name"><g:message code="collection.guid.label" default="Guid" /></td>
                             <td valign="top" class="value"><cl:guid target="_blank" guid='${fieldValue(bean: collectionInstance, field: "guid")}'/></td>
+                        </tr>
+
+<!-- UID    -->        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="collection.uid.label" default="Uid" /></td>
+                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "uid")}</td>
                         </tr>
 
 <!-- Acronym -->        <tr class="prop">

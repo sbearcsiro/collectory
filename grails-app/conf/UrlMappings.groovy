@@ -5,12 +5,12 @@ class UrlMappings {
 			 // apply constraints here
 		  }
 	  }
-      "/collection/view/$id?"(controller:'public', action:'show')
-      "/institution/view/$id?"(controller:'public', action:'showInstitution')
+      "/pub/collection/$id?"(controller:'public', action:'show')
+      "/pub/institution/$id?"(controller:'public', action:'showInstitution')
       "/lookup/institution/$id"(controller:'lookup', action:'findInstitution')
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
-      "/"(view:"/public/map")
+      "/"(controller:'public', action:'map')
 	  "500"(view:'/error')
 	}
 }

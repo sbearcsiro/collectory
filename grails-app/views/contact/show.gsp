@@ -98,7 +98,7 @@
                             <td valign="top" style="text-align: left;" class="value">
                                 <ul>
                                 <g:each in="${contactInstance?.getContactsFor()}" var="entity">
-                                    <li><g:link controller="${cl.controller(type: entity?.groupType)}" action="show" id="${entity?.id}">${entity?.name}</g:link></li>
+                                    <li><g:link controller="${cl.controller(type: entity?.entityType())}" action="show" id="${entity?.uid}">${entity?.name}</g:link></li>
                                 </g:each>
                                 </ul>
                             </td>

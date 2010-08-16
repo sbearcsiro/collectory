@@ -185,7 +185,7 @@ function dataRequestHandler(data) {
         case 1: unMappedText = "1 collection cannot be mapped."; break;
         default: unMappedText = unMappable.length + " collections cannot be mapped."; break;
     }
-    document.getElementById('numUnMappable').innerHTML = unMappedText;
+    $('span#numUnMappable').html(unMappedText);
 
     // update display of number of features
     var innerFeatures = "";
@@ -194,7 +194,7 @@ function dataRequestHandler(data) {
         case 1: innerFeatures = features.length + " collection is selected."; break;
         default: innerFeatures = features.length + " collections are selected."; break;
     }
-    document.getElementById('numFeatures').innerHTML = innerFeatures;
+    $('span#numFeatures').html(innerFeatures);
 
     // fire moved to initialise number visible
     moved(null);
@@ -208,7 +208,7 @@ function updateList(features) {
         case 1: innerFeatures = features.length + " collection is listed"; break;
         default: innerFeatures = features.length + " collections are listed alphabetically"; break;
     }
-    document.getElementById('numFilteredCollections').innerHTML = innerFeatures;
+    $('span#numFilteredCollections').html(innerFeatures);
 
     var innerHtml = "";
     for (var i = 0; i < features.length; i++) {
@@ -219,7 +219,7 @@ function updateList(features) {
         }
         innerHtml = innerHtml + "</li>";
     }
-    document.getElementById('filtered-list').innerHTML = innerHtml;
+    $('ul#filtered-list').html(innerHtml);
 }
 
 /* hover handlers */
@@ -282,7 +282,7 @@ function moved(evt) {
         case 1: innerFeatures = visibleCount + " collection is currently visible on the map."; break;
         default: innerFeatures = visibleCount + " collections are currently visible on the map."; break;
     }
-    document.getElementById('numVisible').innerHTML = innerFeatures;
+    $('span#numVisible').html(innerFeatures);
 }
 
 /* click (select) handlers */
@@ -370,25 +370,22 @@ function resetZoom() {
 
 // set all boxes checked and trigger change handler
 function setAll() {
-    var boxes = document.getElementsByName('filter');
-    for (i = 0; i < boxes.length; i++) {
-        boxes[i].checked = document.getElementById('all').checked;
-    }
+    $('input[name=filter]').attr('checked', $('input#all').is(':checked'));
     filterChange();
 }
 
 // build comma-separated string representing all selected boxes
 function getAll() {
-    if (document.getElementById('all').checked) {
+    if ($('input#all').is(':checked')) {
         return "all";
     }
-    var boxes = document.getElementsByName('filter');
     var checked = "";
-    for (i = 0; i < boxes.length; i++) {
-        if (boxes[i].checked) {
-            checked += boxes[i].value + ",";
+    $('input[name=filter]').each(function(index, element){
+        if (element.checked) {
+            checked += element.value + ",";
         }
-    }
+    });
+
     return checked;
 }
 
@@ -396,16 +393,15 @@ function getAll() {
 function filterChange() {
     // set state of 'select all' box
     var all = true;
-    var boxes = document.getElementsByName('filter');
-    for (i = 0; i < boxes.length; i++) {
-        if (!boxes[i].checked) {
+    $('input[name=filter]').each(function(index, element){
+        if (!element.checked) {
             all = false;
         }
-    }
-    if (document.getElementById('all').checked && !all) {
-        document.getElementById('all').checked = false;
-    } else if (!document.getElementById('all').checked && all) {
-        document.getElementById('all').checked = true;
+    });
+    if ($('input#all').is(':checked') && !all) {
+        $('input#all').attr('checked', false);
+    } else if (!$('input#all').is(':checked') && all) {
+        $('input#all').attr('checked', true);
     }
 
     // reload features based on new filter selections

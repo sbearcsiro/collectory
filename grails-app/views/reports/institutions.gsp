@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<%@ page import="au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -24,7 +24,7 @@
                   <tr><td>Simple name list (for copy and paste)</td>
                     <td colspan="2"></td></tr>
                   <tr class="reportGroupTitle"><td colspan="3">All institutions</td></tr>
-                  <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION, [sort: 'name'])}">
+                  <g:each var='c' in="${Institution.list([sort: 'name'])}">
                     <tr>
                       <td>${fieldValue(bean: c, field: "name")}</td>
                       <td></td>
@@ -43,7 +43,7 @@
                     <tr><td>Columns show whether the institution is an ALA partner and has a primary contact.</td>
                       <td colspan="2"></td></tr>
                     <tr class="reportGroupTitle"><td>All institutions</td><td>ALA</td><td>Cont</td></tr>
-                    <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION, [sort: 'name'])}">
+                    <g:each var='c' in="${Institution.list([sort: 'name'])}">
                       <tr>
                         <td><g:link controller="institution" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link></td>
                         <td>${c.isALAPartner?'Y':' '}</td>
@@ -61,7 +61,7 @@
                   <colgroup><col width="70%"/><col width="30%"/></colgroup>
                   <tr><td colspan="2">Optimal permanent links for the public institution pages.</td></tr>
                   <tr class="reportGroupTitle"><td colspan="3">All institutions</td></tr>
-                  <g:each var='c' in="${ProviderGroup.findAllByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION, [sort: 'name'])}">
+                  <g:each var='c' in="${Institution.list([sort: 'name'])}">
                     <tr>
                       <td>${fieldValue(bean: c, field: "name")}</td>
                       <td><cl:permalink type="institution" id="${c.generatePermalink()}"/></td>

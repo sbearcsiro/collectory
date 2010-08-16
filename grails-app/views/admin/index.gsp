@@ -14,15 +14,15 @@
         <h3>Natural History Collections Management</h3> <p>Information about Australian biodiversity collections can be added and updated here.</p>
       </div>
 
-      <!--isNotLoggedIn>
+      <cl:isNotLoggedIn>
         <div class="homeCell">
           <h4 class="inline">Please log in</h4>
             <span class="buttons" style="float: right;">
-              <link controller="login">&nbsp;Log in&nbsp;</link>
+              Log in
             </span>
           <p>You must log in to manage collection records</p>
         </div>
-      </isNotLoggedIn-->
+      </cl:isNotLoggedIn>
 
       <div class="homeCell">
         <g:link class="mainLink" controller="collection" action="list">View all collections</g:link>
@@ -52,7 +52,7 @@
         <p class="mainText">Browse the institutions that hold collections.</p>
       </div>
 
-    <!--g:ifAllGranted role="ROLE_ADMIN"-->
+    <cl:ifGranted role="ROLE_ADMIN">
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">
@@ -66,32 +66,10 @@
       </div>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="logon" action="list">Manage logons</g:link>
-        <p class="mainText">Create and maintain user accounts.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="role" action="list">Manage roles</g:link>
-        <p class="mainText">Define who can do what by role.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="secRequestMap" action="list">Manage url security</g:link>
-        <p class="mainText">Restrict access to specific urls.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="admin" action="loadSupplementary">Load supplementary data</g:link>
-        <p class="mainText">Only if you know what you are doing.</p>
-        <p class="mainText"><g:link controller="admin" action="loadSupplementary" params="[override:true]">with override</g:link></p>
-      </div>
-
-      <div class="homeCell">
         <g:link class="mainLink" controller="admin" action="export">Export all data as JSON</g:link>
         <p class="mainText">All tables exported verbatim as JSON</p>
       </div>
-    <!--/g:ifAllGranted-->
+    </cl:ifGranted>
       
-
     </body>
 </html>

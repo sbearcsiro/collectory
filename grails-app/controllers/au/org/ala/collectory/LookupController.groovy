@@ -6,6 +6,8 @@ import grails.converters.JSON
 
 class LookupController {
 
+    def idGeneratorService
+
     def index = { }
 
     def collection = {
@@ -84,4 +86,28 @@ class LookupController {
         return Collection.findByAcronym(id)
     }
 
+    def generateCollectionUid = {
+        def resultMap = ['uid':idGeneratorService.getNextCollectionId()]
+        render resultMap as JSON
+    }
+
+    def generateInstitutionUid = {
+        def resultMap = ['uid':idGeneratorService.getNextInstitutionId()]
+        render resultMap as JSON
+    }
+
+    def generateDataProviderUid = {
+        def resultMap = ['uid':idGeneratorService.getNextDataProviderId()]
+        render resultMap as JSON
+    }
+
+    def generateDataResourceUid = {
+        def resultMap = ['uid':idGeneratorService.getNextDataResourceId()]
+        render resultMap as JSON
+    }
+
+    def generateDataHubUid = {
+        def resultMap = ['uid':idGeneratorService.getNextDataHubId()]
+        render resultMap as JSON
+    }
 }

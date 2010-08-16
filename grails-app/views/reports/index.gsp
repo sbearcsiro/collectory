@@ -13,7 +13,7 @@
         <h3>Natural History Collections Reports</h3> <p>Information about the quantity, quality and usage of the ALA's biodiversity collections.</p>
       </div>
 
-      <g:isNotLoggedIn>
+      <cl:isNotLoggedIn>
         <div class="homeCell">
           <h4 class="inline">Please log in</h4>
             <span class="buttons" style="float: right;">
@@ -21,9 +21,9 @@
             </span>
           <p>You must log in to manage collection records</p>
         </div>
-      </g:isNotLoggedIn>
+      </cl:isNotLoggedIn>
 
-    <g:ifAllGranted role="ROLE_ADMIN">
+    <cl:ifGranted role="ROLE_ADMIN">
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">
@@ -61,7 +61,7 @@
         <p class="mainText">Simple list of all contacts.</p>
       </div>
 
-    </g:ifAllGranted>
+    </cl:ifGranted>
 
     </body>
 </html>

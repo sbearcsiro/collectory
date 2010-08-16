@@ -189,7 +189,7 @@ class CollectionCommand implements Serializable {
             id = Math.min(id, it.id - 1)
         }
         if (contact) {
-            ContactFor cf = new ContactFor(contact:contact, entityId:this.uid, entityType:Collection.ENTITY_TYPE)
+            ContactFor cf = new ContactFor(contact:contact, entityUid:this.uid)
             cf.id = id
             if (role) cf.role = role
             cf.administrator = administrator
@@ -389,8 +389,7 @@ class CollectionCommand implements Serializable {
             // save only the new ones
             if (!it.id || it.id < 0) {
                 it.userLastModified = user
-                it.dateLastModified = new Date()
-                if (!it.entityId) it.entityId = collectionInstance.id     // may only have id once collection has been saved
+                if (!it.entityUid) it.entityUid = collectionInstance.uid     // may only have id once collection has been saved
                 it.save()
                 if (it.hasErrors()) {
                     it.errors.each {println it}

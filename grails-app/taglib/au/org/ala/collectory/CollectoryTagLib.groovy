@@ -25,34 +25,93 @@ class CollectoryTagLib {
     /**
      * Indicates user can edit if admin
      *
-     * @attrs admin is the user an admin for the collection
+     * @attrs admin - is the user an admin for the collection
      */
     def adminIfPresent = { attrs, body ->
         out << (attrs.admin ? '(Authorised to edit this collection)' : '')
     }
 
     /**
+     * <g:ifAllGranted role="ROLE_USER,ROLE_ADMIN,ROLE_SUPERVISOR">
+     *  All the listed roles must be granted for the tag to output its body.
+     * </g:ifAllGranted>
+     */
+    def ifAllGranted = { attrs, body ->
+        def granted = true
+        if (ConfigurationHolder.config.security.cas.bypass) {
+            granted = true
+        } else {
+            def roles = attrs.role.toString().tokenize(',')
+            roles.each {
+                if (!request.isUserInRole(it)) {
+                    granted = false
+                }
+            }
+        }
+        if (granted) {
+            out << body()
+        }
+    }
+
+    /**
+     * <cl:ifGranted role="ROLE_ADMIN">
+     *  The specified role must be granted for the tag to output its body.
+     * </g:ifAllGranted>
+     */
+    def ifGranted = { attrs, body ->
+        if (ConfigurationHolder.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
+            out << body()
+        }
+    }
+
+    def isLoggedIn = { attrs, body ->
+        if (ConfigurationHolder.config.security.cas.bypass || request.getUserPrincipal()) {
+            out << body()
+        }
+    }
+
+    def isNotLoggedIn = {attrs, body ->
+        if (!(ConfigurationHolder.config.security.cas.bypass || request.getUserPrincipal())) {
+            out << body()
+        }
+    }
+
+    def loggedInUsername = { attrs ->
+        if (ConfigurationHolder.config.security.cas.bypass) {
+            out << 'cas bypassed'
+        } else if (request.getUserPrincipal()) {
+        	out << request.getUserPrincipal().name
+        }
+    }
+
+    private boolean isAdmin() {
+        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole('ROLE_ADMIN')
+    }
+
+    /**
      * Authorisation for editing is determined by roles and rights
      *
-     * @attrs user to check
-     * @attrs collection to check
+     * @attrs uid - the uid of the entity
      */
     def isAuth = { attrs, body ->
         boolean authorised = false
-        /*if (AuthorizeTools.ifAllGranted('ROLE_ADMIN')) {
+        if (isAdmin()) {
             authorised = true
         } else {
-            Contact c = Contact.findByEmail(attrs.user)
-            if (c) {
-                ContactFor cf = ContactFor.findByContactAndEntityId(c, attrs.collection)
-                authorised = cf?.administrator
+            def email = request.getUserPrincipal()?.attributes?.email
+            if (email) {
+                Contact c = Contact.findByEmail(email)
+                if (c) {
+                    ContactFor cf = ContactFor.findByContactAndEntityUid(c, attrs.uid)
+                    authorised = cf?.administrator
+                }
             }
         }
-        if (authorised) {*/
+        if (authorised) {
             out << body()
-        /*} else {
-            out << ' You are not authorised to change this collection '// + debugString
-        }*/
+        } else {
+            out << ' You are not authorised to change this record '// + debugString
+        }
     }
 
     def showDecimal = { attrs ->
@@ -326,10 +385,12 @@ class CollectoryTagLib {
      * Converts a ProviderGroup groupType to a controller name
      */
     def controller = {attrs ->
-        if (attrs.type == ProviderGroup.GROUP_TYPE_INSTITUTION) {
-            out << 'institution'
-        } else {
-            out << 'collection'
+        switch (attrs.type) {
+            case Collection.ENTITY_TYPE: out << 'collection'; return
+            case Institution.ENTITY_TYPE: out << 'institution'; return
+            //case DataProvider.ENTITY_TYPE: out << 'dataProvider'; return
+            //case DataResource.ENTITY_TYPE: out << 'dataResource'; return
+            //case DataHub.ENTITY_TYPE: out << 'dataHub'; return
         }
     }
 
@@ -512,9 +573,11 @@ class CollectoryTagLib {
     }
 
     /**
-     * Formats free text so line feeds are honoured
+     * Formats free text so:
+     *  line feeds are honoured
      *  and urls are linked
-     *  and lists are supported using wiki markup.
+     *  and bold (*xyz*)and italic (_xyz_) are rendered
+     *  and lists are supported using wiki markup
      *
      * @param attrs.noLink suppresses links
      * @param attrs.noList suppresses lists
@@ -523,6 +586,7 @@ class CollectoryTagLib {
     def formattedText = {attrs, body ->
         def text = body().toString()
         if (text) {
+            // links
             if (!attrs.noLink) {
                 def urlMatch = /\bhttp:\S*\b/   // word boundary + http: + non-whitespace + word boundary
                 text = text.replaceAll(urlMatch) {
@@ -530,6 +594,11 @@ class CollectoryTagLib {
                 }
             }
 
+            // italic
+            text = text.replaceAll(/\b_/) {"<em>"}
+            text = text.replaceAll(/_\b/) {"</em>"}
+
+            // lists
             if (!attrs.noList) {
                 // replace list markup first
                 def lines = text.tokenize("\r\n")
@@ -556,6 +625,10 @@ class CollectoryTagLib {
                 if (inList) { newText = newText + "</ul>"}
                 text = newText
             }
+
+            // bold (do after lists so list markers are not affected)
+            //text = text.replaceAll(/\b*/) {"<b>"}
+            //text = text.replaceAll(/\*\b/) {"</b>"}
 
             out << text
         }

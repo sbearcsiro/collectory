@@ -157,9 +157,9 @@ abstract class ProviderGroup implements Serializable {
                 ContactFor result = null
                 list.each {
                     if (it.primaryContact) result = it  // definitive (as long as there is only one primary)
-                    if (it.role.toLowerCase() =~ 'curator') result = it  // second choice
-                    if (!result && it.role.toLowerCase() =~ 'director') result = it  // third choice
-                    if (!result && it.role.toLowerCase() =~ 'manager') result = it  // fourth choice
+                    if (it.role?.toLowerCase() =~ 'curator') result = it  // second choice
+                    if (!result && it.role?.toLowerCase() =~ 'director') result = it  // third choice
+                    if (!result && it.role?.toLowerCase() =~ 'manager') result = it  // fourth choice
                 }
                 if (!result) result = list[0]  // just take one
                 return result
@@ -238,23 +238,21 @@ abstract class ProviderGroup implements Serializable {
 
     /**
      * Returns the identifier part of a link that is optimised for permanence.
+     * Should always be the UID.
      *
-     * Prioity is:
-     * 1. lsid
-     * 2. acronym
-     * 3. DB id
      * @return an identifier
      */
     String generatePermalink() {
+        if (uid) {
+            return uid
+        }
         if (guid?.startsWith(LSID_PREFIX)) {
             return guid
-        } else if (uid) {
-            return uid
-        } else if (acronym) {
-            return acronym
-        } else {
-            return dbId()
         }
+        if (acronym) {
+            return acronym
+        }
+        return id
     }
 
     /*
@@ -270,6 +268,17 @@ abstract class ProviderGroup implements Serializable {
             pgs.lsid = guid
         }
         return pgs
+    }
+
+    static ProviderGroup _get(String uid) {
+        switch (uid[0..1]) {
+            case Institution.ENTITY_PREFIX: return Institution.findByUid(uid)
+            case Collection.ENTITY_PREFIX: return Collection.findByUid(uid)
+            //case 'dp': return DataProvider.findByUid(uid)
+            //case 'dr': return DataResource.findByUid(uid)
+            //case 'dh': return DataHub.findByUid(uid)
+            default: return null
+        }
     }
 
     /**

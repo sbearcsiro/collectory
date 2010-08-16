@@ -10,10 +10,6 @@ class BootStrap {
 
 
     def init = { servletContext ->
-        // load data if there is none present
-        if (Logon.count() == 0 && GrailsUtil.environment != "test") {
-            //loadTestData()
-        }
     }
 
     def destroy = {

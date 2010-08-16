@@ -65,7 +65,7 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
                 }
                 assertEquals nextLine[4], params.name
                 // try loading a domain object
-                ProviderGroup pg = new ProviderGroup()
+                def pg = new Collection()
                 pg.properties = params
                 assertEquals nextLine[4], pg.name
             }
@@ -81,7 +81,7 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
         println "Collections added = " + ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
         println "Institutions added = " + ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION)
         println "CollectionScopes added = " + CollectionScope.count()
-        println "InfoSources added = " + InfoSource.count()
+        //println "InfoSources added = " + InfoSource.count()
 
         ProviderGroup group0 = ProviderGroup.findByGuid("1004")
         assertNotNull group0
@@ -98,7 +98,7 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
         assertNotNull contact1
         println contact1.id
 
-        ContactFor contactFor1 = ContactFor.findByEntityId(group1.id)
+        ContactFor contactFor1 = ContactFor.findByEntityUid(group1.uid)
 
         if (contactFor1 == null) {
             ContactFor.findAll().each {
@@ -106,7 +106,7 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
             }
 
             // attempt to create
-            ContactFor contactFor2 = new ContactFor(contact1, group1.id, "ProviderGroup", "Contact", true, true).save(flush: true)
+            ContactFor contactFor2 = new ContactFor(contact1, group1.uid, "Contact", true, true).save(flush: true)
             if (contactFor2.hasErrors()) {
                 contactFor2.errors.each {println it.toString()}
             }

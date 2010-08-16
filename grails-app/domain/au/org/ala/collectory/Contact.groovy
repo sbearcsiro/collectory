@@ -122,7 +122,7 @@ class Contact implements Serializable {
     List<ProviderGroup> getContactsFor() {
         List<ProviderGroup> result = []
         ContactFor.findAllByContact(this).each {
-            result << ProviderGroup.get(it.entityId)
+            result << ProviderGroup._get(it.entityUid)
         }
         return result
     }

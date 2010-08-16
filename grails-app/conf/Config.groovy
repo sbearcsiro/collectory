@@ -35,6 +35,9 @@ println "(*) grails.config.locations = ${grails.config.locations}"
 if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
 }
+if (!security.cas.urlPattern) {
+    security.cas.urlPattern = '.*/admin.*,.*/collection/.*,.*/institution/.*,.*/contact/.*,.*/reports/.*,.*/providerCode/.*,.*/providerMap/.*'
+}
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
@@ -81,17 +84,31 @@ def logDirectory = "/data/collectory/logs"
 environments {
     production {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
+        security.cas.serverName = grails.serverURL
+        security.cas.context = ''
+    }
+    testserver {
+        grails.serverURL = "http://alatstdb1-cbr.vm.csiro.au/Collectory"
+        security.cas.serverName = "http://alatstdb1-cbr.vm.csiro.au"
+        security.cas.context = '/Collectory'
     }
     development {
-        grails.serverURL = "http://localhost:8080/Collectory"
+        grails.serverURL = "http://nemo-be.nexus.csiro.au:8080/Collectory"
+        security.cas.serverName = "http://nemo-be.nexus.csiro.au:8080"
+        security.cas.context = '/Collectory'
+        //security.cas.bypass = true
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
+        security.cas.serverName = ''
+        security.cas.context = ''
     }
 
 }
 
 println "serverUrl = " + grails.serverURL
+println "cas.serverName = " + security.cas.serverName
+println "cas.context = " + security.cas.context
 
 hibernate = "off"
 
@@ -109,7 +126,9 @@ log4j = {
     root {
         // change the root logger to my tomcatLog file
         error 'stdout', 'tomcatLog', 'appLog'
+        warn 'stdout', 'tomcatLog', 'appLog'
         info 'stdout','appLog'
+        //debug 'stdout','appLog'
         additivity = true
     }
 
@@ -117,9 +136,11 @@ log4j = {
     //error tomcatLog:'StackTrace'
 
 /* normal logging */
-    debug //'org.springframework.webflow',
-//          'org.springframework',
-          'au.org.ala.collectory'
+    /*debug  'au.org.ala.collectory',
+            'org.jasic.cas',
+            'org.jasic.cas.client',
+            'org.ala.cas.client'*/
+
 //          'org.mortbay.log'
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers

@@ -3,7 +3,6 @@ package au.org.ala.collectory
 class ContactController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
-    def authenticateService
 
     def index = {
         redirect(action: "list", params: params)
@@ -17,14 +16,16 @@ class ContactController {
     def create = {
         def contactInstance = new Contact()
         contactInstance.properties = params
-        contactInstance.userLastModified = authenticateService.userDomain().username
+        contactInstance.userLastModified = username()
         return [contactInstance: contactInstance]
     }
 
     def save = {
         def contactInstance = new Contact(params)
-        contactInstance.dateLastModified = new Date()
-        contactInstance.userLastModified = authenticateService.userDomain().username
+        contactInstance.userLastModified = username()?:'not available'
+        params.each{println it}
+        contactInstance.validate()
+        contactInstance.errors.each{println it}
         if (contactInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
             redirect(action: "show", id: contactInstance.id)
@@ -70,9 +71,9 @@ class ContactController {
             }
             contactInstance.properties = params
             contactInstance.dateLastModified = new Date()
-            contactInstance.userLastModified = authenticateService.userDomain().username
+            contactInstance.userLastModified = username()
             if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
-                ActivityLog.log authenticateService.userDomain().username as String, Action.DELETE, "contact ${params.id}"
+                ActivityLog.log username() as String, Action.DELETE, "contact ${params.id}"
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
                 redirect(action: "show", id: contactInstance.id)
             }
@@ -93,7 +94,7 @@ class ContactController {
         def contactInstance = Contact.get(params.id)
         if (contactInstance) {
             try {
-                ActivityLog.log authenticateService.userDomain().username as String, Action.DELETE, "contact ${contactInstance.buildName()}"
+                ActivityLog.log username() as String, Action.DELETE, "contact ${contactInstance.buildName()}"
                 // need to delete any ContactFor links first
                 ContactFor.findAllByContact(contactInstance).each {
                     it.delete(flush: true)
@@ -112,4 +113,9 @@ class ContactController {
             redirect(action: "list")
         }
     }
+
+    private String username() {
+        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
+    }
+
 }

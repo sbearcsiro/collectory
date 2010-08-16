@@ -4,7 +4,7 @@ security {
 
 	// see DefaultSecurityConfig.groovy for all settable/overridable properties
 
-	active = true
+	active = false
 
 	loginUserDomainClass = "au.org.ala.security.Logon"
 	authorityDomainClass = "au.org.ala.security.Role"
@@ -12,11 +12,11 @@ security {
 
     useSecurityEventListener = true
 
-    onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
+    /*onInteractiveAuthenticationSuccessEvent = { e, appCtx ->
         def user = e.authentication.principal.domainClass //Logon.get(e.authentication.principle.domainClass.id)
         ActivityLog.withTransaction {
             ActivityLog.log(user.username, au.org.ala.collectory.Action.LOGIN)
         }
-   }
+   }*/
 
 }

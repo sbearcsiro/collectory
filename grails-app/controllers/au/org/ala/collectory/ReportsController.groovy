@@ -200,6 +200,6 @@ class ReportsController {
     }
 
     private boolean isAdmin() {
-        return (request.isUserInRole('ROLE_ADMIN'))
+        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
     }
 }

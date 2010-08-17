@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <html>
     <head>
         <title>ALA Collections Management</title>
@@ -52,7 +53,7 @@
         <p class="mainText">Browse the institutions that hold collections.</p>
       </div>
 
-    <g:ifAllGranted role="ROLE_ADMIN">
+    <g:ifAllGranted role="${ProviderGroup.ROLE_ADMIN}">
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">

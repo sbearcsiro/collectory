@@ -1,5 +1,5 @@
 
-<%@ page import="au.org.ala.collectory.Institution" %>
+<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -242,7 +242,7 @@
                   <cl:isAuth uid="${institutionInstance?.uid}">
                     <span class="button"><g:actionSubmit class="edit" action='editInstitution' value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
                   </cl:isAuth>
-                  <cl:ifGranted role="ROLE_ADMIN">
+                  <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
                     <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
                   </cl:ifGranted>
                 </g:form>

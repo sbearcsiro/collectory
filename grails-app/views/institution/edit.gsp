@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.Contact; au.org.ala.collectory.Institution" %>
+<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Contact; au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -60,7 +60,7 @@
                                 </td>
                             </tr>
                         
-<!-- ALA partner -->        <g:ifAllGranted role="ROLE_ADMIN">
+<!-- ALA partner -->        <g:ifAllGranted role="${ProviderGroup.ROLE_ADMIN}">
                               <tr class="prop">
                                   <td valign="top" class="name">
                                     <label for="isALAPartner"><g:message code="providerGroup.isALAPartner.label" default="Is ALA Partner" /></label>

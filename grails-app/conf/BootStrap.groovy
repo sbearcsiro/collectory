@@ -71,17 +71,17 @@ class BootStrap {
         /* add some access control
 
         // roles
-        Role admin = new Role(authority: 'ROLE_ADMIN', description: 'Allows full control of all collectory data').save(flush: true)
-        Role supplier = new Role(authority: 'ROLE_SUPPLIER', description: 'Can edit collections that have a matching contact with admin rights').save(flush: true)
+        Role admin = new Role(authority: ProviderGroup.ROLE_ADMIN, description: 'Allows full control of all collectory data').save(flush: true)
+        Role supplier = new Role(authority: ProviderGroup.ROLE_EDITOR, description: 'Can edit collections that have a matching contact with admin rights').save(flush: true)
 
         // url mapping
         new SecRequestMap(url: '/collection/**', configAttribute: 'ROLE_ADMIN, ROLE_SUPPLIER').save(flush: true)
         new SecRequestMap(url: '/institution/**', configAttribute: 'ROLE_ADMIN, ROLE_SUPPLIER').save(flush: true)
         new SecRequestMap(url: '/contact/**', configAttribute: 'ROLE_ADMIN, ROLE_SUPPLIER').save(flush: true)
         new SecRequestMap(url: '/providerGroup/**', configAttribute: 'ROLE_ADMIN, ROLE_SUPPLIER').save(flush: true)
-        new SecRequestMap(url: '/logon/**', configAttribute: 'ROLE_ADMIN').save(flush: true)
-        new SecRequestMap(url: '/role/**', configAttribute: 'ROLE_ADMIN').save(flush: true)
-        new SecRequestMap(url: '/secRequestMap/**', configAttribute: 'ROLE_ADMIN').save(flush: true)
+        new SecRequestMap(url: '/logon/**', configAttribute: ProviderGroup.ROLE_ADMIN).save(flush: true)
+        new SecRequestMap(url: '/role/**', configAttribute: ProviderGroup.ROLE_ADMIN).save(flush: true)
+        new SecRequestMap(url: '/secRequestMap/**', configAttribute: ProviderGroup.ROLE_ADMIN).save(flush: true)
 
         // logons
         Logon mark = new Logon(username: 'mark.woolston@csiro.au', userRealName: 'MEW', enabled: true)

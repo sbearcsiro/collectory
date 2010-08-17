@@ -32,7 +32,7 @@ class CollectoryTagLib {
     }
 
     /**
-     * <g:ifAllGranted role="ROLE_USER,ROLE_ADMIN,ROLE_SUPERVISOR">
+     * <g:ifAllGranted role="ROLE_COLLECTION_EDITOR,ROLE_COLLECTION_ADMIN">
      *  All the listed roles must be granted for the tag to output its body.
      * </g:ifAllGranted>
      */
@@ -54,7 +54,7 @@ class CollectoryTagLib {
     }
 
     /**
-     * <cl:ifGranted role="ROLE_ADMIN">
+     * <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
      *  The specified role must be granted for the tag to output its body.
      * </g:ifAllGranted>
      */
@@ -85,7 +85,7 @@ class CollectoryTagLib {
     }
 
     private boolean isAdmin() {
-        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole('ROLE_ADMIN')
+        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
     }
 
     /**

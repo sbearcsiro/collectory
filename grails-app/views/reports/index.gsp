@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <html>
     <head>
         <title>ALA Collections Reports</title>
@@ -23,7 +24,7 @@
         </div>
       </cl:isNotLoggedIn>
 
-    <cl:ifGranted role="ROLE_ADMIN">
+    <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">

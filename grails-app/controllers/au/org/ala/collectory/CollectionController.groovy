@@ -222,7 +222,7 @@ class CollectionController {
                 } else {
                     // add the user as the contact of the collection they are creating
                     // but not if they are an ADMIN
-                    if (request.isUserInRole('ROLE_ADMIN')) {
+                    if (request.isUserInRole(ProviderGroup.ROLE_ADMIN)) {
                         def user = username()
                         log.info ">>${user} creating a new collection"
                         if (user) {
@@ -373,7 +373,7 @@ class CollectionController {
                     } else {
                         // add the user as the contact
                         // but not if they are ADMIN
-                        if (!request.isUserInRole('ROLE_ADMIN')) {
+                        if (!request.isUserInRole(ProviderGroup.ROLE_ADMIN)) {
                             def user = username()
                             log.debug user
                             if (user) {
@@ -704,6 +704,6 @@ v                   }
     }
 
     private boolean isAdmin() {
-        return (request.isUserInRole('ROLE_ADMIN'))
+        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
     }
 }

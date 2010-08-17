@@ -62,6 +62,11 @@
         <p class="mainText">Simple list of all contacts.</p>
       </div>
 
+      <div class="homeCell">
+        <g:link class="mainLink" controller="reports" action="codes">List provider codes</g:link>
+        <p class="mainText">Lists institution and collection codes for collections that have them.</p>
+      </div>
+
     </cl:ifGranted>
 
     </body>

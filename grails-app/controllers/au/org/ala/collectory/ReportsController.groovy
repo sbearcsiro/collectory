@@ -38,6 +38,10 @@ class ReportsController {
         ActivityLog.log username(), isAdmin(), Action.REPORT, 'contacts'
     }
 
+    def codes = {
+        [codeSummaries: ProviderMap.list().collect { it.collection.buildSummary() }]
+    }
+
     class ReportCommand {
         int totalCollections
         int totalInstitutions

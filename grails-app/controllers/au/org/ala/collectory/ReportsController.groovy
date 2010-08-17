@@ -2,8 +2,6 @@ package au.org.ala.collectory
 
 class ReportsController {
 
-//    def authenticateService
-
     def index = {
         redirect action: list, params: params
     }
@@ -13,31 +11,31 @@ class ReportsController {
     }
 
     def data = {
-//        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'data'
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'data'
         [reports: new ReportCommand('data')]
     }
 
     def activity = {
-//        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'activity'
+        //ActivityLog.log username(), isAdmin(), Action.REPORT, 'activity'
         [reports: new ReportCommand('activity')]
     }
 
     def membership = {
-//        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'membership'
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'membership'
         [reports: new ReportCommand('membership')]
     }
 
     def collections = {
-//        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'collections'
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'collections'
         [reports: new ReportCommand('collections')]
     }
 
     def institutions = {
-//        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'institutions'
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'institutions'
     }
 
     def contacts = {
-//        ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'contacts'
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'contacts'
     }
 
     class ReportCommand {
@@ -70,7 +68,11 @@ class ReportsController {
         def curatorViews
         def curatorPreviews
         def curatorEdits
+        def adminViews
+        def adminPreviews
+        def adminEdits
         def lastLogin
+        def latestActivity
 
         def partners
         def chahMembers
@@ -159,20 +161,19 @@ class ReportsController {
                 break
 
                 case 'activity':
-                //totalLogins = ActivityLog.countByAction(Action.LOGIN.toString())
-                //lastLogin = ActivityLog.find("from ActivityLog where  action=? order by timestamp desc limit 1", [Action.LOGIN.toString()])
-                //uniqueLogins = ActivityLog.executeQuery("select count(distinct user) from ActivityLog where action='${Action.LOGIN.toString()}'")[0]
-                //uniqueLoginList = ActivityLog.executeQuery("select distinct user from ActivityLog where action='${Action.LOGIN.toString()}'")
-
-                /*supplierLogins = ActivityLog.countByActionAndRoles(Action.LOGIN.toString(), 'ROLE_SUPPLIER')
-                uniqueSupplierLogins = ActivityLog.executeQuery("select count (distinct user) from ActivityLog where action='${Action.LOGIN.toString()}' and roles = 'ROLE_SUPPLIER'")[0]
-                // select count(*) from activity_log where administrator_for_entity = 1 and roles = "ROLE_SUPPLIER" and action = "viewed";
                 curatorViews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.VIEW.toString()}'" +
-                        " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+                        " and administratorForEntity = 1 and not admin = 1")[0]
                 curatorPreviews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.PREVIEW.toString()}'" +
-                        " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]
+                        " and administratorForEntity = 1 and not admin = 1")[0]
                 curatorEdits = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.EDIT_SAVE.toString()}'" +
-                        " and administratorForEntity = 1 and not roles like '%ROLE_ADMIN%'")[0]*/
+                        " and administratorForEntity = 1 and not admin = 1")[0]
+                adminViews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.VIEW.toString()}'" +
+                        " and administratorForEntity = 1 and admin = 1")[0]
+                adminPreviews = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.PREVIEW.toString()}'" +
+                        " and administratorForEntity = 1 and admin = 1")[0]
+                adminEdits = ActivityLog.executeQuery("select count(*) from ActivityLog where action='${Action.EDIT_SAVE.toString()}'" +
+                        " and administratorForEntity = 1 and admin = 1")[0]
+                latestActivity = ActivityLog.list([sort: 'timestamp', order:'desc', max:10])
                 break
                 
                 case 'membership':
@@ -192,5 +193,13 @@ class ReportsController {
 
             }
         }
+    }
+
+    private String username() {
+        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
+    }
+
+    private boolean isAdmin() {
+        return (request.isUserInRole('ROLE_ADMIN'))
     }
 }

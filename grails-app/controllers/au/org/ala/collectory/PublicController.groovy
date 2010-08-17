@@ -27,6 +27,7 @@ class PublicController {
     }
 
     def list = {
+        ActivityLog.log username(), isAdmin(), Action.LIST, 'collections'
         [collections: Collection.list([sort:'name'])]
     }
 
@@ -57,6 +58,7 @@ class PublicController {
                 percent = (count*100)/collectionInstance.numRecords
             }
 
+            ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
                     numBiocacheRecords: count, percentBiocacheRecords: percent]
         }
@@ -98,6 +100,7 @@ class PublicController {
 
 
     def listInstitutions = {
+        ActivityLog.log username(), isAdmin(), Action.LIST, 'institutions'
         [institutions: Institution.list()]
     }
 
@@ -107,14 +110,15 @@ class PublicController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
+            ActivityLog.log username(), isAdmin(), institution.uid, Action.VIEW
             [institution: institution]
         }
     }
 
     def map = {
-        //ActivityLog.log authenticateService.userDomain().username, Action.REPORT, 'map'
+        ActivityLog.log username(), isAdmin(), Action.LIST, 'map'
         def partnerCollections = Collection.list([sort:"name"]).findAll {
-            it.getIsALAPartner() == true
+            it.getIsALAPartner()
         }
         [collections: partnerCollections]
     }
@@ -337,5 +341,13 @@ class PublicController {
         }
         result += '],"p":{"max":' + maximum + '}}'
         return result
+    }
+
+    private String username() {
+        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
+    }
+
+    private boolean isAdmin() {
+        return (request.isUserInRole('ROLE_ADMIN'))
     }
 }

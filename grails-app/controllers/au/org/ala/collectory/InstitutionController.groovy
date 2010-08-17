@@ -25,7 +25,7 @@ class InstitutionController {
         }
         else {
             log.info "Ala partner = " + institutionInstance.isALAPartner
-            ActivityLog.log username(), institutionInstance.uid, Action.VIEW
+            ActivityLog.log username(), isAdmin(), institutionInstance.uid, Action.VIEW
             [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts()]
         }
     }
@@ -148,7 +148,7 @@ class InstitutionController {
                                 File f = new File(colDir, filename)
                                 log.debug "saving ${filename} to ${f.absoluteFile}"
                                 mhsr.transferTo(f)
-                                ActivityLog.log username(), Action.UPLOAD_IMAGE, filename
+                                ActivityLog.log username(), isAdmin(), Action.UPLOAD_IMAGE, filename
                             } else {
                                 // TODO: handle error message
                             }
@@ -194,7 +194,7 @@ class InstitutionController {
                         inst.userLastModified = 'temp'//authenticateService.userDomain().username
                         if (!inst.hasErrors() && inst.save(flush: true)) {
                             flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerGroup.label', default: 'Institution'), inst.name])}"
-                            ActivityLog.log username(), inst.uid, Action.EDIT_SAVE
+                            ActivityLog.log username(), isAdmin(), inst.uid, Action.EDIT_SAVE
                             [id: params.id, url: request.getContextPath() + '/institution/show']
                         } else {
                             return error()
@@ -251,7 +251,7 @@ class InstitutionController {
                 contact.userLastModified = authenticateService.userDomain().username
                 // save immediately - review this decision
                 contact.save()
-                ActivityLog.log username(), contact.id, Action.CREATE_CONTACT
+                ActivityLog.log username(), isAdmin(), contact.id, Action.CREATE_CONTACT
                 flow.providerGroupInstance.addToContacts(contact, params.role2, (params.isAdmin2 as String == 'true'), (params.isPrimary2 as String == 'true'), authenticateService.userDomain().username)
             }
             on("success").to "showEdit"
@@ -263,7 +263,7 @@ class InstitutionController {
         cancel {
             action {
                 log.info "Cancelling"
-//                ActivityLog.log authenticateService.userDomain().username as String, flow.providerGroupInstance?.id, Action.EDIT_CANCEL
+                ActivityLog.log username(), isAdmin(), flow.providerGroupInstance?.uid, Action.EDIT_CANCEL
                 flow.providerGroupInstance.discard()
                 [id: params.id, url: request.getContextPath() + '/institution/show']
             }
@@ -298,7 +298,7 @@ class InstitutionController {
             }
             // now delete
             try {
-//                ActivityLog.log authenticateService.userDomain().username as String, params.id as long, Action.DELETE
+                ActivityLog.log username(), isAdmin(), params.id as long, Action.DELETE
                 providerGroupInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
                 redirect(action: "list")
@@ -326,4 +326,7 @@ class InstitutionController {
         return (request.getUserPrincipal()?.attributes?.email)?:'not available'
     }
 
+    private boolean isAdmin() {
+        return (request.isUserInRole('ROLE_ADMIN'))
+    }
 }

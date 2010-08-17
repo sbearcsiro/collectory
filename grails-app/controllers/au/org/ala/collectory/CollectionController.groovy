@@ -20,7 +20,7 @@ class CollectionController {
             flash.message = params.message
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = "name"
-        ActivityLog.log username(), Action.LIST
+        ActivityLog.log username(), isAdmin(), Action.LIST
         [collInstanceList: Collection.list(params),
                 collInstanceTotal: Collection.count()]
     }
@@ -44,7 +44,7 @@ class CollectionController {
                     }
                 }
             }
-            ActivityLog.log username(), Action.MYLIST
+            ActivityLog.log username(), isAdmin(), Action.MYLIST
             log.info ">>${user} listing my collections and institution"
             render(view: 'myList', model: [collections: collectionList, institutions: institutionList])
         }
@@ -60,7 +60,7 @@ class CollectionController {
         } else {
             // show it
             log.info ">>${username()} showing ${collectionInstance.name}"
-            ActivityLog.log username() as String, collectionInstance.uid, Action.VIEW
+            ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts()]
         }
     }
@@ -120,7 +120,7 @@ class CollectionController {
         if (!params.order) params.order = "asc"
 
         log.info ">>${username()} searching for ${params.term}"
-        ActivityLog.log username(), Action.SEARCH, params.term
+        ActivityLog.log username(), isAdmin(), Action.SEARCH, params.term
 
         def results = Collection.createCriteria().list(max: params.max, offset: params.offset) {
             order(params.sort, params.order)
@@ -141,7 +141,7 @@ class CollectionController {
         if (col) {
             def name = col.name
             log.info ">>${username()} deleting collection " + name
-            ActivityLog.log username(), col.uid, Action.DELETE
+            ActivityLog.log username(), isAdmin(), col.uid, Action.DELETE
             try {
                 // remove it as a child from parent institution
                 if (col.institution) {
@@ -365,7 +365,7 @@ class CollectionController {
                     flow.newInst.errors.each {log.debug it}
                     failure()
                 } else {
-                    ActivityLog.log username() as String, flow.newInst.uid as String, Action.CREATE_INSTITUTION
+                    ActivityLog.log username(), isAdmin(), flow.newInst.uid as String, Action.CREATE_INSTITUTION
                     log.debug "new inst id=" + flow.newInst.id
                     // if we have no id something is wrong
                     if (!flow.newInst?.id) {
@@ -449,7 +449,7 @@ class CollectionController {
                 } else {
                     // save immediately - review this decision
                     contact.save()
-                    ActivityLog.log username() as String, contact.id as String, Action.CREATE_CONTACT
+                    ActivityLog.log username(), isAdmin(), contact.id as String, Action.CREATE_CONTACT
                     flow.command.addAsContact(contact)
                 }
             }
@@ -468,7 +468,7 @@ class CollectionController {
                     log.info "creating collection: user = ${username()}"
                     long id = flow.command.create('temp', idGeneratorService.getNextCollectionId())//username())
                     if (id) {
-                        ActivityLog.log username() as String, flow.command.uid as String, Action.CREATE
+                        ActivityLog.log username(), isAdmin(), flow.command.uid as String, Action.CREATE
                         log.info ">>${username()} created collection ${flow.command.name} with id ${id}"
                         params.id = id
                     } else {
@@ -491,7 +491,7 @@ v                   }
                                 "Another user has updated this collection while you were editing. New values have been refreshed. You will need to reapply your changes.")
                         return lockingFailure()
                     } else {
-                        ActivityLog.log username() as String, flow.command.uid as String, Action.EDIT_SAVE
+                        ActivityLog.log username(), isAdmin(), flow.command.uid as String, Action.EDIT_SAVE
                         log.info ">>${username()} saved collection ${flow.command.name}"
                     }
                 }
@@ -526,9 +526,9 @@ v                   }
                 def uid = flow.command.uid
                 flow.clear()
                 if (mode == 'create') {
-                    ActivityLog.log username(), uid as String, Action.CREATE_CANCEL
+                    ActivityLog.log username(), isAdmin(), uid as String, Action.CREATE_CANCEL
                 } else {
-                    ActivityLog.log username(), uid as String, Action.EDIT_CANCEL
+                    ActivityLog.log username(), isAdmin(), uid as String, Action.EDIT_CANCEL
                     log.debug ">> exiting to " + params.id
                 }
                 [id: params.id, url: request.getContextPath() + '/collection/show']
@@ -612,7 +612,7 @@ v                   }
                 File f = new File(colDir, filename)
                 log.debug "saving ${filename} to ${f.absoluteFile}"
                 mhsr.transferTo(f)
-                ActivityLog.log username() as String, Action.UPLOAD_IMAGE, filename
+                ActivityLog.log username(), isAdmin(), Action.UPLOAD_IMAGE, filename
             } else {
                 // TODO: handle error message
             }
@@ -703,4 +703,7 @@ v                   }
         return (request.getUserPrincipal()?.attributes?.email)?:'not available'
     }
 
+    private boolean isAdmin() {
+        return (request.isUserInRole('ROLE_ADMIN'))
+    }
 }

@@ -29,10 +29,10 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                    <label for="providerGroup"><g:message code="providerMap.providerGroup.label" default="Provider Group" /></label>
+                                    <label for="collection"><g:message code="providerMap.providerGroup.label" default="Provider Group" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'providerGroup', 'errors')}">
-                                    <g:select name="providerGroup.id" from="${au.org.ala.collectory.ProviderGroup.findAllByGroupType('collection',[sort: 'name'])}" optionKey="id" value="${providerMapInstance?.providerGroup?.id}"  />
+                                    <g:select name="collection.id" from="${au.org.ala.collectory.Collection.list([sort: 'name'])}" optionKey="id" value="${providerMapInstance?.collection?.id}"  />
                                 </td>
                             </tr>
                         
@@ -63,6 +63,15 @@
                                 </td>
                             </tr>
                         
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="warning"><g:message code="providerMap.warning.label" default="Warning" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'warning', 'errors')}">
+                                    <g:textField name="warning" value="${providerMapInstance?.warning}" />
+                                </td>
+                            </tr>
+    
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <label for="matchAnyCollectionCode"><g:message code="providerMap.matchAnyCollectionCode.label" default="Match Any Collection Code" /></label>

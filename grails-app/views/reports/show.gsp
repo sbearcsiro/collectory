@@ -92,7 +92,7 @@
                   <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td>AMRRN Members</td>
+                <tr class="reportGroupTitle"><td>CHACM Members</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
                     <g:if test="${reports.amrrnMembers.size() > 0}">${reports.amrrnMembers[0].name}</g:if><g:else>None</g:else>

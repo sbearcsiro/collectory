@@ -53,6 +53,10 @@ class Collection extends ProviderGroup implements Serializable {
     static transients = ProviderGroup.transients + ['listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
             'mappable','inexactlyMapped','attributionList']
 
+    static mapping = {
+        sort: 'name'
+    }
+
     static constraints = {
         collectionType(nullable: true, maxSize: 256/*, inList: [
             "archival",
@@ -211,46 +215,6 @@ class Collection extends ProviderGroup implements Serializable {
             return true
         }
         return false
-    }
-
-    /**
-     * Returns list of name/url for where the information about this collection was sourced.
-     * @return list of Attribution
-     */
-    List<Attribution> getAttributionList() {
-        if (!attributions) {
-            attributions = ""
-            // build it
-            if (guid?.startsWith(LSID_PREFIX)) {
-                // probably loaded from BCI
-                attributions = 'at1'
-            }
-            if (isMemberOf('CHAH')) {
-                attributions += (attributions?' ':'') + 'at2'
-            }
-            if (institution) {
-                // see if an attribution already exists
-                def at = Attribution.findByName(institution.name)
-                if (!at) {
-                    at = new Attribution(name: institution.name, url: institution.websiteUrl, 
-                            uid: idGeneratorService.getNextAttributionId()).save()
-                }
-                attributions += (attributions?' ':'') + at.uid
-            }
-            println attributions
-            validate()
-            if (hasErrors()) {
-                errors.each {println it}
-            }
-            save(flush:true)
-        }
-        def uids = attributions.tokenize(' ')
-        List<Attribution> list = uids.collect {
-            if (it) {
-                Attribution.findByUid(it)
-            }
-        }
-        return list
     }
 
     long dbId() { return id }

@@ -64,38 +64,6 @@ class Institution extends ProviderGroup {
         return latitude != 0.0 && latitude != -1 && longitude != 0.0 && longitude != -1
     }
 
-    /**
-     * Returns list of name/url for where the information about this institution was sourced.
-     * @return list of Attribution
-     */
-    List<Attribution> getAttributionList() {
-        if (!attributions) {
-            attributions = ""
-            // build it
-            if (guid?.startsWith(LSID_PREFIX)) {
-                // probably loaded from BCI
-                attributions = 'at1'
-            }
-            // list itself
-            // see if an attribution already exists
-            def at = Attribution.findByName(name)
-            if (!at) {
-                at = new Attribution(name: name, url: websiteUrl, uid: idGeneratorService.getNextAttributionId()).save()
-            }
-            attributions += (attributions?' ':'') + at.uid
-            validate()
-            if (hasErrors()) {
-                errors.each {println it}
-            }
-            save(flush:true)
-        }
-        def uids = attributions.tokenize(' ')
-        List<Attribution> list = uids.collect {
-            Attribution.findByUid(it)
-        }
-        return list
-    }
-
     long dbId() { return id }
 
     String entityType() {

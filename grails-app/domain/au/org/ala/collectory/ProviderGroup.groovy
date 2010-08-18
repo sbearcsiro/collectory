@@ -259,6 +259,19 @@ abstract class ProviderGroup implements Serializable {
         return id
     }
 
+    /**
+     * Returns list of name/url for where the information about this collection was sourced.
+     * @return list of Attribution
+     */
+    List<Attribution> getAttributionList() {
+        def uids = attributions.tokenize(' ')
+        List<Attribution> list = uids.collect {
+            if (it) {
+                Attribution.findByUid(it as String)
+            }
+        }
+        return list
+    }
 
     /**
      * Adds the specified attribution to this group.

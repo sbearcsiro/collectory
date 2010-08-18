@@ -67,6 +67,16 @@
       </div>
 
       <div class="homeCell">
+        <g:link class="mainLink" controller="providerCode" action="list">Manage provider codes</g:link>
+        <p class="mainText">View and edit all known collection and institution codes.</p>
+      </div>
+
+      <div class="homeCell">
+        <g:link class="mainLink" controller="providerMap" action="list">Manage provider maps</g:link>
+        <p class="mainText">View and edit the allocation of collection and institution codes to collections.</p>
+      </div>
+
+      <div class="homeCell">
         <g:link class="mainLink" controller="admin" action="export">Export all data as JSON</g:link>
         <p class="mainText">All tables exported verbatim as JSON</p>
       </div>

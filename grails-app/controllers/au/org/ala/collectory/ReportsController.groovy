@@ -39,9 +39,25 @@ class ReportsController {
     }
 
     def codes = {
-        [codeSummaries: ProviderMap.list().collect { it.collection.buildSummary() }]
+        [codeSummaries: (ProviderMap.list().collect { it.collection.buildSummary() }).sort {it.name}]
     }
 
+    def attributions = {
+        def collAttributions = []
+        Collection.list([sort: 'name']).each {
+            ProviderGroupSummary pgs = it.buildSummary()
+            List<Attribution> attribs = it.getAttributionList()
+            def ats = new Attributions(pgs, attribs)
+            collAttributions << ats
+        }
+        def instAttributions = Institution.list([sort: 'name']).collect {
+            ProviderGroupSummary pgs = it.buildSummary()
+            List<Attribution> attribs = it.getAttributionList()
+            new Attributions(pgs, attribs)
+        }
+        [collAttributions: collAttributions, instAttributions: instAttributions]
+    }
+    
     class ReportCommand {
         int totalCollections
         int totalInstitutions
@@ -196,6 +212,16 @@ class ReportsController {
                 break
 
             }
+        }
+    }
+
+    class Attributions {
+        ProviderGroupSummary pgs
+        List<Attribution> attribs
+
+        Attributions(ProviderGroupSummary pgs, List<Attribution> attribs) {
+            this.pgs = pgs
+            this.attribs = attribs
         }
     }
 

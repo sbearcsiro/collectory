@@ -131,8 +131,8 @@
             <g:if test="${institution.isMemberOf('CHAFC')}">
               <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
             </g:if>
-            <g:if test="${institution.isMemberOf('AMRRN')}">
-              <p>Member of Australian Microbial Resources Reseach Network (AMRRN)</p>
+            <g:if test="${institution.isMemberOf('CHACM')}">
+              <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
               <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
             </g:if>
           </div>

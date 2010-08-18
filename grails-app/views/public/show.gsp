@@ -193,9 +193,10 @@
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
                     <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+                    <img src="${resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg")}"/>
                   </g:if>
-                  <g:if test="${collectionInstance.isMemberOf('AMRRN')}">
-                    <p>Member of Australian Microbial Resources Reseach Network (AMRRN)</p>
+                  <g:if test="${collectionInstance.isMemberOf('CHACM')}">
+                    <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
                     <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
                   </g:if>
                 </div>
@@ -226,9 +227,9 @@
                     <p>This represents <cl:formatPercent percent="${percentBiocacheRecords}"/>% of all specimens in the collection.</p>
                   </g:if>
                 </g:if>
+                <cl:warnIfInexactMapping collection="${collectionInstance}"/>
                 <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/>
                 </cl:recordsLink>
-                <cl:warnIfInexactMapping collection="${collectionInstance}"/>
               </div>
               <div style="float:right;text-align:center;padding-right:60px;margin-top:-20px;">
                 <g:if test="${percentBiocacheRecords != -1}">

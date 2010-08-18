@@ -32,19 +32,19 @@
                         
                             <tr class="prop">
                                 <td valign="top" class="name">
-                                  <label for="providerGroup"><g:message code="providerMap.providerGroup.label" default="Provider Group" /></label>
+                                  <label for="collection"><g:message code="collection.label" default="Collection" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'providerGroup', 'errors')}">
-                                    <g:select name="providerGroup.id" from="${au.org.ala.collectory.ProviderGroup.findAllByGroupType('collection',[sort: 'name'])}" optionKey="id" value="${providerMapInstance?.providerGroup?.id}"  />
+                                <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'collection', 'errors')}">
+                                    <g:select name="collection.id" from="${au.org.ala.collectory.Collection.list()}" optionKey="id" value="${providerMapInstance?.collection?.id}"  />
                                 </td>
                             </tr>
-                        
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                   <label for="institutionCodes"><g:message code="providerMap.institutionCodes.label" default="Institution Codes" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'institutionCodes', 'errors')}">
-                                    <g:select name="institutionCodes" from="${au.org.ala.collectory.ProviderCode.list([sort:'code'])}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.institutionCodes*.id}" />
+                                    <g:select name="institutionCodes" from="${au.org.ala.collectory.ProviderCode.list()}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.institutionCodes*.id}" />
                                 </td>
                             </tr>
                         
@@ -53,7 +53,7 @@
                                   <label for="collectionCodes"><g:message code="providerMap.collectionCodes.label" default="Collection Codes" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'collectionCodes', 'errors')}">
-                                    <g:select name="collectionCodes" from="${au.org.ala.collectory.ProviderCode.list([sort:'code'])}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.collectionCodes*.id}" />
+                                    <g:select name="collectionCodes" from="${au.org.ala.collectory.ProviderCode.list()}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.collectionCodes*.id}" />
                                 </td>
                             </tr>
 
@@ -66,6 +66,15 @@
                                 </td>
                             </tr>
                         
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="warning"><g:message code="providerMap.warning.label" default="Warning" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'warning', 'errors')}">
+                                    <g:textField name="warning" value="${providerMapInstance?.warning}" />
+                                </td>
+                            </tr>
+
                             <tr class="prop">
                                 <td valign="top" class="name">
                                   <label for="matchAnyCollectionCode"><g:message code="providerMap.matchAnyCollectionCode.label" default="Match Any Collection Code" /></label>

@@ -64,7 +64,7 @@ abstract class ProviderGroup implements Serializable {
     boolean isALAPartner = false
     String notes
     String networkMembership    // a list of names of networks (CHAH, etc) that the group belongs to as JSON list
-    String attributions         // list of space-separated uids for attributions
+    String attributions = ''    // list of space-separated uids for attributions
     Date dateCreated
     Date lastUpdated
     String userLastModified
@@ -73,7 +73,7 @@ abstract class ProviderGroup implements Serializable {
 
     static transients = ['primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'mappable','ALAPartner']
 
-    static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
+    static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
     static mapping = {
         tablePerHierarchy false
@@ -257,6 +257,18 @@ abstract class ProviderGroup implements Serializable {
             return acronym
         }
         return id
+    }
+
+
+    /**
+     * Adds the specified attribution to this group.
+     * @param attributionUid
+     */
+    void addAttribution(String attributionUid) {
+        attributions = attributions ?: ""
+        if (!(attributions =~ /\b${attributionUid}\b/)) {
+            attributions += (attributions?' ':'') + attributionUid
+        }
     }
 
     /*

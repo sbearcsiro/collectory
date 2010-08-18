@@ -64,6 +64,7 @@ abstract class ProviderGroup implements Serializable {
     boolean isALAPartner = false
     String notes
     String networkMembership    // a list of names of networks (CHAH, etc) that the group belongs to as JSON list
+    String attributions         // list of space-separated uids for attributions
     Date dateCreated
     Date lastUpdated
     String userLastModified

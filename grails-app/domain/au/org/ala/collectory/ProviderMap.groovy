@@ -12,11 +12,12 @@ class ProviderMap implements Serializable {
 
     boolean matchAnyCollectionCode = false
     boolean exact = true
+    String warning
     Date dateCreated
     Date lastUpdated
 
     static constraints = {
-        //providerGroup(unique:true)
+        warning(nullable:true)
     }
 
     static mapping = {

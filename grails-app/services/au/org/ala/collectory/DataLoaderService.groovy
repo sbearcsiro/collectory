@@ -96,7 +96,7 @@ class DataLoaderService {
                 if (ins.hasErrors()) {
                     ins.errors.each {println it}
                 } else {
-                    ins.save()
+                    ins.save(flush:true)
                     // store in map until we load child collections
                     institutionMap.put(originalId, ins)
 
@@ -121,7 +121,7 @@ class DataLoaderService {
                             if (cf.hasErrors()) {
                                 cf.errors.each {println it}
                             } else {
-                                cf.save()
+                                cf.save(flush:true)
                             }
                         }
                     }
@@ -185,25 +185,30 @@ class DataLoaderService {
                     col.active = load(scope.active)
                     col.geographicDescription = load(scope.geographicDescription)
                     col.subCollections = load(scope.subCollections)
+                } else {
+                    println "warning: no scope for ${col.name}"
                 }
 
                 col.validate()
                 if (col.hasErrors()) {
                     col.errors.each {println it}
                 } else {
-                    col.save()
+                    col.save(flush:true)
                     // store in map until we load provider maps
                     collectionMap.put(originalId, col)
 
                     // add institution
                     List insts = it.parents
                     switch (insts.size()) {
-                        case 0: break
+                        case 0:
+                            println "No institution for ${col.name}"
+                            break
                         case 1:
                             Institution inst = institutionMap.get(insts[0].id) as Institution
                             if (inst) {
                                 col.institution = inst
                             }
+                            println "added ${col.institution.name} as instn for ${col.name}"
                             break
                         default: println "Multiple parents for collection ${col.name}"
                     }
@@ -229,7 +234,7 @@ class DataLoaderService {
                             if (cf.hasErrors()) {
                                 cf.errors.each {println it}
                             } else {
-                                cf.save()
+                                cf.save(flush:true)
                             }
                         }
                     }

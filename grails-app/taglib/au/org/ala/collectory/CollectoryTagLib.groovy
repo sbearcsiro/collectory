@@ -651,6 +651,13 @@ class CollectoryTagLib {
         }
     }
 
+    def warnIfInexactMapping = { attrs ->
+        if (attrs.collection?.isInexactlyMapped()) {
+            out << "<div id='warnings'><h4>Warning</h4>Records do not exactly match this collection."
+            out << "<br/>${attrs.collection?.providerMap?.warning}</div>"
+        }
+    }
+
     def numberOf = {attrs->
         if (attrs.number) {
             NumberFormat formatter = new DecimalFormat(",###")

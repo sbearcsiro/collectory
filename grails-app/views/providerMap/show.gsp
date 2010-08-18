@@ -30,6 +30,26 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td valign="top" class="name"><g:message code="collection.label" default="Collection" /></td>
+
+                            <td valign="top" class="value"><g:link controller="collection" action="show" id="${providerMapInstance?.collection?.uid}">${providerMapInstance?.collection?.encodeAsHTML()}</g:link></td>
+
+                        </tr>
+
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerMap.institutionCodes.label" default="Institution Codes" /></td>
+
+                            <td valign="top" style="text-align: left;" class="value">
+                                <ul>
+                                <g:each in="${providerMapInstance.institutionCodes}" var="i">
+                                    <li><g:link controller="providerCode" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
+                                </g:each>
+                                </ul>
+                            </td>
+
+                        </tr>
+
+                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="providerMap.collectionCodes.label" default="Collection Codes" /></td>
                             
                             <td valign="top" style="text-align: left;" class="value">
@@ -43,32 +63,19 @@
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerMap.providerGroup.label" default="Provider Group" /></td>
-                            
-                            <td valign="top" class="value"><g:link controller="providerGroup" action="show" id="${providerMapInstance?.providerGroup?.id}">${providerMapInstance?.providerGroup?.encodeAsHTML()}</g:link></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerMap.institutionCodes.label" default="Institution Codes" /></td>
-                            
-                            <td valign="top" style="text-align: left;" class="value">
-                                <ul>
-                                <g:each in="${providerMapInstance.institutionCodes}" var="i">
-                                    <li><g:link controller="providerCode" action="show" id="${i.id}">${i?.encodeAsHTML()}</g:link></li>
-                                </g:each>
-                                </ul>
-                            </td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
                             <td valign="top" class="name"><g:message code="providerMap.exact.label" default="Exact" /></td>
                             
                             <td valign="top" class="value"><g:formatBoolean boolean="${providerMapInstance?.exact}" /></td>
                             
                         </tr>
                     
+                        <tr class="prop">
+                            <td valign="top" class="name"><g:message code="providerMap.warning.label" default="Warning" /></td>
+
+                            <td valign="top" class="value">${fieldValue(bean: providerMapInstance, field: "warning")}</td>
+
+                        </tr>
+
                         <tr class="prop">
                             <td valign="top" class="name"><g:message code="providerMap.matchAnyCollectionCode.label" default="Match Any Collection Code" /></td>
                             

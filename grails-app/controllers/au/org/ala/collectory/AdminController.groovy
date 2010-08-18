@@ -4,7 +4,7 @@ import grails.converters.JSON
 
 class AdminController {
 
-    def dataLoaderService
+    def dataLoaderService, idGeneratorService
 
     def index = { }
 
@@ -21,6 +21,71 @@ class AdminController {
         dataLoaderService.loadAmrrnData()
 //        ActivityLog.log authenticateService.userDomain().username, Action.DATA_LOAD
         redirect(url: "http://localhost:8080/Collectory")  //action: "list")
+    }
+
+    def loadChacmAttributions = {
+        def targets =
+            Collection.findAllByNetworkMembershipIlike("%CHACM%") +
+            Institution.findAllByNetworkMembershipIlike("%CHACM%")
+        targets.each { pg ->
+            println "processing " + pg.name
+            pg.addAttribution('at51')
+            println pg.attributions
+        }
+        render 'Done.'
+    }
+
+    def setAttributions = {
+        def targets = Collection.list() + Institution.list()
+        targets.each { pg ->
+            println "processing " + pg.name
+            if (pg.guid?.startsWith(ProviderGroup.LSID_PREFIX)) {
+                // probably loaded from BCI
+                pg.addAttribution 'at1'
+            }
+            if (pg.isMemberOf('CHAH')) {
+                pg.addAttribution 'at2'
+            }
+            if (pg.isMemberOf('CHACM')) {
+                pg.addAttribution 'at51'
+            }
+            if (pg instanceof Collection && pg.institution) {
+                // add institution
+                // see if an attribution already exists
+                def at = Attribution.findByName(pg.institution.name)
+                if (!at) {
+                    at = new Attribution(name: pg.institution.name, url: pg.institution.websiteUrl,
+                            uid: idGeneratorService.getNextAttributionId()).save()
+                }
+                pg.addAttribution at.uid
+            } else if (pg instanceof Institution) {
+                // add itself
+                def at = Attribution.findByName(pg.name)
+                if (!at) {
+                    at = new Attribution(name: pg.name, url: pg.websiteUrl, uid: idGeneratorService.getNextAttributionId()).save()
+                }
+                pg.addAttribution at.uid
+            }
+            println pg.attributions
+        }
+        render 'Done.'
+    }
+
+    def updateAmrrnToChacm = {
+        def targets =
+            Collection.findAllByNetworkMembershipIlike("%AMRRN%") +
+            Institution.findAllByNetworkMembershipIlike("%AMRRN%")
+        targets.each { pg ->
+            println "processing " + pg.name
+            print pg.networkMembership + " -> "
+            List hubs = JSON.parse(pg.networkMembership).collect { it.toString() }
+            hubs.remove 'AMRRN'
+            hubs.add 'CHACM'
+            pg.networkMembership = (hubs as JSON).toString()
+            println pg.networkMembership
+            pg.save(flush:true)
+        }
+        render 'Done.'
     }
 
     /**

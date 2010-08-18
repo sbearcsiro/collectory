@@ -44,7 +44,7 @@ class CollectionCommand implements Serializable {
 
     List<String> networkMembership    // list of peak body names
 
-    Institution institution     // th eowning institution
+    Institution institution     // the owning institution
 
     List<ContactFor> contacts = []
 
@@ -171,7 +171,7 @@ class CollectionCommand implements Serializable {
             "tissue",
             "visual"]}
 
-    static networkTypes = ["CHAH", "CHAFC", "CHAEC", "AMRRN", "CAMD"]
+    static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
     static List<String> kingdoms() {
         return ['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista']

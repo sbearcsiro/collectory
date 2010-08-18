@@ -12,10 +12,20 @@ class ProviderGroupTests extends GrailsUnitTestCase {
     }
 
     void testLatitude() {
-        ProviderGroup pg = new ProviderGroup(guid: '237645', name: 'Bees', groupType: 'Collection', latitude: -40.03234665)
+        ProviderGroup pg = new Collection(guid: '237645', name: 'Bees', latitude: -40.03234665)
         assertEquals(-40.03234665, pg.latitude)
     }
 
+    void testAttributions() {
+        Collection pg = new Collection(guid:'1234',name:'Bees')
+        assertEquals 0, pg.getAttributionList().size()
+        pg.addAttribution 'at1'
+        assertEquals 'at1', pg.attributions
+        pg.addAttribution 'at2'
+        assertEquals 'at1 at2', pg.attributions
+        pg.addAttribution 'at1'
+        assertEquals 'at1 at2', pg.attributions
+    }
     /* needs to be re-written after refactor
     void testHasProviderCode() {
         ProviderGroup pg = new ProviderGroup(

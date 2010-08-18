@@ -24,8 +24,8 @@
                         
                             <g:sortableColumn property="id" title="${message(code: 'providerMap.id.label', default: 'Id')}" />
                         
-                            <th><g:message code="providerMap.providerGroup.label" default="Provider Group" /></th>
-                   	    
+                            <g:sortableColumn property="collectionName" title="${message(code: 'collection.label', default: 'Collection')}" />
+
                             <g:sortableColumn property="exact" title="${message(code: 'providerMap.exact.label', default: 'Exact')}" />
                         
                             <g:sortableColumn property="matchAnyCollectionCode" title="${message(code: 'providerMap.matchAnyCollectionCode.label', default: 'Match Any Collection Code')}" />
@@ -42,7 +42,7 @@
                         
                             <td><g:link action="show" id="${providerMapInstance.id}">${fieldValue(bean: providerMapInstance, field: "id")}</g:link></td>
                         
-                            <td>${fieldValue(bean: providerMapInstance, field: "providerGroup")}</td>
+                            <td>${fieldValue(bean: providerMapInstance, field: "collection")}</td>
                         
                             <td><g:formatBoolean boolean="${providerMapInstance.exact}" /></td>
                         

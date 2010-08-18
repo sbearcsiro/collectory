@@ -4,7 +4,7 @@ import javax.sql.DataSource
 import groovy.sql.GroovyRowResult
 import org.springframework.transaction.annotation.Transactional
 
-class IdGeneratorService {
+class IdGeneratorService implements Serializable {
 
     static transactional = true
     javax.sql.DataSource dataSource
@@ -14,7 +14,8 @@ class IdGeneratorService {
         institution,
         dataProvider,
         dataResource,
-        dataHub
+        dataHub,
+        attribution
 
         public getIndex() {
             return ordinal() + 1
@@ -55,5 +56,8 @@ class IdGeneratorService {
     }
     def getNextDataHubId() {
         getNextId(IdType.dataHub)
+    }
+    def getNextAttributionId() {
+        getNextId(IdType.attribution)
     }
 }

@@ -200,6 +200,19 @@
                   </g:if>
                 </div>
               </g:if>
+
+              <!-- attribution -->
+              <g:set var='attribs' value='${collectionInstance.getAttributionList()}'/>
+              <g:if test="${attribs.size() > 0}">
+                <div class="section" id="infoSourceList">
+                  <h4>Contributors to this page</h4>
+                  <ul>
+                    <g:each var="a" in="${attribs}">
+                      <li><a href="${a.url}" class="external" target="_blank">${a.name}</a></li>
+                    </g:each>
+                  </ul>
+                </div>
+              </g:if>
             </div>
           </div>
           </div><!--overview-->
@@ -215,6 +228,7 @@
                 </g:if>
                 <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/>
                 </cl:recordsLink>
+                <cl:warnIfInexactMapping collection="${collectionInstance}"/>
               </div>
               <div style="float:right;text-align:center;padding-right:60px;margin-top:-20px;">
                 <g:if test="${percentBiocacheRecords != -1}">

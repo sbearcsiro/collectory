@@ -4,6 +4,8 @@ import grails.converters.JSON
 
 class Collection extends ProviderGroup implements Serializable {
 
+    def idGeneratorService
+
     static final String ENTITY_TYPE = 'Collection'
     static final String ENTITY_PREFIX = 'co'
 
@@ -49,7 +51,7 @@ class Collection extends ProviderGroup implements Serializable {
     static hasOne = [providerMap: ProviderMap]
 
     static transients = ProviderGroup.transients + ['listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
-            'mappable']
+            'mappable','inexactlyMapped','attributionList']
 
     static constraints = {
         collectionType(nullable: true, maxSize: 256/*, inList: [
@@ -140,6 +142,18 @@ class Collection extends ProviderGroup implements Serializable {
     }
 
     /**
+     * Returns true only if there is a provider code mapping and that mapping is known to be inexact.
+     *
+     * @return
+     */
+    boolean isInexactlyMapped() {
+        if (providerMap) {
+            return !providerMap.isExact()
+        }
+        return false
+    }
+
+    /**
      * Returns a summary of the collection including:
      * - id
      * - name
@@ -197,6 +211,46 @@ class Collection extends ProviderGroup implements Serializable {
             return true
         }
         return false
+    }
+
+    /**
+     * Returns list of name/url for where the information about this collection was sourced.
+     * @return list of Attribution
+     */
+    List<Attribution> getAttributionList() {
+        if (!attributions) {
+            attributions = ""
+            // build it
+            if (guid?.startsWith(LSID_PREFIX)) {
+                // probably loaded from BCI
+                attributions = 'at1'
+            }
+            if (isMemberOf('CHAH')) {
+                attributions += (attributions?' ':'') + 'at2'
+            }
+            if (institution) {
+                // see if an attribution already exists
+                def at = Attribution.findByName(institution.name)
+                if (!at) {
+                    at = new Attribution(name: institution.name, url: institution.websiteUrl, 
+                            uid: idGeneratorService.getNextAttributionId()).save()
+                }
+                attributions += (attributions?' ':'') + at.uid
+            }
+            println attributions
+            validate()
+            if (hasErrors()) {
+                errors.each {println it}
+            }
+            save(flush:true)
+        }
+        def uids = attributions.tokenize(' ')
+        List<Attribution> list = uids.collect {
+            if (it) {
+                Attribution.findByUid(it)
+            }
+        }
+        return list
     }
 
     long dbId() { return id }

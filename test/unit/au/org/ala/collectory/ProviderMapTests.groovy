@@ -21,7 +21,7 @@ class ProviderMapTests extends GrailsUnitTestCase {
         map.addToInstitutionCodes(code1)
         map.addToCollectionCodes(code2)
         map.addToCollectionCodes(code3)
-        pg1 = new ProviderGroup(id:12, groupType:'collection', name:'pg name')
+        pg1 = new Collection(id:12, name:'pg name')
         map.providerGroup = pg1
         map.save()
     }

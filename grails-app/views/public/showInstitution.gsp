@@ -45,7 +45,7 @@
           <div class="aside col-3">
             <!-- logo -->
             <g:if test="${fieldValue(bean: institution, field: 'logoRef') && fieldValue(bean: institution, field: 'logoRef.file')}">
-              <img style="padding-bottom:5px; margin-right:20px; float:right; margin-top:0" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
+              <img style="padding-bottom:5px; float:right; padding-right: 10px; margin-top:0" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
             </g:if>
           </div>
         </div>
@@ -75,7 +75,7 @@
         <g:if test="${fieldValue(bean: institution, field: 'imageRef') && fieldValue(bean: institution, field: 'imageRef.file')}">
           <div class="section">
             <img alt="${fieldValue(bean: institution, field: "imageRef.file")}"
-                    src="${resource(absolute:"true", dir:"data/collection/", file:institution.imageRef.file)}" />
+                    src="${resource(absolute:"true", dir:"data/institution/", file:institution.imageRef.file)}" />
             <p class="caption"><cl:formattedText>${fieldValue(bean: institution, field: "imageRef.caption")}</cl:formattedText></p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.attribution")}</p>
             <p class="caption">${fieldValue(bean: institution, field: "imageRef.copyright")}</p>

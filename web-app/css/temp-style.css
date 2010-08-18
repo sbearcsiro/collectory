@@ -31,3 +31,20 @@
 #nav-tabs li a[href='#map'] {
     margin-left: 230px;
 }
+
+body {
+    background:transparent url(../images/ala/header.png) center 0 repeat-x;
+}
+
+#infoSourceList {
+    background-color: #E8EACE;
+    padding: 10px;
+    -moz-border-radius: 0 0 10px 10px; /* FF1+ */
+    -webkit-border-radius: 0 0 10px 10px; /* Saf3+, Chrome */
+    border-radius: 0 0 10px 10px; /* Opera 10.5, IE 9 */
+}
+#infoSourceList h3 { padding: 3px 0 10px 0; }
+
+.hrgroup {
+    border-right: 0 ! important;
+}

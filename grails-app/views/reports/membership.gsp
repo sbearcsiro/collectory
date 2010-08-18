@@ -22,66 +22,66 @@
                 <tr class="reportGroupTitle"><td>ALA Partner Institutions (${reports.partners.size()})</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
-                    <g:if test="${reports.partners.size() > 0}">${reports.partners[0].name}</g:if><g:else>None</g:else>
+                    <g:if test="${reports.partners.size() > 0}"><g:link controller="public" action="show" id="${reports.partners[0].uid}">${reports.partners[0].name}</g:link></g:if><g:else>None</g:else>
                   </td></tr>
                 <g:each var="p" in="${reports.partners}" status="i">
                   <!-- skip first member -->
-                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2"><g:link controller="public" action="show" id="${p.uid}">${p.name}</g:link></td></tr></g:if>
                 </g:each>
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle"><td>CHAH Members (${reports.chahMembers.size()})</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
-                    <g:if test="${reports.chahMembers.size() > 0}">${reports.chahMembers[0].name}</g:if><g:else>None</g:else>
+                    <g:if test="${reports.chahMembers.size() > 0}"><g:link controller="public" action="show" id="${reports.chahMembers[0].uid}">${reports.chahMembers[0].name}</g:link></g:if><g:else>None</g:else>
                   </td></tr>
                 <!-- skip first member -->
                 <g:each var="p" in="${reports.chahMembers}" status="i">
-                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2"><g:link controller="public" action="show" id="${p.uid}">${p.name}</g:link></td></tr></g:if>
                 </g:each>
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle"><td>CHAFC Members (${reports.chafcMembers.size()})</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
-                    <g:if test="${reports.chafcMembers.size() > 0}">${reports.chafcMembers[0].name}</g:if><g:else>None</g:else>
+                    <g:if test="${reports.chafcMembers.size() > 0}"><g:link controller="public" action="show" id="${reports.chafcMembers[0].uid}">${reports.chafcMembers[0].name}</g:link></g:if><g:else>None</g:else>
                   </td></tr>
                 <g:each var="p" in="${reports.chafcMembers}" status="i">
                   <!-- skip first member -->
-                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2"><g:link controller="public" action="show" id="${p.uid}">${p.name}</g:link></td></tr></g:if>
                 </g:each>
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle"><td>CHAEC Members (${reports.chaecMembers.size()})</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
-                    <g:if test="${reports.chaecMembers.size() > 0}">${reports.chaecMembers[0].name}</g:if><g:else>None</g:else>
+                    <g:if test="${reports.chaecMembers.size() > 0}"><g:link controller="public" action="show" id="${reports.chaecMembers[0].uid}">${reports.chaecMembers[0].name}</g:link></g:if><g:else>None</g:else>
                   </td></tr>
                 <g:each var="p" in="${reports.chaecMembers}" status="i">
                   <!-- skip first member -->
-                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2"><g:link controller="public" action="show" id="${p.uid}">${p.name}</g:link></td></tr></g:if>
                 </g:each>
 
                 <tr><td colspan="3"><hr></td></tr>
-                <tr class="reportGroupTitle"><td>AMRRN Members (${reports.amrrnMembers.size()})</td>
+                <tr class="reportGroupTitle"><td>CHACM Members (${reports.amrrnMembers.size()})</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
-                    <g:if test="${reports.amrrnMembers.size() > 0}">${reports.amrrnMembers[0].name}</g:if><g:else>None</g:else>
+                    <g:if test="${reports.amrrnMembers.size() > 0}"><g:link controller="public" action="show" id="${reports.amrrnMembers[0].uid}">${reports.amrrnMembers[0].name}</g:link></g:if><g:else>None</g:else>
                   </td></tr>
                 <g:each var="p" in="${reports.amrrnMembers}" status="i">
                   <!-- skip first member -->
-                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2"><g:link controller="public" action="show" id="${p.uid}">${p.name}</g:link></td></tr></g:if>
                 </g:each>
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle"><td>CAMD Members (${reports.camdMembers.size()})</td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
-                    <g:if test="${reports.camdMembers.size() > 0}">${reports.camdMembers[0].name}</g:if><g:else>None</g:else>
+                    <g:if test="${reports.camdMembers.size() > 0}"><g:link controller="public" action="show" id="${reports.camdMembers[0].uid}">${reports.camdMembers[0].name}</g:link></g:if><g:else>None</g:else>
                   </td></tr>
                 <g:each var="p" in="${reports.camdMembers}" status="i">
                   <!-- skip first member -->
-                  <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
+                  <g:if test="${i > 0}"><tr><td></td><td colspan="2"><g:link controller="public" action="show" id="${p.uid}">${p.name}</g:link></td></tr></g:if>
                 </g:each>
 
               </table>

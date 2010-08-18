@@ -205,8 +205,8 @@ class ReportsController {
                         Institution.findAllByNetworkMembershipIlike("%CHAEC%",[sort:'name'])
                 chafcMembers = Collection.findAllByNetworkMembershipIlike("%CHAFC%",[sort:'name']) +
                         Institution.findAllByNetworkMembershipIlike("%CHAFC%",[sort:'name'])
-                amrrnMembers = Collection.findAllByNetworkMembershipIlike("%AMRRN%",[sort:'name']) +
-                        Institution.findAllByNetworkMembershipIlike("%AMRRN%",[sort:'name'])
+                amrrnMembers = Collection.findAllByNetworkMembershipIlike("%CHACM%",[sort:'name']) +
+                        Institution.findAllByNetworkMembershipIlike("%CHACM%",[sort:'name'])
                 camdMembers = Collection.findAllByNetworkMembershipIlike("%CAMD%",[sort:'name']) +
                         Institution.findAllByNetworkMembershipIlike("%CAMD%",[sort:'name'])
                 break

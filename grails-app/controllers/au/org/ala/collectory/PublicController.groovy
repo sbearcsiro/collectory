@@ -74,7 +74,7 @@ class PublicController {
         } else {
             /* get decade breakdown */
             def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${collectionInstance.generatePermalink()}.json";
-            println decadeUrl
+            //println decadeUrl
             def conn = new URL(decadeUrl).openConnection()
             conn.setConnectTimeout 3000
             def dataTable = null

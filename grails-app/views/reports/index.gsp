@@ -67,6 +67,11 @@
         <p class="mainText">Lists institution and collection codes for collections that have them.</p>
       </div>
 
+      <div class="homeCell">
+        <g:link class="mainLink" controller="reports" action="attributions">List attributions</g:link>
+        <p class="mainText">Lists the sources of information for institutions and collections.</p>
+      </div>
+
     </cl:ifGranted>
 
     </body>

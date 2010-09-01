@@ -9,7 +9,7 @@ class Collection extends ProviderGroup implements Serializable {
     static final String ENTITY_TYPE = 'Collection'
     static final String ENTITY_PREFIX = 'co'
 
-    String collectionType       // type of collection e.g live, preserved, tissue, DNA
+    String collectionType       // list of type of collection as JSON e.g ['live', 'preserved', 'tissue', 'DNA']
     String keywords
     String active               // see active vocab
     int numRecords = ProviderGroup.NO_INFO_AVAILABLE
@@ -57,24 +57,20 @@ class Collection extends ProviderGroup implements Serializable {
         sort: 'name'
     }
 
+    static collectionTypes = ["archival","art","audio","cellcultures","electronic","facsimiles","fossils","genetic",
+                        "living","observations","preserved","products","taxonomic","texts","tissue","visual"]
+
+    static kingdoms = ['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista']
+
     static constraints = {
-        collectionType(nullable: true, maxSize: 256/*, inList: [
-            "archival",
-            "art",
-            "audio",
-            "cellcultures",
-            "electronic",
-            "facsimiles",
-            "fossils",
-            "genetic",
-            "living",
-            "observations",
-            "preserved",
-            "products",
-            "taxonomic",
-            "texts",
-            "tissue",
-            "visual"]*/)
+        collectionType(nullable: true, maxSize: 256,
+                validator: { ct ->
+                if (!ct) {return true}
+                ct.each {
+                    if (!Collection.collectionTypes.contains(it)) {return false}
+                }
+                return true
+        })
         keywords(nullable:true, maxSize:1024)
         active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
         numRecords()
@@ -95,7 +91,7 @@ class Collection extends ProviderGroup implements Serializable {
                 boolean ok = true
                 // split value by spaces
                 kc.split(" ").each {
-                    if (!['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista'].contains(it)) {
+                    if (!kingdoms.contains(it)) {
                         ok = false  // return false does not work here!
                     }
                 }
@@ -107,6 +103,11 @@ class Collection extends ProviderGroup implements Serializable {
         institution(nullable:true)
     }
 
+    /**
+     * Returns sub-collections as a list of maps where each contains a name and a description.
+     *
+     * @return List<Map>
+     */
     def listSubCollections() {
         def result = []
         if (subCollections) {
@@ -115,6 +116,42 @@ class Collection extends ProviderGroup implements Serializable {
             }
         }
         return result
+    }
+
+    /**
+     * Returns collection types as a list of string.
+     *
+     * @return List<Map>
+     */
+    def listCollectionTypes() {
+        if (!collectionType) {
+            return []
+        }
+        return JSON.parse(collectionType).collect { it.toString() }
+    }
+
+    /**
+     * Returns keywords as a list of string.
+     *
+     * @return List<Map>
+     */
+    def listKeywords() {
+        if (!keywords) {
+            return []
+        }
+        return JSON.parse(keywords).collect { it.toString() }
+    }
+
+    /**
+     * Returns scientific names as a list of string.
+     *
+     * @return List<Map>
+     */
+    def listScientificNames() {
+        if (!scientificNames) {
+            return []
+        }
+        return JSON.parse(scientificNames).collect { it.toString() }
     }
 
     /*
@@ -217,6 +254,14 @@ class Collection extends ProviderGroup implements Serializable {
         return false
     }
 
+    Map inheritedLatLng() {
+        if (institution && institution.latitude != 0.0 && institution.latitude != -1 &&
+                institution.longitude != 0.0 && institution.longitude != -1) {
+            return [lat: institution.latitude, lng: institution.longitude]
+        }
+        return [:]
+    }
+    
     long dbId() { return id }
 
     String entityType() {

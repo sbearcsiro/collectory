@@ -33,6 +33,11 @@
     </context-param>
 
     <context-param>
+        <param-name>contextPath</param-name>
+        <param-value>@security.cas.contextPath@</param-value>
+    </context-param>
+
+    <context-param>
         <param-name>uriFilterPattern</param-name>
         <!--param-value>/Collectory/admin</param-value-->
         <!--param-value>/admin</param-value-->

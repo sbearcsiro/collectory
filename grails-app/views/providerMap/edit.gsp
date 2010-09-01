@@ -35,7 +35,10 @@
                                   <label for="collection"><g:message code="collection.label" default="Collection" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'collection', 'errors')}">
-                                    <g:select name="collection.id" from="${au.org.ala.collectory.Collection.list()}" optionKey="id" value="${providerMapInstance?.collection?.id}"  />
+                                    <g:select name="collection.id"
+                                            from="${au.org.ala.collectory.Collection.list()}"
+                                            optionKey="id"
+                                            value="${providerMapInstance?.collection?.id}"  />
                                 </td>
                             </tr>
 

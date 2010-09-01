@@ -26,6 +26,7 @@
             <g:form method="post" >
                 <g:hiddenField name="id" value="${contactInstance?.id}" />
                 <g:hiddenField name="version" value="${contactInstance?.version}" />
+                <g:hiddenField name="returnTo" value="${returnTo}" />
                 <div class="dialog">
                     <table>
                         <tbody>

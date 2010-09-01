@@ -23,12 +23,12 @@
     </head>
     <body class="two-column-right">
       <div id="content">
-        <div id="header" class="taxon" style="margin-bottom:15px;">
+        <div id="header" class="collectory">
           <!--Breadcrumbs-->
           <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${collectionInstance.name}</span></div>
           <div class="section full-width">
             <div class="hrgroup col-9">
-              <h1 class="family"><i>${fieldValue(bean:collectionInstance,field:'name')}</i></h1>
+              <h1 class="family">${fieldValue(bean:collectionInstance,field:'name')}</h1>
               <g:set var="inst" value="${collectionInstance.getInstitution()}"/>
               <g:if test="${inst}">
                 <h2><g:link action="showInstitution" id="${inst.id}">${inst.name}</g:link></h2>
@@ -54,7 +54,6 @@
                   <!--div style="clear: both;"></div-->
               </g:if>
             </div>
-            <div style="clear:both;"></div>
           </div>
           <div id="nav-tabs">
             <ul class="ui-tabs-nav">
@@ -65,7 +64,7 @@
         </div><!--close header-->
         <div id="overview" class="ui-tabs-panel">
           <div id="column-one">
-            <div class="section no-margin-top">
+            <div class="section">
               <h2>Description</h2>
               <cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText>
               <cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText>
@@ -107,21 +106,18 @@
 
               <h2>Number of specimens in the collection</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">
-                <p>The estimated number of specimens within the ${collectionInstance.name}: ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
+                <p>The estimated number of specimens within the ${collectionInstance.name} is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
               </g:if>
-
               <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">
-                <h2>Number of digitised specimens</h2>
                 <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are digitised.
                 This represents <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}' /> of the collection.</p>
               </g:if>
+              <p>Click the Records & Statistics tab to access those digitised records that are available through the atlas.</p>
 
               <g:if test="${collectionInstance.listSubCollections()?.size() > 0}">
                 <h2>Sub-collections</h2>
                 <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
-                <g:each var="sub" in="${collectionInstance.listSubCollections()}" >
-                  <p class="sub"><cl:subCollectionDisplay sub="${sub}"/></p>
-                </g:each>
+                <cl:subCollectionList list="${collectionInstance.subCollections}"/>
               </g:if>
             </div><!--close section-->
           </div><!--close column-one-->
@@ -132,14 +128,14 @@
                 <div class="section">
                   <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
                           src="${resource(absolute:"true", dir:"data/collection/", file:collectionInstance.imageRef.file)}" />
-                  <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</p>
-                  <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p>
-                  <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p>
+                  <cl:formattedText pClass="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</cl:formattedText>
+                  <cl:valueOrOtherwise value="${collectionInstance.imageRef?.attribution}"><p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p></cl:valueOrOtherwise>
+                  <cl:valueOrOtherwise value="${collectionInstance.imageRef?.copyright}"><p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p></cl:valueOrOtherwise>
                 </div>
               </g:if>
 
               <div class="section">
-                <h4>Location</h4>
+                <h3>Location</h3>
                 <!-- use parent location if the collection is blank -->
                 <g:set var="address" value="${collectionInstance.address}"/>
                 <g:if test="${address == null || address.isEmpty()}">
@@ -148,10 +144,16 @@
                   </g:if>
                 </g:if>
 
-                <cl:ifNotBlank value='${address?.street}'/>
-                <cl:ifNotBlank value='${address?.postBox}'/>
-                <cl:ifNotBlank value="${address?.city}" value2="${address?.state}" value3="${address?.postcode}" join=" "/>
-                <cl:ifNotBlank value='${address?.country}'/>
+                <g:if test="${!address?.isEmpty()}">
+                  <p>
+                    <cl:valueOrOtherwise value="${address?.street}">${address?.street}<br/></cl:valueOrOtherwise>
+                    <cl:valueOrOtherwise value="${address?.postBox}">${address?.postBox}<br/></cl:valueOrOtherwise>
+                    <cl:valueOrOtherwise value="${address?.city}">${address?.city}</cl:valueOrOtherwise>
+                    <cl:valueOrOtherwise value="${address?.state}">${address?.state}</cl:valueOrOtherwise>
+                    <cl:valueOrOtherwise value="${address?.postcode}">${address?.postcode}<br/></cl:valueOrOtherwise>
+                    <cl:valueOrOtherwise value="${address?.country}">${address?.country}<br/></cl:valueOrOtherwise>
+                  </p>
+                </g:if>
 
                 <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "email")}'/>
                 <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "phone")}'/>
@@ -160,7 +162,7 @@
               <g:set var="contact" value="${collectionInstance.getPrimaryContact()}"/>
               <g:if test="${contact}">
                 <div class="section">
-                  <h4>Contact</h4>
+                  <h3>Contact</h3>
                   <p class="contactName">${contact?.contact?.buildName()}</p>
                   <p>${contact?.role}</p>
                   <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
@@ -172,7 +174,7 @@
               <!-- web site -->
               <g:if test="${collectionInstance.websiteUrl}">
                 <div class="section">
-                  <h4>Web site</h4>
+                  <h3>Web site</h3>
                   <div class="webSite">
                     <a class='external_icon' target="_blank" href="${collectionInstance.websiteUrl}">Visit the collection's website</a>
                   </div>
@@ -182,7 +184,7 @@
               <!-- network membership -->
               <g:if test="${collectionInstance.networkMembership}">
                 <div class="section">
-                  <h4>Membership</h4>
+                  <h3>Membership</h3>
                   <g:if test="${collectionInstance.isMemberOf('CHAEC')}">
                     <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
                     <img src="${resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif")}"/>
@@ -221,15 +223,24 @@
             <div class="section">
               <h2>Digitised specimen records</h2>
               <div style="float:left;">
-                <g:if test="${numBiocacheRecords != -1}">
-                  <p>The ALA holds <cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> for the ${collectionInstance.name}.</p>
-                  <g:if test="${percentBiocacheRecords != -1}">
-                    <p>This represents <cl:formatPercent percent="${percentBiocacheRecords}"/>% of all specimens in the collection.</p>
-                  </g:if>
+                <g:if test="${collectionInstance.numRecords != -1}">
+                  <p>The ${cl.collectionName(name: collectionInstance.name)} has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
+                    <g:if test="${collectionInstance.numRecordsDigitised != -1}">
+                      <br/><cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}'/> of these have been digitised (${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} records).
+                    </g:if>
+                  </p>
                 </g:if>
-                <cl:warnIfInexactMapping collection="${collectionInstance}"/>
-                <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/>
-                </cl:recordsLink>
+                <g:if test="${numBiocacheRecords != -1}">
+                  <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.
+                  <g:if test="${percentBiocacheRecords}">
+                    (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
+                  </g:if></p>
+                  <cl:warnIfInexactMapping collection="${collectionInstance}"/>
+                  <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
+                </g:if>
+                <g:else>
+                  <p>No digitised records for this collection can be accessed through the Atlas of Living Australia.</p>
+                </g:else>
               </div>
               <div style="float:right;text-align:center;padding-right:60px;margin-top:-20px;">
                 <g:if test="${percentBiocacheRecords != -1}">
@@ -238,7 +249,6 @@
                 </g:if>
               </div>
             </div>
-            <g:if test="${numBiocacheRecords > 0}">
               <div class="section">
                 <h3>Distribution of occurrence records for this collection</h3>
                 <div>
@@ -248,7 +258,6 @@
                 <div id="chart" style="display: inline;padding-right: 20px;">
                 </div>
               </div>
-            </g:if>
           </div>
         </div>
       <script type="text/javascript">

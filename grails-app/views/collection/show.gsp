@@ -1,307 +1,316 @@
 <%@ page import="au.org.ala.collectory.Collection" %>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="main" />
-        <g:set var="entityName" value="${message(code: 'collection.label', default: 'Collection')}" />
-        <title><g:message code="default.show.label" args="[entityName]" /></title>
-    </head>
-    <body>
-        <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-        </div>
-        <div class="body">
-            <h1>${fieldValue(bean: collectionInstance, field: "name")}</h1>
-            <g:if test="${flash.message}">
-            <div class="message">${flash.message}</div>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="layout" content="main"/>
+  <g:set var="entityName" value="${message(code: 'collection.label', default: 'Collection')}"/>
+  <title><g:message code="default.show.label" args="[entityName]"/></title>
+  <script type="text/javascript" src="http://www.google.com/jsapi?key=${grailsApplication.config.google.maps.v2.key}"></script>
+</head>
+<body onload="load();">
+<style>
+#mapCanvas {
+  width: 200px;
+  height: 170px;
+  float: right;
+}
+</style>
+<div class="nav">
+  <span class="menuButton"><cl:homeLink/></span>
+  <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]"/></g:link></span>
+  <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]"/></g:link></span>
+  <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span>
+</div>
+<div class="body">
+  <g:if test="${flash.message}">
+    <div class="message">${flash.message}</div>
+  </g:if>
+  <div class="dialog emulate-public">
+    <!-- base attributes -->
+    <div class="show-section titleBlock">
+      <!-- Name --><!-- Acronym -->
+      <h1>${fieldValue(bean: collectionInstance, field: "name")}<cl:valueOrOtherwise value="${collectionInstance.acronym}"> (${fieldValue(bean: collectionInstance, field: "acronym")})</cl:valueOrOtherwise></h1>
+
+      <!-- Institution --><!-- ALA Partner -->
+      <h2 style="display:inline"><g:link controller="institution" action="show" id="${collectionInstance.institution?.id}">${collectionInstance.institution?.name}</g:link></h2>
+      <cl:partner test="${collectionInstance.institution?.isALAPartner}"/><br/>
+
+      <!-- GUID    -->
+      <p><span class="category">LSID</span>: <cl:guid target="_blank" guid='${fieldValue(bean: collectionInstance, field: "guid")}'/></p>
+
+      <!-- UID    -->
+      <p><span class="category">UID</span>: ${fieldValue(bean: collectionInstance, field: "uid")}</p>
+
+      <!-- Web site -->
+      <p><span class="category">Collection website</span>: <a target="_blank" href="${fieldValue(bean: collectionInstance, field: 'websiteUrl')}">${fieldValue(bean: collectionInstance, field: "websiteUrl")}</a></p>
+
+      <!-- Networks -->
+      <g:if test="${collectionInstance.networkMembership}">
+        <p><cl:membershipWithGraphics coll="${collectionInstance}"/></p>
+      </g:if>
+
+      <!-- Notes -->
+      <g:if test="${collectionInstance.notes}">
+        <p><cl:formattedText>${fieldValue(bean: collectionInstance, field: "notes")}</cl:formattedText></p>
+      </g:if>
+
+      <!-- last edit -->
+      <p><span class="category">Last change</span> ${fieldValue(bean: collectionInstance, field: "userLastModified")} on ${fieldValue(bean: collectionInstance, field: "lastUpdated")}</p>
+    
+      <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'base']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    </div>
+
+    <!-- collection description -->
+    <div class="show-section">
+      <!-- Pub Desc -->
+      <h2>Description</h2>
+      <div class="source">[Public description]</div><div style="clear:both;"></div>
+      <cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText>
+
+      <!-- Tech Desc -->
+      <div class="source">[Technical description]</div><div style="clear:both;"></div>
+      <cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText>
+      <div class="source">[Start/End dates]</div><div style="clear:both;"></div>
+      <cl:temporalSpan start='${fieldValue(bean: collectionInstance, field: "startDate")}' end='${fieldValue(bean: collectionInstance, field: "endDate")}'/>
+
+      <!-- Collection types -->
+      <p><span class="category">Collection types</span> include:
+      <cl:JSONListAsStrings json='${collectionInstance.collectionType}'/>.</p>
+
+      <!-- Active -->
+      <p><span class="category">Activity status</span> is <cl:valueOrOtherwise value="${collectionInstance.active}" otherwise="unknown"/>.</p>
+
+      <!-- Keywords -->
+      <p><span class="category">Keywords</span> are not directly displayed but are used for searching and filtering.
+        These keywords have been added for this collection: <cl:valueOrOtherwise value="${collectionInstance.listKeywords().join(', ')}" otherwise="none"/>.</p>
+
+      <!-- sub collections -->
+      <h2>Sub-collections</h2>
+      <cl:subCollectionList list="${collectionInstance.subCollections}"/>
+
+      <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+  </div>
+
+  <!-- images -->
+  <div class="show-section">
+    <!-- ImageRef -->
+      <h2>Representative Image</h2>
+      <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
+        <img class="showImage" alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
+            src="${resource(absolute: "true", dir: 'data/collection', file: collectionInstance.imageRef.file)}"/>
+        <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.file")}</p>
+        <cl:formattedText pClass="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</cl:formattedText>
+        <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p>
+        <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p>
+      </g:if>
+
+    <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'images']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+  </div>
+
+    <!-- location -->
+    <div class="show-section">
+      <h2>Location</h2>
+      <table>
+        <colgroup><col width="10%"/><col width="45%"/><col width="45%"/></colgroup>
+        <!-- Address -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="collection.address.label" default="Address"/></td>
+
+          <td valign="top" class="value">
+            ${fieldValue(bean: collectionInstance, field: "address.street")}<br/>
+            ${fieldValue(bean: collectionInstance, field: "address.postBox")}<br/>
+            ${fieldValue(bean: collectionInstance, field: "address.city")}<br/>
+            ${fieldValue(bean: collectionInstance, field: "address.state")}
+            ${fieldValue(bean: collectionInstance, field: "address.postcode")}
+            <g:if test="${fieldValue(bean: collectionInstance, field: 'address.country') != 'Australia'}">
+              <br/>${fieldValue(bean: collectionInstance, field: "address.country")}
             </g:if>
-            <div class="dialog">
-                <table>
-                    <tbody>
-                        <tr colspan="2">
-                          <g:if test="${fieldValue(bean: collectionInstance, field: 'logoRef')}">
-                            <img src='${resource(absolute: "true", dir:"data/collection/",file:fieldValue(bean: collectionInstance, field: 'logoRef.file'))}' />
-                          </g:if>
-                        </tr>
-                    
-<!-- Name -->           <tr class="prop">
-                            <td valign="top" class="name" style="width: 300px"><g:message code="collection.name.label" default="Name" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "name")}</td>
-                        </tr>
+          </td>
 
-<!-- GUID    -->        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.guid.label" default="Guid" /></td>
-                            <td valign="top" class="value"><cl:guid target="_blank" guid='${fieldValue(bean: collectionInstance, field: "guid")}'/></td>
-                        </tr>
+          <!-- map spans all rows -->
+          <td rowspan="6">
+            <div id="mapCanvas"></div></td>
 
-<!-- UID    -->        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.uid.label" default="Uid" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "uid")}</td>
-                        </tr>
+        </tr>
 
-<!-- Acronym -->        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.acronym.label" default="Acronym" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "acronym")}</td>
-                        </tr>
+        <!-- Latitude -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="providerGroup.latitude.label" default="Latitude"/></td>
+          <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.latitude}' degree='true'/></td>
+        </tr>
 
-<!-- Collection type --><tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.collectionType.label" default="Collection type" /></td>
-                            <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.collectionType}'/></td>
-                        </tr>
+        <!-- Longitude -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="providerGroup.longitude.label" default="Longitude"/></td>
+          <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.longitude}' degree='true'/></td>
+        </tr>
 
-<!-- Active -->         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="active.label" default="Active" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "active")}</td>
-                        </tr>
+        <!-- State -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="collection.state.label" default="State"/></td>
+          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "state")}</td>
+        </tr>
 
-<!-- Focus   -->        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.focus.label" default="Focus" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></td>
-                        </tr>
-                    
-<!-- Institution -->   <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.institutions.label" default="Institutions" /></td>
-                            <td valign="top" style="text-align: left;" class="value">
-                               <li><g:link controller="institution" action="show" id="${collectionInstance.institution?.id}">${collectionInstance.institution?.name}</g:link></li>
-                            </td>
-                        </tr>
+        <!-- Email -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="collection.email.label" default="Email"/></td>
+          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "email")}</td>
+        </tr>
 
-<!-- ALA Partner -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.isALAPartner.label" default="Institution is an ALA Partner" /></td>
-                            <td valign="top" class="value"><g:formatBoolean boolean="${collectionInstance?.isALAPartner}" /></td>
-                        </tr>
+        <!-- Phone -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="collection.phone.label" default="Phone"/></td>
+          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "phone")}</td>
+        </tr>
+      </table>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'location']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    </div>
 
-<!-- Networks -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.networkMembership.label" default="Is a member of" /></td>
-                            <td valign="top" class="value">
-                              <g:if test="${collectionInstance.networkMembership}">
-                                <cl:JSONListAsStrings json='${collectionInstance.networkMembership}'/>
-                              </g:if>
-                              <g:elseif test="${collectionInstance.findPrimaryInstitution()?.networkMembership}">
-                                Institution is member of <cl:JSONListAsStrings json='${collectionInstance.findPrimaryInstitution().networkMembership}'/> but the collection is not.
-                              </g:elseif>
-                            </td>
-                        </tr>
+    <!-- collection scope -->
+    <div class="show-section">
+      <h2>Geographic range</h2>
+      <table>
+        <colgroup><col width="25%"/><col width="75%"/></colgroup>
+        <!-- Geo descrip -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="geographicDescription.label" default="Geographic Description"/></td>
+          <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "geographicDescription")}</cl:formattedText></td>
+        </tr>
 
-<!-- Pub Desc -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.pubDescription.label" default="Public description" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "pubDescription")}</cl:formattedText></td>
-                        </tr>
+        <!-- States -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="states.label" default="States covered"/></td>
+          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "states")}</td>
+        </tr>
 
-<!-- Tech Desc -->      <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.techDescription.label" default="Technical Description" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "techDescription")}</cl:formattedText></td>
-                        </tr>
+        <!-- Extent -->
+        <tr class="prop">
+          <td valign="top" class="name">Specimens were collected<br/> within these bounds</td>
+          <td valign="top" class="value">
+            <table class="shy">
+              <colgroup><col width="30%"/><col width="40%"/><col width="30%"/></colgroup>
+              <tr><td></td><td>North: <cl:showDecimal value='${collectionInstance.northCoordinate}' degree='true'/></td><td></td></tr>
+              <tr><td>West: <cl:showDecimal value='${collectionInstance.westCoordinate}' degree='true'/></td>
+              <td></td>
+              <td>East: <cl:showDecimal value='${collectionInstance.eastCoordinate}' degree='true'/></td></tr>
+              <tr><td></td><td>South: <cl:showDecimal value='${collectionInstance.southCoordinate}' degree='true'/></td><td></td></tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <h2>Taxonomic range</h2>
+      <table>
+        <colgroup><col width="25%"/><col width="75%"/></colgroup>
+        <!-- Focus   -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="focus.label" default="Collection focus"/></td>
+          <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText></td>
+        </tr>
 
-<!-- sub collections -->
-                        <cl:subCollectionList list="${collectionInstance.subCollections}"/>
+        <!-- Kingdom cover-->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="kingdomCoverage.label" default="Kingdom Coverage"/></td>
+          <td valign="top" class="checkbox"><cl:checkBoxList readonly="true" name="kingdomCoverage" from="${Collection.kingdoms}" value="${collectionInstance?.kingdomCoverage}" /></td>
+        </tr>
 
-<!-- Notes -->          <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.notes.label" default="Notes" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: collectionInstance, field: "notes")}</cl:formattedText></td>
-                        </tr>
+        <!-- sci names -->
+        <tr class="prop">
+          <td valign="top" class="name"><g:message code="scientificNames.label" default="Scientific Names"/></td>
+          <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/></td>
+        </tr>
+      </table>
 
-<!-- Keywords -->       <tr class="prop">
-                          <td valign="top" class="name"><g:message code="keywords.label" default="Keywords" /></td>
-                          <td valign="top" class="value"><cl:JSONListAsStrings json='${collectionInstance.keywords}'/></td>
-                        </tr>
-                    
-<!-- Web site -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.website_url.label" default="Website Url" /></td>
-                            <td valign="top" class="value"><a target="_blank" href="${fieldValue(bean: collectionInstance, field: 'websiteUrl')}">${fieldValue(bean: collectionInstance, field: "websiteUrl")}</a></td>
-                        </tr>
+      <h2 style="padding-top:10px;">Number of specimens in the collection</h2>
+      <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">
+        <p>The estimated number of specimens within the ${collectionInstance.name} is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
+      </g:if>
+      <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">
+        <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are digitised.
+        This represents <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}' /> of the collection.</p>
+      </g:if>
 
-<!-- ImageRef -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.image_ref.label" default="Representative Image" /></td>
-                            <td valign="top">
-                              <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
-                                <table class='shy'>
-                                  <tr>
-                                    <td colspan="2">
-                                      <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
-                                              src="${resource(absolute: "true", dir:'data/collection', file:collectionInstance.imageRef.file)}" />
-                                    </td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name" style="width:10%"><g:message code="collection.imageRef.file.label" default="File" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "imageRef.file")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="collection.imageRef.file.label" default="Caption" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="collection.imageRef.file.label" default="Attribution" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="collection.imageRef.file.label" default="Copyright" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</td>
-                                  </tr>
-                                </table>
-                              </g:if>
-                            </td>
-                        </tr>
+      <!-- biocache records -->
+      <g:if test="${numBiocacheRecords}">
+        <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.
+        <g:if test="${percentBiocacheRecords}">
+          (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
+          <cl:recordsLink collection="${collectionInstance}">Click to view records these records.</cl:recordsLink>
+        </g:if></p>
+        <p>The mapping of these records to this collection is based on <cl:institutionCodes collection="${collectionInstance}"/> and <cl:collectionCodes collection="${collectionInstance}"/>.</p>
+        <cl:warnIfInexactMapping collection="${collectionInstance}"/>
+      </g:if>
+      <g:else>
+        <p>No digitised records for this collection can be accessed through the Atlas of Living Australia.</p>
+      </g:else>
 
-<!-- States -->         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="states.label" default="States" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "states")}</td>
-                        </tr>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'range']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    </div>
 
-<!-- Geo descrip -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="geographicDescription.label" default="Geographic Description" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "geographicDescription")}</td>
-                        </tr>
+     <!-- Contacts -->
+    <div class="show-section">
+      <h2>Contacts</h2>
+      <ul class="fancy">
+        <g:each in="${contacts}" var="c">
+          <li><g:link controller="contact" action="show" id="${c?.contact?.id}">
+            ${c?.contact?.buildName()}
+            <cl:roleIfPresent role='${c?.role}'/>
+            <cl:adminIfPresent admin='${c?.administrator}'/>
+            ${c?.contact?.phone}
+            <cl:valueOrOtherwise value ="${c?.primaryContact}"> (Primary contact)</cl:valueOrOtherwise>
+          </g:link>
+          </li>
+        </g:each>
+      </ul>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'showContacts']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    </div>
+  </div>
+  <div class="buttons">
+    <g:form>
+      <g:hiddenField name="id" value="${collectionInstance?.id}"/>
+      <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
+      <span class="button"><g:link class="preview" controller="public" action='show' id="${collectionInstance?.id}">${message(code: 'default.button.preview.label', default: 'Preview')}</g:link></span>
+    </g:form>
+  </div>
+</div>
+<script type="text/javascript">
 
-<!-- East coord -->     <tr class="prop">
-                            <td valign="top" class="name"><g:message code="eastCoordinate.label" default="East Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.eastCoordinate}' degree='true'/></td>
-                        </tr>
+var map;
+var marker;
 
-<!-- West coord -->     <tr class="prop">
-                            <td valign="top" class="name"><g:message code="westCoordinate.label" default="West Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.westCoordinate}' degree='true'/></td>
-                        </tr>
+function load() {
+    initialize();
+}
 
-<!-- North coord -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="northCoordinate.label" default="North Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.northCoordinate}' degree='true'/></td>
-                        </tr>
-
-<!-- South coord -->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="southCoordinate.label" default="South Coordinate" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.southCoordinate}' degree='true'/></td>
-                        </tr>
-
-<!-- Start date -->     <tr class="prop">
-                            <td valign="top" class="name"><g:message code="startDate.label" default="Start Date" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "startDate")}</td>
-                        </tr>
-
-<!-- End date -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="endDate.label" default="End Date" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "endDate")}</td>
-                        </tr>
-
-<!-- Kingdom cover-->   <tr class="prop">
-                          <td valign="top" class="name"><g:message code="kingdomCoverage.label" default="Kingdom Coverage" /></td>
-                          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "kingdomCoverage")}</td>
-                        </tr>
-
-<!-- sci names -->      <tr class="prop">
-                          <td valign="top" class="name"><g:message code="scientificNames.label" default="Scientific Names" /></td>
-                          <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/></td>
-                        </tr>
-
-<!-- Num records -->    <tr class="prop">
-                          <td valign="top" class="name"><g:message code="numRecords.label" default="Num Records" /></td>
-                          <td valign="top" class="value">
-                            <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">${fieldValue(bean: collectionInstance, field: "numRecords")}</g:if>
-                          </td>
-                        </tr>
-
-<!--Records digitised--><tr class="prop">
-                          <td valign="top" class="name"><g:message code="numRecordsDigitised.label" default="Num Records Digitised" /></td>
-                          <td valign="top" class="value">
-                            <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")}</g:if>
-                          </td>
-                        </tr>
-
-<!--% digitised -->     <tr class="prop">
-                          <td valign="top" class="name"><g:message code="percentDigitised.label" default="Percent Digitised" /></td>
-                          <td valign="top" class="value">
-                            <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}' />
-                          </td>
-                        </tr>
-
-<!-- Address -->        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.address.label" default="Address" /></td>
-                            
-                            <td valign="top" class="value">
-                              ${fieldValue(bean: collectionInstance, field: "address.street")}
-                              ${fieldValue(bean: collectionInstance, field: "address.postBox")}
-                              ${fieldValue(bean: collectionInstance, field: "address.city")}
-                              ${fieldValue(bean: collectionInstance, field: "address.state")}
-                              ${fieldValue(bean: collectionInstance, field: "address.postcode")}
-                              <g:if test="${fieldValue(bean: collectionInstance, field: 'address.country') != 'Australia'}">
-                                ${fieldValue(bean: collectionInstance, field: "address.country")}
-                              </g:if>
-                            </td>
-                            
-                        </tr>
-                    
-<!-- Latitude -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.latitude.label" default="Latitude" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.latitude}' degree='true'/></td>
-                        </tr>
-
-<!-- Longitude -->      <tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.longitude.label" default="Longitude" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.longitude}' degree='true'/></td>
-                        </tr>
-
-<!-- State -->          <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.state.label" default="State" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "state")}</td>
-                        </tr>
-                    
-<!-- Email -->          <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.email.label" default="Email" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "email")}</td>
-                        </tr>
-                    
-<!-- Phone -->          <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.phone.label" default="Phone" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "phone")}</td>
-                        </tr>
-                    
-<!-- web service -->    <!--tr class="prop">
-                        </tr-->
-
-<!-- protocol -->       <!--tr class="prop">
-                        </tr-->
-
-<!-- provider codes --> <!--tr class="prop">
-                            <td valign="top" class="name"><g:message code="providerGroup.providerCodes.label" default="Collection codes" /></td>
-                        </tr-->
-
-<!-- Contacts -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="collection.contacts.label" default="Contacts" /></td>
-                            
-                        <td valign="top" style="text-align: left;" class="value">
-                            <ul>
-                            <g:each in="${contacts}" var="c">
-                                <li><g:link controller="contact" action="show" id="${c?.contact?.id}">
-                                    ${c?.contact?.buildName()}
-                                    <cl:roleIfPresent role='${c?.role}'/>
-                                    <cl:adminIfPresent admin='${c?.administrator}'/><br/>
-                                    ${c?.contact?.phone}
-                                  </g:link>
-                                </li>
-                            </g:each>
-                            </ul>
-                        </td>
-                        </tr>
-                    
-<!-- last edit -->      <tr class="prop">
-                            <td valign="top" class="name">Last edited</td>
-                            <td valign="top" class="value">by ${fieldValue(bean: collectionInstance, field: "userLastModified")} on ${fieldValue(bean: collectionInstance, field: "lastUpdated")}</td>
-                        </tr>
-
-                    </tbody>
-                </table>
-            </div>
-            <div class="buttons">
-              <g:form>
-                <g:hiddenField name="id" value="${collectionInstance?.id}" />
-                  <span class="button"><g:actionSubmit class="edit" action='editCollection' value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
-                  <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
-                <span class="button"><g:link class="preview" controller="public" action='show' id="${collectionInstance?.id}">${message(code: 'default.button.preview.label', default: 'Preview')}</g:link></span>
-              </g:form>
-            </div>
-        </div>
-    </body>
+function initialize() {
+  if (${collectionInstance.canBeMapped()}) {
+    var lat = ${collectionInstance.latitude};
+    if (lat == undefined || lat == 0 || lat == -1 ) {lat = -35.294325779329654}
+    var lng = ${collectionInstance.longitude};
+    if (lng == undefined || lng == 0 || lng == -1 ) {lng = 149.10602960586547}
+    var latLng = new google.maps.LatLng(lat, lng);
+    map = new google.maps.Map(document.getElementById('mapCanvas'), {
+      zoom: 14,
+      center: latLng,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      scrollwheel: false
+    });
+    marker = new google.maps.Marker({
+      position: latLng,
+      title: 'Edit section to change pin location',
+      map: map
+    });
+  } else {
+    var middleOfAus = new google.maps.LatLng(-28.2,133);
+    map = new google.maps.Map(document.getElementById('mapCanvas'), {
+      zoom: 2,
+      center: middleOfAus,
+      mapTypeId: google.maps.MapTypeId.ROADMAP,
+      draggable: false,
+      disableDoubleClickZoom: true,
+      scrollwheel: false
+    });
+  }
+}
+</script>
+</body>
 </html>

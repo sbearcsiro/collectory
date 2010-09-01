@@ -1,5 +1,8 @@
 package au.org.ala.collectory
 
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.converters.JSON
+
 class ReportsController {
 
     def index = {
@@ -56,6 +59,32 @@ class ReportsController {
             new Attributions(pgs, attribs)
         }
         [collAttributions: collAttributions, instAttributions: instAttributions]
+    }
+
+    def missingRecords = {
+        def mrs = []
+        Collection.list([sort: 'name']).each {
+            if (it.numRecordsDigitised > 0) {
+                // find the number of biocache records
+                def baseUrl = ConfigurationHolder.config.biocache.baseURL
+                def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + it.generatePermalink()
+
+                def count = 0
+                def conn = new URL(url).openConnection()
+                conn.setConnectTimeout 3000
+                try {
+                    def json = conn.content.text
+                    count = JSON.parse(json)?.searchResult?.totalRecords
+                } catch (Exception e) {
+                    log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+                }
+                // compare to num digistised
+                if (count == 0 || count / it.numRecordsDigitised < 0.7) {
+                    mrs << [collection:it.buildSummary(), biocacheCount: count, claimed: it.numRecordsDigitised]
+                }
+            }
+        }
+        [mrs: mrs]
     }
     
     class ReportCommand {

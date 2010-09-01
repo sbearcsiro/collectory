@@ -15,7 +15,7 @@ html * {
 	margin: 0;
 	padding: 0;
 	/*background: #1e1f21 url(img/bg-body.gif) no-repeat left top;*/
-	background: #EDECEB url(../images/ala/ALA_icon_in_background.gif) no-repeat fixed left top;
+	/*background: #EDECEB url(../images/ala/ALA_icon_in_background.gif) no-repeat fixed left top;*/
 	/*color: #6e7073;*/
 	color: #373737;
 	font: 12px/20px Verdana, Helvetica, Arial, sans-serif;
@@ -321,6 +321,13 @@ th.desc a {
     margin-top: 5px;
     overflow: hidden;
     padding: 0;
+    height: 22px;
+}
+
+.contactButton {
+    color: #666;
+    font-size: 10px;
+    overflow: hidden;
 }
 
 /* added for index page MEW */
@@ -388,7 +395,7 @@ input[type='checkbox'] {
 .buttons input.cancel {
     background: transparent;
     position: relative;
-    left: 160px;
+    /*left: 160px;*/
 }
 .buttons input.done {
     background: transparent;
@@ -441,7 +448,7 @@ input[type='checkbox'] {
 input.addAction, input.cancelAction {
     border: 0;
     cursor: pointer;
-    font-size: 10px;
+    font-size: normal;
     /*margin-left: 26px;*/
     overflow: visible;
 	width: auto;
@@ -471,10 +478,21 @@ input.addAction, input.cancelAction {
     padding-left: 20px;
     cursor: pointer;
 }
+.removeSmallAction {
+    background: transparent url(../images/ala/delete.png) 5px 50% no-repeat;
+    padding-left: 20px;
+    cursor: pointer;
+}
 .cancelAction {
     background: transparent url(../images/skin/database_delete.png) 0 50% no-repeat;
     padding-left: 20px;
     cursor: pointer;
+}
+.returnAction {
+    background: transparent url(../images/skin/return.png) 0 50% no-repeat;
+    padding-left: 20px;
+    cursor: pointer;
+    margin-left: 10px;
 }
 
 /* added for index page MEW */
@@ -734,6 +752,16 @@ a.preview {
     font-family: arial,helvetica,clean,sans-serif;
 }
 
+a.edit-small {
+    background: transparent url(../images/ala/edit.png) 5px 50% no-repeat;
+    padding-left: 20px;
+}
+
+a.remove-small {
+    background: transparent url(../images/ala/delete.png) 5px 50% no-repeat;
+    padding-left: 20px;
+}
+
 /* MEW for sub-collections in the preview */
 p.sub {
     margin-left: 30px;
@@ -742,6 +770,16 @@ p.sub {
 
 .subName {
     font-style: italic;
+}
+
+ul.detailList {
+    list-style-type: none;
+    display: inline;
+}
+
+ul.detailList li {
+    display: inline;
+    padding-left: 12px;
 }
 
 /* MEW some NG styles */

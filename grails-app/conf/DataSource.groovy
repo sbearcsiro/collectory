@@ -52,8 +52,7 @@ environments {
 		dataSource {
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 			dbCreate = "update"
-			url = "jdbc:hsqldb:file:prodDb;shutdown=true"
-			//url = "jdbc:mysql://alaproddb1-cbr.vm.csiro.au:3306/collectory?autoReconnect=true&connectTimeout=0"//"jdbc:hsqldb:file:prodDb;shutdown=true"
+			url = "jdbc:mysql://alaproddb1-cbr.vm.csiro.au:3306/collectory?autoReconnect=true&connectTimeout=0"
             logSql = false
             properties {
                 maxActive = 50

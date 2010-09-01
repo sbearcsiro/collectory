@@ -352,7 +352,7 @@ function onPopupClose(evt) {
 
 function clearPopups() {
     for (pop in map.popups) {
-        map.removePopup(pop)
+        map.removePopup(map.popups[pop])
     }
     // maybe iterate features and clear popups?
 }

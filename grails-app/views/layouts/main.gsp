@@ -16,8 +16,7 @@
 <script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/supersubs.js"></script-->
 <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
 
-<script type='text/javascript' src='http://www.ala.org.au/wp-includes/js/jquery/jquery.js?ver=1.3.2'></script>
-<script type='text/javascript' src='http://www.ala.org.au/wp-includes/js/comment-reply.js?ver=20090102'></script>
+<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
 <link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.ala.org.au/xmlrpc.php?rsd" />
 <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.ala.org.au/wp-includes/wlwmanifest.xml" /> 
 <link rel='index' title='Atlas of Living Australia' href='http://www.ala.org.au' />
@@ -34,7 +33,7 @@
 
 </head>
  
-<body class="yui-skin-sam">
+<body class="yui-skin-sam" onload="${pageProperty(name:'body.onload')}">
  
 <div id="page">
  

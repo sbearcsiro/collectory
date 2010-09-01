@@ -49,16 +49,16 @@
             <ul id="map-collections">
               <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all">Select all</label>
                 <ul class="taxaBreakdown">
-                  <li id="birdsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="birds"/>Birds</li>
-                  <li id="mammalsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="mammals"/>Mammals</li>
-                  <li id="fishBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fish"/>Fish</li>
-                  <li id="frogsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="frogs"/>Frogs</li>
-                  <li id="reptilesBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="reptiles"/>Reptiles</li>
-                  <li id="invertsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="invertebrates"/>Invertebrates</li>
-                  <li id="plantsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants"/>Flowering plants</li>
-                  <li id="fungiBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fungi"/>Fungi</li>
-                  <li id="fernsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="ferns"/>Ferns</li>
-                  <li id="microbesBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes"/>Microbes</li>
+                  <li id="birdsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="birds" id="birds"/><label for="birds">Birds</label></li>
+                  <li id="mammalsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="mammals" id="mammals"/><label for="mammals">Mammals</label></li>
+                  <li id="fishBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fish" id="fish"/><label for="fish">Fish</label></li>
+                  <li id="frogsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="frogs" id="frogs"/><label for="frogs">Frogs</label></li>
+                  <li id="reptilesBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="reptiles" id="reptiles"/><label for="reptiles">Reptiles</label></li>
+                  <li id="invertsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="invertebrates" id="inverts"/><label for="inverts">Invertebrates</label></li>
+                  <li id="plantsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants">Flowering plants</label></li>
+                  <li id="fungiBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fungi" id="fungi"/><label for="fungi">Fungi</label></li>
+                  <li id="fernsBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="ferns" id="ferns"/><label for="ferns">Ferns</label></li>
+                  <li id="microbesBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes">Microbes</label></li>
                 </ul>
               </li>
               <p><span id='numFeatures'></span></p>

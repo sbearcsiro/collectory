@@ -22,7 +22,7 @@
   </head>
   <body class="two-column-right">
     <div id="content">
-      <div id="header" class="taxon" style="margin-bottom:15px;">
+      <div id="header" class="collectory">
         <!--Breadcrumbs-->
         <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${fieldValue(bean:institution,field:'name')}</span></div>
         <div class="section full-width">
@@ -51,7 +51,7 @@
         </div>
       </div><!--close header-->
       <div id="column-one">
-      <div class="section no-margin-top">
+      <div class="section">
         <g:if test="${institution.pubDescription}">
           <h2>Description</h2>
           <cl:formattedText>${fieldValue(bean: institution, field: "pubDescription")}</cl:formattedText>
@@ -76,28 +76,32 @@
           <div class="section">
             <img alt="${fieldValue(bean: institution, field: "imageRef.file")}"
                     src="${resource(absolute:"true", dir:"data/institution/", file:institution.imageRef.file)}" />
-            <p class="caption"><cl:formattedText>${fieldValue(bean: institution, field: "imageRef.caption")}</cl:formattedText></p>
-            <p class="caption">${fieldValue(bean: institution, field: "imageRef.attribution")}</p>
-            <p class="caption">${fieldValue(bean: institution, field: "imageRef.copyright")}</p>
+            <cl:formattedText pClass="caption">${fieldValue(bean: institution, field: "imageRef.caption")}</cl:formattedText>
+            <cl:valueOrOtherwise value="${institution.imageRef?.attribution}"><p class="caption">${fieldValue(bean: institution, field: "imageRef.attribution")}</p></cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${institution.imageRef?.copyright}"><p class="caption">${fieldValue(bean: institution, field: "imageRef.copyright")}</p></cl:valueOrOtherwise>
           </div>
         </g:if>
 
-        <g:if test="${institution.address != null && !institution.address.isEmpty()}">
-          <div class="section">
-            <h4>Location</h4>
-            <cl:ifNotBlank value='${institution.address?.street}'/>
-            <cl:ifNotBlank value='${institution.address?.postBox}'/>
-            <cl:ifNotBlank value="${institution.address?.city}" value2="${institution.address?.state}" value3="${institution.address?.postcode}" join=" "/>
-            <cl:ifNotBlank value='${institution.address?.country}'/>
-            <cl:ifNotBlank value='${fieldValue(bean: institution, field: "email")}'/>
-            <cl:ifNotBlank value='${fieldValue(bean: institution, field: "phone")}'/>
-          </div>
-        </g:if>
+        <div class="section">
+          <h3>Location</h3>
+          <g:if test="${institution.address != null && !institution.address.isEmpty()}">
+            <p>
+              <cl:valueOrOtherwise value="${institution.address?.street}">${institution.address?.street}<br/></cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${institution.address?.postBox}">${institution.address?.postBox}<br/></cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${institution.address?.city}">${institution.address?.city}</cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${institution.address?.state}">${institution.address?.state}</cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${institution.address?.postcode}">${institution.address?.postcode}<br/></cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${institution.address?.country}">${institution.address?.country}<br/></cl:valueOrOtherwise>
+            </p>
+          </g:if>
+          <cl:ifNotBlank value='${fieldValue(bean: institution, field: "email")}'/>
+          <cl:ifNotBlank value='${fieldValue(bean: institution, field: "phone")}'/>
+        </div>
 
         <g:set var="contact" value="${institution.getPrimaryContact()}"/>
         <g:if test="${contact}">
           <div class="section">
-            <h4>Contact</h4>
+            <h3>Contact</h3>
             <p class="contactName">${contact?.contact?.buildName()}</p>
             <p>${contact?.role}</p>
             <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
@@ -109,7 +113,7 @@
         <!-- web site -->
         <g:if test="${institution.websiteUrl}">
           <div class="section">
-            <h4>Web site</h4>
+            <h3>Web site</h3>
             <div class="webSite">
               <a class='external_icon' target="_blank" href="${institution.websiteUrl}">Visit the institution's website</a>
             </div>
@@ -119,7 +123,7 @@
         <!-- network membership -->
         <g:if test="${institution.networkMembership}">
           <div class="section">
-            <h4>Membership</h4>
+            <h3>Membership</h3>
             <g:if test="${institution.isMemberOf('CHAEC')}">
               <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
               <img src="${resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif")}"/>

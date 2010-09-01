@@ -220,11 +220,6 @@ div#menu {
     text-decoration: none;
 }
 
-#top-nav li#rss {
-	padding: 0 0 0 15px;
-	background: url(img/rss-icon.gif) no-repeat left center;
-}
-
 /*	##################################
    	CONTENT
 	################################## */
@@ -248,21 +243,6 @@ div#menu {
 	color: #5e5e5e;
         margin-bottom: 15px;
         border-bottom: 1px solid #CCCCCC;
-}
-
-.meta-date {
-	padding: 0 10px 0 15px;
-	background: url(img/bg-meta-date.gif) no-repeat 0px 2px;
-}
-
-.meta-categories {
-	padding: 0 10px 0 15px;
-	background: url(img/bg-meta-categories.gif) no-repeat 0px 2px;
-}
-
-.meta-comments {
-	padding: 0 10px 0 15px;
-	background: url(img/bg-meta-comments.gif) no-repeat 0px 2px;
 }
 
 p.tags {
@@ -308,141 +288,6 @@ p.tags {
 
 .box-right li li {
 	border: none;
-}
-
-/*	##################################
-   	COMMENTS
-	################################## */
-	
-#commentform label {
-	display: block;
-	margin: 0 0 5px 0;
-}
-
-#commentform input.text, #commentform textarea {
-	width: 90%;
-	margin: 0 0 10px 0;
-}
-
-#commentform .text {
-	height: 22px;
-	padding: 6px 6px 0 6px;
-	background: #fff url(img/bg-form-text.gif) repeat-x left top;
-	border: 1px solid #dadada;
-	color: #5e5e5e;
-}
-
-#commentform textarea {
-	height: 150px;
-	padding: 6px 6px 0 6px;
-	background: #fff url(img/bg-form-text.gif) repeat-x left top;
-	border: 1px solid #dadada;
-	color: #5e5e5e;
-}
-
-#commentform .button {
-	width: auto;
-	height: 30px;
-	margin: 0px;
-	padding: 0 20px;
-	background: #6e7073;
-	border: none;
-	color: #fff;
-}
-
-.commentlist .comment {
-	height: auto;
-	margin: 20px 0 0 0;
-	color: #fff;
-}
-
-.commentlist .quote {
-	padding: 20px 20px 0 20px;
-	background: #4a4f54 url(img/bg-comment-quote.gif) no-repeat right top;
-}
-
-.avatar {
-	float: right;
-	margin: 0 0 10px 20px;
-}
-
-.commentlist .cite {
-	display: block;
-	padding: 20px 0 0 0;
-	color: #6e7073;
-	background: #fff url(img/bg-comment-bubble.gif) no-repeat left top;
-	font-style: normal;
-}
-
-/** COMMENTS IN WP 2.7 */
-
-.commentlist li {
-	margin: 0px;
-	padding: 20px 0 20px 20px;
-	list-style: none;
-	background: #4a4f54;
-}
-
-.commentlist li a {
-	color: #999;
-}
-
-.commentlist li .avatar {
-	margin: 0 20px 10px 20px;
-}
-
-.commentlist li p {
-	margin: 0 20px 20px 0;
-}
-
-.commentlist .comment-meta {
-	margin: 0 0 20px 0;
-}
-
-.commentlist .comment-author a {
-	font-weight: bold;
-}
-
-.commentlist ul.children {
-	margin: 0px;
-	padding: 0px;
-}
-
-.commentlist .children li {
-	border: 1px solid #6e7073;
-	border-right: none;
-}
-
-#cancel-comment-reply {
-	margin: 10px 0;
-}
-
-.commentlist li.depth-2, .commentlist li.depth-4 {
-	background: #5a5a60;
-}
-
-/*	##################################
-   	SEARCHFORM
-	################################## */
-	
-#searchform #search {
-	float: left;
-	width: 146px;
-	height: 22px;
-	padding: 6px 6px 0 6px;
-	background: #fff url(img/bg-form-text.gif) repeat-x left top;
-	border: 1px solid #dadada;
-	color: #5e5e5e;
-}
-
-#searchform .button {
-	width: auto;
-	height: 30px;
-	margin: 0px;
-	padding: 0 10px;
-	background: #4a4f54;
-	border: none;
-	color: #fff;
 }
 
 /*	##################################
@@ -597,9 +442,12 @@ legend {
 	font-weight: bold;
 }
 
+input {
+    height: 22px;
+}
+
 input, textarea {
 	width: 98%;
-	height: 22px;
 	margin: 0 0 20px 0;
 	padding: 6px 6px 0 6px;
 	background: #fff; /* url(img/bg-form-text.gif) repeat-x left top;*/
@@ -610,7 +458,7 @@ input, textarea {
 
 textarea {
 	width: 98%;
-	height: 60px;
+	/*height: 60px;*/
 }
 
 select {
@@ -816,3 +664,137 @@ div#lastModified {
     color: #898989;
 }
 
+/** following are styles for admin show pages that emulate public page style **/
+.emulate-public h1 {
+    color:#dd3102;
+    padding:0 0 5px 0;
+    font-size:2.0em;
+    line-height:1;
+    margin-top: 0;
+}
+
+.emulate-public h2 {
+    color: #7D8804;
+    font-size:1.6em;
+    line-height:1;
+    padding-bottom:10px;
+}
+
+.emulate-public div.show-section {
+    border: 1px solid #CCC;
+    padding: 10px 5px 5px 5px;
+    margin: 3px 0 3px 0;
+}
+
+.emulate-public .buttons {
+    position: relative;
+    left: 680px;
+}
+
+.emulate-public .follow {
+    margin-left: 20px;    
+}
+
+.emulate-public .partner {
+    padding-left: 15px;
+    background: url(../images/ala/icon-tick-small.jpeg) no-repeat center left;
+    color: #7D8804;
+}
+
+.emulate-public #mapCanvas {
+    float: left;
+    border: 1px solid #AAA;
+}
+
+.emulate-public .prop .value {
+    width: auto;
+}
+
+.emulate-public #header h2 {
+    color: inherit;
+}
+
+div.emulate-public > h2 {
+    padding-top: 10px;
+}
+
+.emulate-public p {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* don't pad if in a table */
+.emulate-public td p {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.emulate-public ul.fancy li {
+    /* TODO: check in IE - see W3C List styling for cross-browser */
+    list-style-image: url(../images/ala/asterisk.gif);
+    margin-left:40px;
+}
+
+.emulate-public p.caption {
+    color: #666 ! important;
+    font-size: 0.9em;
+    line-height: normal;
+    padding-bottom: 4px ! important;
+}
+
+.emulate-public .showImage {
+    float: left;
+    padding-right:20px;
+    margin-left: 10px;
+}
+
+.emulate-public span.category {
+    font-size: 1.1em;
+    color: #7D8804;
+    padding-top: 10px;
+}
+
+.emulate-public span.contactName {
+    font-size: 1.3em;
+    color: #7D8804;
+    padding-top: 8px;
+}
+
+.emulate-public div.source {
+    float: right;
+    color: #666 ! important;
+    font-size: 0.9em;
+    clear: both;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    position: relative;
+    bottom: -5px;
+}
+
+.emulate-public .hubImage {
+    vertical-align: text-top;
+}
+
+.emulate-public .titleBlock p {
+    margin-left: 0;
+    padding-bottom: 5px;
+}
+
+.emulate-public table {
+    border: 0;
+}
+
+.emulate-public div#warnings {
+    /* float: left; */
+    background-color: #F8F2E5;
+    border: 2px solid #D75A20;
+    width: 75%;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    padding-left: 16px;
+    padding-bottom: 16px;
+    padding-top: 10px;
+    line-height: 1.2em;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}

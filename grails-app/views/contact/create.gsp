@@ -1,4 +1,3 @@
-
 <%@ page import="au.org.ala.collectory.Contact" %>
 <html>
     <head>
@@ -23,6 +22,8 @@
             </div>
             </g:hasErrors>
             <g:form action="save" method="post" >
+              <g:hiddenField name="caller" value="${caller}"/>
+              <g:hiddenField name="callerId" value="${callerId}"/>
                 <div class="dialog">
                     <table>
                         <tbody>

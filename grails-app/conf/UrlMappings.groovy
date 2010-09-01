@@ -7,7 +7,6 @@ class UrlMappings {
 	  }
       "/pub/collection/$id?"(controller:'public', action:'show')
       "/pub/institution/$id?"(controller:'public', action:'showInstitution')
-      "/lookup/institution/$id"(controller:'lookup', action:'findInstitution')
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
       "/"(controller:'public', action:'map')

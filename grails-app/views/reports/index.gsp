@@ -72,6 +72,12 @@
         <p class="mainText">Lists the sources of information for institutions and collections.</p>
       </div>
 
+      <div class="homeCell">
+        <g:link class="mainLink" controller="reports" action="missingRecords">List missing records</g:link>
+        <p class="mainText">Lists collections where the number of digitised records declared significantly
+          exceeds the number of biocache records.</p>
+      </div>
+
     </cl:ifGranted>
 
     </body>

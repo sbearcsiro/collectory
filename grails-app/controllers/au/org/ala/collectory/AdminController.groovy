@@ -1,6 +1,7 @@
 package au.org.ala.collectory
 
 import grails.converters.JSON
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class AdminController {
 
@@ -36,6 +37,19 @@ class AdminController {
     }
 
     def setAttributions = {
+        // insert BCI and CH* if not there
+        if (!Attribution.findByUid('at1')) {
+            Attribution at1 = new Attribution(uid: 'at1', name: 'Biodiversity Collections Index', url: 'http://www.biodiveristycollectionsindex.org')
+            at1.save()
+        }
+        if (!Attribution.findByUid('at2')) {
+            Attribution at2 = new Attribution(uid: 'at2', name: 'Council of Heads of Australasian Herbaria', url: 'http://www.chah.gov.au/resources/index.html')
+            at2.save()
+        }
+        if (!Attribution.findByUid('at3')) {
+            Attribution at3 = new Attribution(uid: 'at3', name: 'Council of Heads of Australian Collections of Microorganisms', url: 'http://www.amrin.org/ResearchNetwork/Participants.aspx')
+            at3.save()
+        }
         def targets = Collection.list() + Institution.list()
         targets.each { pg ->
             println "processing " + pg.name
@@ -47,7 +61,7 @@ class AdminController {
                 pg.addAttribution 'at2'
             }
             if (pg.isMemberOf('CHACM')) {
-                pg.addAttribution 'at51'
+                pg.addAttribution 'at3'
             }
             if (pg instanceof Collection && pg.institution) {
                 // add institution
@@ -131,25 +145,26 @@ class AdminController {
     }
 
     def testImport = {
-        String response = ""
+        String resp = ""
 
         def inst1 = Institution.findByName("Tasmanian Museum and Art Gallery")
-        response += inst1.name + "<br>"
+        resp += inst1.name + "<br>"
         def fors1 = inst1.getContacts()
-        fors1.each {response += '_' + it.contact + "<br>"}
+        fors1.each {resp += '_' + it.contact + "<br>"}
 
         def col1 = Collection.findByName("Australian National Herbarium")
-        response += col1.name + "<br>"
+        resp += col1.name + "<br>"
         def fors2 = col1.getContacts()
-        fors2.each {response += '_' + it.contact + "<br>"}
+        fors2.each {resp += '_' + it.contact + "<br>"}
 
         def inst2 = Institution.findByAcronym('CSIRO')
-        response += inst2.name + "<br>"
+        resp += inst2.name + "<br>"
         def children = inst2?.getCollections()
         children?.each {
-            response += '_' + it.name + "<br>"
+            resp += '_' + it.name + "<br>"
         }
 
-        render response
+        render resp
     }
+   
 }

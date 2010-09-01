@@ -31,36 +31,54 @@ class PublicController {
         [collections: Collection.list([sort:'name'])]
     }
 
+    /**
+     * Shows the public page for any entity when passed a UID.
+     *
+     * If the id is not a UID it will be assumed to be a collection and will be treated as:
+     * 1. lsid if it starts with uri:lsid:
+     * 2. database id if it is a number
+     * 3. acronym if it matches a collection
+     */
     def show = {
-        def collectionInstance = findCollection(params.id)
-        //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
-        if (!collectionInstance) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params?.id])}"
-            redirect(controller: "public", action: "map")
+        // is it a UID
+        if (params.id instanceof String && params.id.startsWith(Institution.ENTITY_PREFIX)) {
+            forward(action: 'showInstitution', params: params)
+        } else if (params.id instanceof String && params.id.startsWith('dp')) {
+            render "no information for data providers yet"
+        } else if (params.id instanceof String && params.id.startsWith('dr')) {
+            render "no information for data providers yet"
         } else {
-            // lookup number of biocache records
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
+            // assume it's a collection
+            def collectionInstance = findCollection(params.id)
+            //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
+            if (!collectionInstance) {
+                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params?.id])}"
+                redirect(controller: "public", action: "map")
+            } else {
+                // lookup number of biocache records
+                def baseUrl = ConfigurationHolder.config.biocache.baseURL
+                def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
 
-            def count = 0
-            def conn = new URL(url).openConnection()
-            conn.setConnectTimeout 3000
-            try {
-                def json = conn.content.text
-                //println "Response = " + json
-                count = JSON.parse(json)?.searchResult?.totalRecords
-                //println "Count = " + count
-            } catch (Exception e) {
-                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
-            }
-            def percent = 0
-            if (count != 0 && collectionInstance.numRecords > 0) {
-                percent = (count*100)/collectionInstance.numRecords
-            }
+                def count = 0
+                def conn = new URL(url).openConnection()
+                conn.setConnectTimeout 3000
+                try {
+                    def json = conn.content.text
+                    //println "Response = " + json
+                    count = JSON.parse(json)?.searchResult?.totalRecords
+                    //println "Count = " + count
+                } catch (Exception e) {
+                    log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+                }
+                def percent = 0
+                if (count != 0 && collectionInstance.numRecords > 0) {
+                    percent = (count*100)/collectionInstance.numRecords
+                }
 
-            ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
-            [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
-                    numBiocacheRecords: count, percentBiocacheRecords: percent]
+                ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
+                [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
+                        numBiocacheRecords: count, percentBiocacheRecords: percent]
+            }
         }
     }
 

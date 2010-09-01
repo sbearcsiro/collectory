@@ -17,7 +17,7 @@ class ContactController {
         def contactInstance = new Contact()
         contactInstance.properties = params
         contactInstance.userLastModified = username()
-        return [contactInstance: contactInstance]
+        return [contactInstance: contactInstance, caller: params.caller, callerId: params.callerId]
     }
 
     def save = {
@@ -28,10 +28,14 @@ class ContactController {
         contactInstance.errors.each{println it}
         if (contactInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
-            redirect(action: "show", id: contactInstance.id)
+            if (params.caller == 'collection') {
+                redirect(controller: params.caller, action: 'addNewContact', params: [contactId: contactInstance.id, collectionId: params.callerId])
+            } else {
+                redirect(action: "show", id: contactInstance.id)
+            }
         }
         else {
-            render(view: "create", model: [contactInstance: contactInstance])
+            render(view: "create", model: [contactInstance: contactInstance], caller: params.caller, callerId: params.callerId)
         }
     }
 
@@ -53,7 +57,7 @@ class ContactController {
             redirect(action: "list")
         }
         else {
-            return [contactInstance: contactInstance]
+            return [contactInstance: contactInstance, returnTo: params.returnTo]
         }
     }
 
@@ -70,12 +74,15 @@ class ContactController {
                 }
             }
             contactInstance.properties = params
-            contactInstance.dateLastModified = new Date()
             contactInstance.userLastModified = username()
             if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
                 ActivityLog.log username(), isAdmin(), Action.DELETE, "contact ${params.id}"
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
-                redirect(action: "show", id: contactInstance.id)
+                if (params.returnTo) {
+                    redirect(uri: params.returnTo)
+                } else {
+                    redirect(action: "show", id: contactInstance.id)
+                }
             }
             else {
                 render(view: "edit", model: [contactInstance: contactInstance])
@@ -102,8 +109,7 @@ class ContactController {
                 contactInstance.delete(flush: true)
                 flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
                 redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
                 flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
                 redirect(action: "show", id: params.id)
             }

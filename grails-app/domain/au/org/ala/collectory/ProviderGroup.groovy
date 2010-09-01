@@ -299,6 +299,20 @@ abstract class ProviderGroup implements Serializable {
         return pgs
     }
 
+    static String entityTypeFromUid(String uid) {
+        switch (uid[0..1]) {
+            case Institution.ENTITY_PREFIX: return Institution.ENTITY_TYPE
+            case Collection.ENTITY_PREFIX: return Collection.ENTITY_TYPE
+            //case DataProvider.ENTITY_PREFIX: return DataProvider.ENTITY_TYPE
+            //case DataResource.ENTITY_PREFIX: return DataResource.ENTITY_TYPE
+            //case DataHub.ENTITY_PREFIX: return DataHub.ENTITY_TYPE
+        }
+    }
+
+    static String urlFormOfEntityType(String entityType) {
+        return entityType[0..0].toLowerCase() + entityType[1..entityType.size()-1]
+    }
+
     static ProviderGroup _get(String uid) {
         switch (uid[0..1]) {
             case Institution.ENTITY_PREFIX: return Institution.findByUid(uid)

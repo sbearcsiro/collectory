@@ -6,6 +6,7 @@ import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
 class CollectoryTagLib {
 
@@ -56,7 +57,7 @@ class CollectoryTagLib {
     /**
      * <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
      *  The specified role must be granted for the tag to output its body.
-     * </g:ifAllGranted>
+     * </g:ifGranted>
      */
     def ifGranted = { attrs, body ->
         if (ConfigurationHolder.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
@@ -132,6 +133,12 @@ class CollectoryTagLib {
         }
     }
 
+    def showNumber = { attrs ->
+        if (attrs.value && attrs.value != -1) {
+            out << attrs.value
+        }
+    }
+
     /**
      * Show number and body if it is not -1 (indicated info not available)
      *
@@ -141,9 +148,24 @@ class CollectoryTagLib {
         out << (attrs.number == -1 ? "" : attrs.number + body())
     }
 
+    /**
+     * Outputs value with some decoration if value is not blank.
+     * Handles up to 3 values but stops when any value is blank.
+     *
+     * TODO: this is a pretty shit tag - should be refactored
+     * 
+     * @attrs value the value to test and output
+     * @attrs tagName the tag to enclose the value in - defaults to p if not specified
+     * @attrs prefix output before value
+     * @attrs postfix output after value
+     * @attrs join separator between multiple values
+     */
     def ifNotBlank = {attrs ->
+        def tagName = (attrs.tagName == null) ? 'p' : attrs.tagName
+        def startTag = tagName ? "<${tagName}>" : ""
+        def endTag = tagName ? "</${tagName}>" : ""
         if (attrs.value) {
-            out << "<p>"
+            out << startTag
             out << (attrs.prefix) ? attrs.prefix : ""
             out << attrs.value.encodeAsHTML()
             out << (attrs.postfix) ? attrs.postfix : ""
@@ -163,7 +185,40 @@ class CollectoryTagLib {
                 }
             }
 
-            out << "</p>"
+            out << endTag
+        }
+    }
+
+    /**
+     * Outputs value/body if one is not blank otherwise outputs the otherwise value if present.
+     * Can be used as:
+     *  <valueOrOtherwise>bod</> => outputs bod if bod is groovy true
+     *  <valueOrOtherwise value='val'></> => outputs val if val is groovy true
+     *  <valueOrOtherwise value='val'>bod</> => outputs bod if val is groovy true
+     * In any of the above:
+     *  <valueOrOtherwise value='val' otherwise='not defined'>bod</> => outputs not defined if nothing is groovy true
+     *
+     * @attrs value the value to test (and output if true and there is no body)
+     * @attrs otherwise the text to output if tests all fail
+     * @body the value to test (if value is not provided) and output if test is true
+     */
+    def valueOrOtherwise = { attrs, body ->
+        // determine what text to show
+        def value = attrs.value
+        def bod = body()
+        def text = ''
+        if (body() && body() != "") {
+            text = body()
+        } else if (attrs.value) {
+            text = attrs.value
+        }
+        // determine whether to show it
+        if (attrs.value) {
+            out << text
+        } else if (!attrs.containsKey('value') && body()) { // only test body if value was not present (cf was null, blank or false)
+            out << text
+        } else if (attrs.otherwise) {
+            out << attrs.otherwise
         }
     }
 
@@ -330,8 +385,17 @@ class CollectoryTagLib {
         out << "</div>"
     }
 
-    //  Checkbox list that can be used as a more user-friendly alternative to
-    // a multiselect list box
+    /** Checkbox list that can be used as a more user-friendly alternative to
+     *  a multiselect list box
+     *
+     * @attrs from the list of all values
+     * @attrs value the list of selected values
+     * @attrs name the name of the checkbox list
+     * @attrs height optional height
+     * @attrs width optional width
+     * @attrs optionKey optional optionKey to use in list
+     * @attrs readonly creates list for red only
+     */
     def checkBoxList = {attrs, body ->
         def from = attrs.from
         def value = attrs.value
@@ -357,21 +421,15 @@ class CollectoryTagLib {
 
         from.each { obj ->
 
-            //println "checkBoxList> ${obj}"
-            // if we wanted to select the checkbox using a click anywhere on the label (also hover effect)
-            // but grails does not recognize index suffix in the name as an array:
-            //      cname = "${attrs.name}[${idx++}]"
-            //      and put this inside the li: <label for='$cname'>...</label>
-
             if (attrs.optionKey) {
                 isChecked = (value?.contains(obj."${attrs.optionKey}"))? true: false
                 out << "<li>" <<
-                    checkBox(name:cname, value:obj."${attrs.optionKey}", checked: isChecked) <<
+                    checkBox(name:cname, value:obj."${attrs.optionKey}", checked: isChecked, disabled: attrs.readonly) <<
                         "${obj}" << "</li>"
             } else {
                 isChecked = (value?.contains(obj))? true: false
                 out << "<li>" <<
-                    checkBox(name:cname, value:obj, checked: isChecked) <<
+                    checkBox(name:cname, value:obj, checked: isChecked, disabled: attrs.readonly) <<
                         "${obj}" << "</li>"
             }
 
@@ -439,6 +497,40 @@ class CollectoryTagLib {
         list.each {str += "<li>${it.encodeAsHTML()}</li>"}
         str += "</ul>"
         out << str
+    }
+
+    def membershipWithGraphics = { attrs ->
+        Collection coll = attrs.coll
+        if (coll) {
+            // check collection's membership
+            ProviderGroup.networkTypes.each {
+                if (coll.isMemberOf(it)) {
+                    out << "<span class='category'>Member of</span> ${it}"
+                    // this will be tidied up when hubs are entities
+                    if (it == "CHAH") {
+                        out << "<img class='follow hubImage' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif") + "'/>"
+                    }
+                    if (it == "CHAEC") {
+                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif") + "'/>"
+                    }
+                    if (it == "CHAFC") {
+                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg") + "'/>"
+                    }
+                    if (it == "CHACM") {
+                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png") + "'/>"
+                    }
+                    out << "<br/>"
+                }
+            }
+            // check institution membership
+            /*if (coll.institution) {
+                ProviderGroup.networkTypes.each {
+                    if (coll.institution.isMemberOf(it)) {
+                        out << it
+                    }
+                }
+            }*/
+        }
     }
 
     /**
@@ -539,16 +631,17 @@ class CollectoryTagLib {
     }
 
     def subCollectionList = { attrs ->
-        out << """<tr><td valign="top" class="name">${message(code:"collection.subcollections.label", default:"Sub-collections")}</td><td valign="top" class="value">"""
         if (attrs.list) {
-            out << "<ul>"
-            JSON.parse(attrs.list).each { sub ->
-                //log.info "sub: " + sub
-                out << "<li>${cl.subCollectionDisplay(sub: sub)}</li>"
+            try {
+                out << "<ul class='fancy'>"
+                JSON.parse(attrs.list).each { sub ->
+                    out << "<li>${cl.subCollectionDisplay(sub: sub)}</li>"
+                }
+                out << "</ul>"
+            } catch (ConverterException e) {
+                out  << "unable to parse sub-collections"
             }
-            out << "</ul>"
         }
-        out << "</td></tr>"
     }
 
     /**
@@ -582,6 +675,7 @@ class CollectoryTagLib {
      * @param attrs.noLink suppresses links
      * @param attrs.noList suppresses lists
      * @param body the text to format
+     * @param pClass the class to use for paras
      */
     def formattedText = {attrs, body ->
         def text = body().toString()
@@ -600,12 +694,13 @@ class CollectoryTagLib {
 
             // lists
             if (!attrs.noList) {
-                // replace list markup first
                 def lines = text.tokenize("\r\n")
                 def inList = false
                 def newText = ""
+                // for each line
                 lines.each {
                     if (it[0] == '*') {
+                        // replace list markup
                         def item = "<li>" + it.substring(1,it.length()) + "</li>"
                         if (inList) {
                             it = item
@@ -614,7 +709,10 @@ class CollectoryTagLib {
                             it = "<ul>" + item
                         }
                     } else {
-                        it = "<p>" + it + "</p>"
+                        if (it) { // skip blank content
+                            def para = (attrs.pClass) ? "<p class='${attrs.pClass}'>" : "<p>"
+                            it = para + it + "</p>"
+                        }
                         if (inList) {
                             inList = false
                             it = "</ul>" + it
@@ -631,6 +729,20 @@ class CollectoryTagLib {
             //text = text.replaceAll(/\*\b/) {"</b>"}
 
             out << text
+        }
+    }
+
+    def textAreaHeight = {attrs ->
+        def text = attrs.text
+        if (text) {
+            int lines = text.length()/90
+            lines += text.count('\n')
+            //int charCount = s.length() - s.replaceAll("\\.", "").length();
+            lines = Math.min(lines, 20)
+            lines = Math.max(lines, 4)
+            out << lines
+        } else {
+            out << 4
         }
     }
 
@@ -724,5 +836,34 @@ class CollectoryTagLib {
 
     def homeLink = {
         out << '<a class="home" href="' + createLink(uri:"/admin") + '">Home</a>'
+    }
+
+    def partner = { attrs->
+        if (attrs.test) {
+            out << "<span class='partner follow'>Atlas Partner</span>"
+        }
+    }
+
+    def institutionCodes = { attrs ->
+        def instCodes = attrs.collection.getListOfInstitutionCodesForLookup()
+        switch (instCodes.size()) {
+            case 0: out << "no institution code"; break
+            case 1: out << "institution code = " + instCodes[0]; break
+            default: out << "institution codes: " + instCodes.join(', ')
+        }
+    }
+    
+    def collectionCodes = { attrs ->
+        // handle speical case of ANY collection code
+        if (attrs.collection?.providerMap?.matchAnyCollectionCode) {
+            out << "any collection code"
+        } else {
+            def collCodes = attrs.collection.getListOfCollectionCodesForLookup()
+            switch (collCodes.size()) {
+                case 0: out << "no collection code"; break
+                case 1: out << "collection code = " + collCodes[0]; break
+                default: out << "collection codes: " + collCodes.join(', ')
+            }
+        }
     }
 }

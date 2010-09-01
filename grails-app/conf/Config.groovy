@@ -36,7 +36,10 @@ if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
 }
 if (!security.cas.urlPattern) {
-    security.cas.urlPattern = '.*/admin.*,.*/collection/.*,.*/institution/.*,.*/contact/.*,.*/reports/.*,.*/providerCode/.*,.*/providerMap/.*'
+    security.cas.urlPattern = '/admin.*,/collection/.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*'
+}
+if (!citation.template) {
+    citation.template = 'Accessed through ALA website, @entityName@, for more information: @link@'
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
@@ -85,23 +88,23 @@ environments {
     production {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
         security.cas.serverName = grails.serverURL
-        security.cas.context = ''
+        security.cas.contextPath = ''
     }
     testserver {
         grails.serverURL = "http://alatstdb1-cbr.vm.csiro.au/Collectory"
         security.cas.serverName = "http://alatstdb1-cbr.vm.csiro.au"
-        security.cas.context = '/Collectory'
+        security.cas.contextPath = '/Collectory'
     }
     development {
         grails.serverURL = "http://nemo-be.nexus.csiro.au:8080/Collectory"
         security.cas.serverName = "http://nemo-be.nexus.csiro.au:8080"
-        security.cas.context = '/Collectory'
-        //security.cas.bypass = true
+        security.cas.contextPath = '/Collectory'
+        security.cas.bypass = false
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
         security.cas.serverName = ''
-        security.cas.context = ''
+        security.cas.contextPath = ''
     }
 
 }

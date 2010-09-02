@@ -16,6 +16,130 @@ class DataLoaderService {
 
     boolean transactional = false
 
+    def dataProvidercolumns = ["uid","name","pubDescription","address","websiteUrl","logoUrl","email","phone"]
+
+    def importDataProviders(String filename) {
+        CSVReader reader = new CSVReader(new FileReader(filename),'\t' as char)
+        String [] nextLine;
+        int headerLines = 0
+        int dataLines = 0
+        int exists = 0
+        int failures = 0
+        int inserts = 0
+
+		while ((nextLine = reader.readNext()) != null) {
+
+            /* create a params map from the csv data
+             * using the domain property names as keys
+             */
+            def params = [:]
+            dataProvidercolumns.eachWithIndex {it, i ->
+                //println "i=${i} value=${nextLine[i]}"
+                if (nextLine[i]) {
+                    // eliminate any \ used for line breaks
+                    params[it] = nextLine[i] //.replaceAll("" + (92 as char)," ")
+                }
+            }
+
+            if (params.name != 'name') {  // don't include the header row
+                dataLines++
+                DataProvider dp = DataProvider.findByUid(params.uid)
+                if (!dp) {
+                    // create it
+                    def hasAddress = (params.address == true)
+                    if (hasAddress) {
+                        parseAddress params
+                        params.remove('address')
+                    }
+                    dp = new DataProvider()
+                    dp.properties['uid','name','pubDescription','websiteUrl','email','phone'] = params
+                    if (hasAddress) {
+                        dp.address = new Address()
+                        dp.address.properties["street","postBox","city","state","postcode","country"] = params
+                    }
+                    dp.userLastModified = "DP loader"
+                    if (!dp.hasErrors() && dp.save(flush: true)) {
+                        inserts++
+                        println "Created data provider ${dp.name}"
+                    } else {
+                        failures++
+                        println "Failed to create data provider ${params.name}"
+                        dp.errors.each { println it }
+                    }
+                } else {
+                    exists++
+                }
+            } else {
+                headerLines++
+            }
+        }
+        def returnObj = new Expando()
+        returnObj.headerLines = headerLines
+        returnObj.dataLines = dataLines
+        returnObj.inserts = inserts
+        returnObj.failures = failures
+        returnObj.exists = exists
+        return returnObj
+    }
+
+    def dataResourcecolumns = ["uid","dataProvider","name","pubDescription","rights","citation","citableAgent","websiteUrl","logoUrl"]
+
+    def importDataResources(String filename) {
+        CSVReader reader = new CSVReader(new FileReader(filename),'\t' as char)
+        String [] nextLine;
+        int headerLines = 0
+        int dataLines = 0
+        int exists = 0
+        int failures = 0
+        int inserts = 0
+
+		while ((nextLine = reader.readNext()) != null) {
+
+            /* create a params map from the csv data
+             * using the domain property names as keys
+             */
+            def params = [:]
+            dataResourcecolumns.eachWithIndex {it, i ->
+                //println "i=${i} value=${nextLine[i]}"
+                if (nextLine[i]) {
+                    // eliminate any \ used for line breaks
+                    params[it] = nextLine[i] //.replaceAll("" + (92 as char)," ")
+                }
+            }
+
+            if (params.name != 'name') {  // don't include the header row
+                dataLines++
+                DataResource dr = DataResource.findByUid(params.uid as String)
+                if (!dr) {
+                    // create it
+                    dr = new DataResource()
+                    dr.properties["uid","name","pubDescription","rights","citation","citableAgent","websiteUrl"] = params
+                    dr.dataProvider = DataProvider.findByUid(params.dataProvider as String)
+                    dr.userLastModified = "DR loader"
+                    if (!dr.hasErrors() && dr.save(flush: true)) {
+                        inserts++
+                        println "Created data resource ${dr.name}"
+                    } else {
+                        failures++
+                        println "Failed to create data resource ${params.name}"
+                        dr.errors.each { println it }
+                    }
+                } else {
+                    exists++
+                }
+            } else {
+                headerLines++
+            }
+        }
+        def returnObj = new Expando()
+        returnObj.headerLines = headerLines
+        returnObj.dataLines = dataLines
+        returnObj.inserts = inserts
+        returnObj.failures = failures
+        returnObj.exists = exists
+        return returnObj
+    }
+
     /** import to new structure **/
     /* BEFORE calling this you should import the contacts and provider codes (with the same ids as the import source) */
     def importJson() {
@@ -958,6 +1082,8 @@ class DataLoaderService {
             state = 'SA'
             address = address[0 .. address.length()-16]
         }
+        state = massageState(state.toUpperCase())
+        
         address = trimTrailing(address)
         def bits = address.tokenize(",")
         //bits.each {println it.trim()}

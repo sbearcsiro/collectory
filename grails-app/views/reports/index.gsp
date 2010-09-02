@@ -48,13 +48,13 @@
       </div>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="public" action="map">Show map of collections</g:link>
-        <p class="mainText">Simple map of all collections.</p>
+        <g:link class="mainLink" controller="reports" action="institutions">List all institutions</g:link>
+        <p class="mainText">Simple list of all institutions.</p>
       </div>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="institutions">List all institutions</g:link>
-        <p class="mainText">Simple list of all institutions.</p>
+        <g:link class="mainLink" controller="reports" action="providers">List all data providers</g:link>
+        <p class="mainText">Simple list of all data providers, data resources and data hubs.</p>
       </div>
 
       <div class="homeCell">

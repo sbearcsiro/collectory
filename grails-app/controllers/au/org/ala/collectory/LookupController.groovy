@@ -52,21 +52,23 @@ class LookupController {
     }
 
     /**
-     * Return a collection summary as JSON.
-     * Param can be:
-     *  1. database id
-     *  2. uid
-     *  3. lsid
-     *  4. acronym
+     * Returns a summary for any entity when passed a UID.
+     *
+     * If the id is not a UID it will be assumed to be a collection and will be treated as:
+     * 1. lsid if it starts with uri:lsid:
+     * 2. database id if it is a number
+     * 3. acronym if it matches a collection
      */
     def summary = {
-        Collection collectionInstance = findCollection(params.id)
-        println ">> summary id = " + params.id
-        if (collectionInstance) {
-            render collectionInstance.buildSummary() as JSON
+        ProviderGroup instance = ProviderGroup._get(params.id)
+        if (!instance) {
+            instance = findCollection(params.id)
+        }
+        if (instance) {
+            render instance.buildSummary() as JSON
         } else {
-            log.error "Unable to find collection for id = ${params.id}"
-            def error = ["error":"unable to find collection for id = " + params.id]
+            log.error "Unable to find entity for id = ${params.id}"
+            def error = ["error":"unable to find an entity for id = " + params.id]
             render error as JSON
         }
     }
@@ -144,7 +146,7 @@ class LookupController {
         return Institution.findByAcronym(id)
     }
 
-    private findCollection(id) {
+    private ProviderGroup findCollection(id) {
         // try lsid
         if (id instanceof String && id.startsWith('urn:lsid:')) {
             return Collection.findByGuid(id)

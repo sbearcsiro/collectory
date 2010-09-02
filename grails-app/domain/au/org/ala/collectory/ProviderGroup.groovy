@@ -83,7 +83,7 @@ abstract class ProviderGroup implements Serializable {
     static constraints = {
         guid(nullable:true, maxSize:45)         // allow blank for institutions - therefore can't make unique
         uid(blank:false, maxSize:20)
-        name(blank:false, maxSize:128)          // unique:true - ideally should be unique but relax so we can view all BCI data
+        name(blank:false, maxSize:1024)          // unique:true - ideally should be unique but relax so we can view all BCI data
         acronym(nullable:true, maxSize:45)
         //groupType(blank:false, maxSize:45)
         pubDescription(nullable:true, maxSize:2048)
@@ -303,9 +303,9 @@ abstract class ProviderGroup implements Serializable {
         switch (uid[0..1]) {
             case Institution.ENTITY_PREFIX: return Institution.ENTITY_TYPE
             case Collection.ENTITY_PREFIX: return Collection.ENTITY_TYPE
-            //case DataProvider.ENTITY_PREFIX: return DataProvider.ENTITY_TYPE
-            //case DataResource.ENTITY_PREFIX: return DataResource.ENTITY_TYPE
-            //case DataHub.ENTITY_PREFIX: return DataHub.ENTITY_TYPE
+            case DataProvider.ENTITY_PREFIX: return DataProvider.ENTITY_TYPE
+            case DataResource.ENTITY_PREFIX: return DataResource.ENTITY_TYPE
+            case DataHub.ENTITY_PREFIX: return DataHub.ENTITY_TYPE
         }
     }
 
@@ -317,9 +317,9 @@ abstract class ProviderGroup implements Serializable {
         switch (uid[0..1]) {
             case Institution.ENTITY_PREFIX: return Institution.findByUid(uid)
             case Collection.ENTITY_PREFIX: return Collection.findByUid(uid)
-            //case 'dp': return DataProvider.findByUid(uid)
-            //case 'dr': return DataResource.findByUid(uid)
-            //case 'dh': return DataHub.findByUid(uid)
+            case DataProvider.ENTITY_PREFIX: return DataProvider.findByUid(uid)
+            case DataResource.ENTITY_PREFIX: return DataResource.findByUid(uid)
+            case DataHub.ENTITY_PREFIX: return DataHub.findByUid(uid)
             default: return null
         }
     }

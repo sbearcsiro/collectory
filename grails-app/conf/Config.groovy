@@ -36,7 +36,8 @@ if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
 }
 if (!security.cas.urlPattern) {
-    security.cas.urlPattern = '/admin.*,/collection/.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*'
+    // simplify collection pattern when /collection/summary is not used any more (replaced by /lookup/summary)
+    security.cas.urlPattern = '/admin.*,/collection/list/.*,/collection/show/.*,/collection/edit/.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*'
 }
 if (!citation.template) {
     citation.template = 'Accessed through ALA website, @entityName@, for more information: @link@'

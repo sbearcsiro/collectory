@@ -37,6 +37,10 @@ class ReportsController {
         ActivityLog.log username(), isAdmin(), Action.REPORT, 'institutions'
     }
 
+    def providers = {
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'providers'
+    }
+
     def contacts = {
         ActivityLog.log username(), isAdmin(), Action.REPORT, 'contacts'
     }
@@ -90,6 +94,9 @@ class ReportsController {
     class ReportCommand {
         int totalCollections
         int totalInstitutions
+        int totalDataProviders
+        int totalDataResources
+        int totalDataHubs
         int totalContacts
         int totalLogons
 
@@ -175,6 +182,9 @@ class ReportsController {
                 case 'data':
                 totalCollections = Collection.count()
                 totalInstitutions = Institution.count()
+                totalDataProviders = DataProvider.count()
+                totalDataResources = DataResource.count()
+                totalDataHubs = DataHub.count()
                 totalContacts = Contact.count()
 
                 /* sql: select count(*) from collectory.provider_group

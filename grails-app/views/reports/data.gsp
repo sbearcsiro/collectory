@@ -22,6 +22,9 @@
                 <tr class="reportGroupTitle"><td colspan="3">Totals</td></tr>
                 <tr><td>Collections</td><td>${reports.totalCollections}</td><td></td></tr>
                 <tr><td>Institutions</td><td>${reports.totalInstitutions}</td><td></td></tr>
+                <tr><td>Data providers</td><td>${reports.totalDataProviders}</td><td></td></tr>
+                <tr><td>Data resources</td><td>${reports.totalDataResources}</td><td></td></tr>
+                <tr><td>Data hubs</td><td>${reports.totalDataHubs}</td><td></td></tr>
                 <tr><td>Contacts</td><td>${reports.totalContacts}</td><td></td></tr>
 
                 <tr class="reportGroupTitle"><td colspan="3">Collection data quality</td></tr>

@@ -36,7 +36,7 @@ class Institution extends ProviderGroup {
      */
     InstitutionSummary buildSummary() {
         InstitutionSummary is = init(new InstitutionSummary()) as InstitutionSummary
-        is.collections = collections.collect {[it.id, it.name]}
+        is.collections = collections.collect {[it.uid, it.name]}
         return is
     }
 

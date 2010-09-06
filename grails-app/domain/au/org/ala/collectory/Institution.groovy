@@ -64,6 +64,10 @@ class Institution extends ProviderGroup {
         return latitude != 0.0 && latitude != -1 && longitude != 0.0 && longitude != -1
     }
 
+    Map inheritedLatLng() {
+        return null
+    }
+
     long dbId() { return id }
 
     String entityType() {

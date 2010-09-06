@@ -6,247 +6,257 @@
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${message(code: 'institution.label', default: 'Institution')}" />
         <title><g:message code="default.show.label" args="[entityName]" /></title>
+        <script type="text/javascript" src="http://www.google.com/jsapi?key=${grailsApplication.config.google.maps.v2.key}"></script>
     </head>
-    <body>
+    <body onload="load();">
+    <style>
+    #mapCanvas {
+      width: 200px;
+      height: 170px;
+      float: right;
+    }
+    </style>
         <div class="nav">
             <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
         </div>
         <div class="body">
-            <h1>${fieldValue(bean: institutionInstance, field: "name")}</h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
-            <div class="dialog">
+            <div class="dialog emulate-public">
+              <!-- base attributes -->
+              <div class="show-section titleBlock">
+                <!-- Name --><!-- Acronym -->
+                <h1 style="display:inline">${fieldValue(bean: institutionInstance, field: "name")}<cl:valueOrOtherwise value="${institutionInstance.acronym}"> (${fieldValue(bean: institutionInstance, field: "acronym")})</cl:valueOrOtherwise></h1>
+                <cl:partner test="${institutionInstance.isALAPartner}"/><br/>
+              
+                <!-- GUID    -->
+                <p><span class="category">LSID</span>: <cl:guid target="_blank" guid='${fieldValue(bean: institutionInstance, field: "guid")}'/></p>
+
+                <!-- UID    -->
+                <p><span class="category">UID</span>: ${fieldValue(bean: institutionInstance, field: "uid")}</p>
+
+                <!-- Web site -->
+                <p><span class="category">Collection website</span>: <a target="_blank" href="${fieldValue(bean: institutionInstance, field: 'websiteUrl')}">${fieldValue(bean: institutionInstance, field: "websiteUrl")}</a></p>
+
+                <!-- Networks -->
+                <g:if test="${institutionInstance.networkMembership}">
+                  <p><cl:membershipWithGraphics coll="${institutionInstance}"/></p>
+                </g:if>
+
+                <!-- Notes -->
+                <g:if test="${institutionInstance.notes}">
+                  <p><cl:formattedText>${fieldValue(bean: institutionInstance, field: "notes")}</cl:formattedText></p>
+                </g:if>
+
+                <!-- last edit -->
+                <p><span class="category">Last change</span> ${fieldValue(bean: institutionInstance, field: "userLastModified")} on ${fieldValue(bean: institutionInstance, field: "lastUpdated")}</p>
+
+                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/base']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
+              <!-- description -->
+              <div class="show-section">
+                <!-- Pub Desc -->
+                <h2>Description</h2>
+                <div class="source">[Public description]</div><div style="clear:both;"></div>
+                <cl:formattedText>${fieldValue(bean: institutionInstance, field: "pubDescription")}</cl:formattedText>
+
+                <!-- Tech Desc -->
+                <div class="source">[Technical description]</div><div style="clear:both;"></div>
+                <cl:formattedText>${fieldValue(bean: institutionInstance, field: "techDescription")}</cl:formattedText>
+
+                <!-- Contribution -->
+                <div class="source">[Contribution]</div><div style="clear:both;"></div>
+                <cl:formattedText>${fieldValue(bean: institutionInstance, field: "focus")}</cl:formattedText>
+
+                <!-- Institution type -->
+                <p>Institution type is: ${fieldValue(bean: institutionInstance, field: "institutionType")}</p>
+
+                <!-- Collections -->
+                <h2>Collections</h2>
+                <ul class='fancy'>
+                  <g:each in="${institutionInstance.getCollections()}" var="c">
+                      <li><g:link controller="collection" action="show" id="${c.id}">${c?.name}</g:link></li>
+                  </g:each>
+                  <li><g:link controller="collection" action="create" params='[institutionUid: "${institutionInstance.uid}"]'>create a new collection for this institution</g:link></li>
+                </ul>
+
+                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
+              <!-- images -->
+              <div class="show-section">
+                <!-- ImageRef -->
+                  <h2>Logo</h2>
+                  <g:if test="${fieldValue(bean: institutionInstance, field: 'logoRef.file')}">
+                    <img class="showImage" alt="${fieldValue(bean: institutionInstance, field: "logoRef.file")}"
+                        src="${resource(absolute: "true", dir: 'data/institution', file: institutionInstance.logoRef.file)}"/>
+                    <p class="caption">${fieldValue(bean: institutionInstance, field: "logoRef.file")}</p>
+                    <cl:formattedText pClass="caption">${fieldValue(bean: institutionInstance, field: "logoRef.caption")}</cl:formattedText>
+                    <p class="caption">${fieldValue(bean: institutionInstance, field: "logoRef.attribution")}</p>
+                    <p class="caption">${fieldValue(bean: institutionInstance, field: "logoRef.copyright")}</p>
+                  </g:if>
+
+                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/images',target:'logoRef']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
+              <!-- images -->
+              <div class="show-section">
+                <!-- ImageRef -->
+                  <h2>Representative Image</h2>
+                  <g:if test="${fieldValue(bean: institutionInstance, field: 'imageRef.file')}">
+                    <img class="showImage" alt="${fieldValue(bean: institutionInstance, field: "imageRef.file")}"
+                        src="${resource(absolute: "true", dir: 'data/institution', file: institutionInstance.imageRef.file)}"/>
+                    <p class="caption">${fieldValue(bean: institutionInstance, field: "imageRef.file")}</p>
+                    <cl:formattedText pClass="caption">${fieldValue(bean: institutionInstance, field: "imageRef.caption")}</cl:formattedText>
+                    <p class="caption">${fieldValue(bean: institutionInstance, field: "imageRef.attribution")}</p>
+                    <p class="caption">${fieldValue(bean: institutionInstance, field: "imageRef.copyright")}</p>
+                  </g:if>
+
+                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/images',target:'imageRef']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
+              <!-- location -->
+              <div class="show-section">
+                <h2>Location</h2>
                 <table>
-                    <tbody>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.uid.label" default="uid" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "uid")}</td>
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.guid.label" default="Guid" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "guid")}</td>
-                        </tr>
+                  <colgroup><col width="10%"/><col width="45%"/><col width="45%"/></colgroup>
+                  <!-- Address -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="institution.address.label" default="Address"/></td>
 
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.acronym.label" default="Acronym" /></td>
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "acronym")}</td>
-                        </tr>
+                    <td valign="top" class="value">
+                      ${fieldValue(bean: institutionInstance, field: "address.street")}<br/>
+                      ${fieldValue(bean: institutionInstance, field: "address.postBox")}<br/>
+                      ${fieldValue(bean: institutionInstance, field: "address.city")}<br/>
+                      ${fieldValue(bean: institutionInstance, field: "address.state")}
+                      ${fieldValue(bean: institutionInstance, field: "address.postcode")}
+                      <g:if test="${fieldValue(bean: institutionInstance, field: 'address.country') != 'Australia'}">
+                        <br/>${fieldValue(bean: institutionInstance, field: "address.country")}
+                      </g:if>
+                    </td>
 
-<!-- Pub Desc -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.pubDescription.label" default="Public description" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "pubDescription")}</cl:formattedText></td>
-                        </tr>
+                    <!-- map spans all rows -->
+                    <td rowspan="6">
+                      <div id="mapCanvas"></div></td>
 
-<!-- Tech Desc -->      <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.techDescription.label" default="Technical Description" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "techDescription")}</cl:formattedText></td>
-                        </tr>
+                  </tr>
 
-<!-- Contribution-->    <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.focus.label" default="Contribution to ALA" /></td>
-                            <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "focus")}</cl:formattedText></td>
-                        </tr>
+                  <!-- Latitude -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="providerGroup.latitude.label" default="Latitude"/></td>
+                    <td valign="top" class="value"><cl:showDecimal value='${institutionInstance.latitude}' degree='true'/></td>
+                  </tr>
 
-<!-- Networks -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.networkMembership.label" default="Is a member of" /></td>
-                            <td valign="top" class="value"><cl:JSONListAsStrings json='${institutionInstance.networkMembership}'/></td>
-                        </tr>
+                  <!-- Longitude -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="providerGroup.longitude.label" default="Longitude"/></td>
+                    <td valign="top" class="value"><cl:showDecimal value='${institutionInstance.longitude}' degree='true'/></td>
+                  </tr>
 
-<!-- Address -->        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.address.label" default="Address" /></td>
+                  <!-- State -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="collection.state.label" default="State"/></td>
+                    <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "state")}</td>
+                  </tr>
 
-                            <td valign="top" class="value">
-                              ${fieldValue(bean: institutionInstance, field: "address.street")}
-                              ${fieldValue(bean: institutionInstance, field: "address.postBox")}
-                              ${fieldValue(bean: institutionInstance, field: "address.city")}
-                              ${fieldValue(bean: institutionInstance, field: "address.state")}
-                              ${fieldValue(bean: institutionInstance, field: "address.postcode")}
-                              <g:if test="${fieldValue(bean: institutionInstance, field: 'address.country') != 'Australia'}">
-                                ${fieldValue(bean: institutionInstance, field: "address.country")}
-                              </g:if>
-                            </td>
+                  <!-- Email -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="collection.email.label" default="Email"/></td>
+                    <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "email")}</td>
+                  </tr>
 
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.state.label" default="State" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "state")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.website_url.label" default="Websiteurl" /></td>
-                            
-                            <td valign="top" class="value"><g:link url="${institutionInstance.websiteUrl}">${fieldValue(bean: institutionInstance, field: "websiteUrl")}</g:link></td>
-                            
-                        </tr>
-                    
-<!-- Logo -->           <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.logo_ref.label" default="Logo Image" /></td>
-                            <td valign="top">
-                              <g:if test="${fieldValue(bean: institutionInstance, field: 'logoRef.file')}">
-                                <table class='shy'>
-                                  <tr>
-                                    <td colspan="2">
-                                      <img alt="${fieldValue(bean: institutionInstance, field: "logoRef.file")}"
-                                              src="${resource(absolute: "true", dir:'data/institution', file:institutionInstance.logoRef.file)}" />
-                                    </td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name" style="width:10%"><g:message code="institution.logo_ref.file.label" default="File" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "logoRef.file")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="institution.logo_ref.file.label" default="Caption" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "logoRef.caption")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="institution.logo_ref.file.label" default="Attribution" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "logoRef.attribution")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="institution.logo_ref.file.label" default="Copyright" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "logoRef.copyright")}</td>
-                                  </tr>
-                                </table>
-                              </g:if>
-                            </td>
-                        </tr>
-
-<!-- ImageRef -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.image_ref.label" default="Representative Image" /></td>
-                            <td valign="top">
-                              <g:if test="${fieldValue(bean: institutionInstance, field: 'imageRef.file')}">
-                                <table class='shy'>
-                                  <tr>
-                                    <td colspan="2">
-                                      <img alt="${fieldValue(bean: institutionInstance, field: "imageRef.file")}"
-                                              src="${resource(absolute: "true", dir:'data/institution', file:institutionInstance.imageRef.file)}" />
-                                    </td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name" style="width:10%"><g:message code="institution.image_ref.file.label" default="File" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "imageRef.file")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="institution.image_ref.file.label" default="Caption" /></td>
-                                      <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: institutionInstance, field: "imageRef.caption")}</cl:formattedText></td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="institution.image_ref.file.label" default="Attribution" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "imageRef.attribution")}</td>
-                                  </tr>
-                                  <tr class="prop">
-                                      <td valign="top" class="name"><g:message code="institution.image_ref.file.label" default="Copyright" /></td>
-                                      <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "imageRef.copyright")}</td>
-                                  </tr>
-                                </table>
-                              </g:if>
-                            </td>
-                        </tr>
-
-<!-- Latitude -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.latitude.label" default="Latitude" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${institutionInstance.latitude}' degree='true'/></td>
-                        </tr>
-
-<!-- Longitude -->      <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.longitude.label" default="Longitude" /></td>
-                            <td valign="top" class="value"><cl:showDecimal value='${institutionInstance.longitude}' degree='true'/></td>
-                        </tr>
-
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.email.label" default="Email" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "email")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.phone.label" default="Phone" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "phone")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.isALAPartner.label" default="Is ALA Partner" /></td>
-                            
-                            <td valign="top" class="value"><g:formatBoolean boolean="${institutionInstance?.isALAPartner}" /></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.dateCreated.label" default="Date Created" /></td>
-                            
-                            <td valign="top" class="value"><g:formatDate date="${institutionInstance?.dateCreated}" /></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.notes.label" default="Notes" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "notes")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.institutionType.label" default="Institution Type" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "institutionType")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.children.label" default="Collections" /></td>
-                            
-                            <td valign="top" style="text-align: left;" class="value">
-                                <ul>
-                                <g:each in="${institutionInstance.getCollections()}" var="c">
-                                    <li><g:link controller="collection" action="show" id="${c.id}">${c?.name}</g:link></li>
-                                </g:each>
-                                </ul>
-                            </td>
-                            
-                        </tr>
-                    
-<!-- Contacts -->       <tr class="prop">
-                            <td valign="top" class="name"><g:message code="institution.contacts.label" default="Contacts" /></td>
-                            
-                        <td valign="top" style="text-align: left;" class="value">
-                            <ul>
-                            <g:each in="${contacts}" var="c">
-                                <li><g:link controller="contact" action="show" id="${c?.contact?.id}">
-                                  ${c?.contact?.buildName()}<cl:roleIfPresent role='${c?.role}' /> <cl:adminIfPresent admin='${c?.administrator}' /></g:link></li>
-                            </g:each>
-                            </ul>
-                        </td>
-
-                        </tr>
-                    
-<!-- last edit -->      <tr class="prop">
-                            <td valign="top" class="name">Last edited</td>
-                            <td valign="top" class="value">by ${fieldValue(bean: institutionInstance, field: "userLastModified")} on ${fieldValue(bean: institutionInstance, field: "lastUpdated")}</td>
-                        </tr>
-
-                    </tbody>
+                  <!-- Phone -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="collection.phone.label" default="Phone"/></td>
+                    <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "phone")}</td>
+                  </tr>
                 </table>
+                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/location']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
+              <!-- Contacts -->
+              <div class="show-section">
+                <h2>Contacts</h2>
+                <ul class="fancy">
+                  <g:each in="${contacts}" var="c">
+                    <li><g:link controller="contact" action="show" id="${c?.contact?.id}">
+                      ${c?.contact?.buildName()}
+                      <cl:roleIfPresent role='${c?.role}'/>
+                      <cl:adminIfPresent admin='${c?.administrator}'/>
+                      ${c?.contact?.phone}
+                      <cl:valueOrOtherwise value ="${c?.primaryContact}"> (Primary contact)</cl:valueOrOtherwise>
+                    </g:link>
+                    </li>
+                  </g:each>
+                </ul>
+                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/showContacts']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
+              <!-- Attributions -->
+              <div class="show-section">
+                <h2>Attributions</h2>
+                <ul class="fancy">
+                  <g:each in="${institutionInstance.getAttributionList()}" var="att">
+                    <li>${att.name}</li>
+                  </g:each>
+                </ul>
+                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/editAttributions']" id="${institutionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
             </div>
             <div class="buttons">
-                <g:form url="[action:'editInstitution']">
-                  <g:hiddenField name="id" value="${institutionInstance?.id}" />
-                  <cl:isAuth uid="${institutionInstance?.uid}">
-                    <span class="button"><g:actionSubmit class="edit" action='editInstitution' value="${message(code: 'default.button.edit.label', default: 'Edit')}" /></span>
-                  </cl:isAuth>
-                  <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
-                    <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
-                  </cl:ifGranted>
-                </g:form>
+              <g:form>
+                <g:hiddenField name="id" value="${institutionInstance?.id}"/>
+                <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
+                  <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
+                </cl:ifGranted>
+                <span class="button"><g:link class="preview" controller="public" action='show' id="${institutionInstance?.uid}">${message(code: 'default.button.preview.label', default: 'Preview')}</g:link></span>
+              </g:form>
             </div>
         </div>
+    <script type="text/javascript">
+
+    var map;
+    var marker;
+
+    function load() {
+        initialize();
+    }
+
+    function initialize() {
+      if (${institutionInstance.canBeMapped()}) {
+        var lat = ${institutionInstance.latitude};
+        if (lat == undefined || lat == 0 || lat == -1 ) {lat = -35.294325779329654}
+        var lng = ${institutionInstance.longitude};
+        if (lng == undefined || lng == 0 || lng == -1 ) {lng = 149.10602960586547}
+        var latLng = new google.maps.LatLng(lat, lng);
+        map = new google.maps.Map(document.getElementById('mapCanvas'), {
+          zoom: 14,
+          center: latLng,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          scrollwheel: false
+        });
+        marker = new google.maps.Marker({
+          position: latLng,
+          title: 'Edit section to change pin location',
+          map: map
+        });
+      } else {
+        var middleOfAus = new google.maps.LatLng(-28.2,133);
+        map = new google.maps.Map(document.getElementById('mapCanvas'), {
+          zoom: 2,
+          center: middleOfAus,
+          mapTypeId: google.maps.MapTypeId.ROADMAP,
+          draggable: false,
+          disableDoubleClickZoom: true,
+          scrollwheel: false
+        });
+      }
+    }
+    </script>
     </body>
 </html>

@@ -136,7 +136,7 @@ class PublicController {
     def map = {
         ActivityLog.log username(), isAdmin(), Action.LIST, 'map'
         def partnerCollections = Collection.list([sort:"name"]).findAll {
-            it.getIsALAPartner()
+            it.isALAPartner()
         }
         [collections: partnerCollections]
     }
@@ -150,7 +150,7 @@ class PublicController {
         List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
         Collection.list([sort:"name"]).each {
             // only show ALA partners
-            if (it.getIsALAPartner()) {
+            if (it.isALAPartner()) {
                 // make 0 values be -1
                 def lat = (it.latitude == 0.0) ? -1 : it.latitude
                 def lon = (it.longitude == 0.0) ? -1 : it.longitude

@@ -6,7 +6,12 @@ import java.text.ParseException
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
-class CollectionController {
+class CollectionController extends ProviderGroupController {
+
+    CollectionController() {
+        entityName = "Collection"
+        entityNameLower = "collection"
+    }
 
     def idGeneratorService
 
@@ -166,13 +171,6 @@ class CollectionController {
             log.info ">>${username()} deleting collection " + name
             ActivityLog.log username(), isAdmin(), col.uid, Action.DELETE
             try {
-                // remove it as a child from parent institution
-                if (col.institution) {
-                    log.info "Removing collection " +  name + " from parent " + col.institution.name
-                    col.institution.removeFromChildren col
-                    it.userLastModified = username()
-                    it.save()
-                }
                 // remove contact links (does not remove the contact)
                 ContactFor.findAllByEntityUid(col.uid).each {
                     log.info "Removing link to contact " + it.contact?.buildName()
@@ -205,7 +203,7 @@ class CollectionController {
             redirect(action: "list")
         } else {
             println params.page
-            params.page = params.page ?: 'base'
+            params.page = params.page ?: '/shared/base'
             println params.page
             render(view:params.page, model:[command: collection])
         }
@@ -217,7 +215,11 @@ class CollectionController {
      */
     def create = {
         // quick and dirty
-        def collection = new Collection(uid: idGeneratorService.getNextCollectionId(), name: 'enter name of collection', userLastModified: username())
+        def collection = new Collection(uid: idGeneratorService.getNextCollectionId(), userLastModified: username())
+        collection.name = params.name ?: 'enter name of collection'
+        if (params.institutionUid && Institution.findByUid(params.institutionUid)) {
+            collection.institution = Institution.findByUid(params.institutionUid)
+        }
         if (!collection.hasErrors() && collection.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
             redirect(action: "show", id: collection.id)
@@ -231,12 +233,16 @@ class CollectionController {
      * Update base attributes
      */
     def updateBase = {BaseCommand cmd ->
+        println username()
+        println request.getUserPrincipal()
+        println request.getUserPrincipal()?.attributes
+        println request.getUserPrincipal()?.attributes?.email
         if(cmd.hasErrors()) {
             println params.id
             cmd.errors.each {println it}
             cmd.id = params.id as int   // these do not seem to be injected
             cmd.version = params.version as int
-            render(view:'base', model: [command: cmd])
+            render(view:'/shared/base', model: [command: cmd])
         } else {
             def collection = Collection.get(params.id)
             if (collection) {
@@ -244,7 +250,7 @@ class CollectionController {
                     def version = params.version.toLong()
                     if (collection.version > version) {
                         collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                        render(view: "base", model: [command: collectionInstance])
+                        render(view: "/shared/base", model: [command: collection])
                         return
                     }
                 }
@@ -254,12 +260,13 @@ class CollectionController {
                 params.remove('networkMembership')
 
                 collection.properties = params
+                collection.userLastModified = username()
                 if (!collection.hasErrors() && collection.save(flush: true)) {
                     flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
                     redirect(action: "show", id: collection.id)
                 }
                 else {
-                    render(view: "base", model: [command: collection])
+                    render(view: "/shared/base", model: [command: collection])
                 }
             } else {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
@@ -277,7 +284,7 @@ class CollectionController {
             cmd.errors.each {println it}
             cmd.id = params.id as int   // these do not seem to be injected
             cmd.version = params.version as int
-            render(view:'location', model: [command: cmd])
+            render(view:'/shared/location', model: [command: cmd])
         } else {
             def collection = Collection.get(params.id)
             if (collection) {
@@ -285,7 +292,7 @@ class CollectionController {
                     def version = params.version.toLong()
                     if (collection.version > version) {
                         collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                        render(view: "location", model: [command: collectionInstance])
+                        render(view: "/shared/location", model: [command: collection])
                         return
                     }
                 }
@@ -301,11 +308,12 @@ class CollectionController {
                 }
 
                 collection.properties = params
+                collection.userLastModified = username()
                 if (!collection.hasErrors() && collection.save(flush: true)) {
                     flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
                     redirect(action: "show", id: collection.id)
                 } else {
-                    render(view: "location", model: [command: collection])
+                    render(view: "/shared/location", model: [command: collection])
                 }
             } else {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
@@ -325,7 +333,7 @@ class CollectionController {
                 def version = params.version.toLong()
                 if (collection.version > version) {
                     collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                    render(view: "description", model: [command: collectionInstance])
+                    render(view: "description", model: [command: collection])
                     return
                 }
             }
@@ -356,76 +364,13 @@ class CollectionController {
             params.remove('subCollections')
 
             collection.properties = params
+            collection.userLastModified = username()
             if (!collection.hasErrors() && collection.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
                 redirect(action: "show", id: collection.id)
             }
             else {
                 render(view: "description", model: [command: collection])
-            }
-        } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
-            redirect(action: "show", id: params.id)
-        }
-    }
-
-    /**
-     * Update images
-     */
-    def updateImages = {
-        //params.each {println it}
-        def collection = Collection.get(params.id)
-        if (collection) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (collection.version > version) {
-                    collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                    render(view: "images", model: [command: collectionInstance])
-                    return
-                }
-            }
-            // special handling for uploading image
-            // we need to account for:
-            //  a) upload of new image
-            //  b) change of metadata for existing image
-            // removing an image is handled separately
-            MultipartFile file = params.imageFile
-            if (file?.size) {  // will only have size if a file was selected
-                // save the chosen file
-                def content = request.getFile('imageFile')
-                if (content && file.size < 200000) {   // limit file to 200Kb
-                    def filename = file.getOriginalFilename()
-                    log.debug "filename=${filename}"
-
-                    // update filename
-                    collection.imageRef = new Image(file: filename)
-
-                    def colDir = new File(ConfigurationHolder.config.repository.location.images as String, "collection")
-                    colDir.mkdirs()
-                    File f = new File(colDir, filename)
-                    log.debug "saving ${filename} to ${f.absoluteFile}"
-                    content.transferTo(f)
-                    ActivityLog.log username(), isAdmin(), Action.UPLOAD_IMAGE, filename
-                } else {
-                    println "reject file of size ${file.size}"
-                    collection.errors.reject('image.too.big', 'The image you selected is too large. Images are limited to 200KB.')
-                    collection.errors.rejectValue('imageRef.file', 'image.too.big')
-                }
-            }
-            // handle too big error (cause setting props clears the error)
-            if (collection.hasErrors()) {
-                collection.errors.each{println it}
-                render(view: "images", model: [command: collection])
-            } else {
-                collection.properties = params
-                println "hasErrors? ${collection.hasErrors()}"
-                if (!collection.hasErrors() && collection.save(flush: true)) {
-                    flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
-                    redirect(action: "show", id: collection.id)
-                }
-                else {
-                    render(view: "images", model: [command: collection])
-                }
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
@@ -443,7 +388,7 @@ class CollectionController {
                 def version = params.version.toLong()
                 if (collection.version > version) {
                     collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                    render(view: "range", model: [command: collectionInstance])
+                    render(view: "range", model: [command: collection])
                     return
                 }
             }
@@ -468,6 +413,7 @@ class CollectionController {
             params.remove('scientificNames')
 
             collection.properties = params
+            collection.userLastModified = username()
             if (!collection.hasErrors() && collection.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
                 redirect(action: "show", id: collection.id)
@@ -480,95 +426,33 @@ class CollectionController {
         }
     }
 
-    def updateContactRole = {
-        params.each {println it}
-        def contactFor = ContactFor.get(params.contactForId)
-        if (contactFor) {
-            //contactFor.role = params.role
-            //contactFor.administrator = params.admin
-            //contactFor.primaryContact = params.primary
-            contactFor.properties = params
-            println "role = ${contactFor.role}"
-            println "admin = ${contactFor.administrator}"
-            println "primary = ${contactFor.primaryContact}"
-            if (!contactFor.hasErrors() && contactFor.save(flush: true)) {
-                flash.message = "${message(code: 'contactRole.updated.message', args: [params.id])}"
-                redirect(action: "edit", id: params.id, params: [page: 'showContacts'])
-            } else {
-                render(view: 'contactRole', model: [command: ProviderGroup._get(params.id), cf: contactFor])
+    def removeImage = {
+        def collection = Collection.get(params.id)
+        if (collection) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (collection.version > version) {
+                    collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
+                    render(view: "/shared/images", model: [command: collection])
+                    return
+                }
             }
 
+            if (params.target == 'logoRef') {
+                collection.logoRef = null
+            } else {
+                collection.imageRef = null
+            }
+            collection.userLastModified = username()
+            if (!collection.hasErrors() && collection.save(flush: true)) {
+                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
+                redirect(action: "show", id: collection.id)
+            } else {
+                render(view: "/shared/images", model: [command: collection])
+            }
         } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'contactFor.label', default: 'Contact for collection'), params.contactForId])}"
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "show", id: params.id)
-        }
-
-    }
-
-    def addContact = {
-        def collection = Collection.get(params.id)
-        if (!collection) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
-            redirect(action: "list")
-        } else {
-            Contact contact = Contact.get(params.addContact)
-            if (contact) {
-                collection.addToContacts(contact, "editor", true, false, username())
-                redirect(action: "edit", params: [page:"showContacts"], id: params.id)
-            }
-        }
-    }
-
-    def addNewContact = {
-        def contact = Contact.get(params.contactId)
-        def collection = Collection.get(params.collectionId)
-        if (contact && collection) {
-            // add the contact to the collection
-            collection.addToContacts(contact, "editor", true, false, username())
-            redirect(action: "edit", params: [page:"showContacts"], id: collection.id)
-        } else {
-            if (!collection) {
-                flash.message = "Contact was created but collection could not be found. Please edit collection and add contact from existing."
-                redirect(action: "list")
-            } else {
-                // contact must be null
-                flash.message = "Contact was created but could not be added to the collection. Please add contact from existing."
-                redirect(action: "edit", params: [page:"showContacts"], id: collection.id)
-            }
-        }
-    }
-
-    def removeContact = {
-        def collection = Collection.get(params.id)
-        if (!collection) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
-            redirect(action: "list")
-        } else {
-            ContactFor cf = ContactFor.get(params.idToRemove)
-            if (cf) {
-                cf.delete()
-                redirect(action: "edit", params: [page:"showContacts"], id: params.id)
-            }
-            /*Contact contact = Contact.get(params.contactIdToRemove)
-            if (contact) {
-                collection.deleteFromContacts(contact)
-                redirect(action: "edit", params: [page:"showContacts"], id: params.id)
-            }*/
-        }
-    }
-
-    def editRole = {
-        def contactFor = ContactFor.get(params.id)
-        if (!contactFor) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'contactFor.label', default: 'Contact for collection'), params.id])}"
-            redirect(action: "list")
-        } else {
-            ProviderGroup pg = ProviderGroup._get(contactFor.entityUid)
-            if (pg) {
-                render(view: 'contactRole', model: [command: pg, cf: contactFor])
-            } else {
-                // TODO:
-            }
         }
     }
 
@@ -1069,6 +953,7 @@ v                   }
     }
 
     private findCollection(id) {
+        if (!id) {return null}
         // try lsid
         if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
             return Collection.findByGuid(id)
@@ -1087,46 +972,6 @@ v                   }
         return Collection.findByAcronym(id)
     }
 
-    private Collection get(id) {
-        if (params.id?.toString()?.startsWith(Collection.ENTITY_PREFIX)) {
-            return Collection.findByUid(params.id)
-        } else {
-            return Collection.get(params.id)
-        }
-    }
-    
-    private String username() {
-        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
-    }
-
-    private boolean isAdmin() {
-        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
-    }
-
-    private String toJson(param) {
-        if (!param) {
-            return ""
-        }
-        if (param instanceof String) {
-            // single value
-            return ([param] as JSON).toString()
-        }
-        def list = param.collect {
-            it.toString()
-        }
-        return (list as JSON).toString()
-    }
-
-    private String toSpaceSeparatedList(param) {
-        if (!param) {
-            return ""
-        }
-        if (param instanceof String) {
-            // single value
-            return param
-        }
-        return param.join(' ')
-    }
 }
 
 /** V2 command classes **/

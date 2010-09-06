@@ -57,7 +57,7 @@
       <!-- last edit -->
       <p><span class="category">Last change</span> ${fieldValue(bean: collectionInstance, field: "userLastModified")} on ${fieldValue(bean: collectionInstance, field: "lastUpdated")}</p>
     
-      <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'base']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/base']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
     </div>
 
     <!-- collection description -->
@@ -104,7 +104,7 @@
         <p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.copyright")}</p>
       </g:if>
 
-    <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'images']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/images', target:'imageRef']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
   </div>
 
     <!-- location -->
@@ -163,7 +163,7 @@
           <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "phone")}</td>
         </tr>
       </table>
-      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'location']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/location']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
     </div>
 
     <!-- collection scope -->
@@ -261,8 +261,37 @@
           </li>
         </g:each>
       </ul>
-      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'showContacts']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/showContacts']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
     </div>
+
+    <!-- Attributions -->
+    <div class="show-section">
+      <h2>Attributions</h2>
+      <ul class="fancy">
+        <g:each in="${collectionInstance.getAttributionList()}" var="att">
+          <li>${att.name}</li>
+        </g:each>
+      </ul>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/editAttributions']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    </div>
+
+    <!-- Provider codes -->
+    <g:if test="${collectionInstance.providerMap}">
+      <div class="show-section">
+        <h2>Provider codes</h2>
+        <p>Institution codes: ${collectionInstance.getListOfInstitutionCodesForLookup().join(" ")}</p>
+        <p>Collection codes: ${collectionInstance.getListOfCollectionCodesForLookup().join(" ")}</p>
+        <g:if test="${collectionInstance.providerMap.matchAnyCollectionCode || !collectionInstance.providerMap.exact}">
+          <p>
+            <cl:valueOrOtherwise value="${collectionInstance.providerMap.matchAnyCollectionCode}">Will match any collection code. </cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${!collectionInstance.providerMap.exact}">Codes do not map exactly to this collection. </cl:valueOrOtherwise>
+            <cl:valueOrOtherwise test="${collectionInstance.providerMap.warning}">Warning is: ${collectionInstance.providerMap.warning}</cl:valueOrOtherwise>
+          </p>
+        </g:if>
+        <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/editAttributions']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      </div>
+    </g:if>
+
   </div>
   <div class="buttons">
     <g:form>

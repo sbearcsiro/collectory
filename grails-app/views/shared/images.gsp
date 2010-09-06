@@ -3,16 +3,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
-        <title><g:message code="collection.base.label" default="Edit collection metadata" /></title>
+        <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
+        <g:set var="entityNameLower" value="${command.ENTITY_TYPE.toLowerCase()}"/>
+        <title><g:message code="collection.base.label" default="Edit ${entityNameLower} image metadata" /></title>
     </head>
     <body>
         <div class="nav">
-          <g:if test="${mode == 'create'}">
-            <h1>Creating a new collection</h1>
-          </g:if>
-          <g:else>
-            <h1>Editing: ${command.name}</h1>
-          </g:else>
+          <h1>Editing: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -26,6 +23,7 @@
             <g:uploadForm method="post" name="baseForm" action="base">
                 <g:hiddenField name="id" value="${command?.id}" />
                 <g:hiddenField name="version" value="${command.version}" />
+                <g:hiddenField name="target" value="${target}" />
                 <div class="dialog">
                     <table>
                         <tbody>
@@ -33,11 +31,17 @@
                         <!-- image -->
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <!--label for="imageRef"><g:message code="providerGroup.imageRef.label" default="Representative image" /></label-->
-                              Representative<br/>image
+                              <!--label for="imageRef"><g:message code="providerGroup.${target}.label" default="Image" /></label-->
+                              <g:if test="${target == 'logoRef'}">Logo image</g:if>
+                              <g:else>Representative<br/>image</g:else>
                             </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'imageRef', 'errors')}">
-                              <g:render template="/shared/attributableImage" model="[command: command, directory: 'collection', action: 'editCollection']"/>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: target, 'errors')}">
+                              <g:if test="${target == 'logoRef'}">
+                                <g:render template="/shared/attributableLogo" model="[command: command, directory: entityNameLower, action: 'editCollection']"/>
+                              </g:if>
+                              <g:else>
+                                <g:render template="/shared/attributableImage" model="[command: command, directory: entityNameLower, action: 'editCollection']"/>
+                              </g:else>
                             </td>
                         </tr>
 
@@ -47,6 +51,7 @@
 
                 <div class="buttons">
                     <span class="button"><input type="submit" name="_action_updateImages" value="Update" class="save"></span>
+                    <span class="button"><input type="submit" name="_action_removeImage" value="Remove image" class="cancel"></span>
                     <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
                 </div>
             </g:uploadForm>

@@ -3,7 +3,8 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="layout" content="main"/>
-  <g:set var="entityName" value="${message(code: 'collection.label', default: 'Collection')}"/>
+  <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
+  <g:set var="entityNameLower" value="${command.ENTITY_TYPE.toLowerCase()}"/>
   <title><g:message code="default.show.label" args="[entityName]"/></title>
 </head>
 <body>
@@ -34,7 +35,7 @@
             <td style="padding-bottom:20px;">
               <span class="contactButton buttonRight">
                 <g:link class="edit-small" controller="contact" action='edit' id="${cf.contact.id}"
-                        params='[returnTo: "/collection/edit/${command.id}?page=showContacts"]'>
+                        params='[returnTo: "/${entityNameLower}/edit/${command.id}?page=/shared/showContacts"]'>
                   ${message(code: 'default.button.editContact.label', default: "Edit the contact's details")}
                 </g:link>
               </span>
@@ -51,15 +52,18 @@
             </td>
             <td>
               <span class="contactButton buttonRight">
-                <g:link class="edit-small" action='editRole' id="${cf.id}">${message(code: 'default.button.editRole.label', default: "Edit the contact's role in this collection")}</g:link>
+                <g:link class="edit-small" action='editRole' id="${cf.id}"
+                  params='[returnTo: "/${entityNameLower}/edit/${command.id}?page=/shared/showContacts"]'>
+                  Edit the contact's role in this ${entityNameLower}
+                </g:link>
               </span>
             </td></tr>
 
             <!-- remove -->
             <tr><td></td><td>
               <span class="contactButton">
-                <g:link class="removeSmallAction" action='removeContact' id="${command.id}" onclick="return confirm('Remove ${cf.contact?.buildName()} as a contact for this collection?');"
-                        params='[idToRemove: "${cf.id}"]'>${message(code: 'default.button.remove.label', default: 'Remove the contact for this collection')}</g:link>
+                <g:link class="removeSmallAction" action='removeContact' id="${command.id}" onclick="return confirm('Remove ${cf.contact?.buildName()} as a contact for this ${entityNameLower}?');"
+                        params='[idToRemove: "${cf.id}"]'>Remove the contact for this ${entityNameLower}</g:link>
               </span>
             </td></tr>
 
@@ -83,10 +87,10 @@
         OR:<br/>
         <table class="shy">
           <colgroup><col width="68%"><col width="32%"></colgroup>
-          <tr><td>Create a new contact and add them to this collection:</td>
+          <tr><td>Create a new contact and add them to this ${entityNameLower}:</td>
           <td>
           <span class="button">
-            <g:link class="addAction" controller="contact" action='create' params='[caller:"collection", callerId: "${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>
+            <g:link class="addAction" controller="contact" action='create' params='[returnTo:"/${entityNameLower}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>
           </span>
           </td></tr>
         </table>
@@ -96,7 +100,7 @@
     <div class="buttons">
       <g:form>
         <g:hiddenField name="id" value="${command.id}"/>
-        <span class="button"><g:link class="returnAction" controller="collection" action='show' id="${command.id}">Return to ${command.name}</g:link></span>
+        <span class="button"><g:link class="returnAction" controller="${entityNameLower}" action='show' id="${command.id}">Return to ${command.name}</g:link></span>
       </g:form>
     </div>
   </div>

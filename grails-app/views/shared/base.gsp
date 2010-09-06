@@ -65,6 +65,7 @@
                             <cl:helpTD/>
                           </tr>
 
+                        <g:if test="${command.ENTITY_TYPE == 'Collection'}">
                           <tr class="prop">
                             <td valign="top" class="name">
                               <label for="institution"><g:message code="collection.institution.label" default="Institution"/></label>
@@ -77,8 +78,21 @@
                                       value="${command.institution?.id}"/>
                               <cl:helpText code="collection.institution"/>
                               <cl:helpTD/>
-                          </td>
-                        </tr>
+                            </td>
+                          </tr>
+                        </g:if>
+
+                        <!-- ALA partner -->
+                        <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
+                          <tr class="prop">
+                              <td valign="top" class="name">
+                                <label for="isALAPartner"><g:message code="providerGroup.isALAPartner.label" default="Is ALA Partner" /></label>
+                              </td>
+                              <td valign="top" class="value ${hasErrors(bean: command, field: 'isALAPartner', 'errors')}">
+                                  <g:checkBox name="isALAPartner" value="${command?.isALAPartner}" />
+                              </td>
+                          </tr>
+                        </cl:ifGranted>
 
                         <!-- network membership -->
                         <tr class="prop">

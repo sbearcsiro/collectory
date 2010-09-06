@@ -3,7 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
-        <title><g:message code="collection.base.label" default="Edit collection metadata" /></title>
+        <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
+        <g:set var="entityNameLower" value="${command.ENTITY_TYPE.toLowerCase()}"/>
+        <title><g:message code="${entityNameLower}.base.label" default="Edit ${entityNameLower} metadata" /></title>
     </head>
     <body>
         <div class="nav">
@@ -22,6 +24,7 @@
                 <g:hiddenField name="id" value="${command?.id}" />
                 <g:hiddenField name="version" value="${command.version}" />
                 <g:hiddenField name="contactForId" value="${cf.id}" />
+                <g:hiddenField name="returnTo" value="${returnTo}" />
                 <div class="dialog">
                     <table>
                       <colgroup><col width="15%"><col width="10%"><col width="75%"></colgroup>
@@ -34,12 +37,12 @@
                           <tr class="checkbox">
                             <td style="vertical-align:middle;">Administrator</td>
                             <td><g:checkBox style="margin-left:7px;" name="administrator" value="${cf?.administrator}"/></td>
-                            <td>Determines whether the contact can edit properties of this collection.</td>
+                            <td>Determines whether the contact can edit properties of this ${entityNameLower}.</td>
                           </tr>
                           <tr class="checkbox">
                             <td style="vertical-align:middle;">Primary contact:</td>
                             <td valign="top" class="value"><g:checkBox style="margin-left:7px;" name="primaryContact" value="${cf?.primaryContact}"/></td>
-                            <td>The primary contact is the one displayed on the public page for this collection.</td>
+                            <td>The primary contact is the one displayed on the public page for this ${entityNameLower}.</td>
                           </tr>
 
                         </tbody>

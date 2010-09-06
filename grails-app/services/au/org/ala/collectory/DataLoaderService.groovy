@@ -564,7 +564,7 @@ class DataLoaderService {
                     } catch (IOException e) {
                         println "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
                     }
-                    pg.scope = new CollectionScope(keywords: '["microbial"]', userLastModified: "AMRRN loader")
+                    pg.keywords = '["microbial"]'
                     pg.save(flush:true)
                     if (pg.hasErrors()) {
                         println pg.name + "- " + pg.errors
@@ -734,11 +734,10 @@ class DataLoaderService {
                     provider.userLastModified = "BCI loader"
 
                     /* collection */
-                    provider.scope = new CollectionScope()
-                    provider.scope.properties["geographicDescription","startDate"] = params
-                    provider.scope.keywords = extractKeywords(params)
-                    provider.scope.numRecords = buildSize(params)
-                    provider.scope.userLastModified = "BCI loader"
+                    provider.properties["geographicDescription","startDate"] = params
+                    provider.keywords = extractKeywords(params)
+                    provider.numRecords = buildSize(params)
+                    provider.userLastModified = "BCI loader"
 
                     /*/ create or assign infosource only if there is some data
                     String webServiceUri = params.webServiceUri

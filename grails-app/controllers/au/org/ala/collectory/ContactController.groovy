@@ -17,7 +17,7 @@ class ContactController {
         def contactInstance = new Contact()
         contactInstance.properties = params
         contactInstance.userLastModified = username()
-        return [contactInstance: contactInstance, caller: params.caller, callerId: params.callerId]
+        return [contactInstance: contactInstance, returnTo: params.returnTo]
     }
 
     def save = {
@@ -28,14 +28,14 @@ class ContactController {
         contactInstance.errors.each{println it}
         if (contactInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
-            if (params.caller == 'collection') {
-                redirect(controller: params.caller, action: 'addNewContact', params: [contactId: contactInstance.id, collectionId: params.callerId])
+            if (params.returnTo) {
+                redirect(uri: params.returnTo + "?contactId=${contactInstance.id}")
             } else {
                 redirect(action: "show", id: contactInstance.id)
             }
         }
         else {
-            render(view: "create", model: [contactInstance: contactInstance], caller: params.caller, callerId: params.callerId)
+            render(view: "create", model: [contactInstance: contactInstance], returnTo: params.returnTo)
         }
     }
 
@@ -69,14 +69,14 @@ class ContactController {
                 if (contactInstance.version > version) {
                     
                     contactInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'contact.label', default: 'Contact')] as Object[], "Another user has updated this Contact while you were editing")
-                    render(view: "edit", model: [contactInstance: contactInstance])
+                    render(view: "edit", model: [contactInstance: contactInstance, returnTo: params.returnTo])
                     return
                 }
             }
             contactInstance.properties = params
             contactInstance.userLastModified = username()
             if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
-                ActivityLog.log username(), isAdmin(), Action.DELETE, "contact ${params.id}"
+                ActivityLog.log username(), isAdmin(), Action.EDIT_SAVE, "contact ${params.id}"
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
                 if (params.returnTo) {
                     redirect(uri: params.returnTo)
@@ -85,7 +85,7 @@ class ContactController {
                 }
             }
             else {
-                render(view: "edit", model: [contactInstance: contactInstance])
+                render(view: "edit", model: [contactInstance: contactInstance, returnTo: params.returnTo])
             }
         }
         else {

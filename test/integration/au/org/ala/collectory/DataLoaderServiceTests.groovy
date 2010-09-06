@@ -80,8 +80,6 @@ class DataLoaderServiceTests extends GrailsUnitTestCase {
         dataLoaderService.loadBCIData("/data/collectory/bootstrap/lookup_lsid.csv")
         println "Collections added = " + ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_COLLECTION)
         println "Institutions added = " + ProviderGroup.countByGroupType(ProviderGroup.GROUP_TYPE_INSTITUTION)
-        println "CollectionScopes added = " + CollectionScope.count()
-        //println "InfoSources added = " + InfoSource.count()
 
         ProviderGroup group0 = ProviderGroup.findByGuid("1004")
         assertNotNull group0

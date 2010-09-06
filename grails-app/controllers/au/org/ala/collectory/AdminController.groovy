@@ -50,7 +50,15 @@ class AdminController {
             Attribution at3 = new Attribution(uid: 'at3', name: 'Council of Heads of Australian Collections of Microorganisms', url: 'http://www.amrin.org/ResearchNetwork/Participants.aspx')
             at3.save()
         }
-        def targets = Collection.list() + Institution.list()
+        def targets = []
+        if (params.id) {
+            def target = ProviderGroup._get(params.id)
+            if (target) {
+                targets << target
+            }
+        } else {
+            targets = Collection.list() + Institution.list()
+        }
         targets.each { pg ->
             println "processing " + pg.name
             if (pg.guid?.startsWith(ProviderGroup.LSID_PREFIX)) {

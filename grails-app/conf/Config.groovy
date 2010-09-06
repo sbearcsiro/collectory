@@ -37,7 +37,7 @@ if (!biocache.baseURL) {
 }
 if (!security.cas.urlPattern) {
     // simplify collection pattern when /collection/summary is not used any more (replaced by /lookup/summary)
-    security.cas.urlPattern = '/admin.*,/collection/list/.*,/collection/show/.*,/collection/edit/.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*'
+    security.cas.urlPattern = '/admin.*,/collection/list.*,/collection/show/.*,/collection/edit.*,/collection/delete.*,/collection/create.*,/collection/removeImage.*,/collection/update.*,/collection/base.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*'
 }
 if (!citation.template) {
     citation.template = 'Accessed through ALA website, @entityName@, for more information: @link@'

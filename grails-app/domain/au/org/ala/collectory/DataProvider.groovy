@@ -26,7 +26,7 @@ class DataProvider extends ProviderGroup implements Serializable {
      * @return CollectionSummary
      */
     DataProviderSummary buildSummary() {
-        DataProviderSummary dps = init(new DataProviderSummary())
+        DataProviderSummary dps = init(new DataProviderSummary()) as DataProviderSummary
         dps.resources = resources.collect {[it.uid, it.name]}
         return dps
     }

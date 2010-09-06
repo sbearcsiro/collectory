@@ -500,11 +500,11 @@ class CollectoryTagLib {
     }
 
     def membershipWithGraphics = { attrs ->
-        Collection coll = attrs.coll
-        if (coll) {
+        ProviderGroup pg = attrs.coll
+        if (pg) {
             // check collection's membership
             ProviderGroup.networkTypes.each {
-                if (coll.isMemberOf(it)) {
+                if (pg.isMemberOf(it)) {
                     out << "<span class='category'>Member of</span> ${it}"
                     // this will be tidied up when hubs are entities
                     if (it == "CHAH") {

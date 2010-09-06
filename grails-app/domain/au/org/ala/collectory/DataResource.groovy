@@ -36,7 +36,7 @@ class DataResource extends ProviderGroup implements Serializable {
      * @return CollectionSummary
      */
     DataResourceSummary buildSummary() {
-        DataResourceSummary drs = init(new DataResourceSummary())
+        DataResourceSummary drs = init(new DataResourceSummary()) as DataResourceSummary
         drs.displayName = displayName
         drs.dataProvider = dataProvider.name
         drs.dataProviderId = dataProvider.id

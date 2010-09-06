@@ -22,8 +22,7 @@
             </div>
             </g:hasErrors>
             <g:form action="save" method="post" >
-              <g:hiddenField name="caller" value="${caller}"/>
-              <g:hiddenField name="callerId" value="${callerId}"/>
+              <g:hiddenField name="returnTo" value="${returnTo}"/>
                 <div class="dialog">
                     <table>
                         <tbody>

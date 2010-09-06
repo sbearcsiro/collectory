@@ -45,7 +45,7 @@
                         <td><g:link controller="collection" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link></td>
                         <td>${c.getInstitution()?'Y':' '}</td>
                         <td>${c.getPrimaryContact()?'Y':' '}</td>
-                        <td>${c.getIsALAPartner()?'Y':' '}</td>
+                        <td>${c.isALAPartner()?'Y':' '}</td>
                       </tr>
                     </g:each>
                   </table>

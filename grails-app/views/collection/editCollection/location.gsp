@@ -1,5 +1,5 @@
 
-<%@ page import="au.org.ala.collectory.CollectionCommand" %>
+<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.CollectionCommand" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -127,7 +127,7 @@
                                 </label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'state', 'errors')}">
-                                  <g:select name="state" from="${command.constraints.state.inList}" value="${command?.state}" valueMessagePrefix="providerGroup.state" noSelection="['': '']" />
+                                  <g:select name="state" from="${ProviderGroup.states}" value="${command?.state}" valueMessagePrefix="providerGroup.state" noSelection="['': '']" />
                                   <cl:helpText code="collection.state"/>
                               </td>
                               <cl:helpTD/>

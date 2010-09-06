@@ -36,7 +36,7 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'collection', 'errors')}">
                                     <g:select name="collection.id"
-                                            from="${au.org.ala.collectory.Collection.list()}"
+                                            from="${au.org.ala.collectory.Collection.list([sort: 'name'])}"
                                             optionKey="id"
                                             value="${providerMapInstance?.collection?.id}"  />
                                 </td>
@@ -47,7 +47,7 @@
                                   <label for="institutionCodes"><g:message code="providerMap.institutionCodes.label" default="Institution Codes" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'institutionCodes', 'errors')}">
-                                    <g:select name="institutionCodes" from="${au.org.ala.collectory.ProviderCode.list()}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.institutionCodes*.id}" />
+                                    <g:select name="institutionCodes" from="${au.org.ala.collectory.ProviderCode.list([sort: 'code'])}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.institutionCodes*.id}" />
                                 </td>
                             </tr>
                         
@@ -56,7 +56,7 @@
                                   <label for="collectionCodes"><g:message code="providerMap.collectionCodes.label" default="Collection Codes" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: providerMapInstance, field: 'collectionCodes', 'errors')}">
-                                    <g:select name="collectionCodes" from="${au.org.ala.collectory.ProviderCode.list()}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.collectionCodes*.id}" />
+                                    <g:select name="collectionCodes" from="${au.org.ala.collectory.ProviderCode.list([sort: 'code'])}" multiple="yes" optionKey="id" size="5" value="${providerMapInstance?.collectionCodes*.id}" />
                                 </td>
                             </tr>
 

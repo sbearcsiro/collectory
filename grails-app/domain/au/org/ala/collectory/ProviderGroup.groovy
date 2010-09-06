@@ -75,6 +75,8 @@ abstract class ProviderGroup implements Serializable {
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
+    static states = ['Australian Capital Territory', 'New South Wales', 'Queensland', 'Northern Territory', 'Western Australia', 'South Australia', 'Tasmania', 'Victoria']
+
     static mapping = {
         tablePerHierarchy false
         uid index: 'uid_idx'
@@ -93,7 +95,7 @@ abstract class ProviderGroup implements Serializable {
         latitude(max:360.0, min:-360.0, scale:10)
         longitude(max:360.0, min:-360.0, scale:10)
         altitude(nullable:true)
-        state(nullable:true, maxSize:45, inList: ['Australian Capital Territory', 'New South Wales', 'Queensland', 'Northern Territory', 'Western Australia', 'South Australia', 'Tasmania', 'Victoria'])
+        state(nullable:true, maxSize:45, inList: states)
         websiteUrl(nullable:true, maxSize:256)
         logoRef(nullable:true)
         imageRef(nullable:true)

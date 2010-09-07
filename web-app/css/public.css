@@ -8,7 +8,7 @@
 
 .sidebar p.caption {
     color: #666 ! important;
-    font-size: 0.8em;
+    font-size: 0.9em;
     line-height: normal;
     padding-bottom: 4px ! important;
 }
@@ -96,6 +96,13 @@ ul.taxaBreakdown input {
     padding: 5px 5px 5px 30px
 }
 
+div.distributionImage {
+    display: inline;
+}
+
+div.inline {
+    display: inline;
+}
 /*a[target='_blank'] {
     background: url(../images/skin/external.png) center right no-repeat;
     padding-right: 13px;

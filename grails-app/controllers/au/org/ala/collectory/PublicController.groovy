@@ -82,7 +82,7 @@ class PublicController {
         }
     }
 
-    def breakdown = {
+    def decadeBreakdown = {
         def collectionInstance = findCollection(params.id)
         //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
         if (!collectionInstance) {
@@ -116,6 +116,39 @@ class PublicController {
         }
     }
 
+    def taxonBreakdown = {
+        def threshold = params.threshold ?: 20
+        def collectionInstance = findCollection(params.id)
+        if (!collectionInstance) {
+            log.error "Unable to find collection for id = ${params.id}"
+            def error = ["error":"unable to find collection for id = " + params.id]
+            render error as JSON
+        } else {
+            /* get taxon breakdown */
+            def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${collectionInstance.uid}.json";
+            def conn = new URL(taxonUrl).openConnection()
+            conn.setConnectTimeout 3000
+            def dataTable = null
+            def json
+            try {
+                json = conn.content.text
+                //println "Response = " + json
+                def breakdown = JSON.parse(json)?.breakdown
+                if (breakdown) {
+                    dataTable = buildPieChartDataTable(breakdown)
+                }
+            } catch (Exception e) {
+                log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
+            }
+            if (dataTable) {
+                render dataTable
+            } else {
+                log.warn "unable to build data table from taxa json = " + json
+                def error = ["error":"Unable to build data table from taxa json"]
+                render error as JSON
+            }
+        }
+    }
 
     def listInstitutions = {
         ActivityLog.log username(), isAdmin(), Action.LIST, 'institutions'
@@ -358,6 +391,42 @@ class PublicController {
             result += (index == input.size()) ? "" : ","
         }
         result += '],"p":{"max":' + maximum + '}}'
+        return result
+    }
+
+    /**
+     * // input of form: [count:1, fieldValue:null1870, prefix:null, label:1870],
+     *                   [count:16, fieldValue:null1880, prefix:null, label:1880],
+     *                   [count:44, fieldValue:null1890, prefix:null, label:1890]
+     *
+     * // output: Two columns. The first column should be a string, and contain the slice label.
+     *                         The second column should be a number, and contain the slice value.
+     *
+     * e.g. {"cols":[
+     * {"id":"","label":"Class","pattern":"","type":"string"},{"id":"","label":"No. specimens","pattern":"","type":"number"}],
+     * "rows":[
+     *  {"c":[{"v":"Insecta","f":null},{"v":2129,"f":null}]},
+     *  {"c":[{"v":"Trebouxiophyceae","f":null},{"v":3407,"f":null}]},
+     *  {"c":[{"v":"Magnoliopsida","f":null},{"v":859,"f":null}]},
+     *  {"c":[{"v":"Diplopoda","f":null},{"v":134,"f":null}]},
+     *  {"c":[{"v":"Actinopterygii","f":null},{"v":88,"f":null}]},
+     *  {"c":[{"v":"Arachnida","f":null},{"v":54,"f":null}]},
+     *  {"c":[{"v":"Malacostraca","f":null},{"v":5,"f":null}]}],
+     * "p":null}
+     *
+     * @param input
+     * @return
+     */
+    private String buildPieChartDataTable(input) {
+        String result = """{"cols":[{"id":"","label":"${input.rank}","pattern":"","type":"string"},{"id":"","label":"No. specimens","pattern":"","type":"number"}],"rows":["""
+        def list = input.taxa.collect {
+            [label: it.label, count: it.count]
+        }
+        list.eachWithIndex {it, index ->
+            result += '{"c":[{"v":"' + it.label + '","f":null},{"v":' + it.count + ',"f":null}]}'
+            result += (index == list.size()) ? "" : ","
+        }
+        result += '],"p":{"rank":"' + input.rank + '"}}'
         return result
     }
 

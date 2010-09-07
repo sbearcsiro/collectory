@@ -250,11 +250,12 @@
               </div>
             </div>
               <div class="section">
-                <h3>Distribution of occurrence records for this collection</h3>
-                <div>
+                <div class="inline">
+                  <h3>Distribution and statistics</h3>
                   <cl:distributionImg inst="${collectionInstance.getListOfInstitutionCodesForLookup()}" coll="${collectionInstance.getListOfCollectionCodesForLookup()}"/>
                 </div>
-                <h3>Statistics of digitised specimens in this collection.</h3>
+                <div id="taxonChart" style="display: inline;padding-right: 20px; width: 500px;">
+                </div>
                 <div id="chart" style="display: inline;padding-right: 20px;">
                 </div>
               </div>
@@ -262,16 +263,26 @@
         </div>
       <script type="text/javascript">
         var queryString = '';
-        var dataUrl = '';
+        var decadeUrl = '';
+        var taxonUrl = '';
+        google.load("visualization", "1", {packages:["corechart"]});
 
         function onLoadCallback() {
-          if (dataUrl.length > 0) {
-            var query = new google.visualization.Query(dataUrl);
+          if (decadeUrl.length > 0) {
+            var query = new google.visualization.Query(decadeUrl);
             query.setQuery(queryString);
             query.send(handleQueryResponse);
           } else {
-            dataUrl = "${ConfigurationHolder.config.grails.serverURL}/public/breakdown/${collectionInstance.id}";
-            $.get(dataUrl, {}, breakdownRequestHandler);
+            decadeUrl = "${ConfigurationHolder.config.grails.serverURL}/public/decadeBreakdown/${collectionInstance.id}";
+            $.get(decadeUrl, {}, breakdownRequestHandler);
+          }
+          if (taxonUrl.length > 0) {
+            var taxonQuery = new google.visualization.Query(taxonUrl);
+            taxonQuery.setQuery(queryString);
+            taxonQuery.send(handleQueryResponse);
+          } else {
+            taxonUrl = "${ConfigurationHolder.config.grails.serverURL}/public/taxonBreakdown/${collectionInstance.id}?threshold=55";
+            $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
           }
         }
 
@@ -279,6 +290,13 @@
           var data = new google.visualization.DataTable(response);
           if (data.getNumberOfRows() > 0) {
             draw(data);
+          }
+        }
+
+        function taxonBreakdownRequestHandler(response) {
+          var data = new google.visualization.DataTable(response);
+          if (data.getNumberOfRows() > 0) {
+            drawTaxonChart(data);
           }
         }
 
@@ -304,6 +322,26 @@
           //options.chxp = '0,50';
 
           vis.draw(dataTable, options);
+        }
+
+        function drawTaxonChart(dataTable) {
+          var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
+          var options = {};
+
+          options.width = 500;
+          options.height = 500;
+          options.is3d = true;
+          options.title = "Specimen numbers by " + dataTable.getTableProperty('rank');
+          options.titleTextStyle = {color: "#7D8804", fontSize: 15};
+          //options.sliceVisibilityThreshold = 1/2000;
+          //options.pieSliceText = "label";
+          options.legend = "left";
+          //options.colors = ['orange','red','blue'];
+          google.visualization.events.addListener(chart, 'select', function() {
+            alert(chart.getSelection());
+          });
+
+          chart.draw(dataTable, options);
         }
 
         function handleQueryResponse(response) {

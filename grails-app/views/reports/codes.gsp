@@ -21,7 +21,7 @@
 
                 <tr class="reportGroupTitle"><td colspan="3">Codes</td></tr>
                 <g:each var='c' in="${codeSummaries}">
-                  <tr><td><g:link controller="public" action="show" id="${c.uid}">${c.name}</g:link></td><td>${c.derivedInstCodes.join(',')}</td><td>${c.derivedCollCodes.join(',')}</td></tr>
+                  <tr><td><g:link controller="public" action="show" id="${c.uid}" fragment="statistics">${c.name}</g:link></td><td>${c.derivedInstCodes.join(',')}</td><td>${c.derivedCollCodes.join(',')}</td></tr>
                 </g:each>
 
               </table>

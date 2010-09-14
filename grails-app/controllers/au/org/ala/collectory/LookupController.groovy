@@ -9,7 +9,7 @@ class LookupController {
 
     def idGeneratorService
 
-    //static allowedMethods = [citation:'POST']
+    static allowedMethods = [citation:['POST','GET']]
 
     def index = { }
 
@@ -34,7 +34,6 @@ class LookupController {
     }
 
     def institution = {
-        println "entered"
         Institution inst = null
         if (params.id) {
             inst = findInstitution(params.id)
@@ -75,21 +74,42 @@ class LookupController {
 
     def citation = {
         // input is a json object of the form ['co123','in23','dp45']
-        def content = request.reader.text
-        //println "Got request " + content
-        if (content) {
-            List<String> uids = JSON.parse(content) as List<String>
-            List<String> result = uids.collect {
-                // get each pg
-                def pg = ProviderGroup._get(it)
-                if (pg) {
-                    return buildCitation(pg).toString()
-                } else {
-                    return "UID ${it} not known".toString()
+        def uids
+        switch (request.method) {
+            case "POST":
+                uids = request.JSON;
+                break;
+            case "GET":
+                uids = JSON.parse(params.uids);
+                break;
+        }
+        if (uids) {
+            if (uids.size() > 0 && uids[0] == "all") {
+                uids = DataResource.list(sort: "uid").collect { it.uid }
+            }
+            withFormat {
+                text {  // handles text/plain and text/html
+                    String result = "Resource name\tCitation\tRights\tMore information"
+                    uids.each {
+                        // get each pg
+                        def pg = ProviderGroup._get(it)
+                        if (pg) {
+                            result += "\n" + buildCitation(pg,true)
+                        }
+                    }
+                    render result
+                }
+                json {
+                    def result = uids.collect {
+                        // get each pg
+                        def pg = ProviderGroup._get(it)
+                        if (pg) {
+                            return buildCitation(pg,false)
+                        }
+                    }
+                    render result as JSON
                 }
             }
-            //result.each {println it}
-            render (result) as JSON
         } else {
             render (["error":"no uids posted"]) as JSON
         }
@@ -116,10 +136,26 @@ class LookupController {
         render (result) as JSON
     }
 
-    String buildCitation(ProviderGroup pg) {
-        def template = ConfigurationHolder.config.citation.template
-        template = template.replaceAll("@entityName@",pg.name)
-        return template.replaceAll("@link@",makeLink(pg.generatePermalink()))
+    def buildCitation(ProviderGroup pg, boolean asString) {
+        def citation = ConfigurationHolder.config.citation.template
+        def rights = ConfigurationHolder.config.citation.rights.template
+        def name = pg.name
+        if (pg instanceof DataResource) {
+            def cit = (pg as DataResource).getCitation()
+            citation = cit ? cit : citation
+            def rit = (pg as DataResource).getRights()
+            rights = rit ? rit : rights
+            def nam = (pg as DataResource).getDisplayName()
+            name = nam ? name : name
+        }
+        def link = ConfigurationHolder.config.citation.link.template
+        link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))
+        citation =  citation.replaceAll("@entityName@",name)
+        if (asString) {
+            return "${name}\t${citation}\t${rights}\t${link}"
+        } else {
+            return ['name': name, 'citation': citation, 'rights': rights, 'link': link]
+        }
     }
 
     String makeLink(uid) {

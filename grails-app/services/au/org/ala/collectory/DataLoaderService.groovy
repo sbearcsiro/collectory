@@ -2,8 +2,6 @@ package au.org.ala.collectory
 
 import grails.converters.*;
 import au.com.bytecode.opencsv.CSVReader
-import au.org.ala.collectory.Geocoder
-import org.codehaus.groovy.grails.web.json.JSONObject
 import au.org.ala.collectory.Geocoder.Location
 import groovy.sql.Sql
 import java.text.SimpleDateFormat
@@ -82,7 +80,7 @@ class DataLoaderService {
         return returnObj
     }
 
-    def dataResourcecolumns = ["uid","dataProvider","name","pubDescription","rights","citation","citableAgent","websiteUrl","logoUrl"]
+    def dataResourcecolumns = ["uid","dataProvider","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl","logoUrl"]
 
     def importDataResources(String filename) {
         CSVReader reader = new CSVReader(new FileReader(filename),'\t' as char)
@@ -93,6 +91,8 @@ class DataLoaderService {
         int failures = 0
         int inserts = 0
 
+        def sql = new Sql(dataSource)
+        sql.execute("delete from data_resource")
 		while ((nextLine = reader.readNext()) != null) {
 
             /* create a params map from the csv data
@@ -113,7 +113,7 @@ class DataLoaderService {
                 if (!dr) {
                     // create it
                     dr = new DataResource()
-                    dr.properties["uid","name","pubDescription","rights","citation","citableAgent","websiteUrl"] = params
+                    dr.properties["uid","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl"] = params
                     dr.dataProvider = DataProvider.findByUid(params.dataProvider as String)
                     dr.userLastModified = "DR loader"
                     if (!dr.hasErrors() && dr.save(flush: true)) {

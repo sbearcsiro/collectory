@@ -83,6 +83,10 @@ class PublicController {
     }
 
     def decadeBreakdown = {
+        response.setHeader("Pragma","no-cache")
+        response.setDateHeader("Expires",1L)
+        response.setHeader("Cache-Control","no-cache")
+        response.addHeader("Cache-Control","no-store")
         def collectionInstance = findCollection(params.id)
         //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
         if (!collectionInstance) {
@@ -117,6 +121,10 @@ class PublicController {
     }
 
     def taxonBreakdown = {
+        response.setHeader("Pragma","no-cache")
+        response.setDateHeader("Expires",1L)
+        response.setHeader("Cache-Control","no-cache")
+        response.addHeader("Cache-Control","no-store")
         def threshold = params.threshold ?: 20
         def collectionInstance = findCollection(params.id)
         if (!collectionInstance) {
@@ -264,7 +272,7 @@ class PublicController {
         }
         def filters = filterString.tokenize(",")
         for (int i = 0; i < filters.size(); i++) {
-            println "Checking filter ${filters[i]} against keywords ${scope?.keywords}"
+            log.debug "Checking filter ${filters[i]} against keywords ${scope?.keywords}"
             if (keywords =~ filters[i]) {
                 return true;
             }
@@ -373,7 +381,7 @@ class PublicController {
          "rows":[
             {"c":[{"v":"1870","f":null},{"v":1,"f":null}]},
             {"c":[{"v":"1880","f":null},{"v":16,"f":null}]},
-            {"c":[{"v":"1890","f":null},{"v":44,"f":null}]},
+            {"c":[{"v":"1890","f":null},{"v":44,"f":null}]}
             ],
         "p":null}
      *
@@ -388,7 +396,7 @@ class PublicController {
             maximum = Math.max(maximum, it.count)
             def label = (stagger && (index % 2) == 0) ? "" : it.label
             result += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
-            result += (index == input.size()) ? "" : ","
+            result += (index == input.size() - 1) ? "" : ","
         }
         result += '],"p":{"max":' + maximum + '}}'
         return result
@@ -411,7 +419,7 @@ class PublicController {
      *  {"c":[{"v":"Diplopoda","f":null},{"v":134,"f":null}]},
      *  {"c":[{"v":"Actinopterygii","f":null},{"v":88,"f":null}]},
      *  {"c":[{"v":"Arachnida","f":null},{"v":54,"f":null}]},
-     *  {"c":[{"v":"Malacostraca","f":null},{"v":5,"f":null}]}],
+     *  {"c":[{"v":"Malacostraca","f":null},{"v":5,"f":null}]}]
      * "p":null}
      *
      * @param input
@@ -424,7 +432,7 @@ class PublicController {
         }
         list.eachWithIndex {it, index ->
             result += '{"c":[{"v":"' + it.label + '","f":null},{"v":' + it.count + ',"f":null}]}'
-            result += (index == list.size()) ? "" : ","
+            result += (index == list.size() - 1) ? "" : ","
         }
         result += '],"p":{"rank":"' + input.rank + '"}}'
         return result

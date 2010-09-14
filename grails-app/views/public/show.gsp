@@ -256,6 +256,8 @@
                 </div>
                 <div id="taxonChart" style="display: inline;padding-right: 20px; width: 500px;">
                 </div>
+                <span class="taxonChartCaption">Click a segment to view its records.</span>
+                <div style="clear:both;"></div>
                 <div id="chart" style="display: inline;padding-right: 20px;">
                 </div>
               </div>
@@ -265,7 +267,6 @@
         var queryString = '';
         var decadeUrl = '';
         var taxonUrl = '';
-        google.load("visualization", "1", {packages:["corechart"]});
 
         function onLoadCallback() {
           if (decadeUrl.length > 0) {
@@ -273,7 +274,7 @@
             query.setQuery(queryString);
             query.send(handleQueryResponse);
           } else {
-            decadeUrl = "${ConfigurationHolder.config.grails.serverURL}/public/decadeBreakdown/${collectionInstance.id}";
+            decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.id}";
             $.get(decadeUrl, {}, breakdownRequestHandler);
           }
           if (taxonUrl.length > 0) {
@@ -281,7 +282,7 @@
             taxonQuery.setQuery(queryString);
             taxonQuery.send(handleQueryResponse);
           } else {
-            taxonUrl = "${ConfigurationHolder.config.grails.serverURL}/public/taxonBreakdown/${collectionInstance.id}?threshold=55";
+            taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.id}?threshold=55";
             $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
           }
         }
@@ -330,15 +331,16 @@
 
           options.width = 500;
           options.height = 500;
-          options.is3d = true;
+          options.is3D = false;
           options.title = "Specimen numbers by " + dataTable.getTableProperty('rank');
-          options.titleTextStyle = {color: "#7D8804", fontSize: 15};
+          options.titleTextStyle = {color: "#7D8804", fontName: 'Arial', fontSize: 15};
           //options.sliceVisibilityThreshold = 1/2000;
           //options.pieSliceText = "label";
           options.legend = "left";
-          //options.colors = ['orange','red','blue'];
           google.visualization.events.addListener(chart, 'select', function() {
-            alert(chart.getSelection());
+            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}/occurrences/searchForCollection?q=${collectionInstance.uid}&fq=" +
+              dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
+            document.location.href = linkUrl;
           });
 
           chart.draw(dataTable, options);
@@ -352,7 +354,7 @@
           draw(response.getDataTable());
         }
 
-        google.load("visualization", "1", {packages:["imagechart"]});
+        google.load("visualization", "1", {packages:["imagechart","corechart"]});
         google.setOnLoadCallback(onLoadCallback);
 
       </script>

@@ -104,6 +104,7 @@ abstract class ProviderGroup implements Serializable {
         isALAPartner()
         notes(nullable:true, maxSize:2048)
         networkMembership(nullable:true, maxSize:256)
+        attributions(nullable:true, maxSize:256)
     }
 
     /*  Contacts  */
@@ -316,6 +317,7 @@ abstract class ProviderGroup implements Serializable {
     }
 
     static ProviderGroup _get(String uid) {
+        if (!uid || uid.size() < 3) {return null}
         switch (uid[0..1]) {
             case Institution.ENTITY_PREFIX: return Institution.findByUid(uid)
             case Collection.ENTITY_PREFIX: return Collection.findByUid(uid)

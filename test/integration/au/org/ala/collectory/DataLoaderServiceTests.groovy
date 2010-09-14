@@ -1,9 +1,7 @@
 package au.org.ala.collectory
 
 import grails.test.*
-import org.codehaus.groovy.grails.web.json.JSONObject
 import au.com.bytecode.opencsv.CSVReader
-import grails.converters.JSON
 
 class DataLoaderServiceTests extends GrailsUnitTestCase {
 

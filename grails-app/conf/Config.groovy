@@ -40,7 +40,13 @@ if (!security.cas.urlPattern) {
     security.cas.urlPattern = '/admin.*,/collection/list.*,/collection/show/.*,/collection/edit.*,/collection/delete.*,/collection/create.*,/collection/removeImage.*,/collection/update.*,/collection/base.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*'
 }
 if (!citation.template) {
-    citation.template = 'Accessed through ALA website, @entityName@, for more information: @link@'
+    citation.template = 'Records provided by @entityName@, accessed through ALA website.'
+}
+if (!citation.link.template) {
+    citation.link.template = 'For more information: @link@'
+}
+if (!citation.rights.template) {
+    citation.rights.template = ''
 }
 
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
@@ -88,24 +94,28 @@ def logDirectory = "/data/collectory/logs"
 environments {
     production {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
+        grails.context = ''
         security.cas.serverName = grails.serverURL
-        security.cas.contextPath = ''
+        security.cas.contextPath = grails.context
     }
     testserver {
         grails.serverURL = "http://alatstdb1-cbr.vm.csiro.au/Collectory"
+        grails.context = '/Collectory'
         security.cas.serverName = "http://alatstdb1-cbr.vm.csiro.au"
-        security.cas.contextPath = '/Collectory'
+        security.cas.contextPath = grails.context
     }
     development {
         grails.serverURL = "http://nemo-be.nexus.csiro.au:8080/Collectory"
+        grails.context = '/Collectory'
         security.cas.serverName = "http://nemo-be.nexus.csiro.au:8080"
-        security.cas.contextPath = '/Collectory'
+        security.cas.contextPath = grails.context
         security.cas.bypass = false
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
+        grails.context = ''
         security.cas.serverName = ''
-        security.cas.contextPath = ''
+        security.cas.contextPath = grails.context
     }
 
 }

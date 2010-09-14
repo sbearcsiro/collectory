@@ -103,6 +103,16 @@ div.distributionImage {
 div.inline {
     display: inline;
 }
+
+/* painful positioning of chart label because of the dynamic generation of the div content and IE bugs */
+span.taxonChartCaption {
+    position:relative;
+    left:575px;
+    top:-110px;
+    padding-left:40px;
+    color: #555;
+}
+
 /*a[target='_blank'] {
     background: url(../images/skin/external.png) center right no-repeat;
     padding-right: 13px;

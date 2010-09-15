@@ -14,8 +14,10 @@ class InstitutionController extends ProviderGroupController {
     def scaffold = Institution
 
     def list = {
+        if (params.message)
+            flash.message = params.message
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        params.sort = "name"
+        params.sort = params.sort ?: "name"
         [institutionInstanceList: Institution.list(params),
                 institutionInstanceTotal: Institution.count()]
     }
@@ -35,136 +37,7 @@ class InstitutionController extends ProviderGroupController {
 
     /** V2 editing ****************************************************************************************************/
 
-    /**
-     * Create a new institution.
-     *
-     */
-    def create = {
-        // quick and dirty
-        def institution = new Institution(uid: idGeneratorService.getNextInstitutionId(), name: 'enter name of institution', userLastModified: username())
-        if (!institution.hasErrors() && institution.save(flush: true)) {
-            flash.message = "${message(code: 'default.created.message', args: [message(code: 'institution.label', default: 'Institution'), institution.uid])}"
-            redirect(action: "show", id: institution.id)
-        } else {
-            flash.message = "Failed to create new institution"
-            redirect(controller: 'admin', action: 'index')
-        }
-    }
-
-    /**
-     * Update base attributes
-     */
-    def updateBase = {BaseCommand cmd ->
-        if(cmd.hasErrors()) {
-            cmd.id = params.id as int   // these do not seem to be injected
-            cmd.version = params.version as int
-            render(view:'/shared/base', model: [command: cmd])
-        } else {
-            def institution = Institution.get(params.id)
-            if (institution) {
-                if (params.version) {
-                    def version = params.version.toLong()
-                    if (institution.version > version) {
-                        institution.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'institution.label', default: 'Institution')] as Object[], "Another user has updated this institution while you were editing")
-                        render(view: "/shared/base", model: [command: institution])
-                        return
-                    }
-                }
-
-                // special handling for membership
-                institution.networkMembership = toJson(params.networkMembership)
-                params.remove('networkMembership')
-
-                institution.properties = params
-                institution.userLastModified = username()
-                if (!institution.hasErrors() && institution.save(flush: true)) {
-                    flash.message = "${message(code: 'default.updated.message', args: [message(code: 'institution.label', default: 'Institution'), institution.uid])}"
-                    redirect(action: "show", id: institution.id)
-                }
-                else {
-                    render(view: "/shared/base", model: [command: institution])
-                }
-            } else {
-                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
-                redirect(action: "show", id: params.id)
-            }
-        }
-    }
-
-    /**
-     * Update location attributes
-     */
-    def updateLocation = {LocationCommand cmd ->
-        if(cmd.hasErrors()) {
-            cmd.errors.each {log.debug it}
-            cmd.id = params.id as int   // these do not seem to be injected
-            cmd.version = params.version as int
-            render(view:'/shared/location', model: [command: cmd])
-        } else {
-            def institution = Institution.get(params.id)
-            if (institution) {
-                if (params.version) {
-                    def version = params.version.toLong()
-                    if (institution.version > version) {
-                        institution.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'institution.label', default: 'Institution')] as Object[], "Another user has updated this institution while you were editing")
-                        render(view: "/shared/location", model: [command: institution])
-                        return
-                    }
-                }
-
-                // special handling for lat & long
-                if (!params.latitude) { params.latitude = -1 }
-                if (!params.longitude) { params.longitude = -1 }
-
-                // special handling for embedded address - need to create address obj if none exists and we have data
-                if (!institution.address && [params.address.street, params.address.postBox, params.address.city,
-                    params.address.state, params.address.postcode, params.address.country].join('').size() > 0) {
-                    institution.address = new Address()
-                }
-
-                institution.properties = params
-                institution.userLastModified = username()
-                if (!institution.hasErrors() && institution.save(flush: true)) {
-                    flash.message = "${message(code: 'default.updated.message', args: [message(code: 'institution.label', default: 'Institution'), institution.uid])}"
-                    redirect(action: "show", id: institution.id)
-                } else {
-                    render(view: "/shared/location", model: [command: institution])
-                }
-            } else {
-                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
-                redirect(action: "show", id: params.id)
-            }
-        }
-    }
-
-    /**
-     * Update descriptive attributes
-     */
-    def updateDescription = {
-        def institution = Institution.get(params.id)
-        if (institution) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (institution.version > version) {
-                    institution.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'institution.label', default: 'Institution')] as Object[], "Another user has updated this institution while you were editing")
-                    render(view: "description", model: [command: institution])
-                    return
-                }
-            }
-            institution.properties = params
-            institution.userLastModified = username()
-            if (!institution.hasErrors() && institution.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'institution.label', default: 'Institution'), institution.uid])}"
-                redirect(action: "show", id: institution.id)
-            }
-            else {
-                render(view: "description", model: [command: institution])
-            }
-        } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.id])}"
-            redirect(action: "show", id: params.id)
-        }
-    }
+    // All in base class!!
 
     /** end V2 editing ************************************************************************************************/
 

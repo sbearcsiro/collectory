@@ -446,9 +446,9 @@ class CollectoryTagLib {
         switch (attrs.type) {
             case Collection.ENTITY_TYPE: out << 'collection'; return
             case Institution.ENTITY_TYPE: out << 'institution'; return
-            //case DataProvider.ENTITY_TYPE: out << 'dataProvider'; return
-            //case DataResource.ENTITY_TYPE: out << 'dataResource'; return
-            //case DataHub.ENTITY_TYPE: out << 'dataHub'; return
+            case DataProvider.ENTITY_TYPE: out << 'dataProvider'; return
+            case DataResource.ENTITY_TYPE: out << 'dataResource'; return
+            case DataHub.ENTITY_TYPE: out << 'dataHub'; return
         }
     }
 

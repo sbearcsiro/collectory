@@ -90,7 +90,7 @@
           <tr><td>Create a new contact and add them to this ${entityNameLower}:</td>
           <td>
           <span class="button">
-            <g:link class="addAction" controller="contact" action='create' params='[returnTo:"/${entityNameLower}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>
+            <g:link class="addAction" controller="contact" action='create' params='[returnTo:"/${command.urlForm()}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>
           </span>
           </td></tr>
         </table>
@@ -100,7 +100,7 @@
     <div class="buttons">
       <g:form>
         <g:hiddenField name="id" value="${command.id}"/>
-        <span class="button"><g:link class="returnAction" controller="${entityNameLower}" action='show' id="${command.id}">Return to ${command.name}</g:link></span>
+        <span class="button"><g:link class="returnAction" controller="${command.urlForm()}" action='show' id="${command.id}">Return to ${command.name}</g:link></span>
       </g:form>
     </div>
   </div>

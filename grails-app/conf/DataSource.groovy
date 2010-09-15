@@ -17,7 +17,7 @@ environments {
 //            logSql = "true"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
 			dbCreate = "update" // one of 'create', 'create-drop','update'
-            url = "jdbc:mysql://localhost:3306/coll?autoReconnect=true&connectTimeout=0"
+            url = "jdbc:mysql://localhost:3306/collectory?autoReconnect=true&connectTimeout=0"
 //			url = "jdbc:hsqldb:mem:devDB"
 		}
 	}

@@ -348,6 +348,11 @@ abstract class ProviderGroup implements Serializable {
     abstract long dbId()
 
     abstract String entityType()
+
+    String urlForm() {
+        return ProviderGroup.urlFormOfEntityType(entityType())
+    }
+    
 }
 
 /**

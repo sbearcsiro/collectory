@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Institution" %>
+<%@ page import="au.org.ala.collectory.DataProvider; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -68,7 +68,7 @@
                         <g:if test="${command.ENTITY_TYPE == 'Collection'}">
                           <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="institution"><g:message code="collection.institution.label" default="Institution"/></label>
+                              <label for="institution.id"><g:message code="collection.institution.label" default="Institution"/></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'institution', 'errors')}">
                               <g:select name="institution.id"
@@ -77,6 +77,23 @@
                                       noSelection="${['null':'Select an institution']}"
                                       value="${command.institution?.id}"/>
                               <cl:helpText code="collection.institution"/>
+                              <cl:helpTD/>
+                            </td>
+                          </tr>
+                        </g:if>
+
+                        <g:if test="${command.ENTITY_TYPE == 'DataResource'}">
+                          <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="dataProvider.id"><g:message code="dataResource.dataProvider.label" default="Data provider"/></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'dataProvider', 'errors')}">
+                              <g:select name="dataProvider.id"
+                                      from="${DataProvider.list([sort:'name'])}"
+                                      optionKey="id"
+                                      noSelection="${['null':'Select an data provider']}"
+                                      value="${command.dataProvider?.id}"/>
+                              <cl:helpText code="dataResource.dataProvider"/>
                               <cl:helpTD/>
                             </td>
                           </tr>

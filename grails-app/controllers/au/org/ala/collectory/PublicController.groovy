@@ -5,6 +5,15 @@ import java.text.NumberFormat
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
+/**
+ * Handles all the public pages generated from the collectory.
+ *
+ * This includes:
+ * Natural History Collections page - with map of collection locations (map)
+ * Display pages for collection, institution, data provider and data resource (show)
+ *
+ * Handles ajax requests for data for those pages.
+ */
 class PublicController {
 
     def keywordSynonyms = [
@@ -21,15 +30,6 @@ class PublicController {
     ]
 
     def index = { redirect(action: 'map')}
-
-    def tagTest = {
-        [testValue: 'test1']
-    }
-
-    def list = {
-        ActivityLog.log username(), isAdmin(), Action.LIST, 'collections'
-        [collections: Collection.list([sort:'name'])]
-    }
 
     /**
      * Shows the public page for any entity when passed a UID.
@@ -50,7 +50,6 @@ class PublicController {
         } else {
             // assume it's a collection
             def collectionInstance = findCollection(params.id)
-            //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
             if (!collectionInstance) {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params?.id])}"
                 redirect(controller: "public", action: "map")
@@ -82,6 +81,11 @@ class PublicController {
         }
     }
 
+    /**
+     * Returns JSON in Google charts DataTable format showing breakdown of records by decade.
+     *
+     * Makes request to biocache service for breakdown data.
+     */
     def decadeBreakdown = {
         response.setHeader("Pragma","no-cache")
         response.setDateHeader("Expires",1L)
@@ -120,6 +124,12 @@ class PublicController {
         }
     }
 
+    /**
+     * Returns JSON in Google charts DataTable format showing breakdown of records by taxonomic group.
+     *
+     * Makes request to biocache service for breakdown data.
+     * Chooses the taxon rank based on the spread of records and the threshold value supplied in the request.
+     */
     def taxonBreakdown = {
         response.setHeader("Pragma","no-cache")
         response.setDateHeader("Expires",1L)
@@ -158,11 +168,9 @@ class PublicController {
         }
     }
 
-    def listInstitutions = {
-        ActivityLog.log username(), isAdmin(), Action.LIST, 'institutions'
-        [institutions: Institution.list()]
-    }
-
+    /**
+     * Shows the public page for an institution.
+     */
     def showInstitution = {
         def institution = findInstitution(params.id)
         if (!institution) {
@@ -174,6 +182,12 @@ class PublicController {
         }
     }
 
+    /**
+     * Displays main page for Natural History Collections.
+     *
+     * Although an initial list of collections is placed in the model, the data is sourced by ajax callback. The initial
+     * list is used if the callback fails.
+     */
     def map = {
         ActivityLog.log username(), isAdmin(), Action.LIST, 'map'
         def partnerCollections = Collection.list([sort:"name"]).findAll {
@@ -182,6 +196,9 @@ class PublicController {
         [collections: partnerCollections]
     }
 
+    /**
+     * Returns GEOJson for populating the map based on the selected filters.
+     */
     def mapFeatures = {
         //log.info ">>Map features action called"
         def locations = [:]
@@ -221,48 +238,6 @@ class PublicController {
 
         //def json = JSON.parse(features)
         render(locations as JSON)
-    }
-
-    def chart = {
-        /* temporal:
-         * http://chart.apis.google.com/chart
-           ?chxl=1:|1950|1960|1970|1980|1990|2000|2010
-           &chxr=0,0,4000
-           &chxt=y,x
-           &chbh=a,4,35
-           &chs=300x225
-           &cht=bvs
-           &chco=A2C180
-           &chd=s:uZOQLVS
-           &chdlp=l
-           &chtt=Specimens+added+per+decade */
-
-        /* percent digitised:
-         * http://chart.apis.google.com/chart
-           ?chs=300x150
-           &cht=gm
-           &chd=t:70
-           &chtt=Percent+of+specimen+records+digitised
-           &chts=676767,12 */
-
-        /* taxa:
-         * http://chart.apis.google.com/chart
-           ?chs=400x150
-           &cht=p3
-           &chco=7777CC|76A4FB|3399CC|3366CC
-           &chd=s:QEHCVfe
-           &chdl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae
-           &chdlp=t
-           &chp=12.7
-           &chl=Angiosperms|Dicots|Monocots|Gymnosperms|Pteridophytes|Mosses|Algae
-           &chma=175
-         */
-
-        // some dummy data for now:
-        def data = [:]
-        data.decades = ["1950":"1010","1960":"2020","1970":"1515","1980":"2929","1990":"200","2000":"3000","2010":"3300"]
-        data.orders = ["Angiosperms":"10,210","Dicots":"8,510","Monocots":"1,700","Gymnosperms":"75","Pteridophytes":"320","Mosses":"250","Algae":"50"]
-        render(data as JSON)
     }
 
     private boolean matchKeywords(keywords, filterString) {

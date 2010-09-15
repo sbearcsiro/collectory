@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
         <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
-        <g:set var="entityNameLower" value="${command.ENTITY_TYPE.toLowerCase()}"/>
+        <g:set var="entityNameLower" value="${command.urlForm()}"/>
         <title><g:message code="collection.base.label" default="Edit ${entityNameLower} image metadata" /></title>
     </head>
     <body>
@@ -20,7 +20,7 @@
                 <g:renderErrors bean="${command}" as="list" />
             </div>
             </g:hasErrors>
-            <g:uploadForm method="post" name="baseForm" action="base">
+            <g:uploadForm method="post" name="imageForm" action="image">
                 <g:hiddenField name="id" value="${command?.id}" />
                 <g:hiddenField name="version" value="${command.version}" />
                 <g:hiddenField name="target" value="${target}" />

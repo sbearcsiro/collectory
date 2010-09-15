@@ -57,6 +57,16 @@
       <br/><br/><p>These actions are only available to system admins.</p>
 
       <div class="homeCell">
+        <g:link class="mainLink" controller="dataProvider" action="list">View all data providers</g:link>
+        <p class="mainText">Browse all current data providers.</p>
+      </div>
+
+      <div class="homeCell">
+        <g:link class="mainLink" controller="dataResource" action="list">View all data resources</g:link>
+        <p class="mainText">Browse all current data resources.</p>
+      </div>
+
+      <div class="homeCell">
         <g:link class="mainLink" controller="reports" action="list">View reports</g:link>
         <p class="mainText">Browse summaries of Registry contents and usage.</p>
       </div>

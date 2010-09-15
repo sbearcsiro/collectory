@@ -7,9 +7,7 @@
       </td>
     </tr>
     <tr>
-      <td colspan="2" style="padding-bottom:14px;"><span style="padding-right:75px;">${command.imageRef.file}</span>
-        <g:link action="${action}" event="removeImage" >Remove image</g:link>
-      </td>
+      <td colspan="2" style="padding-bottom:14px;"><span style="padding-right:75px;">${command.imageRef.file}</span></td>
     </tr>
   </g:if>
   <tr class='prop'>

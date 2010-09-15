@@ -14,6 +14,8 @@ class ProviderGroupController {
     static String entityName = "ProviderGroup"
     static String entityNameLower = "providerGroup"
 
+    def idGeneratorService
+
     /**
      * Edit base attributes.
      * @param id - the database id
@@ -21,12 +23,46 @@ class ProviderGroupController {
     def edit = {
         def pg = get(params.id)
         if (!pg) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityName), params.id])}"
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
             params.page = params.page ?: '/shared/base'
-            println params.page
             render(view:params.page, model:[command: pg, target: params.target])
+        }
+    }
+
+    /**
+     * Create a new entity instance.
+     *
+     */
+    def create = {
+        ProviderGroup pg
+        switch (entityName) {
+            case Collection.ENTITY_TYPE:
+                pg = new Collection(uid: idGeneratorService.getNextCollectionId(), name: 'enter name', userLastModified: username())
+                if (params.institutionUid && Institution.findByUid(params.institutionUid)) {
+                    pg.institution = Institution.findByUid(params.institutionUid)
+                }
+                break
+            case Institution.ENTITY_TYPE:
+                pg = new Institution(uid: idGeneratorService.getNextInstitutionId(), name: 'enter name', userLastModified: username()); break
+            case DataProvider.ENTITY_TYPE:
+                pg = new DataProvider(uid: idGeneratorService.getNextDataProviderId(), name: 'enter name', userLastModified: username()); break
+            case DataResource.ENTITY_TYPE:
+                pg = new DataResource(uid: idGeneratorService.getNextDataResourceId(), name: 'enter name', userLastModified: username())
+            if (params.dataProviderUid && DataProvider.findByUid(params.dataProviderUid)) {
+                pg.dataProvider = DataProvider.findByUid(params.dataProviderUid)
+            }
+            break
+            case DataHub.ENTITY_TYPE:
+                pg = new DataHub(uid: idGeneratorService.getNextDataHubId(), name: 'enter name', userLastModified: username()); break
+        }
+        if (!pg.hasErrors() && pg.save(flush: true)) {
+            flash.message = "${message(code: 'default.created.message', args: [message(code: "${pg.urlForm()}", default: pg.urlForm()), pg.uid])}"
+            redirect(action: "show", id: pg.id)
+        } else {
+            flash.message = "Failed to create new ${entityName}"
+            redirect(controller: 'admin', action: 'index')
         }
     }
 
@@ -36,6 +72,142 @@ class ProviderGroupController {
             redirect(uri: params.returnTo)
         } else {
             redirect(action: "show", id: params.id)
+        }
+    }
+
+    /**
+     * Update base attributes
+     */
+    def updateBase = {BaseCommand cmd ->
+        if(cmd.hasErrors()) {
+            cmd.errors.each {println it}
+            cmd.id = params.id as int   // these do not seem to be injected
+            cmd.version = params.version as int
+            render(view:'/shared/base', model: [command: cmd])
+        } else {
+            def pg = get(params.id)
+            if (pg) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (pg.version > version) {
+                        pg.errors.rejectValue("version", "default.optimistic.locking.failure",
+                                [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
+                                "Another user has updated this ${pg.entityType()} while you were editing")
+                        render(view: "/shared/base", model: [command: pg])
+                        return
+                    }
+                }
+
+                // special handling for membership
+                pg.networkMembership = toJson(params.networkMembership)
+                params.remove('networkMembership')
+
+                pg.properties = params
+                pg.userLastModified = username()
+                if (!pg.hasErrors() && pg.save(flush: true)) {
+                    flash.message =
+                        "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                    redirect(action: "show", id: pg.id)
+                }
+                else {
+                    render(view: "/shared/base", model: [command: pg])
+                }
+            } else {
+                flash.message =
+                    "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+                redirect(action: "show", id: params.id)
+            }
+        }
+    }
+
+    /**
+     * Update descriptive attributes
+     */
+    def updateDescription = {
+        def pg = get(params.id)
+        if (pg) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (pg.version > version) {
+                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
+                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
+                            "Another user has updated this ${pg.entityType()} while you were editing")
+                    render(view: "description", model: [command: pg])
+                    return
+                }
+            }
+
+            // do any entity specific processing
+            entitySpecificDescriptionProcessing(pg, params)
+
+            pg.properties = params
+            pg.userLastModified = username()
+            if (!pg.hasErrors() && pg.save(flush: true)) {
+                flash.message =
+                  "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                redirect(action: "show", id: pg.id)
+            }
+            else {
+                render(view: "description", model: [command: pg])
+            }
+        } else {
+            flash.message =
+                "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "show", id: params.id)
+        }
+    }
+
+    def entitySpecificDescriptionProcessing(pg, params) {
+        // default is to do nothing
+        // sub-classes override to do specific processing
+    }
+    
+    /**
+     * Update location attributes
+     */
+    def updateLocation = {LocationCommand cmd ->
+        if(cmd.hasErrors()) {
+            cmd.id = params.id as int   // these do not seem to be injected
+            cmd.version = params.version as int
+            render(view:'/shared/location', model: [command: cmd])
+        } else {
+            def pg = get(params.id)
+            if (pg) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (pg.version > version) {
+                        pg.errors.rejectValue("version", "default.optimistic.locking.failure",
+                                [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
+                                "Another user has updated this ${pg.entityType()} while you were editing")
+                        render(view: "/shared/location", model: [command: pg])
+                        return
+                    }
+                }
+
+                // special handling for lat & long
+                if (!params.latitude) { params.latitude = -1 }
+                if (!params.longitude) { params.longitude = -1 }
+
+                // special handling for embedded address - need to create address obj if none exists and we have data
+                if (!pg.address && [params.address.street, params.address.postBox, params.address.city,
+                    params.address.state, params.address.postcode, params.address.country].join('').size() > 0) {
+                    pg.address = new Address()
+                }
+
+                pg.properties = params
+                pg.userLastModified = username()
+                if (!pg.hasErrors() && pg.save(flush: true)) {
+                    flash.message =
+                      "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                    redirect(action: "show", id: pg.id)
+                } else {
+                    render(view: "/shared/location", model: [command: pg])
+                }
+            } else {
+                flash.message =
+                    "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+                redirect(action: "show", id: params.id)
+            }
         }
     }
 
@@ -61,7 +233,7 @@ class ProviderGroupController {
     def addContact = {
         def pg = get(params.id)
         if (!pg) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}".label, default: entityName), params.id])}"
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
             Contact contact = Contact.get(params.addContact)
@@ -85,7 +257,7 @@ class ProviderGroupController {
                 redirect(action: "list")
             } else {
                 // contact must be null
-                flash.message = "Contact was created but could not be added to the ${entityNameLower}. Please add contact from existing."
+                flash.message = "Contact was created but could not be added to the ${pg.urlForm()}. Please add contact from existing."
                 redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.id)
             }
         }
@@ -94,7 +266,7 @@ class ProviderGroupController {
     def removeContact = {
         def pg = get(params.id)
         if (!pg) {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityName), params.id])}"
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
             ContactFor cf = ContactFor.get(params.idToRemove)
@@ -144,15 +316,16 @@ class ProviderGroupController {
      * Update images
      */
     def updateImages = {
-        //params.each {println it}
+        params.each {println it}
         def pg = get(params.id)
         def target = params.target ?: "imageRef"
+        println target
         if (pg) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${entityNameLower}.label", default: entityName)] as Object[], "Another user has updated this ${entityNameLower} while you were editing")
-                    render(view: "images", model: [command: pg])
+                    pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.urlForm()} while you were editing")
+                    render(view: "/shared/images", model: [command: pg])
                     return
                 }
             }
@@ -161,22 +334,27 @@ class ProviderGroupController {
             //  a) upload of new image
             //  b) change of metadata for existing image
             // removing an image is handled separately
-            MultipartFile file = params.imageFile
+            MultipartFile file
+            switch (target) {
+                case 'imageRef': file = params.imageFile; break
+                case 'logoRef': file = params.logoFile; break
+            }
+            println file?.size
             if (file?.size) {  // will only have size if a file was selected
                 // save the chosen file
-                def content = request.getFile('imageFile')
-                if (content && file.size < 200000) {   // limit file to 200Kb
+                if (file.size < 200000) {   // limit file to 200Kb
                     def filename = file.getOriginalFilename()
                     log.debug "filename=${filename}"
 
                     // update filename
                     pg."${target}" = new Image(file: filename)
+                    String subDir = pg.urlForm()
 
-                    def colDir = new File(ConfigurationHolder.config.repository.location.images as String, entityNameLower)
+                    def colDir = new File(ConfigurationHolder.config.repository.location.images as String, subDir)
                     colDir.mkdirs()
                     File f = new File(colDir, filename)
                     log.debug "saving ${filename} to ${f.absoluteFile}"
-                    content.transferTo(f)
+                    file.transferTo(f)
                     ActivityLog.log username(), isAdmin(), Action.UPLOAD_IMAGE, filename
                 } else {
                     println "reject file of size ${file.size}"
@@ -192,7 +370,7 @@ class ProviderGroupController {
                 pg.properties = params
                 pg.userLastModified = username()
                 if (!pg.hasErrors() && pg.save(flush: true)) {
-                    flash.message = "${message(code: 'default.updated.message', args: [message(code: "${entityNameLower}.label", default: entityName), pg.uid])}"
+                    flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
                     redirect(action: "show", id: pg.id)
                 }
                 else {
@@ -201,6 +379,36 @@ class ProviderGroupController {
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityName), params.id])}"
+            redirect(action: "show", id: params.id)
+        }
+    }
+
+    def removeImage = {
+        def pg = get(params.id)
+        if (pg) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (pg.version > version) {
+                    pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.entityType()} while you were editing")
+                    render(view: "/shared/images", model: [command: pg])
+                    return
+                }
+            }
+
+            if (params.target == 'logoRef') {
+                pg.logoRef = null
+            } else {
+                pg.imageRef = null
+            }
+            pg.userLastModified = username()
+            if (!pg.hasErrors() && pg.save(flush: true)) {
+                flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                redirect(action: "show", id: pg.id)
+            } else {
+                render(view: "/shared/images", model: [command: pg])
+            }
+        } else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "show", id: params.id)
         }
     }

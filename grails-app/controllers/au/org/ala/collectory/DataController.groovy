@@ -344,8 +344,27 @@ class DataController {
     }
 
     def delete = {
-        def message = ['message':'not implemented']
-        render message as JSON
+        // check role
+        if (isAdmin()) {
+            if (params.uid) {
+                def pg = ProviderGroup._get(params.uid)
+                if (pg) {
+                    def name = pg.name
+                    pg.delete()
+                    def message = ['message':"deleted ${name}"]
+                    render message as JSON
+                } else {
+                    def error = ['error': "no uid specified"]
+                    render error as JSON
+                }
+            }
+        } else {
+            def error = ['error': "only ADMIN can invoke this service"]
+            render error as JSON
+        }
     }
 
+    protected boolean isAdmin() {
+        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
+    }
 }

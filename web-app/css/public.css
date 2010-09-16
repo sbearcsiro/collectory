@@ -97,7 +97,10 @@ ul.taxaBreakdown input {
 }
 
 div.distributionImage {
+    margin-left: 50px;
     display: inline;
+    position: relative;
+    top: -64px;
 }
 
 div.inline {
@@ -113,6 +116,9 @@ span.taxonChartCaption {
     color: #555;
 }
 
+div#decadeChart img {
+    margin-top: -100px;
+}
 /*a[target='_blank'] {
     background: url(../images/skin/external.png) center right no-repeat;
     padding-right: 13px;

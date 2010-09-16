@@ -664,6 +664,12 @@ div#lastModified {
     color: #898989;
 }
 
+span.entityType {
+    font-size: 16px;
+    color: #555;
+    padding-bottom: 4px;
+}
+
 /** following are styles for admin show pages that emulate public page style **/
 .emulate-public h1 {
     color:#dd3102;
@@ -678,6 +684,14 @@ div#lastModified {
     font-size:1.6em;
     line-height:1;
     padding-bottom:10px;
+}
+
+.emulate-public a:hover {
+    text-decoration: underline !important;
+}
+
+.emulate-public h2 a {
+    text-decoration: underline !important;
 }
 
 .emulate-public div.show-section {

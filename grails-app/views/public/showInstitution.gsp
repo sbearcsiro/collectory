@@ -63,8 +63,8 @@
         </g:if>
         <h2>Collections</h2>
         <ol>
-          <g:each var="c" in="${institution.getCollections()}">
-            <li><g:link controller="public" action="show" id="${c.id}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
+          <g:each var="c" in="${institution.collections.sort{it.name}}">
+            <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
           </g:each>
         </ol>
       </div><!--close section-->

@@ -20,6 +20,7 @@
             <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <span class="entityType" style="float:right;">Institution</span>
         </div>
         <div class="body">
             <g:if test="${flash.message}">
@@ -78,8 +79,8 @@
                 <!-- Collections -->
                 <h2>Collections</h2>
                 <ul class='fancy'>
-                  <g:each in="${institutionInstance.getCollections()}" var="c">
-                      <li><g:link controller="collection" action="show" id="${c.id}">${c?.name}</g:link></li>
+                  <g:each in="${institutionInstance.collections.sort{it.name}}" var="c">
+                      <li><g:link controller="collection" action="show" id="${c.uid}">${c?.name}</g:link></li>
                   </g:each>
                   <li><g:link controller="collection" action="create" params='[institutionUid: "${institutionInstance.uid}"]'>create a new collection for this institution</g:link></li>
                 </ul>

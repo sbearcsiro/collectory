@@ -44,9 +44,9 @@ class PublicController {
         if (params.id instanceof String && params.id.startsWith(Institution.ENTITY_PREFIX)) {
             forward(action: 'showInstitution', params: params)
         } else if (params.id instanceof String && params.id.startsWith('dp')) {
-            render "no information for data providers yet"
+            forward(action: 'showDataProvider', params: params)
         } else if (params.id instanceof String && params.id.startsWith('dr')) {
-            render "no information for data providers yet"
+            forward(action: 'showDataResource', params: params)
         } else {
             // assume it's a collection
             def collectionInstance = findCollection(params.id)
@@ -179,6 +179,34 @@ class PublicController {
         } else {
             ActivityLog.log username(), isAdmin(), institution.uid, Action.VIEW
             [institution: institution]
+        }
+    }
+
+    /**
+     * Shows the public page for a data provider.
+     */
+    def showDataProvider = {
+        def instance = ProviderGroup._get(params.id)
+        if (!instance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataProvider.label', default: 'Data provider'), params.code ? params.code : params.id])}"
+            redirect(controller: "public", action: "map")
+        } else {
+            ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
+            [instance: instance]
+        }
+    }
+
+    /**
+     * Shows the public page for a data resource.
+     */
+    def showDataResource = {
+        def instance = ProviderGroup._get(params.id)
+        if (!instance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataResource.label', default: 'Data resource'), params.code ? params.code : params.id])}"
+            redirect(controller: "public", action: "map")
+        } else {
+            ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
+            [instance: instance, numBiocacheRecords: -1]
         }
     }
 
@@ -369,7 +397,7 @@ class PublicController {
         String result = """{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":["""
         input.eachWithIndex {it, index ->
             maximum = Math.max(maximum, it.count)
-            def label = (stagger && (index % 2) == 0) ? "" : it.label
+            String label = (stagger && (index % 2) == 0) ? "" : it.label + "s"
             result += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
             result += (index == input.size() - 1) ? "" : ","
         }

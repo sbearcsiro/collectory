@@ -20,6 +20,7 @@
             <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <span class="entityType" style="float:right;">Data Provider</span>
         </div>
         <div class="body">
             <g:if test="${flash.message}">
@@ -31,7 +32,7 @@
                 <!-- Name --><!-- Acronym -->
                 <h1 style="display:inline">${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
                 <cl:partner test="${instance.isALAPartner}"/><br/>
-              
+
                 <!-- GUID    -->
                 <p><span class="category">LSID</span>: <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
@@ -71,6 +72,15 @@
                 <!-- Contribution -->
                 <div class="source">[Contribution]</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
+
+                <!-- Resources -->
+                <h2>Data resources</h2>
+                <ul class='fancy'>
+                  <g:each in="${instance.getResources().sort{it.name}}" var="c">
+                      <li><g:link controller="dataResource" action="show" id="${c.uid}">${c?.name}</g:link></li>
+                  </g:each>
+                  <li><g:link controller="dataResource" action="create" params='[dataProviderUid: "${instance.uid}"]'>create a new data resource for this provider</g:link></li>
+                </ul>
 
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>

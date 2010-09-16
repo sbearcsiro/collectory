@@ -814,7 +814,7 @@ class CollectoryTagLib {
         if (codes) {
             // replace first & with ?
             codes = "?" + codes.substring(1)
-            out << "<div class='distributionImage'>${body()}<img src='http://spatial.ala.org.au/alaspatial/ws/density/map${codes}' width='400' /></div>"
+            out << "<div class='distributionImage'>${body()}<img src='http://spatial.ala.org.au/alaspatial/ws/density/map${codes}' width='350' /></div>"
         }
     }
 

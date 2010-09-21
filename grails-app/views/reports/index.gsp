@@ -78,6 +78,12 @@
           exceeds the number of biocache records.</p>
       </div>
 
+      <div class="homeCell">
+        <g:link class="mainLink" controller="reports" action="classification">Show classifications</g:link>
+        <p class="mainText">Shows how collections are classified according to their keywords into the filter groups
+        used on the collections map page.</p>
+      </div>
+
     </cl:ifGranted>
 
     </body>

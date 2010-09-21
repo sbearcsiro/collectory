@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.ProviderGroup" %>
 <html>
     <head>
         <title>ALA Collections Management</title>
@@ -19,7 +19,7 @@
         <div class="homeCell">
           <h4 class="inline">Please log in</h4>
             <span class="buttons" style="float: right;">
-              Log in
+              <a href="${ConfigurationHolder.config.security.cas.loginUrl}?service=${ConfigurationHolder.config.grails.serverURL}/admin">&nbsp;Log in&nbsp;</a>
             </span>
           <p>You must log in to manage collection records</p>
         </div>

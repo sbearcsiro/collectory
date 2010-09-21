@@ -53,7 +53,7 @@
       </div>
 
       <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="providers">List all data providers</g:link>
+        <g:link class="mainLink" controller="reports" action="providers">List all data providers and resources</g:link>
         <p class="mainText">Simple list of all data providers, data resources and data hubs.</p>
       </div>
 

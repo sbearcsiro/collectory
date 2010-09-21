@@ -1,4 +1,4 @@
-<html>
+<%@ page import="au.org.ala.collectory.Collection; au.org.ala.collectory.Institution" %><html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
@@ -19,7 +19,7 @@
               <gui:tab label="Collections" active="true">
               <div class="dialog">
                 <table>
-                  <tr class="reportGroupTitle"><td colspan="2">Attributions for collections</td></tr>
+                  <tr class="reportGroupTitle"><td>Attributions for collections</td><td>${Collection.count()} collections shown.</td></tr>
                   <g:each var='c' in="${collAttributions}">
                     <tr><td><g:link controller="public" action="show" id="${c.pgs.uid}">${c.pgs.name}</g:link></td>
                     <g:each var='a' in="${c.attribs}" status="i">
@@ -41,7 +41,7 @@
               <gui:tab label="Institutions">
               <div class="dialog">
                 <table>
-                  <tr class="reportGroupTitle"><td colspan="2">Attributions for institutions</td></tr>
+                  <tr class="reportGroupTitle"><td>Attributions for institutions</td><td>${Institution.count()} institutions shown.</td></tr>
                   <g:each var='c' in="${instAttributions}">
                     <tr><td><g:link controller="public" action="show" id="${c.pgs.uid}">${c.pgs.name}</g:link></td>
                     <g:each var='a' in="${c.attribs}" status="i">

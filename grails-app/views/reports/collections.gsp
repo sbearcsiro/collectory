@@ -39,7 +39,7 @@
                   <table>
                     <colgroup><col width="70%"/><col width="10%"/><col width="10%"/><col width="10%"/></colgroup>
                     <tr><td colspan="4">Columns show whether the collection has an institution, has a primary contact and is an ALA partner.</td></tr>
-                    <tr class="reportGroupTitle"><td>All collections</td><td>Inst</td><td>Cont</td><td>ALA</td></tr>
+                    <tr class="reportGroupTitle"><td>All collections (${Collection.count()})</td><td>Inst</td><td>Cont</td><td>ALA</td></tr>
                     <g:each var='c' in="${Collection.list([sort: 'name'])}">
                       <tr>
                         <td><g:link controller="collection" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link></td>

@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.CollectionSummary" %>
+<%@ page import="au.org.ala.collectory.Collection" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -19,7 +19,7 @@
               <table>
                 <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
 
-                <tr class="reportGroupTitle"><td colspan="3">Codes</td></tr>
+                <tr class="reportGroupTitle"><td>Codes</td><td colspan="2">${Collection.count()} collections shown.</td></tr>
                 <g:each var='c' in="${codeSummaries}">
                   <tr><td><g:link controller="public" action="show" id="${c.uid}" fragment="statistics">${c.name}</g:link></td><td>${c.derivedInstCodes.join(',')}</td><td>${c.derivedCollCodes.join(',')}</td></tr>
                 </g:each>

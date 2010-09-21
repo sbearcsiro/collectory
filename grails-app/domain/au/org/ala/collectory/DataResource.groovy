@@ -11,6 +11,7 @@ class DataResource extends ProviderGroup implements Serializable {
     String citableAgent
 
     DataProvider dataProvider
+    Institution institution         // optional link to the institution whose records are served by this resource
 
     static constraints = {
         displayName(nullable:true, maxSize:1024)
@@ -18,6 +19,7 @@ class DataResource extends ProviderGroup implements Serializable {
         citation(nullable:true, maxSize:4096)
         citableAgent(nullable:true, maxSize:2048)
         dataProvider(nullable:true)
+        institution(nullable:true)
     }
 
     boolean canBeMapped() {
@@ -38,9 +40,11 @@ class DataResource extends ProviderGroup implements Serializable {
     DataResourceSummary buildSummary() {
         DataResourceSummary drs = init(new DataResourceSummary()) as DataResourceSummary
         drs.displayName = displayName
-        drs.dataProvider = dataProvider.name
-        drs.dataProviderId = dataProvider.id
-        drs.dataProviderUid = dataProvider.uid
+        drs.dataProvider = dataProvider?.name
+        drs.dataProviderId = dataProvider?.id
+        drs.dataProviderUid = dataProvider?.uid
+        drs.institution = institution?.name
+        drs.institutionUid = institution?.uid
         return drs
     }
 
@@ -52,8 +56,11 @@ class DataResource extends ProviderGroup implements Serializable {
         return ENTITY_TYPE;
     }
 
+    String shortProviderName(int len) {
+        return dataProvider?.name?.length() > len ? dataProvider.name[0..len] + ".." : dataProvider?.name
+    }
+
     String shortProviderName() {
-        def len = 30
-        return dataProvider?.name?.length() > len ? dataProvider.name[0..len] : ""
+        return shortProviderName(30)
     }
 }

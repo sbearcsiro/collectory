@@ -7,7 +7,7 @@ class DataResourceController extends ProviderGroupController {
 
     DataResourceController() {
         entityName = "DataResource"
-        entityNameLower = "DataResource"
+        entityNameLower = "dataResource"
     }
 
     def index = {

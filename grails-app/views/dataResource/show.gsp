@@ -32,9 +32,14 @@
                 <!-- Name --><!-- Acronym -->
                 <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
-                <!-- Institution --><!-- ALA Partner -->
+                <!-- Data Provider --><!-- ALA Partner -->
                 <h2 style="display:inline"><g:link controller="dataProvider" action="show" id="${instance.dataProvider?.id}">${instance.dataProvider?.name}</g:link></h2>
                 <cl:partner test="${instance.dataProvider?.isALAPartner}"/><br/>
+
+                <!-- Institution -->
+                <g:if test="${instance.institution}">
+                  <p><span class="category">Source of records</span>: <g:link controller="institution" action="show" id="${instance.institution?.id}">${instance.institution?.name}</g:link></p>
+                </g:if>
 
                 <!-- GUID    -->
                 <p><span class="category">LSID</span>: <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>

@@ -26,11 +26,11 @@
           <!--Breadcrumbs-->
           <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${instance.name}</span></div>
           <div class="section full-width">
-            <div class="hrgroup col-9">
+            <div class="hrgroup col-8">
               <h1 class="family">${fieldValue(bean:instance,field:'name')}</h1>
               <g:set var="dp" value="${instance.dataProvider}"/>
               <g:if test="${dp}">
-                <h2><g:link action="showInstitution" id="${dp.id}">${dp.name}</g:link></h2>
+                <h2><g:link action="show" id="${dp.uid}">${dp.name}</g:link></h2>
               </g:if>
               <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
               <div style="display:none; text-align: left;">
@@ -44,7 +44,7 @@
                   </div>
               </div>
             </div>
-            <div class="aside col-2">
+            <div class="aside col-4">
               <!-- provider -->
               <g:if test="${dp?.logoRef?.file}">
                 <g:link action="show" id="${dp.uid}">

@@ -39,6 +39,9 @@ if (!security.cas.urlPattern) {
     // simplify collection pattern when /collection/summary is not used any more (replaced by /lookup/summary)
     security.cas.urlPattern = '/admin.*,/collection/list.*,/collection/show/.*,/collection/edit.*,/collection/delete.*,/collection/create.*,/collection/removeImage.*,/collection/update.*,/collection/base.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*,/dataProvider/.*,/dataResource/.*,/dataHub/.*'
 }
+if (!security.cas.loginUrl) {
+    security.cas.loginUrl = "https://auth.ala.org.au/cas/login"
+}
 if (!citation.template) {
     citation.template = 'Records provided by @entityName@, accessed through ALA website.'
 }

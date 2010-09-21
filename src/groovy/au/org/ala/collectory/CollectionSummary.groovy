@@ -9,4 +9,5 @@ class CollectionSummary extends ProviderGroupSummary {
     String institutionUid
     List derivedInstCodes
     List derivedCollCodes
+    String institutionLogoUrl
 }

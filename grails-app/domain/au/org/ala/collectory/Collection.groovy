@@ -200,7 +200,7 @@ class Collection extends ProviderGroup implements Serializable {
      * - name
      * - acronym
      * - lsid if available
-     * - institution (id & name) if available
+     * - institution (id,uid, name & logo url) if available
      * - description
      * - provider codes for matching with biocache records
      *
@@ -212,6 +212,9 @@ class Collection extends ProviderGroup implements Serializable {
             cs.institution = institution.name
             cs.institutionId = institution.id
             cs.institutionUid = institution.uid
+            if (institution.logoRef?.file) {
+                cs.institutionLogoUrl = au.org.ala.collectory.Utilities.buildInstitutionLogoUrl(institution.logoRef.file)
+            }
         }
         cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()

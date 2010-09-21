@@ -211,7 +211,12 @@
                   <h4>Contributors to this page</h4>
                   <ul>
                     <g:each var="a" in="${attribs}">
-                      <li><a href="${a.url}" class="external" target="_blank">${a.name}</a></li>
+                      <g:if test="${a.url}">
+                        <li><a href="${a.url}" class="external" target="_blank">${a.name}</a></li>
+                      </g:if>
+                      <g:else>
+                        <li>${a.name}</li>
+                      </g:else>
                     </g:each>
                   </ul>
                 </div>
@@ -250,6 +255,7 @@
               </div>
             </div>
               <div class="section">
+                <div style="clear:both;"></div>
                 <div class="inline">
                   <h3>Distribution and statistics</h3>
                   <cl:distributionImg inst="${collectionInstance.getListOfInstitutionCodesForLookup()}" coll="${collectionInstance.getListOfCollectionCodesForLookup()}"/>
@@ -258,7 +264,7 @@
                 </div>
                 <span class="taxonChartCaption">Click a segment to view its records.</span>
                 <div style="clear:both;"></div>
-                <div id="chart" style="display: inline;padding-right: 20px;">
+                <div id="decadeChart" style="display: inline;padding-right: 20px;">
                 </div>
               </div>
           </div>
@@ -275,7 +281,7 @@
             query.send(handleQueryResponse);
           } else {
             decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.id}";
-            $.get(decadeUrl, {}, breakdownRequestHandler);
+            $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
           }
           if (taxonUrl.length > 0) {
             var taxonQuery = new google.visualization.Query(taxonUrl);
@@ -287,7 +293,7 @@
           }
         }
 
-        function breakdownRequestHandler(response) {
+        function decadeBreakdownRequestHandler(response) {
           var data = new google.visualization.DataTable(response);
           if (data.getNumberOfRows() > 0) {
             draw(data);
@@ -301,8 +307,22 @@
           }
         }
 
+        function drawDecadeChart(dataTable) {
+          var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
+
+          vis.draw(dataTable, {
+            width: 500,
+            height: 400,
+            title: "Additions by decade",
+            titleTextStyle: {color: "#7D8804", fontName: 'Arial', fontSize: 15},
+            hAxis: {title:"decades", showTextEvery: 3},
+            legend: 'none',
+            colors: ['#3398cc']
+          });
+        }
+
         function draw(dataTable) {
-          var vis = new google.visualization.ImageChart(document.getElementById('chart'));
+          var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
           var options = {};
 
           // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
@@ -340,8 +360,10 @@
           google.visualization.events.addListener(chart, 'select', function() {
             var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}/occurrences/searchForCollection?q=${collectionInstance.uid}&fq=" +
               dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
-            document.location.href = linkUrl;
           });
+          //google.visualization.events.addListener(chart, 'onmouseover', function() {
+          //  $("div#taxonChart").css("cursor") = "pointer";
+          //});
 
           chart.draw(dataTable, options);
         }

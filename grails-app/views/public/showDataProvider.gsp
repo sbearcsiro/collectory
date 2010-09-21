@@ -63,8 +63,13 @@
         </g:if>
         <h2>Resources</h2>
         <ol>
-          <g:each var="c" in="${instance.getResources()}">
-            <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
+          <g:each var="c" in="${instance.getResources().sort{it.name}}">
+            <g:if test="${c.institution}">
+              <li><g:link controller="public" action="show" id="${c.institution.uid}">${c?.name}</g:link></li>
+            </g:if>
+            <g:else>
+              <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
+            </g:else>
           </g:each>
         </ol>
       </div><!--close section-->

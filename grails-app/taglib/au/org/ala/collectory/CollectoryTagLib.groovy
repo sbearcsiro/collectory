@@ -222,6 +222,17 @@ class CollectoryTagLib {
         }
     }
 
+    def acronymOrShortName = { attrs ->
+        def pg = attrs.entity
+        if (pg) {
+            if (pg.acronym) {
+                out << pg.acronym
+            } else {
+                out << pg.name
+            }
+        }
+    }
+
     def formatPercent = { attrs ->
         double percent
         try {

@@ -24,7 +24,7 @@
                   <tr class="reportGroupTitle"><td>All providers</td><td>UID</td><td>Resources</td></tr>
                   <g:each var='c' in="${DataProvider.list([sort: 'name'])}">
                     <tr>
-                      <td>${fieldValue(bean: c, field: "name")}</td>
+                      <td><g:link controller="dataProvider" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
                       <td>${c.uid}</td>
                       <td>${c.resources?.size()}</td>
                     </tr>
@@ -36,13 +36,14 @@
               <gui:tab label="Data resources">
                 <div class="drs">
                   <table>
-                    <colgroup><col width="60%"/><col width="10%"/><col width="30%"/></colgroup>
-                    <tr class="reportGroupTitle"><td>All resources</td><td>UID</td><td>Provider</td></tr>
+                    <colgroup><col width="53%"/><col width="7%"/><col width="30%"/><col width="10%"/></colgroup>
+                    <tr class="reportGroupTitle"><td>All resources</td><td>UID</td><td>Provider</td><td>Institution</td></tr>
                     <g:each var='c' in="${DataResource.list([sort: 'name'])}">
                       <tr>
-                        <td>${fieldValue(bean: c, field: "name")}</td>
+                        <td><g:link controller="dataResource" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
                         <td>${c.uid}</td>
-                        <td>${c.shortProviderName()}..</td>
+                        <td><cl:ifNotBlank tagName="" value="${c.shortProviderName()}"/></td>
+                        <td><cl:acronymOrShortName entity="${c.institution}"/></td>
                       </tr>
                     </g:each>
                   </table>

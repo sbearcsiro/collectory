@@ -3,7 +3,9 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
-        <title><g:message code="collection.base.label" default="Edit collection metadata" /></title>
+        <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
+        <g:set var="entityNameLower" value="${command.urlForm()}"/>
+        <title><g:message code="collection.base.label" default="Edit ${entityNameLower}  metadata" /></title>
     </head>
     <body>
         <div class="nav">
@@ -36,7 +38,7 @@
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'guid', 'errors')}">
                                 <g:textField name="guid" maxlength="45" value="${command?.guid}" />
-                                <cl:helpText code="collection.guid"/>
+                                <cl:helpText code="${entityNameLower}.guid"/>
                               </td>
                               <cl:helpTD/>
                           </tr>
@@ -49,7 +51,7 @@
                               </td>
                               <td id="previous" valign="top" class="value ${hasErrors(bean: command, field: 'name', 'errors')}">
                                 <g:textField name="name" maxlength="128" value="${command?.name}" />
-                                <cl:helpText code="collection.name"/>
+                                <cl:helpText code="${entityNameLower}.name"/>
                               </td>
                             <cl:helpTD/>
                           </tr>
@@ -60,12 +62,13 @@
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'acronym', 'errors')}">
                                   <g:textField name="acronym" maxlength="45" value="${command?.acronym}" />
-                                  <cl:helpText code="collection.acronym"/>
+                                  <cl:helpText code="providerGroup.acronym"/>
                               </td>
                             <cl:helpTD/>
                           </tr>
 
                         <g:if test="${command.ENTITY_TYPE == 'Collection'}">
+                          <!-- institution -->
                           <tr class="prop">
                             <td valign="top" class="name">
                               <label for="institution.id"><g:message code="collection.institution.label" default="Institution"/></label>
@@ -83,6 +86,7 @@
                         </g:if>
 
                         <g:if test="${command.ENTITY_TYPE == 'DataResource'}">
+                          <!-- data provider -->
                           <tr class="prop">
                             <td valign="top" class="name">
                               <label for="dataProvider.id"><g:message code="dataResource.dataProvider.label" default="Data provider"/></label>
@@ -91,9 +95,25 @@
                               <g:select name="dataProvider.id"
                                       from="${DataProvider.list([sort:'name'])}"
                                       optionKey="id"
-                                      noSelection="${['null':'Select an data provider']}"
+                                      noSelection="${['null':'Select a data provider']}"
                                       value="${command.dataProvider?.id}"/>
                               <cl:helpText code="dataResource.dataProvider"/>
+                              <cl:helpTD/>
+                            </td>
+                          </tr>
+
+                          <!-- institution -->
+                          <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="institution.id"><g:message code="institution.dataProvider.label" default="Institution"/></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'institution', 'errors')}">
+                              <g:select name="institution.id"
+                                      from="${Institution.list([sort:'name'])}"
+                                      optionKey="id"
+                                      noSelection="${['null':'Select an institution']}"
+                                      value="${command.institution?.id}"/>
+                              <cl:helpText code="dataResource.institution"/>
                               <cl:helpTD/>
                             </td>
                           </tr>

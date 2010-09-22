@@ -83,7 +83,20 @@
 
       <!-- Keywords -->
       <p><span class="category">Keywords</span> are not directly displayed but are used for searching and filtering.
-        These keywords have been added for this collection: <cl:valueOrOtherwise value="${collectionInstance.listKeywords().join(', ')}" otherwise="none"/>.</p>
+        These keywords have been added for this collection: <cl:valueOrOtherwise value="${collectionInstance.listKeywords().join(', ')}" otherwise="none"/>.
+        <g:if test="${!collectionInstance.listKeywords().contains('fauna')}">
+          (<g:link action="addKeyword" id="${collectionInstance.id}" params="[keyword:'fauna']">Add fauna</g:link>)
+        </g:if>
+        <g:if test="${!collectionInstance.listKeywords().contains('plants')}">
+          (<g:link action="addKeyword" id="${collectionInstance.id}" params="[keyword:'plants']">Add plants</g:link>)
+        </g:if>
+        <g:if test="${!collectionInstance.listKeywords().contains('entomology')}">
+          (<g:link action="addKeyword" id="${collectionInstance.id}" params="[keyword:'entomology']">Add entomology</g:link>)
+        </g:if>
+        <g:if test="${!collectionInstance.listKeywords().contains('microbes')}">
+          (<g:link action="addKeyword" id="${collectionInstance.id}" params="[keyword:'microbes']">Add microbes</g:link>)
+        </g:if>
+      </p>
 
       <!-- sub collections -->
       <h2>Sub-collections</h2>

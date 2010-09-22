@@ -213,7 +213,7 @@ function updateList(features) {
     var innerHtml = "";
     for (var i = 0; i < features.length; i++) {
         innerHtml = innerHtml + "<li>";
-        innerHtml = innerHtml + "<a href=" + baseUrl + "/public/show/" + features[i].attributes.id + ">" + features[i].attributes.name + "</a>";
+        innerHtml = innerHtml + "<a href=" + baseUrl + "/public/show/" + features[i].attributes.uid + ">" + features[i].attributes.name + "</a>";
         if (!features[i].attributes.isMappable) {
           innerHtml = innerHtml + "<img style='vertical-align:middle' src='" + baseUrl + "/images/nomap.gif'/>";
         }
@@ -391,13 +391,18 @@ function getAll() {
 
 // handler for selection change
 function filterChange() {
-    // set state of 'select all' box
+    // set state of ento box
+    if ($('input#fauna').is(':checked')) {
+        $('input#ento').attr('checked', true);
+    }
+    // find out if they are all checked
     var all = true;
     $('input[name=filter]').each(function(index, element){
         if (!element.checked) {
             all = false;
         }
     });
+    // set state of 'select all' box
     if ($('input#all').is(':checked') && !all) {
         $('input#all').attr('checked', false);
     } else if (!$('input#all').is(':checked') && all) {

@@ -63,23 +63,24 @@
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
             <h2>Digitised records</h2>
+            <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
             <div>
-              <g:if test="${numBiocacheRecords != -1}">
-                <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.
-                <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource./></cl:recordsLink>
+              <g:if test="${recordsAvailable}">
+                <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.</p>
+                <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
               </g:if>
               <g:else>
                 <p>No digitised records for this data resource can be accessed through the Atlas of Living Australia.</p>
               </g:else>
             </div>
           </div>
-          <div class="section">
+          <div class="section vertical-charts">
             <h3>Distribution and statistics</h3>
             <cl:distributionImg inst="${['ANIC']}" coll="${['Insects']}"/>
-            <div id="taxonChart" style="display: inline;padding-right: 20px; width: 300px;">
+            <div id="taxonChart" style="margin-left:-15px;margin-top:-20px;">
             </div>
             <!--span class="taxonChartCaption">Click a segment to view its records.</span-->
-            <div id="chart" style="display: inline;padding-right: 20px;">
+            <div id="decadeChart" style="padding-right: 20px;width:500">
             </div>
           </div>
         </div><!--close column-one-->
@@ -188,25 +189,27 @@
         var taxonUrl = '';
 
         function onLoadCallback() {
-          if (decadeUrl.length > 0) {
-            var query = new google.visualization.Query(decadeUrl);
-            query.setQuery(queryString);
-            query.send(handleQueryResponse);
-          } else {
-            decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${instance.id}";
-            $.get(decadeUrl, {}, breakdownRequestHandler);
-          }
-          if (taxonUrl.length > 0) {
-            var taxonQuery = new google.visualization.Query(taxonUrl);
-            taxonQuery.setQuery(queryString);
-            taxonQuery.send(handleQueryResponse);
-          } else {
-            taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.id}?threshold=55";
-            $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+          if (${numBiocacheRecords != -1 && numBiocacheRecords != 0}) {
+            if (decadeUrl.length > 0) {
+              var query = new google.visualization.Query(decadeUrl);
+              query.setQuery(queryString);
+              query.send(handleQueryResponse);
+            } else {
+              decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${instance.uid}";
+              $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
+            }
+            if (taxonUrl.length > 0) {
+              var taxonQuery = new google.visualization.Query(taxonUrl);
+              taxonQuery.setQuery(queryString);
+              taxonQuery.send(handleQueryResponse);
+            } else {
+              taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.uid}?threshold=55";
+              $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+            }
           }
         }
 
-        function breakdownRequestHandler(response) {
+        function decadeBreakdownRequestHandler(response) {
           var data = new google.visualization.DataTable(response);
           if (data.getNumberOfRows() > 0) {
             draw(data);
@@ -220,8 +223,22 @@
           }
         }
 
+        function drawDecadeChart(dataTable) {
+          var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
+
+          vis.draw(dataTable, {
+            width: 500,
+            height: 400,
+            title: "Additions by decade",
+            titleTextStyle: {color: "#7D8804", fontName: 'Arial', fontSize: 15},
+            hAxis: {title:"decades", showTextEvery: 3},
+            legend: 'none',
+            colors: ['#3398cc']
+          });
+        }
+
         function draw(dataTable) {
-          var vis = new google.visualization.ImageChart(document.getElementById('chart'));
+          var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
           var options = {};
 
           // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
@@ -236,6 +253,8 @@
           // Chart title and style
           options.chtt = 'Additions by decade';  // chart title
           options.chts = '7D8804,15';
+
+          options.chs = '400x200';
 
           //options.chxt = 'x,x,y';
           //options.chxl = '2:|Decade';
@@ -257,8 +276,9 @@
           //options.pieSliceText = "label";
           options.legend = "left";
           google.visualization.events.addListener(chart, 'select', function() {
-            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}/occurrences/searchForCollection?q=${instance.uid}&fq=" +
+            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${instance.uid}&fq=" +
               dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
+            document.location.href = linkUrl;
           });
           //google.visualization.events.addListener(chart, 'onmouseover', function() {
           //  $("div#taxonChart").css("cursor") = "pointer";

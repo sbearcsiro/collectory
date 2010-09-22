@@ -227,6 +227,7 @@
           <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
             <div class="section">
               <h2>Digitised specimen records</h2>
+              <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
               <div style="float:left;">
                 <g:if test="${collectionInstance.numRecords != -1}">
                   <p>The ${cl.collectionName(name: collectionInstance.name)} has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
@@ -235,8 +236,8 @@
                     </g:if>
                   </p>
                 </g:if>
-                <g:if test="${numBiocacheRecords != -1}">
-                  <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.
+                <g:if test="${recordsAvailable}">
+                  <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record" none="No"/> can be accessed through the Atlas of Living Australia.
                   <g:if test="${percentBiocacheRecords}">
                     (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
                   </g:if></p>
@@ -254,7 +255,8 @@
                 </g:if>
               </div>
             </div>
-              <div class="section">
+            <div class="section">
+              <g:if test="${recordsAvailable}">
                 <div style="clear:both;"></div>
                 <div class="inline">
                   <h3>Distribution and statistics</h3>
@@ -266,7 +268,8 @@
                 <div style="clear:both;"></div>
                 <div id="decadeChart" style="display: inline;padding-right: 20px;">
                 </div>
-              </div>
+              </g:if>
+            </div>
           </div>
         </div>
       <script type="text/javascript">
@@ -275,21 +278,23 @@
         var taxonUrl = '';
 
         function onLoadCallback() {
-          if (decadeUrl.length > 0) {
-            var query = new google.visualization.Query(decadeUrl);
-            query.setQuery(queryString);
-            query.send(handleQueryResponse);
-          } else {
-            decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.id}";
-            $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
-          }
-          if (taxonUrl.length > 0) {
-            var taxonQuery = new google.visualization.Query(taxonUrl);
-            taxonQuery.setQuery(queryString);
-            taxonQuery.send(handleQueryResponse);
-          } else {
-            taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.id}?threshold=55";
-            $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+          if (${numBiocacheRecords != -1 && numBiocacheRecords != 0}) {
+            if (decadeUrl.length > 0) {
+              var query = new google.visualization.Query(decadeUrl);
+              query.setQuery(queryString);
+              query.send(handleQueryResponse);
+            } else {
+              decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.id}";
+              $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
+            }
+            if (taxonUrl.length > 0) {
+              var taxonQuery = new google.visualization.Query(taxonUrl);
+              taxonQuery.setQuery(queryString);
+              taxonQuery.send(handleQueryResponse);
+            } else {
+              taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.id}?threshold=55";
+              $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+            }
           }
         }
 
@@ -358,8 +363,9 @@
           //options.pieSliceText = "label";
           options.legend = "left";
           google.visualization.events.addListener(chart, 'select', function() {
-            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}/occurrences/searchForCollection?q=${collectionInstance.uid}&fq=" +
+            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${collectionInstance.uid}&fq=" +
               dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
+            document.location.href = linkUrl;
           });
           //google.visualization.events.addListener(chart, 'onmouseover', function() {
           //  $("div#taxonChart").css("cursor") = "pointer";

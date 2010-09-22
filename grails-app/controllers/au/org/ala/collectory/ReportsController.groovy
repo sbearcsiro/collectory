@@ -49,6 +49,11 @@ class ReportsController {
         [codeSummaries: (ProviderMap.list().collect { it.collection.buildSummary() }).sort {it.name}]
     }
 
+    def classification = {
+        ActivityLog.log username(), isAdmin(), Action.REPORT, 'classifications'
+        [collections: Collection.list([sort:'name'])]
+    }
+
     def attributions = {
         def collAttributions = []
         Collection.list([sort: 'name']).each {
@@ -71,7 +76,7 @@ class ReportsController {
             if (it.numRecordsDigitised > 0) {
                 // find the number of biocache records
                 def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + it.generatePermalink()
+                def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + it.generatePermalink()
 
                 def count = 0
                 def conn = new URL(url).openConnection()

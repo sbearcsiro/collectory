@@ -248,7 +248,7 @@
                   <p>No digitised records for this collection can be accessed through the Atlas of Living Australia.</p>
                 </g:else>
               </div>
-              <div style="float:right;text-align:center;padding-right:60px;margin-top:-20px;">
+              <div id="speedo">
                 <g:if test="${percentBiocacheRecords != -1}">
                   <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as digitised records" />
                   <p class="caption"><cl:formatPercent percent="${percentBiocacheRecords}"/>% of records<br/>available for viewing.</p>
@@ -284,7 +284,7 @@
               query.setQuery(queryString);
               query.send(handleQueryResponse);
             } else {
-              decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.id}";
+              decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.uid}";
               $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
             }
             if (taxonUrl.length > 0) {
@@ -292,7 +292,7 @@
               taxonQuery.setQuery(queryString);
               taxonQuery.send(handleQueryResponse);
             } else {
-              taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.id}?threshold=55";
+              taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
               $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
             }
           }

@@ -96,8 +96,11 @@ ul.taxaBreakdown input {
     padding: 5px 5px 5px 30px
 }
 
-#statistics div.distributionImage {
+div.distributionImage {
     margin-left: 50px;
+}
+
+#statistics div.distributionImage {
     display: inline;
 }
 
@@ -106,10 +109,24 @@ ul.taxaBreakdown input {
     margin-top: 10px;
 }
 
+.vertical-charts div.distributionImage img {
+    position: relative;
+    z-index: -4;
+}
+
 #taxonChart iFrame {
     margin-top: -60px;
     position: relative;
-    z-index: -2;
+    z-index: 0;
+}
+
+#speedo {
+    position: relative;
+    z-index: 2;
+    float:right;
+    text-align:center;
+    padding-right:60px;
+    margin-top:-20px;
 }
 
 div.inline {
@@ -127,6 +144,10 @@ span.taxonChartCaption {
 
 div#decadeChart img {
     margin-top: -100px;
+}
+
+.vertical-charts div#decadeChart img {
+    margin-top: -50px;
 }
 /*a[target='_blank'] {
     background: url(../images/skin/external.png) center right no-repeat;

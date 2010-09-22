@@ -806,6 +806,20 @@ input.classicButton:active {
     color: buttontext;
     border: 2px inset buttonface;
 }
+
+/* edit links after a view link in reports */
+span.editLink {
+    color: #b0b0b0;
+}
+
+span.editLink a {
+    color: #b0b0b0;
+}
+
+span.dataWarning a {
+    color: red;
+}
+
 /* override YUI tabview colours
     - also requires modifying sprite.PSD */
 

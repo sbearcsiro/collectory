@@ -16,19 +16,6 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
  */
 class PublicController {
 
-    def keywordSynonyms = [
-        'birds':['ornithology','bird'],
-        'fish': ['ichthyology'],
-        'frogs': ['amphibians','herpetology','frog'],
-        'mammals': ['mammal'],
-        'reptiles': ['reptile','herpetology'],
-        'invertebrates': ['insect','insects','spiders','arachnids','invertebrate'],
-        'plants': ['angiosperms','plant','plantae','herbarium','herbaria'],
-        'fungi': ['fungus'],
-        'ferns': ['fern'],
-        'microbes': ['microbe','microbial','protista']
-    ]
-
     def index = { redirect(action: 'map')}
 
     /**
@@ -56,7 +43,7 @@ class PublicController {
             } else {
                 // lookup number of biocache records
                 def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
+                def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
 
                 def count = 0
                 def conn = new URL(url).openConnection()
@@ -152,18 +139,18 @@ class PublicController {
                 json = conn.content.text
                 //println "Response = " + json
                 def breakdown = JSON.parse(json)?.breakdown
-                if (breakdown) {
+                if (breakdown && breakdown.toString() != "null") {
                     dataTable = buildPieChartDataTable(breakdown)
+                    if (dataTable) {
+                        render dataTable
+                    } else {
+                        log.warn "unable to build data table from taxa json = " + json
+                        def error = ["error":"Unable to build data table from taxa json"]
+                        render error as JSON
+                    }
                 }
             } catch (Exception e) {
                 log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
-            }
-            if (dataTable) {
-                render dataTable
-            } else {
-                log.warn "unable to build data table from taxa json = " + json
-                def error = ["error":"Unable to build data table from taxa json"]
-                render error as JSON
             }
         }
     }
@@ -247,7 +234,7 @@ class PublicController {
                 // only show if we have lat and long
                 //if (lat != -1 && lon != -1) {
                     // and if matches current filter
-                    if (showAll || matchTaxa(it.keywords, params.filters)) {
+                    if (showAll || Classification.matchKeywords(it.keywords, params.filters)) {
                         def loc = [:]
                         loc.type = "Feature"
                         loc.properties = [
@@ -256,7 +243,7 @@ class PublicController {
                                 isMappable: it.canBeMapped(),
                                 address: it.address?.buildAddress(),
                                 desc: it.makeAbstract(),
-                                url: request.getContextPath() + "/public/show/" + it.id]
+                                url: request.getContextPath() + "/public/show/" + it.uid]
                         loc.geometry = [type: "Point", coordinates: [lon,lat]]
                         locations.features << loc
                     }
@@ -266,40 +253,6 @@ class PublicController {
 
         //def json = JSON.parse(features)
         render(locations as JSON)
-    }
-
-    private boolean matchKeywords(keywords, filterString) {
-        // synonyms
-        if (filterString =~ "fungi") {
-            filterString += "fungal"
-        }
-        def filters = filterString.tokenize(",")
-        for (int i = 0; i < filters.size(); i++) {
-            log.debug "Checking filter ${filters[i]} against keywords ${scope?.keywords}"
-            if (keywords =~ filters[i]) {
-                return true;
-            }
-        }
-        return false
-    }
-
-    private boolean matchTaxa(keywords, filterString) {
-        def filters = filterString.tokenize(",")
-        for (filter in filters) {
-            //println "Checking filter ${filter} against keywords ${scope?.keywords}"
-            if (keywords =~ filter) {
-                return true;
-            } else {
-                // check synonyms
-                List synonyms = keywordSynonyms.get(filter)
-                for (synonym in synonyms) {
-                    if (keywords =~ synonym) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false
     }
 
     private boolean matchNetwork(pg, filterString) {
@@ -359,7 +312,7 @@ class PublicController {
             def collClause = collCodes ? buildSearchClause("coll", collCodes) : ""
             //println collClause
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "searchForCollection.JSON?pageSize=0" + instClause + collClause
+            def url = baseUrl + "searchForUID.JSON?pageSize=0" + instClause + collClause
         } else {
             return ""
         }

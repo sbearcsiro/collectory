@@ -78,15 +78,15 @@ class PublicController {
         response.setDateHeader("Expires",1L)
         response.setHeader("Cache-Control","no-cache")
         response.addHeader("Cache-Control","no-store")
-        def collectionInstance = findCollection(params.id)
+        def instance = ProviderGroup._get(params.id)
         //println ">>debug map key " + grailsApplication.config.google.maps.v2.key
-        if (!collectionInstance) {
-            log.error "Unable to find collection for id = ${params.id}"
-            def error = ["error":"unable to find collection for id = " + params.id]
+        if (!instance) {
+            log.error "Unable to find entity for id = ${params.id}"
+            def error = ["error":"unable to find entity for id = " + params.id]
             render error as JSON
         } else {
             /* get decade breakdown */
-            def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${collectionInstance.generatePermalink()}.json";
+            def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${instance.generatePermalink()}.json";
             //println decadeUrl
             def conn = new URL(decadeUrl).openConnection()
             conn.setConnectTimeout 3000
@@ -123,14 +123,14 @@ class PublicController {
         response.setHeader("Cache-Control","no-cache")
         response.addHeader("Cache-Control","no-store")
         def threshold = params.threshold ?: 20
-        def collectionInstance = findCollection(params.id)
-        if (!collectionInstance) {
-            log.error "Unable to find collection for id = ${params.id}"
-            def error = ["error":"unable to find collection for id = " + params.id]
+        def instance = ProviderGroup._get(params.id)
+        if (!instance) {
+            log.error "Unable to find entity for id = ${params.id}"
+            def error = ["error":"unable to find entity for id = " + params.id]
             render error as JSON
         } else {
             /* get taxon breakdown */
-            def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${collectionInstance.uid}.json";
+            def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${instance.uid}.json";
             def conn = new URL(taxonUrl).openConnection()
             conn.setConnectTimeout 3000
             def dataTable = null
@@ -192,8 +192,22 @@ class PublicController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataResource.label', default: 'Data resource'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
+            // lookup number of biocache records
+            def baseUrl = ConfigurationHolder.config.biocache.baseURL
+            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + instance.generatePermalink()
+
+            def count = 0
+            def conn = new URL(url).openConnection()
+            conn.setConnectTimeout 3000
+            try {
+                def json = conn.content.text
+                count = JSON.parse(json)?.searchResult?.totalRecords
+            } catch (Exception e) {
+                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+            }
+
             ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
-            [instance: instance, numBiocacheRecords: -1]
+            [instance: instance, numBiocacheRecords: count]
         }
     }
 
@@ -401,4 +415,5 @@ class PublicController {
     private boolean isAdmin() {
         return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
     }
+
 }

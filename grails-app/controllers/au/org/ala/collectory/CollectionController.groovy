@@ -65,7 +65,7 @@ class CollectionController extends ProviderGroupController {
         } else {
             // lookup number of biocache records - TODO: this code should be shared with public controller
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForCollection.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
+            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
 
             def count = 0
             def conn = new URL(url).openConnection()
@@ -267,6 +267,34 @@ class CollectionController extends ProviderGroupController {
                 redirect(action: "show", id: collection.id)
             } else {
                 render(view: "range", model: [command: collection])
+            }
+        } else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
+            redirect(action: "show", id: params.id)
+        }
+    }
+
+    def addKeyword = {
+        def collection = Collection.get(params.id)
+        if (collection) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (collection.version > version) {
+                    collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
+                    redirect(action: "show", id: collection.id)
+                }
+            }
+            def keywords = collection.listKeywords()
+            if (!(keywords.contains(params.keyword))) {
+                keywords.add params.keyword
+                collection.keywords = (keywords as JSON).toString()
+            }
+            collection.userLastModified = username()
+            if (!collection.hasErrors() && collection.save(flush: true)) {
+                flash.message = "${message(code: 'default.updated.message', args: [message(code: 'collection.label', default: 'Collection'), collection.uid])}"
+                redirect(action: "show", id: collection.id)
+            } else {
+                render(view: "show", model: [command: collection])
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"

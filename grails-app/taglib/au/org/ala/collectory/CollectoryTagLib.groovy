@@ -767,7 +767,7 @@ class CollectoryTagLib {
         // must have at least one value to build a query
         if (attrs.collection) {
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForCollection?q=" + attrs.collection?.generatePermalink()
+            def url = baseUrl + "occurrences/searchForUID?q=" + attrs.collection?.generatePermalink()
             out << "<a href='"
             out << url
             out << "'>" << body() << "</a>"
@@ -786,7 +786,7 @@ class CollectoryTagLib {
             NumberFormat formatter = new DecimalFormat(",###")
             out << formatter.format(attrs.number)
         } else {
-            out << "no"
+            out << attrs.none ?: "no"
         }
         out << " "
         out << (attrs.number == 1 ? attrs.noun : attrs.noun + "s")
@@ -865,7 +865,7 @@ class CollectoryTagLib {
     }
     
     def collectionCodes = { attrs ->
-        // handle speical case of ANY collection code
+        // handle special case of ANY collection code
         if (attrs.collection?.providerMap?.matchAnyCollectionCode) {
             out << "any collection code"
         } else {
@@ -875,6 +875,22 @@ class CollectoryTagLib {
                 case 1: out << "collection code = " + collCodes[0]; break
                 default: out << "collection codes: " + collCodes.join(', ')
             }
+        }
+    }
+
+    def showOrEdit = { attrs ->
+        def pg = attrs.entity
+        if (pg) {
+            out << link(controller: 'public', action:'show', id:pg.uid) {pg.name}
+            out << " <span class='editLink'>(" + link(controller:pg.urlForm(), action:'show', id:pg.uid) {'edit'} + ")</span>"
+        }
+    }
+
+    def reportClassification = { attrs ->
+        def filter = attrs.filter
+        def pg = attrs.entity
+        if (Classification.matchKeywords(pg?.keywords, filter)) {
+            out << "<img src='" + resource(dir:'images/ala', file:'olive-tick.png') + "'/>"
         }
     }
 }

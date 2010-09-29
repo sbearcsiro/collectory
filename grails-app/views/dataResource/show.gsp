@@ -147,7 +147,6 @@
 
                     <td valign="top" class="value">
                       ${fieldValue(bean: instance, field: "address.street")}<br/>
-                      ${fieldValue(bean: instance, field: "address.postBox")}<br/>
                       ${fieldValue(bean: instance, field: "address.city")}<br/>
                       ${fieldValue(bean: instance, field: "address.state")}
                       ${fieldValue(bean: instance, field: "address.postcode")}
@@ -160,6 +159,12 @@
                     <td rowspan="6">
                       <div id="mapCanvas"></div></td>
 
+                  </tr>
+
+                  <!-- Postal -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="providerGroup.address.postal.label" default="Postal"/></td>
+                    <td valign="top" class="value">${fieldValue(bean: instance, field: "address.postBox")}</td>
                   </tr>
 
                   <!-- Latitude -->

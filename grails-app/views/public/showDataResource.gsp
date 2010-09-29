@@ -32,7 +32,8 @@
               <g:if test="${dp}">
                 <h2><g:link action="show" id="${dp.uid}">${dp.name}</g:link></h2>
               </g:if>
-              <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
+              <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
+              <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
                       <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
@@ -48,7 +49,7 @@
               <!-- provider -->
               <g:if test="${dp?.logoRef?.file}">
                 <g:link action="show" id="${dp.uid}">
-                  <img style="padding-top: 10px; margin-right:0; float:right;" src='${resource(absolute:"true", dir:"data/dataProvider/",file:fieldValue(bean: dp, field: 'logoRef.file'))}' />
+                  <img class="institutionImage" src='${resource(absolute:"true", dir:"data/dataProvider/",file:fieldValue(bean: dp, field: 'logoRef.file'))}' />
                 </g:link>
                   <!--div style="clear: both;"></div-->
               </g:if>
@@ -110,15 +111,14 @@
               <g:if test="${!address?.isEmpty()}">
                 <p>
                   <cl:valueOrOtherwise value="${address?.street}">${address?.street}<br/></cl:valueOrOtherwise>
-                  <cl:valueOrOtherwise value="${address?.postBox}">${address?.postBox}<br/></cl:valueOrOtherwise>
-                  <cl:valueOrOtherwise value="${address?.city}">${address?.city}</cl:valueOrOtherwise>
+                  <cl:valueOrOtherwise value="${address?.city}">${address?.city}<br/></cl:valueOrOtherwise>
                   <cl:valueOrOtherwise value="${address?.state}">${address?.state}</cl:valueOrOtherwise>
                   <cl:valueOrOtherwise value="${address?.postcode}">${address?.postcode}<br/></cl:valueOrOtherwise>
                   <cl:valueOrOtherwise value="${address?.country}">${address?.country}<br/></cl:valueOrOtherwise>
                 </p>
               </g:if>
 
-              <cl:ifNotBlank value='${fieldValue(bean: instance, field: "email")}'/>
+              <g:if test="${instance.email}"><cl:emailLink>${fieldValue(bean: instance, field: "email")}</cl:emailLink><br/></g:if>
               <cl:ifNotBlank value='${fieldValue(bean: instance, field: "phone")}'/>
             </div>
 
@@ -270,7 +270,7 @@
           options.width = 500;
           options.height = 500;
           options.is3D = false;
-          options.title = "Specimen numbers by " + dataTable.getTableProperty('rank');
+          options.title = "Record numbers by " + dataTable.getTableProperty('rank');
           options.titleTextStyle = {color: "#7D8804", fontName: 'Arial', fontSize: 15};
           //options.sliceVisibilityThreshold = 1/2000;
           //options.pieSliceText = "label";

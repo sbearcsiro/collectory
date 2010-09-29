@@ -9,12 +9,15 @@ class Institution extends ProviderGroup {
 
     String institutionType      // the type of institution, eg herbarium, library
 
+    String childInstitutions    // space-separated list of UIDs of institutions that this institution administers
+
     // an institution may have many collections
     static hasMany = [collections: Collection]
-    
+
     static constraints = {
         institutionType(nullable:true, maxSize:45, inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government', 'herbarium', 'historicalSociety', 'horticulturalInstitution', 'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum', 'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute', 'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'])
         collections(nullable:true)
+        childInstitutions(nullable:true)
     }
 
     static transients = ProviderGroup.transients + ['summary','mappable']
@@ -72,5 +75,25 @@ class Institution extends ProviderGroup {
 
     String entityType() {
         return ENTITY_TYPE
+    }
+
+
+    /**
+     * List of collections held directly by this institution or by an institution that this one administers.
+     *
+     * @return List of Collection
+     */
+    def listCollections() {
+        if (!childInstitutions) {
+            return collections
+        }
+        def result = collections
+        childInstitutions.tokenize(' ').each {
+            def i = _get(it)
+            if (i) {
+                result.addAll i.listCollections()
+            }
+        }
+        return result
     }
 }

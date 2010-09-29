@@ -254,6 +254,7 @@ class PublicController {
                         loc.properties = [
                                 name: it.name,
                                 id: it.id,
+                                uid: it.uid,
                                 isMappable: it.canBeMapped(),
                                 address: it.address?.buildAddress(),
                                 desc: it.makeAbstract(),

@@ -21,6 +21,21 @@
     font-size: 1em;
 }
 
+span.acronym {
+    color:#555;
+    padding-right:10px;
+}
+
+span.lsid {
+    font-size:12px;
+}
+
+.institutionImage {
+    padding: 10px 5px 5px 0;
+    float:right;
+    max-width:300px;
+}
+
 /* allow logo to rise to level of name text */
 #header .aside {
     padding-top: 0;
@@ -129,8 +144,21 @@ div.distributionImage {
     margin-top:-20px;
 }
 
+a.recordsLink {
+    position: relative;
+    z-index: 2;
+}
+
 div.inline {
     display: inline;
+}
+
+div.contact {
+    padding-bottom: 5px;
+}
+
+p.contactName {
+    font-weight: bold;
 }
 
 /* painful positioning of chart label because of the dynamic generation of the div content and IE bugs */

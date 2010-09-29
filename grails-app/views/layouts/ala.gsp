@@ -96,5 +96,14 @@
       <div class="copyright"><p><a href="http://creativecommons.org/licenses/by/2.5/au/" title="External link to Creative Commons" class="left no-pipe"><img src="http://test.ala.org.au/wp-content/themes/ala/images/somerights20.png" width="88" height="31" alt=""/></a>This work is licensed under a <a href="http://creativecommons.org/licenses/by/2.5/au/" title="External link to Creative Commons">Creative Commons Attribution 2.5 Australia License</a></p></div>
     </div><!--close footer-->
   </div><!--close wrapper-->
+  <script type="text/javascript"> 
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+  </script>
+  <script type="text/javascript">
+      var pageTracker = _gat._getTracker("UA-4355440-1");
+      pageTracker._initData();
+      pageTracker._trackPageview();
+  </script>
 </body>
 </html>

@@ -49,10 +49,10 @@
             <ul id="map-collections">
               <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all">Select all</label>
                 <ul class="taxaBreakdown">
-                  <li id="herbariaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants">Herbaria and botanic gardens</label></li>
+                  <li id="herbariaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants">Herbaria</label></li>
                   <li id="faunaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fauna" id="fauna"/><label for="fauna">Faunal collections</label>
                     <ul>
-                      <li id="entoBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="entomology" id="ento"/><label for="ento">Entomology collections</label></li>
+                      <li id="entoBreakdown"><input style="margin-right:8px;" onclick="entoChange()" name="filter" type="checkbox" checked="checked" value="entomology" id="ento"/><label for="ento">Entomological collections</label></li>
                     </ul>
                   </li>
                   <li id="microbialBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes">Microbial collections</label></li>
@@ -81,7 +81,7 @@
               <ul id="filtered-list" style="padding-left:15px;">
                 <g:each var="c" in="${collections}" status="i">
                   <li>
-                    <g:link controller="public" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link>
+                    <g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link>
                     <g:if test="${!c.canBeMapped()}">
                       <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>
                     </g:if>

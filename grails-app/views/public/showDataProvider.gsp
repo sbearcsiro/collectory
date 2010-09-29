@@ -28,8 +28,9 @@
         <div class="section full-width">
           <div class="hrgroup col-8">
             <h1>${fieldValue(bean:instance,field:'name')}</h1>
+            <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
             <g:if test="${instance.guid?.startsWith('urn:lsid:')}">
-              <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
+              <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
                       <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
@@ -45,7 +46,7 @@
           <div class="aside col-4">
             <!-- logo -->
             <g:if test="${fieldValue(bean: instance, field: 'logoRef') && fieldValue(bean: instance, field: 'logoRef.file')}">
-              <img style="padding-bottom:5px; float:right; margin-top:0" src='${resource(absolute:"true", dir:"data/"+instance.urlForm()+"/",file:fieldValue(bean: instance, field: 'logoRef.file'))}' />
+              <img class="institutionImage" src='${resource(absolute:"true", dir:"data/"+instance.urlForm()+"/",file:fieldValue(bean: instance, field: 'logoRef.file'))}' />
             </g:if>
           </div>
         </div>
@@ -92,14 +93,13 @@
           <g:if test="${instance.address != null && !instance.address.isEmpty()}">
             <p>
               <cl:valueOrOtherwise value="${instance.address?.street}">${instance.address?.street}<br/></cl:valueOrOtherwise>
-              <cl:valueOrOtherwise value="${instance.address?.postBox}">${instance.address?.postBox}<br/></cl:valueOrOtherwise>
-              <cl:valueOrOtherwise value="${instance.address?.city}">${instance.address?.city}</cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${instance.address?.city}">${instance.address?.city}<br/></cl:valueOrOtherwise>
               <cl:valueOrOtherwise value="${instance.address?.state}">${instance.address?.state}</cl:valueOrOtherwise>
               <cl:valueOrOtherwise value="${instance.address?.postcode}">${instance.address?.postcode}<br/></cl:valueOrOtherwise>
               <cl:valueOrOtherwise value="${instance.address?.country}">${instance.address?.country}<br/></cl:valueOrOtherwise>
             </p>
           </g:if>
-          <cl:ifNotBlank value='${fieldValue(bean: instance, field: "email")}'/>
+          <g:if test="${instance.email}"><cl:emailLink>${fieldValue(bean: instance, field: "email")}</cl:emailLink><br/></g:if>
           <cl:ifNotBlank value='${fieldValue(bean: instance, field: "phone")}'/>
         </div>
 

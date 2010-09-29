@@ -26,10 +26,11 @@
         <!--Breadcrumbs-->
         <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${fieldValue(bean:institution,field:'name')}</span></div>
         <div class="section full-width">
-          <div class="hrgroup col-9">
+          <div class="hrgroup col-8">
             <h1>${fieldValue(bean:institution,field:'name')}</h1>
+            <cl:valueOrOtherwise value="${institution.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: institution, field: "acronym")}</span></cl:valueOrOtherwise>
             <g:if test="${institution.guid?.startsWith('urn:lsid:')}">
-              <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
+              <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
                       <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
@@ -42,10 +43,10 @@
               </div>
             </g:if>
           </div>
-          <div class="aside col-3">
+          <div class="aside col-4">
             <!-- logo -->
             <g:if test="${fieldValue(bean: institution, field: 'logoRef') && fieldValue(bean: institution, field: 'logoRef.file')}">
-              <img style="padding-bottom:5px; float:right; padding-right: 10px; margin-top:0" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
+              <img class="institutionImage" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: institution, field: 'logoRef.file'))}' />
             </g:if>
           </div>
         </div>
@@ -63,7 +64,7 @@
         </g:if>
         <h2>Collections</h2>
         <ol>
-          <g:each var="c" in="${institution.collections.sort{it.name}}">
+          <g:each var="c" in="${institution.listCollections().sort{it.name}}">
             <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
           </g:each>
         </ol>
@@ -87,28 +88,32 @@
           <g:if test="${institution.address != null && !institution.address.isEmpty()}">
             <p>
               <cl:valueOrOtherwise value="${institution.address?.street}">${institution.address?.street}<br/></cl:valueOrOtherwise>
-              <cl:valueOrOtherwise value="${institution.address?.postBox}">${institution.address?.postBox}<br/></cl:valueOrOtherwise>
-              <cl:valueOrOtherwise value="${institution.address?.city}">${institution.address?.city}</cl:valueOrOtherwise>
+              <cl:valueOrOtherwise value="${institution.address?.city}">${institution.address?.city}<br/></cl:valueOrOtherwise>
               <cl:valueOrOtherwise value="${institution.address?.state}">${institution.address?.state}</cl:valueOrOtherwise>
               <cl:valueOrOtherwise value="${institution.address?.postcode}">${institution.address?.postcode}<br/></cl:valueOrOtherwise>
               <cl:valueOrOtherwise value="${institution.address?.country}">${institution.address?.country}<br/></cl:valueOrOtherwise>
             </p>
           </g:if>
-          <cl:ifNotBlank value='${fieldValue(bean: institution, field: "email")}'/>
+          <g:if test="${institution.email}"><cl:emailLink>${fieldValue(bean: institution, field: "email")}</cl:emailLink><br/></g:if>
           <cl:ifNotBlank value='${fieldValue(bean: institution, field: "phone")}'/>
         </div>
 
-        <g:set var="contact" value="${institution.getPrimaryContact()}"/>
-        <g:if test="${contact}">
-          <div class="section">
-            <h3>Contact</h3>
-            <p class="contactName">${contact?.contact?.buildName()}</p>
-            <p>${contact?.role}</p>
-            <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
-            <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: contact, field: "contact.fax")}'/>
-            <p>email: <cl:emailLink>${contact?.contact?.email}</cl:emailLink></p>
-          </div>
-        </g:if>
+      <!-- contacts -->
+      <g:set var="contacts" value="${institution.getContactsPrimaryFirst()}"/>
+      <g:if test="${contacts.size() > 0}">
+        <div class="section">
+          <h3>Contact</h3>
+          <g:each in="${contacts}" var="cf">
+            <div class="contact">
+              <p class="contactName">${cf?.contact?.buildName()}</p>
+              <p>${cf?.role}</p>
+              <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: cf, field: "contact.phone")}'/>
+              <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: cf, field: "contact.fax")}'/>
+              <p>email: <cl:emailLink>${cf?.contact?.email}</cl:emailLink></p>
+            </div>
+          </g:each>
+        </div>
+      </g:if>
 
         <!-- web site -->
         <g:if test="${institution.websiteUrl}">

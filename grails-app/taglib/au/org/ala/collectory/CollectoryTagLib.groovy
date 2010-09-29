@@ -768,7 +768,7 @@ class CollectoryTagLib {
         if (attrs.collection) {
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
             def url = baseUrl + "occurrences/searchForUID?q=" + attrs.collection?.generatePermalink()
-            out << "<a href='"
+            out << "<a class='recordsLink' href='"
             out << url
             out << "'>" << body() << "</a>"
         }

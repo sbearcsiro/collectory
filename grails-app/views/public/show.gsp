@@ -27,13 +27,14 @@
           <!--Breadcrumbs-->
           <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${collectionInstance.name}</span></div>
           <div class="section full-width">
-            <div class="hrgroup col-9">
+            <div class="hrgroup col-8">
               <h1 class="family">${fieldValue(bean:collectionInstance,field:'name')}</h1>
               <g:set var="inst" value="${collectionInstance.getInstitution()}"/>
               <g:if test="${inst}">
                 <h2><g:link action="showInstitution" id="${inst.id}">${inst.name}</g:link></h2>
               </g:if>
-              <cite><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></cite>
+              <cl:valueOrOtherwise value="${collectionInstance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: collectionInstance, field: "acronym")}</span></cl:valueOrOtherwise>
+              <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
                       <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
@@ -45,11 +46,11 @@
                   </div>
               </div>
             </div>
-            <div class="aside col-2">
+            <div class="aside col-4">
               <!-- institution -->
               <g:if test="${inst?.logoRef?.file}">
                 <g:link action="showInstitution" id="${inst.id}">
-                  <img style="padding-top: 10px; margin-right:0; float:right;" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: inst, field: 'logoRef.file'))}' />
+                  <img class="institutionImage" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: inst, field: 'logoRef.file'))}' />
                 </g:link>
                   <!--div style="clear: both;"></div-->
               </g:if>
@@ -126,7 +127,7 @@
             <div class="section sidebar">
               <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef') && fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
                 <div class="section">
-                  <img alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
+                  <img style="max-width:100%;" alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
                           src="${resource(absolute:"true", dir:"data/collection/", file:collectionInstance.imageRef.file)}" />
                   <cl:formattedText pClass="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</cl:formattedText>
                   <cl:valueOrOtherwise value="${collectionInstance.imageRef?.attribution}"><p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p></cl:valueOrOtherwise>
@@ -147,27 +148,31 @@
                 <g:if test="${!address?.isEmpty()}">
                   <p>
                     <cl:valueOrOtherwise value="${address?.street}">${address?.street}<br/></cl:valueOrOtherwise>
-                    <cl:valueOrOtherwise value="${address?.postBox}">${address?.postBox}<br/></cl:valueOrOtherwise>
-                    <cl:valueOrOtherwise value="${address?.city}">${address?.city}</cl:valueOrOtherwise>
+                    <cl:valueOrOtherwise value="${address?.city}">${address?.city}<br/></cl:valueOrOtherwise>
                     <cl:valueOrOtherwise value="${address?.state}">${address?.state}</cl:valueOrOtherwise>
                     <cl:valueOrOtherwise value="${address?.postcode}">${address?.postcode}<br/></cl:valueOrOtherwise>
                     <cl:valueOrOtherwise value="${address?.country}">${address?.country}<br/></cl:valueOrOtherwise>
                   </p>
                 </g:if>
 
-                <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "email")}'/>
+                <g:if test="${collectionInstance.email}"><cl:emailLink>${fieldValue(bean: collectionInstance, field: "email")}</cl:emailLink><br/></g:if>
                 <cl:ifNotBlank value='${fieldValue(bean: collectionInstance, field: "phone")}'/>
               </div>
 
-              <g:set var="contact" value="${collectionInstance.getPrimaryContact()}"/>
-              <g:if test="${contact}">
+              <!-- contacts -->
+              <g:set var="contacts" value="${collectionInstance.getContactsPrimaryFirst()}"/>
+              <g:if test="${contacts.size() > 0}">
                 <div class="section">
                   <h3>Contact</h3>
-                  <p class="contactName">${contact?.contact?.buildName()}</p>
-                  <p>${contact?.role}</p>
-                  <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
-                  <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: contact, field: "contact.fax")}'/>
-                  <p>email: <cl:emailLink>${contact?.contact?.email}</cl:emailLink></p>
+                  <g:each in="${contacts}" var="cf">
+                    <div class="contact">
+                      <p class="contactName">${cf?.contact?.buildName()}</p>
+                      <p>${cf?.role}</p>
+                      <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: cf, field: "contact.phone")}'/>
+                      <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: cf, field: "contact.fax")}'/>
+                      <p>email: <cl:emailLink>${cf?.contact?.email}</cl:emailLink></p>
+                    </div>
+                  </g:each>
                 </div>
               </g:if>
 

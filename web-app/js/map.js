@@ -389,10 +389,21 @@ function getAll() {
     return checked;
 }
 
+// need separate handler for ento change because we need to know which checkbox changed
+// to manage the ento-fauna paradigm
+function entoChange() {
+    // set state of faunal box
+    if ($('input#fauna').is(':checked') && !$('input#ento').is(':checked')) {
+        $('input#fauna').attr('checked', false);
+    }
+    filterChange();
+}
+
 // handler for selection change
 function filterChange() {
-    // set state of ento box
-    if ($('input#fauna').is(':checked')) {
+    // set ento based on faunal
+    // set state of faunal box
+    if ($('input#fauna').is(':checked') && !$('input#ento').is(':checked')) {
         $('input#ento').attr('checked', true);
     }
     // find out if they are all checked

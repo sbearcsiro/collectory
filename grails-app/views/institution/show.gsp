@@ -79,7 +79,7 @@
                 <!-- Collections -->
                 <h2>Collections</h2>
                 <ul class='fancy'>
-                  <g:each in="${institutionInstance.collections.sort{it.name}}" var="c">
+                  <g:each in="${institutionInstance.listCollections().sort{it.name}}" var="c">
                       <li><g:link controller="collection" action="show" id="${c.uid}">${c?.name}</g:link></li>
                   </g:each>
                   <li><g:link controller="collection" action="create" params='[institutionUid: "${institutionInstance.uid}"]'>create a new collection for this institution</g:link></li>
@@ -131,7 +131,6 @@
 
                     <td valign="top" class="value">
                       ${fieldValue(bean: institutionInstance, field: "address.street")}<br/>
-                      ${fieldValue(bean: institutionInstance, field: "address.postBox")}<br/>
                       ${fieldValue(bean: institutionInstance, field: "address.city")}<br/>
                       ${fieldValue(bean: institutionInstance, field: "address.state")}
                       ${fieldValue(bean: institutionInstance, field: "address.postcode")}
@@ -144,6 +143,12 @@
                     <td rowspan="6">
                       <div id="mapCanvas"></div></td>
 
+                  </tr>
+
+                  <!-- Postal -->
+                  <tr class="prop">
+                    <td valign="top" class="name"><g:message code="providerGroup.address.postal.label" default="Postal"/></td>
+                    <td valign="top" class="value">${fieldValue(bean: institutionInstance, field: "address.postBox")}</td>
                   </tr>
 
                   <!-- Latitude -->

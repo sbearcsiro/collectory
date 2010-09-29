@@ -90,14 +90,6 @@
               </tr>
               <tr class='prop'>
                 <td valign="top" class="name">
-                  <label for="address.postBox"><g:message code="providerGroup.address.postBox.label" default="Post box"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.postBox', 'errors')}">
-                  <g:textField name="address.postBox" maxlength="128" value="${command?.address?.postBox}"/>
-                </td>
-              </tr>
-              <tr class='prop'>
-                <td valign="top" class="name">
                   <label for="address.city"><g:message code="providerGroup.address.city.label" default="City"/></label>
                 </td>
                 <td valign="top" class="value ${hasErrors(bean: command, field: 'address.city', 'errors')}">
@@ -126,6 +118,14 @@
                 </td>
                 <td valign="top" class="value ${hasErrors(bean: command, field: 'address.country', 'errors')}">
                   <g:textField id="country" name="address.country" maxlength="128" value="${command?.address?.country}"/>
+                </td>
+              </tr>
+              <tr class='prop'>
+                <td valign="top" class="name">
+                  <label for="address.postBox"><g:message code="providerGroup.address.postBox.label" default="Postal address"/></label>
+                </td>
+                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.postBox', 'errors')}">
+                  <g:textField name="address.postBox" maxlength="128" value="${command?.address?.postBox}"/>
                 </td>
               </tr>
             </table>

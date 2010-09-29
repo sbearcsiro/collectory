@@ -162,15 +162,34 @@ abstract class ProviderGroup implements Serializable {
             case 1: return list[0]
             default:
                 ContactFor result = null
-                list.each {
-                    if (it.primaryContact) result = it  // definitive (as long as there is only one primary)
-                    if (it.role?.toLowerCase() =~ 'curator') result = it  // second choice
-                    if (!result && it.role?.toLowerCase() =~ 'director') result = it  // third choice
-                    if (!result && it.role?.toLowerCase() =~ 'manager') result = it  // fourth choice
+                for (cf in list) {
+                    if (cf.primaryContact)  // definitive (as long as there is only one primary)
+                        return cf
                 }
                 if (!result) result = list[0]  // just take one
                 return result
         }
+    }
+
+    /**
+     * Return all contacts for this group with the primary contact listed first.
+     *
+     * @return list of ContactFor (contains the contact and the role for this collection)
+     */
+    List<ContactFor> getContactsPrimaryFirst() {
+        List<ContactFor> list = getContacts()
+        list.each {println it}
+        if (list.size() > 1) {
+                for (cf in list) {
+                    if (cf.primaryContact) {
+                        // move it to the top
+                        Collections.swap(list, 0, list.indexOf(cf))
+                        list.each {println it}
+                        break
+                    }
+                }
+        }
+        return list
     }
 
     /**

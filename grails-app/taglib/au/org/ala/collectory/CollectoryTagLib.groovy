@@ -893,4 +893,12 @@ class CollectoryTagLib {
             out << "<img src='" + resource(dir:'images/ala', file:'olive-tick.png') + "'/>"
         }
     }
+
+    /**
+     * Adds site context to page title.
+     */
+    def pageTitle = { attrs, body ->
+        out << "${body()} | Natural History Collections | Atlas of Living Australia"
+    }
+
 }

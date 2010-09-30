@@ -253,7 +253,7 @@ class PublicController {
                         loc.type = "Feature"
                         loc.properties = [
                                 name: it.name,
-                                id: it.id,
+                                acronym: it.acronym,
                                 uid: it.uid,
                                 isMappable: it.canBeMapped(),
                                 address: it.address?.buildAddress(),

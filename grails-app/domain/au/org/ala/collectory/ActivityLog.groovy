@@ -1,7 +1,5 @@
 package au.org.ala.collectory
 
-import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
-
 /**
  * Records user activity such as login and editing.
  */

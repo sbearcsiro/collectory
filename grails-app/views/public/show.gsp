@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="ala" />
-        <title>${fieldValue(bean: collectionInstance, field: "name")}</title>
+        <title><cl:pageTitle>${fieldValue(bean: collectionInstance, field: "name")}</cl:pageTitle></title>
         <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
         <script type="text/javascript">
@@ -31,7 +31,7 @@
               <h1 class="family">${fieldValue(bean:collectionInstance,field:'name')}</h1>
               <g:set var="inst" value="${collectionInstance.getInstitution()}"/>
               <g:if test="${inst}">
-                <h2><g:link action="showInstitution" id="${inst.id}">${inst.name}</g:link></h2>
+                <h2><g:link action="show" id="${inst.uid}">${inst.name}</g:link></h2>
               </g:if>
               <cl:valueOrOtherwise value="${collectionInstance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: collectionInstance, field: "acronym")}</span></cl:valueOrOtherwise>
               <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
@@ -46,8 +46,8 @@
                   </div>
               </div>
             </div>
-            <div class="aside col-4">
-              <!-- institution -->
+            <div class="aside col-4 center">
+              <!-- institution logo -->
               <g:if test="${inst?.logoRef?.file}">
                 <g:link action="showInstitution" id="${inst.id}">
                   <img class="institutionImage" src='${resource(absolute:"true", dir:"data/institution/",file:fieldValue(bean: inst, field: 'logoRef.file'))}' />
@@ -127,7 +127,7 @@
             <div class="section sidebar">
               <g:if test="${fieldValue(bean: collectionInstance, field: 'imageRef') && fieldValue(bean: collectionInstance, field: 'imageRef.file')}">
                 <div class="section">
-                  <img style="max-width:100%;" alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
+                  <img style="max-width:100%;max-height:350px;" alt="${fieldValue(bean: collectionInstance, field: "imageRef.file")}"
                           src="${resource(absolute:"true", dir:"data/collection/", file:collectionInstance.imageRef.file)}" />
                   <cl:formattedText pClass="caption">${fieldValue(bean: collectionInstance, field: "imageRef.caption")}</cl:formattedText>
                   <cl:valueOrOtherwise value="${collectionInstance.imageRef?.attribution}"><p class="caption">${fieldValue(bean: collectionInstance, field: "imageRef.attribution")}</p></cl:valueOrOtherwise>

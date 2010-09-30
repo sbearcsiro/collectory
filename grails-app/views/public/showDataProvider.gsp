@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="layout" content="ala" />
-    <title>${fieldValue(bean: instance, field: "name")}</title>
+    <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
     <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
     <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
     <script type="text/javascript">
@@ -43,7 +43,7 @@
               </div>
             </g:if>
           </div>
-          <div class="aside col-4">
+          <div class="aside col-4 center">
             <!-- logo -->
             <g:if test="${fieldValue(bean: instance, field: 'logoRef') && fieldValue(bean: instance, field: 'logoRef.file')}">
               <img class="institutionImage" src='${resource(absolute:"true", dir:"data/"+instance.urlForm()+"/",file:fieldValue(bean: instance, field: 'logoRef.file'))}' />

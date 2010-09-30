@@ -39,7 +39,7 @@ class AdminController {
     def setAttributions = {
         // insert BCI and CH* if not there
         if (!Attribution.findByUid('at1')) {
-            Attribution at1 = new Attribution(uid: 'at1', name: 'Biodiversity Collections Index', url: 'http://www.biodiveristycollectionsindex.org')
+            Attribution at1 = new Attribution(uid: 'at1', name: 'Biodiversity Collections Index', url: 'http://www.biodiversitycollectionsindex.org')
             at1.save()
         }
         if (!Attribution.findByUid('at2')) {
@@ -60,7 +60,6 @@ class AdminController {
             targets = Collection.list() + Institution.list()
         }
         targets.each { pg ->
-            println "processing " + pg.name
             if (pg.guid?.startsWith(ProviderGroup.LSID_PREFIX)) {
                 // probably loaded from BCI
                 pg.addAttribution 'at1'
@@ -71,24 +70,31 @@ class AdminController {
             if (pg.isMemberOf('CHACM')) {
                 pg.addAttribution 'at3'
             }
-            if (pg instanceof Collection && pg.institution) {
-                // add institution
-                // see if an attribution already exists
-                def at = Attribution.findByName(pg.institution.name)
-                if (!at) {
-                    at = new Attribution(name: pg.institution.name, url: pg.institution.websiteUrl,
-                            uid: idGeneratorService.getNextAttributionId()).save()
-                }
-                pg.addAttribution at.uid
-            } else if (pg instanceof Institution) {
-                // add itself
-                def at = Attribution.findByName(pg.name)
-                if (!at) {
-                    at = new Attribution(name: pg.name, url: pg.websiteUrl, uid: idGeneratorService.getNextAttributionId()).save()
-                }
-                pg.addAttribution at.uid
+        }
+        render 'Done.'
+    }
+
+    def removeInstitutionAttributions = {
+        def targets = []
+        if (params.id) {
+            def target = ProviderGroup._get(params.id)
+            if (target) {
+                targets << target
             }
-            println pg.attributions
+        } else {
+            targets = Collection.list() + Institution.list()
+        }
+        targets.each { pg ->
+            if (pg.attributions) {
+                def uids = pg.attributions.tokenize(' ')
+                def newUids = []
+                uids.each {
+                    if (it in ['at1','at2','at3']) {
+                        newUids << it
+                    }
+                }
+                pg.attributions = newUids.join(' ')
+            }
         }
         render 'Done.'
     }

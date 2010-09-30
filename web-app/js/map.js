@@ -212,8 +212,13 @@ function updateList(features) {
 
     var innerHtml = "";
     for (var i = 0; i < features.length; i++) {
+        var acronym = ""
+        if (features[i].attributes.acronym != undefined) {
+            acronym = " (" + features[i].attributes.acronym + ")"
+        }
         innerHtml = innerHtml + "<li>";
-        innerHtml = innerHtml + "<a href=" + baseUrl + "/public/show/" + features[i].attributes.uid + ">" + features[i].attributes.name + "</a>";
+        innerHtml = innerHtml + "<a href=" + baseUrl + "/public/show/" + features[i].attributes.uid + ">" +
+                features[i].attributes.name + acronym + "</a>";
         if (!features[i].attributes.isMappable) {
           innerHtml = innerHtml + "<img style='vertical-align:middle' src='" + baseUrl + "/images/nomap.gif'/>";
         }
@@ -302,9 +307,13 @@ function selected(evt) {
     if (feature.cluster) {
         content = "Multiple collections at this location:<ul>";
         for(var c = 0; c < feature.cluster.length; c++) {
+            var acronym = ""
+            if (feature.cluster[c].attributes.acronym != undefined) {
+                acronym = " (" + feature.cluster[c].attributes.acronym + ")"
+            }
             content += "<li>"
                     + "<a href='" + feature.cluster[c].attributes.url + "'>"
-                    + feature.cluster[c].attributes.name + "</a>"
+                    + feature.cluster[c].attributes.name + acronym + "</a>"
                     + "</li>";
         }
         content += "</ul>";
@@ -319,8 +328,12 @@ function selected(evt) {
         } else {
             desc = "";
         }
+        var acronym = ""
+        if (feature.attributes.acronym != undefined) {
+            acronym = " (" + feature.attributes.acronym + ")"
+        }
         content = "<a href='" + feature.attributes.url + "'>"
-                    + feature.attributes.name + "</a>"
+                    + feature.attributes.name + acronym + "</a>"
                     + "<span class='abstract'>" + "<em>" + address + "</em>"
                     + desc + "</span>"
     }

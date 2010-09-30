@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="ala" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
-        <title>Explore |  Atlas Living Australia NG</title>
+        <title>Natural History Collections | Atlas of Living Australia</title>
         <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>
         <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
         <script type="text/javascript" src="${resource(dir:'js', file:'map.js')}"></script>

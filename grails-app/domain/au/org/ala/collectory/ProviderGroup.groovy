@@ -178,13 +178,11 @@ abstract class ProviderGroup implements Serializable {
      */
     List<ContactFor> getContactsPrimaryFirst() {
         List<ContactFor> list = getContacts()
-        list.each {println it}
         if (list.size() > 1) {
                 for (cf in list) {
                     if (cf.primaryContact) {
                         // move it to the top
                         Collections.swap(list, 0, list.indexOf(cf))
-                        list.each {println it}
                         break
                     }
                 }
@@ -287,9 +285,11 @@ abstract class ProviderGroup implements Serializable {
      */
     List<Attribution> getAttributionList() {
         def uids = attributions.tokenize(' ')
-        List<Attribution> list = uids.collect {
-            if (it) {
-                Attribution.findByUid(it as String)
+        List<Attribution> list = []
+        uids.each {
+            def att = Attribution.findByUid(it as String)
+            if (att) {
+                list << att
             }
         }
         return list

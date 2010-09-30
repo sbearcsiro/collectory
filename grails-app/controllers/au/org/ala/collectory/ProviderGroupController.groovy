@@ -9,7 +9,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
  *
  * It provides common code for shared attributes like contacts.
  */
-class ProviderGroupController {
+abstract class ProviderGroupController {
 
     static String entityName = "ProviderGroup"
     static String entityNameLower = "providerGroup"
@@ -297,35 +297,27 @@ class ProviderGroupController {
         }
     }
 
-    protected ProviderGroup get(id) {
-        switch (entityName) {
-            case Collection.ENTITY_TYPE:
-                return (id?.toString()?.startsWith(Collection.ENTITY_PREFIX)) ? Collection.findByUid(params.id) : Collection.get(params.id)
-            case Institution.ENTITY_TYPE:
-                return (id?.toString()?.startsWith(Institution.ENTITY_PREFIX)) ? Institution.findByUid(params.id) : Institution.get(params.id)
-            case DataProvider.ENTITY_TYPE:
-                return (id?.toString()?.startsWith(DataProvider.ENTITY_PREFIX)) ? DataProvider.findByUid(params.id) : DataProvider.get(params.id)
-            case DataResource.ENTITY_TYPE:
-                return (id?.toString()?.startsWith(DataResource.ENTITY_PREFIX)) ? DataResource.findByUid(params.id) : DataResource.get(params.id)
-            case DataHub.ENTITY_TYPE:
-                return (id?.toString()?.startsWith(DataHub.ENTITY_PREFIX)) ? DataHub.findByUid(params.id) : DataHub.get(params.id)
-        }
-    }
+    /**
+     * Get the instance for this entity based on either uid or DB id.
+     * All sub-classes must implement this method.
+     *
+     * @param id UID or DB id
+     * @return the entity of null if not found
+     */
+    abstract protected ProviderGroup get(id)
 
     /**
      * Update images
      */
     def updateImages = {
-        params.each {println it}
         def pg = get(params.id)
         def target = params.target ?: "imageRef"
-        println target
         if (pg) {
             if (params.version) {
                 def version = params.version.toLong()
                 if (pg.version > version) {
                     pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.urlForm()} while you were editing")
-                    render(view: "/shared/images", model: [command: pg])
+                    render(view: "/shared/images", model: [command: pg, target: target])
                     return
                 }
             }
@@ -339,7 +331,6 @@ class ProviderGroupController {
                 case 'imageRef': file = params.imageFile; break
                 case 'logoRef': file = params.logoFile; break
             }
-            println file?.size
             if (file?.size) {  // will only have size if a file was selected
                 // save the chosen file
                 if (file.size < 200000) {   // limit file to 200Kb
@@ -358,24 +349,18 @@ class ProviderGroupController {
                     ActivityLog.log username(), isAdmin(), Action.UPLOAD_IMAGE, filename
                 } else {
                     println "reject file of size ${file.size}"
-                    pg.errors.reject('image.too.big', 'The image you selected is too large. Images are limited to 200KB.')
-                    pg.errors.rejectValue('imageRef.file', 'image.too.big')
+                    pg.errors.rejectValue('imageRef', 'image.too.big', 'The image you selected is too large. Images are limited to 200KB.')
+                    render(view: "/shared/images", model: [command: pg, target: target])
+                    return
                 }
             }
-            // handle too big error (cause setting props clears the error)
-            if (pg.hasErrors()) {
-                pg.errors.each{println it}
-                render(view: "images", model: [command: pg, target: target])
+            pg.properties = params
+            pg.userLastModified = username()
+            if (!pg.hasErrors() && pg.save(flush: true)) {
+                flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                redirect(action: "show", id: pg.id)
             } else {
-                pg.properties = params
-                pg.userLastModified = username()
-                if (!pg.hasErrors() && pg.save(flush: true)) {
-                    flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                    redirect(action: "show", id: pg.id)
-                }
-                else {
-                    render(view: "images", model: [command: pg])
-                }
+                render(view: "/shared/images", model: [command: pg, target: target])
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityName), params.id])}"

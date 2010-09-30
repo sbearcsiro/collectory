@@ -30,9 +30,12 @@ span.lsid {
     font-size:12px;
 }
 
+div.center {
+    text-align:center !important;
+}
+
 .institutionImage {
-    padding: 10px 5px 5px 0;
-    float:right;
+    padding: 10px 0 5px 0;
     max-width:300px;
 }
 

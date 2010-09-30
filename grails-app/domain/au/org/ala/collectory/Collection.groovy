@@ -264,7 +264,16 @@ class Collection extends ProviderGroup implements Serializable {
         }
         return [:]
     }
-    
+
+    def List<Attribution> getAttributionList() {
+        List<Attribution> list = super.getAttributionList();
+        // add institution
+        if (institution) {
+            list << new Attribution(name: institution.name, url: institution.websiteUrl, uid: institution.uid)
+        }
+        return list
+    }
+
     long dbId() { return id }
 
     String entityType() {

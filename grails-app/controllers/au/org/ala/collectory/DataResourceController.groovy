@@ -67,4 +67,27 @@ class DataResourceController extends ProviderGroupController {
             redirect(action: "show", id: params.id)
         }
     }
+
+    /**
+     * Get the instance for this entity based on either uid or DB id.
+     *
+     * @param id UID or DB id
+     * @return the entity of null if not found
+     */
+    protected ProviderGroup get(id) {
+        if (id.size() > 2) {
+            if (id[0..1] == DataResource.ENTITY_PREFIX) {
+                return ProviderGroup._get(id)
+            }
+        }
+        // else must be long id
+        long dbId
+        try {
+            dbId = Long.parseLong(id)
+        } catch (NumberFormatException e) {
+            return null
+        }
+        return DataResource.get(dbId)
+    }
+
 }

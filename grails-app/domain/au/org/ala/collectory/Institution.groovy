@@ -96,4 +96,12 @@ class Institution extends ProviderGroup {
         }
         return result
     }
+
+    def List<Attribution> getAttributionList() {
+        List<Attribution> list = super.getAttributionList();
+        // add institution
+        list << new Attribution(name: name, url: websiteUrl, uid: uid)
+        return list
+    }
+
 }

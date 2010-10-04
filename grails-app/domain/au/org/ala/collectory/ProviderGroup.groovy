@@ -75,7 +75,7 @@ abstract class ProviderGroup implements Serializable {
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
-    static states = ['Australian Capital Territory', 'New South Wales', 'Queensland', 'Northern Territory', 'Western Australia', 'South Australia', 'Tasmania', 'Victoria']
+    static statesList = ['Australian Capital Territory', 'New South Wales', 'Queensland', 'Northern Territory', 'Western Australia', 'South Australia', 'Tasmania', 'Victoria']
 
     static mapping = {
         tablePerHierarchy false
@@ -95,7 +95,7 @@ abstract class ProviderGroup implements Serializable {
         latitude(max:360.0, min:-360.0, scale:10)
         longitude(max:360.0, min:-360.0, scale:10)
         altitude(nullable:true)
-        state(nullable:true, maxSize:45, inList: states)
+        state(nullable:true, maxSize:45, inList: statesList)
         websiteUrl(nullable:true, maxSize:256)
         logoRef(nullable:true)
         imageRef(nullable:true)
@@ -301,11 +301,21 @@ abstract class ProviderGroup implements Serializable {
      */
     void addAttribution(String attributionUid) {
         attributions = attributions ?: ""
-        if (!(attributions =~ /\b${attributionUid}\b/)) {
+        if (!hasAttribution(attributionUid)) {
             attributions += (attributions?' ':'') + attributionUid
         }
     }
 
+    boolean hasAttribution(String attributionUid) {
+        return attributions =~ /\b${attributionUid}\b/
+    }
+
+    void removeAttribution(String attributionUid) {
+        def uids = attributions.tokenize(' ')
+        uids.remove attributionUid
+        attributions = uids.join(' ')
+    }
+    
     /*
      * Injects common group attributes into the summary object.
      */

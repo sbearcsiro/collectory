@@ -291,7 +291,7 @@
           <li>${att.name}</li>
         </g:each>
       </ul>
-      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/editAttributions']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      <div style="clear:both;"><span class="buttons"><g:link class="edit" action="editAttributions" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
     </div>
 
     <!-- Provider codes -->

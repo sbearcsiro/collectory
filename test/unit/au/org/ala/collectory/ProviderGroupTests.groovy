@@ -25,39 +25,16 @@ class ProviderGroupTests extends GrailsUnitTestCase {
         assertEquals 'at1 at2', pg.attributions
         pg.addAttribution 'at1'
         assertEquals 'at1 at2', pg.attributions
+
+        assertTrue pg.hasAttribution('at2')
+        assertFalse pg.hasAttribution('at3')
+
+        pg.removeAttribution 'at1'
+        assertFalse pg.hasAttribution('at1')
+        assertTrue pg.hasAttribution('at2')
+
+        pg.removeAttribution 'at2'
+        assertEquals 0, pg.getAttributionList().size()
     }
-    /* needs to be re-written after refactor
-    void testHasProviderCode() {
-        ProviderGroup pg = new ProviderGroup(
-                guid: '237645',
-                name: 'Bees',
-                groupType: ProviderGroup.GROUP_TYPE_COLLECTION,
-                providerCodes: '["ants", "pants", "plants"]')
-
-        assertTrue pg.hasProviderCode('ants')
-        assertTrue pg.hasProviderCode('PANTS')
-        assertTrue pg.hasProviderCode('Plants')
-
-        assertFalse pg.hasProviderCode('pant')
-        assertFalse pg.hasProviderCode('lant')
-        assertFalse pg.hasProviderCode('bees')
-
-        pg.internalProviderCodes = '["bees", "knees", "plants"]'
-
-        assertTrue pg.hasProviderCode('bees')
-        assertTrue pg.hasProviderCode('KNEES')
-        assertTrue pg.hasProviderCode('Plants')
-
-        assertFalse pg.hasProviderCode('ants')
-        assertFalse pg.hasProviderCode('pants')
-        assertFalse pg.hasProviderCode('nees')
-
-        pg.internalProviderCodes = '["ANY", "knees", "plants"]'
-
-        assertTrue pg.hasProviderCode('wallabees')
-        assertTrue pg.hasProviderCode('KNEES')
-        assertTrue pg.hasProviderCode('ants')
-    }
-    */
 
 }

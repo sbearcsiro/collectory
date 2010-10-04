@@ -680,7 +680,7 @@ class CollectoryTagLib {
      * Formats free text so:
      *  line feeds are honoured
      *  and urls are linked
-     *  and bold (*xyz*)and italic (_xyz_) are rendered
+     *  and bold (+xyz+)and italic (_xyz_) are rendered
      *  and lists are supported using wiki markup
      *
      * @param attrs.noLink suppresses links
@@ -700,8 +700,12 @@ class CollectoryTagLib {
             }
 
             // italic
-            text = text.replaceAll(/\b_/) {"<em>"}
-            text = text.replaceAll(/_\b/) {"</em>"}
+            def italicMarkup = /_([^\r\n+]*)_/
+            text = text.replaceAll(italicMarkup) {match, group -> '<em>' + group + '</em>'}
+
+            // bold
+            def regex = /\+([^\r\n+]*)\+/
+            text = text.replaceAll(regex) {match, group -> '<b>' + group + '</b>'}
 
             // lists
             if (!attrs.noList) {
@@ -734,10 +738,6 @@ class CollectoryTagLib {
                 if (inList) { newText = newText + "</ul>"}
                 text = newText
             }
-
-            // bold (do after lists so list markers are not affected)
-            //text = text.replaceAll(/\b*/) {"<b>"}
-            //text = text.replaceAll(/\*\b/) {"</b>"}
 
             out << text
         }

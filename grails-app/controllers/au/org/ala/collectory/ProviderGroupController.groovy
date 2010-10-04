@@ -31,6 +31,17 @@ abstract class ProviderGroupController {
         }
     }
 
+    def editAttributions = {
+        def pg = get(params.id)
+        if (!pg) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "list")
+        } else {
+            render(view: '/shared/attributions', model:[BCI: pg.hasAttribution('at1'), CHAH: pg.hasAttribution('at2'),
+                    CHACM: pg.hasAttribution('at3'), command: pg])
+        }
+    }
+
     /**
      * Create a new entity instance.
      *
@@ -394,6 +405,59 @@ abstract class ProviderGroupController {
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "show", id: params.id)
+        }
+    }
+
+    def updateAttributions = {
+        def pg = get(params.id)
+        if (pg) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (pg.version > version) {
+                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
+                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
+                            "Another user has updated this ${pg.entityType()} while you were editing")
+                    render(view: "description", model: [command: pg])
+                    return
+                }
+            }
+
+            if (params.BCI && !pg.hasAttribution('at1')) {
+                pg.addAttribution 'at1'
+            }
+            if (!params.BCI && pg.hasAttribution('at1')) {
+                pg.removeAttribution 'at1'
+            }
+            if (params.CHAH && !pg.hasAttribution('at2')) {
+                pg.addAttribution 'at2'
+            }
+            if (!params.CHAH && pg.hasAttribution('at2')) {
+                pg.removeAttribution 'at2'
+            }
+            if (params.CHACM && !pg.hasAttribution('at3')) {
+                pg.addAttribution 'at3'
+            }
+            if (!params.CHACM && pg.hasAttribution('at3')) {
+                pg.removeAttribution 'at3'
+            }
+
+            if (pg.isDirty()) {
+                pg.userLastModified = username()
+                if (!pg.hasErrors() && pg.save(flush: true)) {
+                    flash.message =
+                      "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                    redirect(action: "show", id: pg.id)
+                }
+                else {
+                    render(view: "description", model: [command: pg])
+                }
+            } else {
+                redirect(action: "show", id: pg.id)
+            }
+        } else {
+            flash.message =
+                "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "show", id: params.id)
         }
     }

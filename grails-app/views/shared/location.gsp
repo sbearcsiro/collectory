@@ -43,7 +43,7 @@
             </label>
           </td>
           <td valign="top" colspan="3" class="value ${hasErrors(bean: command, field: 'state', 'errors')}">
-            <g:select id="state" name="state" from="${ProviderGroup.states}" value="${command?.state}" valueMessagePrefix="providerGroup.state" noSelection="['': '']"/>
+            <g:select id="state" name="state" from="${ProviderGroup.statesList}" value="${command?.state}" valueMessagePrefix="providerGroup.state" noSelection="['': '']"/>
             <cl:helpText code="${entityNameLower}.state"/>
           </td>
           <cl:helpTD/>

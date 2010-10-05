@@ -67,10 +67,9 @@ h1 {
     padding-left: 0;
 }
 
-/*.value ul {
-    list-style-type: none;
-    padding-left: 0;
-}*/
+ul.simple {
+    padding-left: 40px;
+}
 
 .hint li {
     list-style-type: none;

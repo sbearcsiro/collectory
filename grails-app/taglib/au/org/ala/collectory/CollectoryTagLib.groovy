@@ -721,7 +721,7 @@ class CollectoryTagLib {
                             it = item
                         } else {
                             inList = true
-                            it = "<ul>" + item
+                            it = "<ul class='simple'>" + item
                         }
                     } else {
                         if (it) { // skip blank content

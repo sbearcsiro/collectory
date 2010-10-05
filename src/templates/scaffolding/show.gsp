@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><a class="home" href="\${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+            <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
         </div>
@@ -22,7 +22,8 @@
                 <table>
                     <tbody>
                     <%  excludedProps = Event.allEvents.toList() << 'version'
-                        props = domainClass.properties.findAll { !excludedProps.contains(it.name) }
+                        allowedNames = domainClass.persistentProperties*.name << 'id' << 'dateCreated' << 'lastUpdated'
+                        props = domainClass.properties.findAll { allowedNames.contains(it.name) && !excludedProps.contains(it.name) }
                         Collections.sort(props, comparator.constructors[0].newInstance([domainClass] as Object[]))
                         props.each { p -> %>
                         <tr class="prop">
@@ -43,7 +44,7 @@
                             <td valign="top" class="value"><g:formatBoolean boolean="\${${propertyName}?.${p.name}}" /></td>
                             <%  } else if (p.type == Date.class || p.type == java.sql.Date.class || p.type == java.sql.Time.class || p.type == Calendar.class) { %>
                             <td valign="top" class="value"><g:formatDate date="\${${propertyName}?.${p.name}}" /></td>
-                            <%  } else { %>
+                            <%  } else if(!p.type.isArray()) { %>
                             <td valign="top" class="value">\${fieldValue(bean: ${propertyName}, field: "${p.name}")}</td>
                             <%  } %>
                         </tr>

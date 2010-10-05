@@ -1,4 +1,5 @@
 <% import grails.persistence.Event %>
+<% import org.codehaus.groovy.grails.plugins.PluginManagerHolder %>
 <%=packageName%>
 <html>
     <head>
@@ -9,7 +10,7 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><a class="home" href="\${createLink(uri: '/')}"><g:message code="default.home.label"/></a></span>
+            <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
         </div>
@@ -30,11 +31,16 @@
                     <table>
                         <tbody>
                         <%  excludedProps = Event.allEvents.toList() << 'version' << 'id' << 'dateCreated' << 'lastUpdated'
-                            props = domainClass.properties.findAll { !excludedProps.contains(it.name) }
+                            persistentPropNames = domainClass.persistentProperties*.name
+                            props = domainClass.properties.findAll { persistentPropNames.contains(it.name) && !excludedProps.contains(it.name) }
                             Collections.sort(props, comparator.constructors[0].newInstance([domainClass] as Object[]))
+                            display = true
+                            boolean hasHibernate = PluginManagerHolder.pluginManager.hasGrailsPlugin('hibernate')
                             props.each { p ->
-                                cp = domainClass.constrainedProperties[p.name]
-                                display = (cp?.display ?: true)
+                                if (hasHibernate) {
+                                    cp = domainClass.constrainedProperties[p.name]
+                                    display = (cp?.display ?: true)
+                                }
                                 if (display) { %>
                             <tr class="prop">
                                 <td valign="top" class="name">

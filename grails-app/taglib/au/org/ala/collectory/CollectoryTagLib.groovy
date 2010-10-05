@@ -700,7 +700,7 @@ class CollectoryTagLib {
             }
 
             // italic
-            def italicMarkup = /_([^\r\n+]*)_/
+            def italicMarkup = /_([^\r\n_]*)_/
             text = text.replaceAll(italicMarkup) {match, group -> '<em>' + group + '</em>'}
 
             // bold

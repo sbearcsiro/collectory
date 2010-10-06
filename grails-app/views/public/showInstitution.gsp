@@ -28,6 +28,10 @@
         <div class="section full-width">
           <div class="hrgroup col-8">
             <h1>${fieldValue(bean:institution,field:'name')}</h1>
+            <g:set var="parents" value="${institution.listParents()}"/>
+            <g:each var="p" in="${parents}">
+              <h2 style="font-size:1.5em;"><g:link action="show" id="${p.uid}">${p.name}</g:link></h2>
+            </g:each>
             <cl:valueOrOtherwise value="${institution.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: institution, field: "acronym")}</span></cl:valueOrOtherwise>
             <g:if test="${institution.guid?.startsWith('urn:lsid:')}">
               <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>

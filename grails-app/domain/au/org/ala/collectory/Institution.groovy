@@ -97,6 +97,17 @@ class Institution extends ProviderGroup {
         return result
     }
 
+
+    /**
+     * List of institutions that include this as a child institution.
+     *
+     * Note this is not very efficient as the relationship is modelled solely in the parent.
+     * @return list of Institution
+     */
+    def listParents() {
+        return Institution.findAll("from Institution as i where i.childInstitutions like :uid",[uid: uid])
+    }
+
     def List<Attribution> getAttributionList() {
         List<Attribution> list = super.getAttributionList();
         // add institution

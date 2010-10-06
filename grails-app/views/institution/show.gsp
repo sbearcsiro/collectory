@@ -30,9 +30,22 @@
               <!-- base attributes -->
               <div class="show-section titleBlock">
                 <!-- Name --><!-- Acronym -->
-                <h1 style="display:inline">${fieldValue(bean: institutionInstance, field: "name")}<cl:valueOrOtherwise value="${institutionInstance.acronym}"> (${fieldValue(bean: institutionInstance, field: "acronym")})</cl:valueOrOtherwise></h1>
-                <cl:partner test="${institutionInstance.isALAPartner}"/><br/>
-              
+                <g:if test="${institutionInstance.name.size() > 50}">
+                  <h1 style="display:inline;font-size:1.7em;">${fieldValue(bean: institutionInstance, field: "name")}<cl:valueOrOtherwise value="${institutionInstance.acronym}"> (${fieldValue(bean: institutionInstance, field: "acronym")})</cl:valueOrOtherwise></h1>
+                  <cl:partner test="${institutionInstance.isALAPartner}"/><br/>
+                </g:if>
+                <g:else>
+                  <h1 style="display:inline">${fieldValue(bean: institutionInstance, field: "name")}<cl:valueOrOtherwise value="${institutionInstance.acronym}"> (${fieldValue(bean: institutionInstance, field: "acronym")})</cl:valueOrOtherwise></h1>
+                  <cl:partner test="${institutionInstance.isALAPartner}"/><br/>
+                </g:else>
+                <!-- Institutions -->
+                <g:set var='parents' value="${institutionInstance.listParents()}"/>
+                <g:if test="${parents}">
+                  <g:each in="${parents}" var="p">
+                    <h2 style="display:inline;font-size:1.2em"><g:link controller="institution" action="show" id="${p.uid}">${p.name}</g:link></h2>
+                    <cl:partner test="${p.isALAPartner}"/><br/>
+                  </g:each>
+                </g:if>
                 <!-- GUID    -->
                 <p><span class="category">LSID</span>: <cl:guid target="_blank" guid='${fieldValue(bean: institutionInstance, field: "guid")}'/></p>
 

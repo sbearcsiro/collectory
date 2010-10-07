@@ -107,17 +107,17 @@
 
               <h2>Number of specimens in the collection</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">
-                <p>The estimated number of specimens within the ${collectionInstance.name} is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
+                <p>The estimated number of specimens within <cl:collectionName prefix="the " name="${collectionInstance.name}"/> is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
               </g:if>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">
-                <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are digitised.
+                <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are databased.
                 This represents <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}' /> of the collection.</p>
               </g:if>
-              <p>Click the Records & Statistics tab to access those digitised records that are available through the atlas.</p>
+              <p>Click the Records & Statistics tab to access those database records that are available through the atlas.</p>
 
               <g:if test="${collectionInstance.listSubCollections()?.size() > 0}">
                 <h2>Sub-collections</h2>
-                <p>The <cl:collectionName name="${collectionInstance.name}"/> contains these significant collections:</p>
+                <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> contains these significant collections:</p>
                 <cl:subCollectionList list="${collectionInstance.subCollections}"/>
               </g:if>
             </div><!--close section-->
@@ -235,9 +235,9 @@
               <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
               <div style="float:left;">
                 <g:if test="${collectionInstance.numRecords != -1}">
-                  <p>The ${cl.collectionName(name: collectionInstance.name)} has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
+                  <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
                     <g:if test="${collectionInstance.numRecordsDigitised != -1}">
-                      <br/><cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}'/> of these have been digitised (${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} records).
+                      <br/><cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}'/> of these have been databased (${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} records).
                     </g:if>
                   </p>
                 </g:if>
@@ -250,12 +250,12 @@
                   <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
                 </g:if>
                 <g:else>
-                  <p>No digitised records for this collection can be accessed through the Atlas of Living Australia.</p>
+                  <p>No database records for this collection can be accessed through the Atlas of Living Australia.</p>
                 </g:else>
               </div>
               <div id="speedo">
                 <g:if test="${percentBiocacheRecords != -1}">
-                  <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as digitised records" />
+                  <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as database records" />
                   <p class="caption"><cl:formatPercent percent="${percentBiocacheRecords}"/>% of records<br/>available for viewing.</p>
                 </g:if>
               </div>

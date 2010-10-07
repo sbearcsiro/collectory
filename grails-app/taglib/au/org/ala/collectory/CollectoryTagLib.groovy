@@ -626,11 +626,14 @@ class CollectoryTagLib {
     }
 
     def collectionName = { attrs ->
-        if (!attrs.name || attrs.name =~ 'Collection') {
-            out << attrs.name
-        } else {
-            out << attrs.name + " Collection"
+        def name = attrs.name
+        if (name && !(name =~ 'Collection' || name =~ 'Herbarium')) {
+            name += " collection"
         }
+        if (attrs.prefix && !name.toLowerCase().startsWith(attrs.prefix.toLowerCase())) {
+            name = attrs.prefix + name
+        }
+        out << name
     }
 
     def subCollectionDisplay = { attrs ->

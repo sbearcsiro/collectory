@@ -22,7 +22,7 @@ class ProviderMapTests extends GrailsUnitTestCase {
         map.addToCollectionCodes(code2)
         map.addToCollectionCodes(code3)
         pg1 = new Collection(id:12, name:'pg name')
-        map.providerGroup = pg1
+        map.collection = pg1
         map.save()
     }
 
@@ -37,24 +37,11 @@ class ProviderMapTests extends GrailsUnitTestCase {
     void testMatches() {
         def cCodes = map.getCollectionCodes()
         assertEquals 2, cCodes.size()
-        assertTrue cCodes.collect{it.code}.contains("code2")
+        assertTrue cCodes*.code.contains("code2")
 
         assertTrue map.matches("code1", "code2")
         assertTrue map.matches("code1", "code3")
         assertFalse map.matches("code2", "code3")
     }
 
-    void testFindMatch() {
-        def pg1 = ProviderMap.find("from provider_map_provider_code as pp, provider_code as c, provider_map as m where c.code = 'CSIRO' and pp.provider_code_id = c.id and m.id = pp.provider_map_institution_codes_id")
-        
-
-        def pg = ProviderMap.findMatch("code1", "code2")
-        assertNotNull pg
-        assertEquals "pg name", pg.name
-        assertEquals 12, ProviderMap.findMatchId("code1", "code2")
-
-        // alt
-        //def x = ProviderMap.find('from ProviderMap as pm where pm.institutionCode.code = code1')
-        //println x
-    }
 }

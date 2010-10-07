@@ -162,7 +162,7 @@ class Collection extends ProviderGroup implements Serializable {
      */
     List<String> getListOfCollectionCodesForLookup() {
         if (providerMap) {
-            return providerMap.getCollectionCodes().collect {it.code}
+            return providerMap.getCollectionCodes()*.code
         } else {
             return []
         }
@@ -176,7 +176,7 @@ class Collection extends ProviderGroup implements Serializable {
      */
     List<String> getListOfInstitutionCodesForLookup() {
         if (providerMap) {
-            return providerMap.getInstitutionCodes().collect {it.code}
+            return providerMap.getInstitutionCodes()*.code
         } else {
             return []
         }

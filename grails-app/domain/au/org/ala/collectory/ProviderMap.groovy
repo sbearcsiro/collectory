@@ -29,8 +29,8 @@ class ProviderMap implements Serializable {
     }*/
 
     boolean matches(String institutionCode, String collectionCode) {
-        return institutionCodes.collect{it.code}.contains(institutionCode) &&
-                (matchAnyCollectionCode || collectionCodes.collect{it.code}.contains(collectionCode))
+        return institutionCodes*.code.contains(institutionCode) &&
+                (matchAnyCollectionCode || collectionCodes*.code.contains(collectionCode))
     }
 
     /**

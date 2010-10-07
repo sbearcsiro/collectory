@@ -36,6 +36,9 @@ div.center {
 
 .institutionImage {
     max-width:300px;
+    -moz-border-radius: 0; /* FF1+ */
+    -webkit-border-radius: 0; /* Saf3+, Chrome */
+    border-radius: 0; /* Opera 10.5, IE 9 */
 }
 
 /* allow logo to rise to level of name text */
@@ -183,3 +186,9 @@ div#decadeChart img {
     background: url(../images/skin/external.png) center right no-repeat;
     padding-right: 13px;
 }*/
+
+img.no-radius {
+    -moz-border-radius: 0; /* FF1+ */
+    -webkit-border-radius: 0; /* Saf3+, Chrome */
+    border-radius: 0; /* Opera 10.5, IE 9 */
+}

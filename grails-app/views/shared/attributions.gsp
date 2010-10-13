@@ -6,7 +6,6 @@
   <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
   <g:set var="entityNameLower" value="${command.ENTITY_TYPE.toLowerCase()}"/>
   <title>Edit ${entityNameLower} metadata</title>
-<script type="text/javascript" src="http://www.google.com/jsapi?key=${grailsApplication.config.google.maps.v2.key}"></script>
 </head>
 <body onload="load();">
   <style>

@@ -30,7 +30,40 @@ class DataProviderController extends ProviderGroupController {
         else {
             log.debug "Ala partner = " + instance.isALAPartner
             ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
-            [instance: instance, contacts: instance.getContacts()]
+
+            [instance: instance, contacts: instance.getContacts(), changes: getChanges(instance.uid)]
+        }
+    }
+
+    def delete = {
+        def instance = get(params.id)
+        if (instance) {
+            /* need to remove it as a parent from all children otherwise they will be deleted */
+            def resources = instance.resources as List
+            resources.each {
+                instance.removeFromResources it
+                it.userLastModified = username()
+                it.save()  // necessary?
+            }
+            // remove contact links (does not remove the contact)
+            ContactFor.findAllByEntityUid(instance.uid).each {
+                it.delete()
+            }
+            // now delete
+            try {
+                ActivityLog.log username(), isAdmin(), params.id as long, Action.DELETE
+                instance.delete(flush: true)
+                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'dataProvider.label', default: 'dataProvider'), params.id])}"
+                redirect(action: "list")
+            }
+            catch (org.springframework.dao.DataIntegrityViolationException e) {
+                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'dataProvider.label', default: 'dataProvider'), params.id])}"
+                redirect(action: "show", id: params.id)
+            }
+        }
+        else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataProvider.label', default: 'dataProvider'), params.id])}"
+            redirect(action: "list")
         }
     }
 

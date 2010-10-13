@@ -2,6 +2,7 @@ package au.org.ala.collectory
 
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.JSON
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 class ReportsController {
 
@@ -47,6 +48,10 @@ class ReportsController {
 
     def codes = {
         [codeSummaries: (ProviderMap.list().collect { it.collection.buildSummary() }).sort {it.name}]
+    }
+
+    def changes = {
+        [changes: AuditLogEvent.list([sort:'lastUpdated',order:'desc',max:100])]
     }
 
     def classification = {

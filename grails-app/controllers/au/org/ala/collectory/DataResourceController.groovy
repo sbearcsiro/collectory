@@ -33,7 +33,8 @@ class DataResourceController extends ProviderGroupController {
         else {
             log.debug "Ala partner = " + instance.isALAPartner
             ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
-            [instance: instance, contacts: instance.getContacts()]
+
+            [instance: instance, contacts: instance.getContacts(), changes: getChanges(instance.uid)]
         }
     }
 

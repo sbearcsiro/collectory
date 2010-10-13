@@ -3,7 +3,7 @@ package au.org.ala.collectory
 import grails.converters.JSON
 import java.text.NumberFormat
 import java.text.ParseException
-import org.springframework.web.multipart.MultipartFile
+
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class CollectionController extends ProviderGroupController {
@@ -63,10 +63,10 @@ class CollectionController extends ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
         } else {
-            // lookup number of biocache records - TODO: this code should be shared with public controller
+
+            // lookup number of biocache records - TODO: this code should be shared with public controller via a service
             def baseUrl = ConfigurationHolder.config.biocache.baseURL
             def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
-
             def count = 0
             def conn = new URL(url).openConnection()
             conn.setConnectTimeout 3000
@@ -87,7 +87,8 @@ class CollectionController extends ProviderGroupController {
             log.info ">>${username()} showing ${collectionInstance.name}"
             ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
             [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
-                    numBiocacheRecords: count, percentBiocacheRecords: percent]
+                    numBiocacheRecords: count, percentBiocacheRecords: percent,
+                    changes: getChanges(collectionInstance.uid)]
         }
     }
 
@@ -162,32 +163,6 @@ class CollectionController extends ProviderGroupController {
         def term = params.term
         def criteria = term ? term : "blank"        // for display purposes
         [providerGroupInstanceList : results, providerGroupInstanceTotal: results.getTotalCount(), criteria: [criteria], term: term]
-    }
-
-    def delete = {
-        Collection col = Collection.get(params.id)
-        if (col) {
-            def name = col.name
-            log.info ">>${username()} deleting collection " + name
-            ActivityLog.log username(), isAdmin(), col.uid, Action.DELETE
-            try {
-                // remove contact links (does not remove the contact)
-                ContactFor.findAllByEntityUid(col.uid).each {
-                    log.info "Removing link to contact " + it.contact?.buildName()
-                    it.delete()
-                }
-                // delete collection
-                col.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'collection.label', default: 'Collection'), name])}"
-                redirect(action: "list")
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'collection.label', default: 'Collection'), name])}"
-                redirect(action: "show", id: params.id)
-            }
-        } else {
-            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
-            redirect(action: "list")
-        }
     }
 
     /** V2 editing ****************************************************************************************************/

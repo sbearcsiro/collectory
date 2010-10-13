@@ -86,7 +86,7 @@ class CollectionController extends ProviderGroupController {
             // show it
             log.info ">>${username()} showing ${collectionInstance.name}"
             ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
-            [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
+            [instance: collectionInstance, contacts: collectionInstance.getContacts(),
                     numBiocacheRecords: count, percentBiocacheRecords: percent,
                     changes: getChanges(collectionInstance.uid)]
         }

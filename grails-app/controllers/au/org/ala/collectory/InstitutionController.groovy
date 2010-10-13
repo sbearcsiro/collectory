@@ -32,7 +32,7 @@ class InstitutionController extends ProviderGroupController {
             log.debug "Ala partner = " + institutionInstance.isALAPartner
             ActivityLog.log username(), isAdmin(), institutionInstance.uid, Action.VIEW
 
-            [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts(), changes: getChanges(institutionInstance.uid)]
+            [instance: institutionInstance, contacts: institutionInstance.getContacts(), changes: getChanges(institutionInstance.uid)]
         }
     }
 

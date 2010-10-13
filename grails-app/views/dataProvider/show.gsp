@@ -86,68 +86,17 @@
               </div>
 
               <!-- images -->
-              <div class="show-section">
-                <!-- LogoRef -->
-                  <h2>Logo</h2>
-                  <g:if test="${fieldValue(bean: instance, field: 'logoRef.file')}">
-                    <img class="showImage" alt="${fieldValue(bean: instance, field: "logoRef.file")}"
-                        src="${resource(absolute: "true", dir: 'data/dataProvider', file: instance.logoRef.file)}"/>
-                    <p class="caption">${fieldValue(bean: instance, field: "logoRef.file")}</p>
-                    <cl:formattedText pClass="caption">${fieldValue(bean: instance, field: "logoRef.caption")}</cl:formattedText>
-                    <p class="caption">${fieldValue(bean: instance, field: "logoRef.attribution")}</p>
-                    <p class="caption">${fieldValue(bean: instance, field: "logoRef.copyright")}</p>
-                  </g:if>
-
-                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/images',target:'logoRef']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
-              </div>
-
-              <!-- images -->
-              <div class="show-section">
-                <!-- ImageRef -->
-                  <h2>Representative Image</h2>
-                  <g:if test="${fieldValue(bean: instance, field: 'imageRef.file')}">
-                    <img class="showImage" alt="${fieldValue(bean: instance, field: "imageRef.file")}"
-                        src="${resource(absolute: "true", dir: 'data/dataProvider', file: instance.imageRef.file)}"/>
-                    <p class="caption">${fieldValue(bean: instance, field: "imageRef.file")}</p>
-                    <cl:formattedText pClass="caption">${fieldValue(bean: instance, field: "imageRef.caption")}</cl:formattedText>
-                    <p class="caption">${fieldValue(bean: instance, field: "imageRef.attribution")}</p>
-                    <p class="caption">${fieldValue(bean: instance, field: "imageRef.copyright")}</p>
-                  </g:if>
-
-                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/images',target:'imageRef']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
-              </div>
+              <g:render template="/shared/images" model="[target: 'logoRef', image: instance.logoRef, title:'Logo', instance: instance]"/>
+              <g:render template="/shared/images" model="[target: 'imageRef', image: instance.imageRef, title:'Representative image', instance: instance]"/>
 
               <!-- location -->
               <g:render template="/shared/location" model="[instance: instance]"/>
 
               <!-- Contacts -->
-              <div class="show-section">
-                <h2>Contacts</h2>
-                <ul class="fancy">
-                  <g:each in="${contacts}" var="c">
-                    <li><g:link controller="contact" action="show" id="${c?.contact?.id}">
-                      ${c?.contact?.buildName()}
-                      <cl:roleIfPresent role='${c?.role}'/>
-                      <cl:adminIfPresent admin='${c?.administrator}'/>
-                      ${c?.contact?.phone}
-                      <cl:valueOrOtherwise value ="${c?.primaryContact}"> (Primary contact)</cl:valueOrOtherwise>
-                    </g:link>
-                    </li>
-                  </g:each>
-                </ul>
-                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/showContacts']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
-              </div>
+              <g:render template="/shared/contacts" model="[contacts: contacts, instance: instance]"/>
 
               <!-- Attributions -->
-              <div class="show-section">
-                <h2>Attributions</h2>
-                <ul class="fancy">
-                  <g:each in="${instance.getAttributionList()}" var="att">
-                    <li>${att.name}</li>
-                  </g:each>
-                </ul>
-                <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/editAttributions']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
-              </div>
+              <g:render template="/shared/attributions" model="[instance: instance]"/>
 
               <!-- change history -->
               <g:render template="/shared/changes" model="[changes: changes, instance: instance]"/>

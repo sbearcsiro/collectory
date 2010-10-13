@@ -27,7 +27,7 @@
         <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${fieldValue(bean:institution,field:'name')}</span></div>
         <div class="section full-width">
           <div class="hrgroup col-8">
-            <h1>${fieldValue(bean:institution,field:'name')}</h1>
+            <cl:h1 value="${institution.name}"/>
             <g:set var="parents" value="${institution.listParents()}"/>
             <g:each var="p" in="${parents}">
               <h2 style="font-size:1.5em;"><g:link action="show" id="${p.uid}">${p.name}</g:link></h2>
@@ -124,7 +124,7 @@
           <div class="section">
             <h3>Web site</h3>
             <div class="webSite">
-              <a class='external_icon' target="_blank" href="${institution.websiteUrl}">Visit the institution's website</a>
+              <a class='external_icon' target="_blank" href="${institution.websiteUrl}">Visit the <cl:institutionType inst="${institution}"/>'s website</a>
             </div>
           </div>
         </g:if>

@@ -5,6 +5,8 @@ class DataHub extends ProviderGroup implements Serializable {
     static final String ENTITY_TYPE = 'DataHub'
     static final String ENTITY_PREFIX = 'dh'
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
+
     static constraints = {
     }
 

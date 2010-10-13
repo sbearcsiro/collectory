@@ -5,6 +5,8 @@ class DataResource extends ProviderGroup implements Serializable {
     static final String ENTITY_TYPE = 'DataResource'
     static final String ENTITY_PREFIX = 'dr'
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
+
     String displayName
     String rights
     String citation

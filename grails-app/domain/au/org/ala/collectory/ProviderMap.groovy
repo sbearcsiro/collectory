@@ -7,6 +7,8 @@ class ProviderMap implements Serializable {
 
     Collection collection
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated']]
+
     // has many collection codes and institution codes
     static hasMany = [collectionCodes: ProviderCode, institutionCodes: ProviderCode]
 

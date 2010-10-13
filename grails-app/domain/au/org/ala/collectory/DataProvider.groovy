@@ -5,6 +5,8 @@ class DataProvider extends ProviderGroup implements Serializable {
     static final String ENTITY_TYPE = 'DataProvider'
     static final String ENTITY_PREFIX = 'dp'
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
+
     static hasMany = [resources: DataResource]
 
     static constraints = {

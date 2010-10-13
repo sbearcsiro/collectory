@@ -4,6 +4,8 @@ class ProviderCode {
 
     String code
 
+    static auditable = [ignore: ['version']]
+
     static belongsTo = ProviderMap
 
     static mapping = {

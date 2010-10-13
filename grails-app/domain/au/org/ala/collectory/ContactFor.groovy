@@ -17,6 +17,8 @@ class ContactFor implements Serializable {
     Date dateLastModified = new Date()
     String userLastModified
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
+
     ContactFor () {}
 
     ContactFor (Contact contact, String entityUid, String role, boolean isAdministrator, boolean isPrimaryContact) {

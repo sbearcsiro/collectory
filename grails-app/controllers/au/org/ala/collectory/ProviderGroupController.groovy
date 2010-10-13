@@ -3,6 +3,7 @@ package au.org.ala.collectory
 import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 /**
  * This is a base class for all provider group entities types.
@@ -460,6 +461,49 @@ abstract class ProviderGroupController {
                 "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "show", id: params.id)
         }
+    }
+
+    def delete = {
+        def pg = get(params.id)
+        if (pg) {
+            def name = pg.name
+            log.info ">>${username()} deleting ${entityName} " + name
+            ActivityLog.log username(), isAdmin(), pg.uid, Action.DELETE
+            try {
+                // remove contact links (does not remove the contact)
+                ContactFor.findAllByEntityUid(pg.uid).each {
+                    log.info "Removing link to contact " + it.contact?.buildName()
+                    it.delete()
+                }
+                // delete
+                pg.delete(flush: true)
+                flash.message = "${message(code: 'default.deleted.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), name])}"
+                redirect(action: "list")
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), name])}"
+                redirect(action: "show", id: params.id)
+            }
+        } else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
+    def showChanges = {
+        def instance = get(params.id)
+        if (instance) {
+            // get audit records
+            def changes = AuditLogEvent.findAllByUri(instance.uid,[sort:'lastUpdated',order:'desc'])
+            render(view:'/shared/showChanges', model:[changes:changes, instance:instance])
+        } else {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "list")
+        }
+    }
+
+    def getChanges(uid) {
+        // get audit records
+        return AuditLogEvent.findAllByUri(uid,[sort:'lastUpdated',order:'desc',max:10])
     }
 
     protected String username() {

@@ -1,5 +1,7 @@
 package au.org.ala.collectory
 
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+
 class ContactController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -46,7 +48,9 @@ class ContactController {
             redirect(action: "list")
         }
         else {
-            [contactInstance: contactInstance]
+            [contactInstance: contactInstance,
+             changes: AuditLogEvent.findAllByPersistedObjectIdAndClassName(
+                     contactInstance.id,'au.org.ala.collectory.Contact',[sort:'lastUpdated',order:'desc',max:10])]
         }
     }
 

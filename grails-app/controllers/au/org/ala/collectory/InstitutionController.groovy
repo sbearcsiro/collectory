@@ -31,7 +31,8 @@ class InstitutionController extends ProviderGroupController {
         else {
             log.debug "Ala partner = " + institutionInstance.isALAPartner
             ActivityLog.log username(), isAdmin(), institutionInstance.uid, Action.VIEW
-            [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts()]
+
+            [institutionInstance: institutionInstance, contacts: institutionInstance.getContacts(), changes: getChanges(institutionInstance.uid)]
         }
     }
 
@@ -44,13 +45,11 @@ class InstitutionController extends ProviderGroupController {
     def delete = {
         def providerGroupInstance = get(params.id)
         if (providerGroupInstance) {
-            /* need to remove it as a parent from all children
-               - in practice this means removing all rows of the link table that reference this institution
-               - however we should stick within the domain model and use remove methods
-             */
-            providerGroupInstance.children.each {
-                it.removeFromParents providerGroupInstance
-                it.userLastModified = 'temp'//authenticateService.userDomain().username
+            /* need to remove it as a parent from all children otherwise they will be deleted */
+            def collections = providerGroupInstance.collections as List
+            collections.each {
+                providerGroupInstance.removeFromCollections it
+                it.userLastModified = username()
                 it.save()  // necessary?
             }
             // remove contact links (does not remove the contact)

@@ -115,6 +115,20 @@ class CollectoryTagLib {
         }
     }
 
+    def h1 = { attrs ->
+        def style = ""
+        if (attrs.value?.size() > 70) {
+            style = ' style="font-size:1.6em;"'
+        } else
+        if (attrs.value?.size() > 58) {
+            style = ' style="font-size:1.7em;"'
+        } else
+        if (attrs.value?.size() > 50) {
+            style = ' style="font-size:1.8em;"'
+        }
+        out << "<h1${style}>${attrs.value}</h1>"
+    }
+    
     def showDecimal = { attrs ->
         BigDecimal val = -1
         if (attrs.value?.class == BigDecimal.class) {
@@ -828,7 +842,9 @@ class CollectoryTagLib {
         if (codes) {
             // replace first & with ?
             codes = "?" + codes.substring(1)
-            out << "<div class='distributionImage'>${body()}<img src='http://spatial.ala.org.au/alaspatial/ws/density/map${codes}' width='350' /></div>"
+            def baseUrl = ConfigurationHolder.config.spatial.baseURL
+            def url = baseUrl + "ws/density/map${codes}"
+            out << "<div class='distributionImage'>${body()}<img src='${url}' width='350' /></div>"
         }
     }
 
@@ -904,4 +920,90 @@ class CollectoryTagLib {
         out << "${body()} | Natural History Collections | Atlas of Living Australia"
     }
 
+    /**
+     * Returns lowercase past tense version of the change event.
+     * Bolds the result for insert and delete if highlightInsertDelete is true.
+     */
+    def changeEventName = { attrs ->
+        switch (attrs.event) {
+            case 'UPDATE': out << 'updated'; break
+            case 'INSERT': out << (attrs.highlightInsertDelete ? '<b>inserted</b>' : 'inserted'); break
+            case 'DELETE': out << (attrs.highlightInsertDelete ? '<b>deleted</b>' : 'deleted'); break
+        }
+    }
+
+    /**
+     * Returns a string representation of the value suiable for short display such as in change logs.
+     */
+    def cleanString = { attrs ->
+        def text = attrs.value
+        // detect json array of strings
+        if (text && text[0..1] == '["' && text[text.size()-2..text.size()-1] == '"]') {
+            def list = JSON.parse(text.toString())
+            String str = ""
+            list.each {str += "${it}, "}
+            text = str.size() > 3 ? str[0..str.size()-3] : ""
+        }
+        // detect json array of objects
+        if (text && text[0..1] == '[{' && text[text.size()-2..text.size()-1] == '}]') {
+            def list = JSON.parse(text.toString())
+            String str = ""
+            list.each {
+                def obj = JSON.parse(it.toString())
+                // handle subcollections explicitly (so we can order pairs sensibly)
+                if (attrs.field == "subCollections") {
+                    str += "name = ${obj.name}"
+                    if (obj.description) {
+                        str += "; desc = ${obj.description}"
+                    }
+                    str += "<br/>"
+                }
+                else {
+                    obj.each {k, v ->
+                        str += k.toString() + " = " + v.toString() + "<br/>"
+                    }
+                }
+            }
+
+            text = str.size() > 7 ? str[0..str.size()-6] : ""
+        }
+
+        out << "<span class='${attrs.class}'>" + text + "</span>"
+    }
+
+    /**
+     * Returns the short class name from a fully-qualified class name.
+     */
+    def shortClassName = {attrs ->
+        if (attrs.className) {
+            def lastDot = attrs.className.lastIndexOf('.')
+            if (lastDot > -1) {
+                out << attrs.className[lastDot+1..attrs.className.size()-1]
+            }
+            else {
+                out << attrs.className
+            }
+        }
+    }
+
+    def boldNameInEmail = {attrs ->
+        if (attrs.name) {
+            def amp = attrs.name.indexOf('@')
+            if (amp > -1) {
+                out << "<b>" + attrs.name[0..amp-1] + "</b>" + attrs.name[amp..attrs.name.size()-1]
+            }
+            else {
+                out << attrs.name
+            }
+        }
+    }
+
+    def institutionType = {attrs ->
+        if (attrs.inst?.institutionType == "governmentDepartment") {
+            out << 'department'
+        }
+        else {
+            out << 'institution'
+        }
+    }
 }

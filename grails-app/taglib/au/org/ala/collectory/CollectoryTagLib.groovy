@@ -986,6 +986,37 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Returns the controller name for the specified class name.
+     *
+     * Class name may be fully qualified or short.
+     */
+    def controllerFromClassName = {attrs ->
+        def clazz = shortClassName(className: attrs.className)
+        if (clazz) {
+            clazz = clazz[0].toLowerCase() + clazz[1..clazz.size()-1]
+        }
+        out << clazz
+    }
+
+    /**
+     * Returns the controller name for the specified uid.
+     */
+    def controllerFromUid = {attrs ->
+        if (attrs.uid.size() > 2) {
+            switch (attrs.uid[0..1]) {
+                case 'co': out << 'collection'; break
+                case 'in': out << 'institution'; break
+                case 'dp': out << 'dataProvider'; break
+                case 'dr': out << 'dataResource'; break
+                case 'dh': out << 'dataHub'; break
+            }
+        }
+    }
+
+    /**
+     * Bolds the name part of an email address, ie all before the @.
+     */
     def boldNameInEmail = {attrs ->
         if (attrs.name) {
             def amp = attrs.name.indexOf('@')
@@ -998,6 +1029,9 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Tailors the descriptive noun for an institution based on it's type.
+     */
     def institutionType = {attrs ->
         if (attrs.inst?.institutionType == "governmentDepartment") {
             out << 'department'

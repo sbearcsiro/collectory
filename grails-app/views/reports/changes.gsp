@@ -24,13 +24,31 @@
                     <td><g:link controller="auditLogEvent" action="show" id="${ch.id}">${ch.lastUpdated}</g:link></td>
                     <td><g:link controller="auditLogEvent" action="show" id="${ch.id}"><cl:boldNameInEmail name="${ch.actor}"/></g:link></td>
                     <td><g:link controller="auditLogEvent" action="show" id="${ch.id}"><cl:changeEventName event="${ch.eventName}"/></g:link></td>
-                    <td><g:link controller="auditLogEvent" action="show" id="${ch.id}">
-                      <g:if test="${ch.eventName == 'UPDATE'}"><b>${ch.propertyName}</b> in</g:if>
-                      <cl:shortClassName className="${ch.className}"/><b>
-                      <g:if test="${ch.uri}">${ch.uri}</g:if>
-                      <g:else>${ch.persistedObjectId}</g:else>
+                    <td>
+                      <g:link controller="auditLogEvent" action="show" id="${ch.id}">
+                        <g:if test="${ch.eventName == 'UPDATE'}"><b>${ch.propertyName}</b> in</g:if>
+                        <cl:shortClassName className="${ch.className}"/><b>
+                      </g:link>
+                      <g:if test="${ch.uri}">
+                        <!-- handle uids -->
+                        <g:if test="${ch.eventName=='DELETE' && !ch.className.endsWith('ContactFor')}">
+                          ${ch.uri}
+                        </g:if>
+                        <g:else>
+                          <g:link controller="${cl.controllerFromUid(uid:ch.uri)}" action="show" id="${ch.uri}">${ch.uri}</g:link>
+                        </g:else>
+                      </g:if>
+                      <g:else>
+                        <!-- handle db ids -->
+                        <g:if test="${ch.eventName=='DELETE'}">
+                          ${ch.persistedObjectId}
+                        </g:if>
+                        <g:else>
+                          <g:link controller="${cl.controllerFromClassName(className:ch.className)}" action="show" id="${ch.persistedObjectId}">${ch.persistedObjectId}</g:link>
+                        </g:else>
+                      </g:else>
                       </b>
-                    </g:link></td>
+                    </td>
                   </tr>
                 </g:each>
               </table>

@@ -10,6 +10,7 @@
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
+/******* Start time config **********/
 def ENV_NAME = "COLLECTORY_CONFIG"
 def default_config = "/data/collectory/config/${appName}-config.properties"
 if(!grails.config.locations || !(grails.config.locations instanceof List)) {
@@ -35,9 +36,12 @@ println "(*) grails.config.locations = ${grails.config.locations}"
 if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
 }
+if (!spatial.baseURL) {
+     spatial.baseURL = "http://spatial.ala.org.au/"
+}
 if (!security.cas.urlPattern) {
-    // simplify collection pattern when /collection/summary is not used any more (replaced by /lookup/summary)
-    security.cas.urlPattern = '/admin.*,/collection/list.*,/collection/show/.*,/collection/edit.*,/collection/delete.*,/collection/create.*,/collection/removeImage.*,/collection/update.*,/collection/base.*,/institution/.*,/contact/.*,/reports/.*,/providerCode/.*,/providerMap/.*,/dataProvider/.*,/dataResource/.*,/dataHub/.*'
+    security.cas.urlPattern = "/admin.*,/collection.*,/institution.*," +
+            "/contact.*,/reports.*,/providerCode.*,/providerMap.*,/dataProvider.*,/dataResource.*,/dataHub.*"
 }
 if (!security.cas.loginUrl) {
     security.cas.loginUrl = "https://auth.ala.org.au/cas/login"
@@ -52,6 +56,7 @@ if (!citation.rights.template) {
     citation.rights.template = ''
 }
 
+/******* standard grails **********/
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
@@ -91,9 +96,11 @@ grails.spring.bean.packages = []
 // MEW tell the framework which packages to search for @Validateable classes
 grails.validateable.packages = ['au.org.ala.collectory']
 
+/******* location of images **********/
 // default location for images
 repository.location.images = '/data/collectory/data'
 
+/******* log files **********/
 def logDirectory = "/data/collectory/logs"
 
 // set per-environment serverURL stem for creating absolute links
@@ -132,7 +139,21 @@ println "cas.context = " + security.cas.context
 
 hibernate = "off"
 
-// log4j configuration
+/******* config audit logging plugin **********/
+auditLog {
+  actorClosure = { request, session ->
+      def cas = session?.getAttribute('_const_cas_assertion_')
+      def actor = cas?.getPrincipal()?.getName()
+      if (!actor) {
+          actor = request.getUserPrincipal()?.attributes?.email ?: "anonymous"
+      }
+      return actor
+  }
+  TRUNCATE_LENGTH = 2048
+}
+auditLog.verbose = false
+
+/******* log4j configuration **********/
 log4j = {
 
     appenders {
@@ -173,12 +194,12 @@ log4j = {
 	       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
            'org.springframework',
            'org.hibernate',
-           'net.sf.ehcache.hibernate'
+           'net.sf.ehcache.hibernate',
+           'org.codehaus.groovy.grails.plugins.orm.auditable'
 
     warn   'org.mortbay.log', 'org.springframework.webflow'
 
     info   'grails.app.controller'
-
 
 /* debug logging
     debug  'org.springframework.webflow',

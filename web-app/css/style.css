@@ -670,6 +670,27 @@ span.entityType {
     padding-bottom: 4px;
 }
 
+/* for change history */
+table.textChanges {
+    margin-left: 30px;
+    border: none;
+    padding: 0 0 20px 0 !important;
+    width: auto;
+}
+
+table.textChanges td {
+    font: 12px verdana, arial, helvetica, sans-serif !important;
+    padding-top: 2px;
+}
+
+p.relatedFollows {
+    padding-bottom: 2px;
+}
+
+span.changeTo {
+    color: #0066cc;
+}
+
 /** following are styles for admin show pages that emulate public page style **/
 .emulate-public h1 {
     color:#dd3102;
@@ -702,7 +723,7 @@ span.entityType {
 
 .emulate-public .buttons {
     position: relative;
-    left: 680px;
+    left: 670px;
 }
 
 .emulate-public .follow {

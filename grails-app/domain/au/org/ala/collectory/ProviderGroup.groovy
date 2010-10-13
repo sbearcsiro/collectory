@@ -87,7 +87,6 @@ abstract class ProviderGroup implements Serializable {
         uid(blank:false, maxSize:20)
         name(blank:false, maxSize:1024)          // unique:true - ideally should be unique but relax so we can view all BCI data
         acronym(nullable:true, maxSize:45)
-        //groupType(blank:false, maxSize:45)
         pubDescription(nullable:true, maxSize:2048)
         techDescription(nullable:true, maxSize:2048)
         focus(nullable:true, maxSize:2048)
@@ -381,7 +380,16 @@ abstract class ProviderGroup implements Serializable {
     String urlForm() {
         return ProviderGroup.urlFormOfEntityType(entityType())
     }
-    
+
+    /**
+     * Entities are the same if they have the same uid.
+     *
+     * @param obj to compare
+     * @return true if same
+     */
+    def boolean equals(Object obj) {
+        return uid == obj?.uid
+    }
 }
 
 /**
@@ -412,17 +420,34 @@ class Address implements Serializable {
         return !(street || postBox || city || state || postcode || country)
     }
 
-    List<String> nonEmptyAddressElements() {
+    List<String> nonEmptyAddressElements(includePostal) {
+        def fields = ['street','city','state','postcode']
+        if (includePostal) {fields << 'postBox'}
         List<String> elements = []
-        if (street) {elements << street}
-        if (city) {elements << city}
-        if (state) {elements << state}
-        if (postcode) {elements << postcode}
+        fields.each {
+            if (this."${it}") {
+                elements << this."${it}"
+            }
+        }
         return elements
     }
 
     String buildAddress() {
-        return nonEmptyAddressElements().join(" ")
+        return nonEmptyAddressElements(false).join(" ")
+    }
+
+    def String toString() {
+        return nonEmptyAddressElements(true).join(" ")
+    }
+
+    def boolean equals(Object obj) {
+        return obj instanceof Address &&
+                street == obj.street &&
+                postBox == obj.postBox &&
+                city == obj.city &&
+                state == obj.state &&
+                postcode == obj.postcode &&
+                country == obj.country
     }
 }
 
@@ -444,4 +469,15 @@ class Image implements Serializable {
         attribution(nullable:true)
         copyright(nullable:true)
     }
+
+    def String toString() {
+        return ([file,caption,attribution,copyright].findAll {it}).join(", ")
+    }
+
+    def boolean equals(Object obj) {
+        return obj instanceof Image && file == obj.file && caption == obj.caption &&
+                attribution == obj.attribution && copyright == obj.copyright
+    }
+
+
 }

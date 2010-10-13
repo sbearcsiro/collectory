@@ -7,6 +7,8 @@ class Institution extends ProviderGroup {
     static final String ENTITY_TYPE = 'Institution'
     static final String ENTITY_PREFIX = 'in'
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
+
     String institutionType      // the type of institution, eg herbarium, library
 
     String childInstitutions    // space-separated list of UIDs of institutions that this institution administers
@@ -15,7 +17,12 @@ class Institution extends ProviderGroup {
     static hasMany = [collections: Collection]
 
     static constraints = {
-        institutionType(nullable:true, maxSize:45, inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government', 'herbarium', 'historicalSociety', 'horticulturalInstitution', 'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum', 'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute', 'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'])
+        institutionType(nullable:true, maxSize:45,
+                inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government',
+                        'governmentDepartment', 'herbarium', 'historicalSociety', 'horticulturalInstitution',
+                        'independentExpert', 'industry', 'laboratory', 'library', 'management', 'museum',
+                        'natureEducationCenter', 'nonUniversityCollege', 'park', 'repository', 'researchInstitute',
+                        'school', 'scienceCenter', 'society', 'university', 'voluntaryObserver', 'zoo'])
         collections(nullable:true)
         childInstitutions(nullable:true)
     }

@@ -1,4 +1,3 @@
-<%@ page import="au.org.ala.collectory.Collection" %>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -122,68 +121,7 @@
   </div>
 
     <!-- location -->
-    <div class="show-section">
-      <h2>Location</h2>
-      <table>
-        <colgroup><col width="10%"/><col width="45%"/><col width="45%"/></colgroup>
-        <!-- Address -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="collection.address.label" default="Address"/></td>
-
-          <td valign="top" class="value">
-            ${fieldValue(bean: collectionInstance, field: "address.street")}<br/>
-            ${fieldValue(bean: collectionInstance, field: "address.city")}<br/>
-            ${fieldValue(bean: collectionInstance, field: "address.state")}
-            ${fieldValue(bean: collectionInstance, field: "address.postcode")}
-            <g:if test="${fieldValue(bean: collectionInstance, field: 'address.country') != 'Australia'}">
-              <br/>${fieldValue(bean: collectionInstance, field: "address.country")}
-            </g:if>
-          </td>
-
-          <!-- map spans all rows -->
-          <td rowspan="6">
-            <div id="mapCanvas"></div></td>
-
-        </tr>
-
-        <!-- Postal -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="providerGroup.address.postal.label" default="Postal"/></td>
-          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "address.postBox")}</td>
-        </tr>
-
-        <!-- Latitude -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="providerGroup.latitude.label" default="Latitude"/></td>
-          <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.latitude}' degree='true'/></td>
-        </tr>
-
-        <!-- Longitude -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="providerGroup.longitude.label" default="Longitude"/></td>
-          <td valign="top" class="value"><cl:showDecimal value='${collectionInstance.longitude}' degree='true'/></td>
-        </tr>
-
-        <!-- State -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="collection.state.label" default="State"/></td>
-          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "state")}</td>
-        </tr>
-
-        <!-- Email -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="collection.email.label" default="Email"/></td>
-          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "email")}</td>
-        </tr>
-
-        <!-- Phone -->
-        <tr class="prop">
-          <td valign="top" class="name"><g:message code="collection.phone.label" default="Phone"/></td>
-          <td valign="top" class="value">${fieldValue(bean: collectionInstance, field: "phone")}</td>
-        </tr>
-      </table>
-      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/location']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
-    </div>
+    <g:render template="/shared/location" model="[instance: collectionInstance]"/>
 
     <!-- collection scope -->
     <div class="show-section">
@@ -241,7 +179,7 @@
 
       <h2 style="padding-top:10px;">Number of specimens in the collection</h2>
       <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">
-        <p>The estimated number of specimens within the ${collectionInstance.name} is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
+        <p>The estimated number of specimens within <cl:collectionName prefix="the " name="${collectionInstance.name}"/> is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
       </g:if>
       <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">
         <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are digitised.
@@ -307,9 +245,12 @@
             <cl:valueOrOtherwise value="${collectionInstance.providerMap.warning}">Warning is: ${collectionInstance.providerMap.warning}</cl:valueOrOtherwise>
           </p>
         </g:if>
-        <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/editAttributions']" id="${collectionInstance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+        <div style="clear:both;"><span class="buttons"><g:link class="edit" controller="providerMap" action='show' id="${collectionInstance.providerMap.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
       </div>
     </g:if>
+
+    <!-- change history -->
+    <g:render template="/shared/changes" model="[changes: changes, instance: collectionInstance]"/>
 
   </div>
   <div class="buttons">

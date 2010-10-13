@@ -104,6 +104,18 @@
                             </td>
 
                         </tr>
+
+                        <!-- change history -->
+                        <g:if test="${changes}">
+                          <g:each var="ch" in="${changes}" status="row">
+                            <tr class="prop">
+                              <td><g:if test="${row==0}">Change history</g:if></td>
+                              <td><g:link controller='auditLogEvent' action='show' id='${ch.id}'>${ch.lastUpdated}: ${ch.actor}
+                                <cl:changeEventName event="${ch.eventName}" highlightInsertDelete="true"/> <strong>${ch.propertyName}</strong>
+                              </g:link></td>
+                            </tr>
+                          </g:each>
+                        </g:if>
                     </tbody>
                 </table>
             </div>

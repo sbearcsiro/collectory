@@ -27,7 +27,7 @@
           <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${instance.name}</span></div>
           <div class="section full-width">
             <div class="hrgroup col-8">
-              <h1 class="family">${fieldValue(bean:instance,field:'name')}</h1>
+              <cl:h1 value="${instance.name}"/>
               <g:set var="dp" value="${instance.dataProvider}"/>
               <g:if test="${dp}">
                 <h2><g:link action="show" id="${dp.uid}">${dp.name}</g:link></h2>

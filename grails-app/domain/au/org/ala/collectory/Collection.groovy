@@ -9,6 +9,8 @@ class Collection extends ProviderGroup implements Serializable {
     static final String ENTITY_TYPE = 'Collection'
     static final String ENTITY_PREFIX = 'co'
 
+    static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
+    
     String collectionType       // list of type of collection as JSON e.g ['live', 'preserved', 'tissue', 'DNA']
     String keywords
     String active               // see active vocab
@@ -279,4 +281,5 @@ class Collection extends ProviderGroup implements Serializable {
     String entityType() {
         return ENTITY_TYPE
     }
+
 }

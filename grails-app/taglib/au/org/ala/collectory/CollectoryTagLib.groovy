@@ -544,10 +544,10 @@ class CollectoryTagLib {
                     out << "<span class='category'>Member of</span> ${it}"
                     // this will be tidied up when hubs are entities
                     if (it == "CHAH") {
-                        out << "<img class='follow hubImage' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif") + "'/>"
+                        out << "<img class='follow' style='padding-left:25px;' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif") + "'/>"
                     }
                     if (it == "CHAEC") {
-                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif") + "'/>"
+                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png") + "'/>"
                     }
                     if (it == "CHAFC") {
                         out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg") + "'/>"

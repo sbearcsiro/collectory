@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<%@ page import="au.org.ala.collectory.Contact; au.org.ala.collectory.DataResource; au.org.ala.collectory.DataProvider; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Institution; au.org.ala.collectory.Collection" %>
 <html>
     <head>
         <title>ALA Collections Reports</title>
@@ -25,71 +25,110 @@
       </cl:isNotLoggedIn>
 
     <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
-      <br/><br/><p>These actions are only available to system admins.</p>
+    <div class="dashboard">
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="data">View data reports</g:link>
-        <p class="mainText">Totals and data quality.</p>
+      <div class="dashCell">
+        <div class='header'>
+          <div>
+            <p class="dashCellTitle">General</p>
+          </div>
+          <div class="stats">
+            <span class="total">${Collection.count()}</span> collections<br/>
+            <span class="total">${DataResource.count()}</span> data resources
+          </div>
+          <div class="stats">
+            <span class="total">${Institution.count()}</span> institutions<br/>
+            <span class="total">${DataProvider.count()}</span> data providers
+          </div>
+        </div>
+        <div style="clear:both;">
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="data">Measure metadata quality</g:link>
+          <span class="linkText">- a few measures of completeness of metadata</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="changes">Show changes</g:link>
+          <span class="linkText">- lists the recent changes made to the collection registry.</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="membership">View memberships</g:link>
+          <span class="linkText">- lists ALA partners as well as the members of collection networks (hubs).</span></p>
+        </div>
       </div>
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="activity">View activity reports</g:link>
-        <p class="mainText">Show user activity.</p>
+      <div class="dashCell">
+        <div class='header'>
+          <div>
+            <p class="dashCellTitle">Collections</p>
+          </div>
+          <div class="stats">
+            <span class="total">${Collection.count()}</span> total collections
+          </div>
+        </div>
+        <div style="clear:both;">
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="collections">List all collections</g:link>
+          <span class="linkText">- lists collections with permalinks and some attributes</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="codes">List provider codes</g:link>
+          <span class="linkText">- controls the mapping to biocache records.</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="attributions">List attributions</g:link>
+          <span class="linkText">- lists the sources of information for collections.</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="missingRecords">List missing records</g:link>
+          <span class="linkText">- lists collections where the number of digitised records declared significantly exceeds the number of biocache records.</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="classification">Show classifications</g:link>
+          <span class="linkText">- shows how collections are classified according to their keywords into the filter groups used on the collections map page.</span></p>
+        </div>
       </div>
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="membership">View memberships</g:link>
-        <p class="mainText">Lists ALA partners as well as the members of collection networks (hubs).</p>
+      <div class="dashCell">
+        <div class='header'>
+          <div>
+            <p class="dashCellTitle">Institutions</p>
+          </div>
+          <div class="stats">
+            <span class="total">${Institution.count()}</span> total institutions
+          </div>
+        </div>
+        <div style="clear:both;">
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="institutions">List all institutions</g:link>
+          <span class="linkText">- lists institutions with permalinks and some attributes</span></p>
+        </div>
       </div>
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="collections">List all collections</g:link>
-        <p class="mainText">Simple list of all collections.</p>
+      <div class="dashCell">
+        <div class='header'>
+          <div>
+            <p class="dashCellTitle">Data providers</p>
+          </div>
+          <div class="stats">
+            <span class="total">${DataProvider.count()}</span> total data providers
+          </div>
+          <div class="stats">
+            <span class="total">${DataResource.count()}</span> total data resources
+          </div>
+        </div>
+        <div style="clear:both;">
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="providers">List all data providers and resources</g:link>
+          <span class="linkText">- list of all data providers, data resources and data hubs</span></p>
+        </div>
       </div>
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="institutions">List all institutions</g:link>
-        <p class="mainText">Simple list of all institutions.</p>
+      <div class="dashCell">
+        <div class='header'>
+          <div>
+            <p class="dashCellTitle">Contacts</p>
+          </div>
+          <div class="stats">
+            <span class="total">${Contact.count()}</span> total contacts
+          </div>
+        </div>
+        <div style="clear:both;">
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="contacts">List all contacts</g:link></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="contactsForCouncilMembers">Show contacts for member collections</g:link>
+          <span class="linkText">- lists all collections that are members of councils and their contact emails.</span></p>
+        </div>
       </div>
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="providers">List all data providers and resources</g:link>
-        <p class="mainText">Simple list of all data providers, data resources and data hubs.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="contacts">List all contacts</g:link>
-        <p class="mainText">Simple list of all contacts.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="codes">List provider codes</g:link>
-        <p class="mainText">Lists institution and collection codes for collections that have them.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="attributions">List attributions</g:link>
-        <p class="mainText">Lists the sources of information for institutions and collections.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="changes">Show changes</g:link>
-        <p class="mainText">Lists the recent changes made to the collection registry.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="missingRecords">List missing records</g:link>
-        <p class="mainText">Lists collections where the number of digitised records declared significantly
-          exceeds the number of biocache records.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="classification">Show classifications</g:link>
-        <p class="mainText">Shows how collections are classified according to their keywords into the filter groups
-        used on the collections map page.</p>
-      </div>
-
+    </div>
     </cl:ifGranted>
+
+    <cl:ifNotGranted role="${ProviderGroup.ROLE_ADMIN}">
+      <p>Your must have the admin role (ROLE_COLLECTION_ADMIN) to view reports.</p>
+    </cl:ifNotGranted>
 
     </body>
 </html>

@@ -124,7 +124,7 @@
           <div class="section">
             <h3>Web site</h3>
             <div class="webSite">
-              <a class='external_icon' target="_blank" href="${institution.websiteUrl}">Visit the <cl:institutionType inst="${institution}"/>'s website</a>
+              <a class='external' target="_blank" href="${institution.websiteUrl}">Visit the <cl:institutionType inst="${institution}"/>'s website</a>
             </div>
           </div>
         </g:if>
@@ -134,18 +134,19 @@
           <div class="section">
             <h3>Membership</h3>
             <g:if test="${institution.isMemberOf('CHAEC')}">
-              <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
-              <img src="${resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif")}"/>
+              <p>Council of Heads of Australian Entomological Collections (CHAEC)</p>
+              <img src="${resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png")}"/>
             </g:if>
             <g:if test="${institution.isMemberOf('CHAH')}">
-              <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
-              <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
+              <p>Council of Heads of Australasian Herbaria (CHAH)</p>
+              <a target="_blank" href="http://www.chah.gov.au"><img style="padding-left:25px;" src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
             </g:if>
             <g:if test="${institution.isMemberOf('CHAFC')}">
-              <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+              <p>Council of Heads of Australian Faunal Collections (CHAFC)</p>
+              <img src="${resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg")}"/>
             </g:if>
             <g:if test="${institution.isMemberOf('CHACM')}">
-              <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
+              <p>Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
               <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
             </g:if>
           </div>

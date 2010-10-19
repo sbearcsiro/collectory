@@ -8,7 +8,7 @@
         <title><g:message code="default.show.label" args="[entityName]" /></title>
         <script type="text/javascript" src="http://www.google.com/jsapi?key=${grailsApplication.config.google.maps.v2.key}"></script>
     </head>
-    <body onload="load();">
+    <body onload="initializeLocationMap('${instance.canBeMapped()}',${instance.latitude},${instance.longitude});">
     <style>
     #mapCanvas {
       width: 200px;
@@ -112,45 +112,5 @@
               </g:form>
             </div>
         </div>
-    <script type="text/javascript">
-
-    var map;
-    var marker;
-
-    function load() {
-        initialize();
-    }
-
-    function initialize() {
-      if (${instance.canBeMapped()}) {
-        var lat = ${instance.latitude};
-        if (lat == undefined || lat == 0 || lat == -1 ) {lat = -35.294325779329654}
-        var lng = ${instance.longitude};
-        if (lng == undefined || lng == 0 || lng == -1 ) {lng = 149.10602960586547}
-        var latLng = new google.maps.LatLng(lat, lng);
-        map = new google.maps.Map(document.getElementById('mapCanvas'), {
-          zoom: 14,
-          center: latLng,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-          scrollwheel: false
-        });
-        marker = new google.maps.Marker({
-          position: latLng,
-          title: 'Edit section to change pin location',
-          map: map
-        });
-      } else {
-        var middleOfAus = new google.maps.LatLng(-28.2,133);
-        map = new google.maps.Map(document.getElementById('mapCanvas'), {
-          zoom: 2,
-          center: middleOfAus,
-          mapTypeId: google.maps.MapTypeId.ROADMAP,
-          draggable: false,
-          disableDoubleClickZoom: true,
-          scrollwheel: false
-        });
-      }
-    }
-    </script>
     </body>
 </html>

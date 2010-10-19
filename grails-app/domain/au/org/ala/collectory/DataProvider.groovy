@@ -29,7 +29,11 @@ class DataProvider extends ProviderGroup implements Serializable {
      */
     DataProviderSummary buildSummary() {
         DataProviderSummary dps = init(new DataProviderSummary()) as DataProviderSummary
-        dps.resources = resources.collect {[it.uid, it.name]}
+        def list = []
+        resources.each {
+            list << [it.uid, it.name]
+        }
+        dps.resources = list
         return dps
     }
 

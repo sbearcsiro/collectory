@@ -94,3 +94,29 @@ function sendBugEmail(strEncoded, message) {
     }
     return false;
 }
+
+function contactCurator(email, firstName, uid, instUid, name) {
+    var subject = "Request to review web pages presenting information about the " + name + ".";
+    var content = "Dear " + firstName + ",\n\n";
+    content = content + "The current web address for the Atlas of Living Australia is: http://test.ala.org.au and will replace www.ala.org.au in late October 2010.\n\n";
+    content = content + "However, you can find:\n\n";
+    content = content + "Your Collection page at: http://collections.ala.org.au/public/show/" + uid + ".\n\n";
+    if (instUid != "") {
+        content = content + "Your Institution page at: http://collections.ala.org.au/public/showInstitution/" + instUid + ".\n\n";
+    }
+    content = content + "Or explore your collections community at: http://collections.ala.org.au/public/map.\n\n";
+    content = content + "After consulting the website, please respond to this email with any feedback and edits that you would like made to your Collections and Institution pages before Monday the 25th of October 2010.\n\n";
+    content = content + "Regards,\n";
+    content = content + "The Atlas of Living Australia\n\n";
+    content = content + "Dr. Peter Neville\n";
+    content = content + "Research Projects Officer | Atlas of Living Australia\n";
+    content = content + "CSIRO\n";
+
+    var objWin = window.open ('mailto:' + email + '?subject=' + subject + '&body=' + encodeURI(content));
+    if (objWin) objWin.close();
+    if (event) {
+        event.cancelBubble = true;
+    }
+    return false;
+}
+

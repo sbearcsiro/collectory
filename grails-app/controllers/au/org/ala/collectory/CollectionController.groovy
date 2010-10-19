@@ -83,12 +83,40 @@ class CollectionController extends ProviderGroupController {
                 percent = (count*100)/collectionInstance.numRecords
             }
 
+            // contact email - temp
+            def contact = collectionInstance.getPrimaryContact()?.contact
+            def body = ""
+            if (contact?.email) {
+                body = "Dear ${contact.firstName},%0A%0A" +
+
+"""
+The current web address for the Atlas of Living Australia is: http://test.ala.org.au and will replace www.ala.org.au in late October 2010.%0A%0A
+
+However, you can find:%0A%0A
+
+Your Collection page at: http://collections.ala.org.au/public/show/""" + collectionInstance.uid + "%0A%0A" +
+
+"Your Institution page at: http://collections.ala.org.au/public/showInstitution/${collectionInstance.institution?.uid}%0A%0A" +
+
+"""Or explore your collections community at: http://collections.ala.org.au/public/map.%0A%0A
+
+After consulting the website, please respond to this email with any feedback and edits that you would like made to your Collections and Institution pages before Monday the 25th of October 2010.%0A%0A
+
+Regards,%0A
+The Atlas of Living Australia%0A%0A
+
+Dr. Peter Neville%0A
+Research Projects Officer | Atlas of Living Australia%0A
+CSIRO
+"""
+            }
+
             // show it
             log.info ">>${username()} showing ${collectionInstance.name}"
             ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
             [instance: collectionInstance, contacts: collectionInstance.getContacts(),
                     numBiocacheRecords: count, percentBiocacheRecords: percent,
-                    changes: getChanges(collectionInstance.uid)]
+                    changes: getChanges(collectionInstance.uid), contactEmailBody: body]
         }
     }
 

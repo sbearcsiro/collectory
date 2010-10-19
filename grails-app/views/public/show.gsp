@@ -177,12 +177,20 @@
               </g:if>
 
               <!-- web site -->
-              <g:if test="${collectionInstance.websiteUrl}">
+              <g:if test="${collectionInstance.websiteUrl || collectionInstance.institution?.websiteUrl}">
                 <div class="section">
                   <h3>Web site</h3>
-                  <div class="webSite">
-                    <a class='external_icon' target="_blank" href="${collectionInstance.websiteUrl}">Visit the collection's website</a>
-                  </div>
+                  <g:if test="${collectionInstance.websiteUrl}">
+                    <div class="webSite">
+                      <a class='external' target="_blank" href="${collectionInstance.websiteUrl}">Visit the collection's website</a>
+                    </div>
+                  </g:if>
+                  <g:if test="${collectionInstance.institution?.websiteUrl}">
+                    <div class="webSite">
+                      <a class='external' target="_blank" href="${collectionInstance.institution?.websiteUrl}">
+                        Visit the <cl:institutionType inst="${collectionInstance.institution}"/>'s website</a>
+                    </div>
+                  </g:if>
                 </div>
               </g:if>
 
@@ -191,19 +199,19 @@
                 <div class="section">
                   <h3>Membership</h3>
                   <g:if test="${collectionInstance.isMemberOf('CHAEC')}">
-                    <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
-                    <img src="${resource(absolute:"true", dir:"data/network/",file:"butflyyl.gif")}"/>
+                    <p>Council of Heads of Australian Entomological Collections</p>
+                    <img src="${resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png")}"/>
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAH')}">
-                    <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
-                    <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
+                    <p>Council of Heads of Australasian Herbaria</p>
+                    <a target="_blank" href="http://www.chah.gov.au"><img style="padding-left:25px;" src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
-                    <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+                    <p>Council of Heads of Australian Faunal Collections</p>
                     <img src="${resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg")}"/>
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHACM')}">
-                    <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
+                    <p>Council of Heads of Australian Collections of Microorganisms</p>
                     <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
                   </g:if>
                 </div>

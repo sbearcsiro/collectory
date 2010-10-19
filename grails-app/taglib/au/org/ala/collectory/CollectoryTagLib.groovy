@@ -65,6 +65,17 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * <cl:ifNotGranted role="ROLE_COLLECTION_ADMIN">
+     *  The specified role must be missing for the tag to output its body.
+     * </g:ifNotGranted>
+     */
+    def ifNotGranted = { attrs, body ->
+        if (!ConfigurationHolder.config.security.cas.bypass && !request.isUserInRole(attrs.role)) {
+            out << body()
+        }
+    }
+
     def isLoggedIn = { attrs, body ->
         if (ConfigurationHolder.config.security.cas.bypass || request.getUserPrincipal()) {
             out << body()

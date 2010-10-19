@@ -85,8 +85,7 @@
 	   <div id="webdemar">
 		<p> <a href="http://www.ala.org.au">ala site</a> |
 		    <cl:emailLink email="support@ala.org.au">support</cl:emailLink> |
-		    <a href="http://www.ala.org.au/privacy.html">privacy</a> |
-            <a href="http://www.ala.org.au/copyright.html">copyright</a>
+            <a href="http://www.ala.org.au/about/media-centre/terms-of-use/">terms of use</a>
         </p>
 	</div>
 		

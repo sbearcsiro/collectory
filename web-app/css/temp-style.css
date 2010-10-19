@@ -15,8 +15,9 @@
 
 /* h2 link used for institution name on collection page - trad link is overwhelming */
 #header h2 a {
-    text-decoration: none;
+    text-decoration: underline;
     color: inherit;
+    font-size: 20px;
 }
 
 /* map column is set to 329 for some reason. Wraps any text above or below the map.*/

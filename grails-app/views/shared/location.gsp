@@ -255,7 +255,8 @@ function initialize() {
   map = new google.maps.Map(document.getElementById('mapCanvas'), {
     zoom: 12,
     center: latLng,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    mapTypeId: google.maps.MapTypeId.ROADMAP,
+    streetViewControl: false
   });
   marker = new google.maps.Marker({
     position: latLng,

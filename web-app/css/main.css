@@ -411,6 +411,13 @@ input[type='checkbox'] {
     background: transparent;
 }
 
+.buttons input.special {
+    background: transparent;
+    font-size: 10px;
+    font-weight: normal;
+    margin-left: 0;
+}
+
 /* Flow buttons */
 /* modifications to the standard grails buttons for a flatter look */
 .flowButtons {
@@ -622,6 +629,51 @@ td.name-align {
 .mainText {
     margin-left: 50px;
 }
+
+/* reports 'dashboard' */
+div.dashboard {
+    padding-bottom: 20px;
+}
+
+.dashCell {
+    border: 1px solid #CCC;
+    padding: 5px;
+    margin-bottom: 20px;
+}
+
+.dashCellTitle {
+    color: #363;
+    font-size: 16px;
+    padding-bottom:0;
+}
+
+.dashboard div.header {
+    margin-bottom: 50px;
+    clear: both;
+}
+
+.dashboard div.header div {
+    float: left;
+    width: 200px;
+}
+
+.dashboard div.stats {
+    padding: 0 30px 5px 30px;
+}
+
+.dashboard span.total {
+    color: #01716E;
+    font-size: 15px;
+}
+
+.dashboard p.pageLink {
+    margin-left: 30px;
+}
+
+.dashboard span.linkText {
+    margin-left: 10px;
+}
+/* --------*/
 
 .tooltip {
     position:relative;

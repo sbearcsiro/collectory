@@ -183,9 +183,18 @@ class AdminController {
 
     def importDataProviders = {
         int beforeCount = DataProvider.count()
-        dataLoaderService.importDataProviders("/data/collectory/bootstrap/data_providers.txt")
+        def result = dataLoaderService.importDataProviders("/data/collectory/bootstrap/data_providers.txt")
         int afterCount = DataProvider.count()
         render "Done - ${afterCount-beforeCount} providers created."
+        render """
+        ${beforeCount} providers before<br/>
+        ${result.headerLines} header line found<br/>
+        ${result.dataLines} lines of data found<br/>
+        ${result.exists} lines of data match existing records<br/>
+        ${result.updates} existing records were updated<br/>
+        ${result.inserts} records inserted<br/>
+        ${result.failures} lines of data could not be processed<br/>
+        ${afterCount} providers after"""
     }
 
     def importDataResources = {
@@ -197,6 +206,7 @@ class AdminController {
         ${result.headerLines} header line found<br/>
         ${result.dataLines} lines of data found<br/>
         ${result.exists} lines of data match existing records<br/>
+        ${result.updates} existing records were updated<br/>
         ${result.inserts} records inserted<br/>
         ${result.failures} lines of data could not be processed<br/>
         ${afterCount} resources after"""

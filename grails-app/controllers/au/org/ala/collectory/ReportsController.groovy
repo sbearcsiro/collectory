@@ -14,6 +14,25 @@ class ReportsController {
         render(view: "index")
     }
 
+    def contactsForCouncilMembers = {
+        def chafc = []
+        Collection.findAllByNetworkMembershipIlike("%CHAFC%",[sort:'name']).each {
+            def pc = it.getPrimaryContact()
+            chafc << [id: it.uid, name: it.name, email: pc?.contact?.email, contact: pc?.contact?.buildName()]
+        }
+        def chaec = []
+        Collection.findAllByNetworkMembershipIlike("%CHAEC%",[sort:'name']).each {
+            def pc = it.getPrimaryContact()
+            chaec << [id: it.uid, name: it.name, email: pc?.contact?.email, contact: pc?.contact?.buildName()]
+        }
+        def chacm = []
+        Collection.findAllByNetworkMembershipIlike("%CHACM%",[sort:'name']).each {
+            def pc = it.getPrimaryContact()
+            chacm << [id: it.uid, name: it.name, email: pc?.contact?.email, contact: pc?.contact?.buildName()]
+        }
+        [chafc: chafc, chaec: chaec, chacm: chacm]
+    }
+    
     def data = {
         ActivityLog.log username(), isAdmin(), Action.REPORT, 'data'
         [reports: new ReportCommand('data')]

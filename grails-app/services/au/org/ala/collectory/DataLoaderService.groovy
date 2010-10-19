@@ -14,17 +14,29 @@ class DataLoaderService {
 
     boolean transactional = false
 
+    /*****
+     *****  Update providers from CSV file
+     *****/
+
     def dataProvidercolumns = ["uid","name","pubDescription","address","websiteUrl","logoUrl","email","phone"]
 
+    /**
+     * Idempotent update of data providers from a tab-separated CSV file.
+     *
+     * @param filename the CSV file
+     * @return an object that summaries the changes that result
+     */
     def importDataProviders(String filename) {
         CSVReader reader = new CSVReader(new FileReader(filename),'\t' as char)
         String [] nextLine;
         int headerLines = 0
         int dataLines = 0
         int exists = 0
+        int updates = 0
         int failures = 0
         int inserts = 0
 
+        log.info "================================= importing providers ======="
 		while ((nextLine = reader.readNext()) != null) {
 
             /* create a params map from the csv data
@@ -44,28 +56,31 @@ class DataLoaderService {
                 DataProvider dp = DataProvider.findByUid(params.uid)
                 if (!dp) {
                     // create it
-                    def hasAddress = (params.address == true)
-                    if (hasAddress) {
-                        parseAddress params
-                        params.remove('address')
-                    }
                     dp = new DataProvider()
-                    dp.properties['uid','name','pubDescription','websiteUrl','email','phone'] = params
-                    if (hasAddress) {
-                        dp.address = new Address()
-                        dp.address.properties["street","postBox","city","state","postcode","country"] = params
-                    }
-                    dp.userLastModified = "DP loader"
+                    updateProvider dp, params
                     if (!dp.hasErrors() && dp.save(flush: true)) {
                         inserts++
-                        println "Created data provider ${dp.name}"
+                        log.info "Created data provider ${dp.name}"
                     } else {
                         failures++
-                        println "Failed to create data provider ${params.name}"
-                        dp.errors.each { println it }
+                        log.info "Failed to create data provider ${params.name}"
+                        dp.errors.each { log.info it }
                     }
                 } else {
                     exists++
+                    // update it
+                    // TODO: limited testing
+                    updateProvider dp, params
+                    if (dp.isDirty()) {
+                        if (!dp.hasErrors() && dp.save(flush: true)) {
+                            updates++
+                            log.info "Updated data provider ${dp.name}"
+                        } else {
+                            failures++
+                            log.info "Failed to update data provider ${params.name}"
+                            dp.errors.each { log.info it }
+                        }
+                    }
                 }
             } else {
                 headerLines++
@@ -77,11 +92,52 @@ class DataLoaderService {
         returnObj.inserts = inserts
         returnObj.failures = failures
         returnObj.exists = exists
+        returnObj.updates = updates
         return returnObj
     }
 
+    def updateProvider = {dp, params ->
+        def address = params.address
+        params.remove('address')  // don't apply un-parsed address directly to entity
+        if (hasValue(address)) {
+            //println "---------------"
+            //println "${params.uid} address = ${address}"
+            def addressParams = parseAddress(address)
+            /*addressParams.each {k,v ->
+                println "${k} = ${v}"
+            }*/
+            if (dp.address) {
+                // dp.address.properties = addressParams doesn't work - readonly for some reason
+                dp.address.street = addressParams.street
+                dp.address.postcode = addressParams.postcode
+                dp.address.city = addressParams.city
+                dp.address.state = addressParams.state
+                dp.address.country = addressParams.country
+                dp.address.postBox = addressParams.postBox
+            } else {
+                dp.address = new Address(addressParams)
+            }
+        }
+        dp.properties['uid','name','pubDescription','websiteUrl','email','phone'] = params
+        dp.userLastModified = "DR loader"
+    }
+
+    def hasValue = {it ->
+        it && it.toString().toLowerCase() != 'null'
+    }
+
+    /*****
+     *****  Update resources from CSV file
+     *****/
+
     def dataResourcecolumns = ["uid","dataProvider","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl","logoUrl"]
 
+    /**
+     * Idempotent update of data resources from a tab-separated CSV file.
+     *
+     * @param filename the CSV file
+     * @return an object that summaries the changes that result
+     */
     def importDataResources(String filename) {
         CSVReader reader = new CSVReader(new FileReader(filename),'\t' as char)
         String [] nextLine;
@@ -90,9 +146,8 @@ class DataLoaderService {
         int exists = 0
         int failures = 0
         int inserts = 0
+        int updates = 0
 
-        def sql = new Sql(dataSource)
-        sql.execute("delete from data_resource")
 		while ((nextLine = reader.readNext()) != null) {
 
             /* create a params map from the csv data
@@ -113,9 +168,7 @@ class DataLoaderService {
                 if (!dr) {
                     // create it
                     dr = new DataResource()
-                    dr.properties["uid","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl"] = params
-                    dr.dataProvider = DataProvider.findByUid(params.dataProvider as String)
-                    dr.userLastModified = "DR loader"
+                    updateResource dr, params
                     if (!dr.hasErrors() && dr.save(flush: true)) {
                         inserts++
                         println "Created data resource ${dr.name}"
@@ -125,6 +178,12 @@ class DataLoaderService {
                         dr.errors.each { println it }
                     }
                 } else {
+                    // update it
+                    // TODO: limited testing
+                    updateResource dr, params
+                    if (dr.isDirty()) {
+                        updates++
+                    }
                     exists++
                 }
             } else {
@@ -137,7 +196,14 @@ class DataLoaderService {
         returnObj.inserts = inserts
         returnObj.failures = failures
         returnObj.exists = exists
+        returnObj.updates = updates
         return returnObj
+    }
+
+    def updateResource = {dr, params ->
+        dr.properties["uid","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl"] = params
+        dr.dataProvider = DataProvider.findByUid(params.dataProvider as String)
+        dr.userLastModified = "DR loader"
     }
 
     /** import to new structure **/
@@ -549,9 +615,7 @@ class DataLoaderService {
                 if (!pg) {
                     pg = new Collection(name: params.name, userLastModified: "AMRRN loader",
                             uid: idGeneratorService.getNextCollectionId(), acronym: params.acronym)
-                    parseAddress(params)
-                    pg.address = new Address(street: params.street, city: params.city, state: params.state,
-                        postcode: params.postcode, postBox: params.postBox)
+                    pg.address = new Address(parseAddress(params.address))
                     try {
                         Location loc = Geocoder.getLocation(params.address)
                         if (loc) {
@@ -586,9 +650,7 @@ class DataLoaderService {
                     println "${pg.name} ${pg.longitude} ${pg.latitude}" 
                 } else {
                     // update existing rough'n'ready
-                    parseAddress(params)
-                    pg.address = new Address(street: params.street, city: params.city, state: params.state,
-                        postcode: params.postcode, postBox: params.postBox)
+                    pg.address = new Address(parseAddress(params.address))
                     try {
                         Location loc = Geocoder.getLocation(params.address)
                         if (loc) {
@@ -1045,7 +1107,7 @@ class DataLoaderService {
         params.lastName = lastName
     }
 
-    private void parseAddress(params) {
+    private Map parseAddress(address) {
 
         def trimTrailing = {it ->
             it = it.trim()
@@ -1056,10 +1118,33 @@ class DataLoaderService {
             return it
         }
 
+        def lastWord = {it ->
+            return it.trim().tokenize(' ,').last().trim()
+        }
+
+        def removeLastWord = {it ->
+            def lastIndex = Math.max(it.lastIndexOf(' '),it.lastIndexOf(','))
+            it = it[0..lastIndex-1]
+            it = trimTrailing(it)
+            return it
+        }
+
+        def params = [:]
         // parse address  eg Plant Pathology Branch, DPIand Fisheries, 80 meiers Rd, Indooroopilly, QLD 4069
-        String address = params.address
         address = trimTrailing(address)
+        //println "---------------"
+        //println "full address = " + address
+
+        /* remove possible country at end */
+        ['australia','new zealand'].each { country ->
+            if (lastWord(address).toLowerCase() == country) {
+                address = removeLastWord(address)
+            }
+        }
+
+        /* POSTCODE */
         def postcode = address[address.length() - 4 .. address.length() - 1]
+        //println "possible postcode = " + postcode
         try {
             Integer.parseInt(postcode)
             address = address[0 .. address.length() - 5]
@@ -1067,6 +1152,8 @@ class DataLoaderService {
         } catch (NumberFormatException e) {
             postcode = ""
         }
+
+        /* STATE */
         def state = ""
         if (address[address.length()-2..address.length()-1] in ['WA', 'SA', 'NT', 'wa', 'sa', 'nt']) {
             state = address[address.length()-2..address.length()-1]
@@ -1082,12 +1169,27 @@ class DataLoaderService {
             address = address[0 .. address.length()-16]
         }
         state = massageState(state.toUpperCase())
-        
+
+        /* CITY or SUBURB */
+        def city = ""
         address = trimTrailing(address)
+
         def bits = address.tokenize(",")
-        //bits.each {println it.trim()}
-        def city = bits[bits.size()-1].trim()
-        bits.remove(bits.size()-1)
+        /*println "<<bits"
+        bits.each {println it.trim()}
+        println "bits>>"*/
+
+        if (bits.size > 1) {
+            // if remainder contains a comma then assume the right-most bit is the city
+            city = bits.last()
+            bits = bits - bits.last()
+            // or bits.remove(bits.size()-1)
+        } else {
+            // can only assume that right-most word is the city - this will fail on ambiguous strings
+            city = lastWord(address)
+            address = removeLastWord(address)
+            bits = [address]
+        }
 
         def postBox = ""
         def index = -1
@@ -1107,5 +1209,11 @@ class DataLoaderService {
         if (state) {params.state = state}
         if (postcode) {params.postcode = postcode}
         if (postBox) {params.postBox = postBox}
+
+        /*params.each {k,v ->
+            println "${k} = ${v}"
+        }*/
+
+        return params
     }
 }

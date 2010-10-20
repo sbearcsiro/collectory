@@ -63,6 +63,15 @@
             <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
+            <h2>Citation</h2>
+            <cl:formattedText>${fieldValue(bean: instance, field: "citation")}</cl:formattedText>
+            <cl:formattedText>${fieldValue(bean: instance, field: "citableAgent")}</cl:formattedText>
+
+            <g:if test="${instance.rights}">
+              <h2>Rights</h2>
+              <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
+            </g:if>
+            
             <h2>Digitised records</h2>
             <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
             <div>

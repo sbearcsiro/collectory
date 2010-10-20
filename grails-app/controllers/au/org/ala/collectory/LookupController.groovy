@@ -159,8 +159,7 @@ class LookupController {
     }
 
     String makeLink(uid) {
-        def urlPath = ProviderGroup.urlFormOfEntityType(ProviderGroup.entityTypeFromUid(uid))
-        return "${ConfigurationHolder.config.grails.serverURL}/pub/${urlPath}/${uid}"
+        return "${ConfigurationHolder.config.grails.serverURL}/public/show/${uid}"
     }
 
     private findInstitution(id) {

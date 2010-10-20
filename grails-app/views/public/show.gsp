@@ -76,11 +76,11 @@
                 <cl:formattedText>${fieldValue(bean: collectionInstance, field: "focus")}</cl:formattedText>
               </g:if>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'kingdomCoverage')}">
-                <p>Kingdoms covered include: ${fieldValue(bean: collectionInstance, field: "kingdomCoverage")}</p>
+                <p>Kingdoms covered include: <cl:concatenateStrings values='${fieldValue(bean: collectionInstance, field: "kingdomCoverage")}'/>.</p>
               </g:if>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'scientificNames')}">
                 <p>Specimens in the ${collectionInstance.name} include members from the following taxa:<br/>
-                <cl:JSONListAsList json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/></p>
+                <cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/>.</p>
               </g:if>
 
               <g:if test="${collectionInstance?.geographicDescription || collectionInstance.states}">
@@ -204,7 +204,7 @@
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAH')}">
                     <p>Council of Heads of Australasian Herbaria</p>
-                    <a target="_blank" href="http://www.chah.gov.au"><img style="padding-left:25px;" src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
+                    <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHAFC')}">
                     <p>Council of Heads of Australian Faunal Collections</p>
@@ -239,23 +239,22 @@
           </div><!--overview-->
           <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
             <div class="section">
-              <h2>Digitised specimen records</h2>
+              <h2>Digitised records available through the Atlas</h2>
               <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
               <div style="float:left;">
                 <g:if test="${collectionInstance.numRecords != -1}">
                   <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
                     <g:if test="${collectionInstance.numRecordsDigitised != -1}">
-                      <br/><cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}'/> of these have been databased (${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} records).
+                      <br/>The collection has databased <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}'/> of these (${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} records).
                     </g:if>
                   </p>
                 </g:if>
                 <g:if test="${recordsAvailable}">
-                  <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record" none="No"/> can be accessed through the Atlas of Living Australia.
-                  <g:if test="${percentBiocacheRecords}">
-                    (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
-                  </g:if></p>
+                  <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record" none="No"/> can be accessed through the Atlas of Living Australia.</p>
                   <cl:warnIfInexactMapping collection="${collectionInstance}"/>
-                  <cl:recordsLink collection="${collectionInstance}">Click to view records for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
+                  <cl:recordsLink collection="${collectionInstance}">
+                    <img src="${resource(dir:"images/ala/",file:"database_go.png")}"/>
+                    Click to view <cl:numberOf number="${numBiocacheRecords}" noun="record" none="No"/> for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
                 </g:if>
                 <g:else>
                   <p>No database records for this collection can be accessed through the Atlas of Living Australia.</p>
@@ -263,8 +262,22 @@
               </div>
               <div id="speedo">
                 <g:if test="${percentBiocacheRecords != -1}">
-                  <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as database records" />
-                  <p class="caption"><cl:formatPercent percent="${percentBiocacheRecords}"/>% of records<br/>available for viewing.</p>
+                  <cl:recordsLink collection="${collectionInstance}" onlyIf="${numBiocacheRecords}">
+                    <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as database records" />
+                  </cl:recordsLink>
+                  <p class="caption">
+                  <g:if test="${percentBiocacheRecords}">
+                    Records for <cl:formatPercent percent="${percentBiocacheRecords}"/>% of specimens are<br/>available for viewing in the Atlas.
+                  </g:if>
+                  <g:else>
+                    <g:if test="${collectionInstance.numRecords > 0}">
+                      No records are available for viewing in the Atlas.
+                    </g:if>
+                    <g:else>
+                      There is no estimate of the total number<br/>of specimens in this collection.
+                    </g:else>
+                  </g:else>
+                  </p>
                 </g:if>
               </div>
             </div>
@@ -272,8 +285,8 @@
               <g:if test="${recordsAvailable}">
                 <div style="clear:both;"></div>
                 <div class="inline">
-                  <h3>Distribution and statistics</h3>
-                  <cl:distributionImg inst="${collectionInstance.getListOfInstitutionCodesForLookup()}" coll="${collectionInstance.getListOfCollectionCodesForLookup()}"/>
+                  <h3>Map of occurrence records</h3>
+                  <cl:recordsMap type="collection" uid="${collectionInstance.uid}"/>
                 </div>
                 <div id="taxonChart" style="display: inline;padding-right: 20px; width: 500px;">
                 </div>

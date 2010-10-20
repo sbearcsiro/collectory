@@ -39,6 +39,7 @@ div.center {
     -moz-border-radius: 0 !important; /* FF1+ */
     -webkit-border-radius: 0 !important; /* Saf3+, Chrome */
     border-radius: 0 !important; /* Opera 10.5, IE 9 */
+    padding-bottom: 5px;
 }
 
 /* allow logo to rise to level of name text */
@@ -146,7 +147,7 @@ div.distributionImage {
     float:right;
     text-align:center;
     padding-right:60px;
-    margin-top:-20px;
+    margin-top:-40px;
 }
 
 a.recordsLink {

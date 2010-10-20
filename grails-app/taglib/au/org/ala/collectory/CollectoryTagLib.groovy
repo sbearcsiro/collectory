@@ -511,15 +511,25 @@ class CollectoryTagLib {
     }
 
     /**
-     * Displays a JSON list as a comma-separated list of strings
+     * Displays a JSON list as a comma-separated list of strings.
+     * The last separator is the word 'and'.
      */
     def JSONListAsStrings = {attrs ->
         if (!attrs?.json)
             return ""
         def list = JSON.parse(attrs.json.toString())
-        String str = ""
-        list.each {(str == "") ? (str += it) : (str += ", " + it)}
-        out << str.encodeAsHTML()
+        out << (list.size() == 1 ? list[0] : list[0..list.size()-2].join(', ') + " and " + list.last())
+    }
+
+    /**
+     * Displays a space-separated list of strings as a comma-separated list of strings.
+     * The last separator is the word 'and'.
+     */
+    def concatenateStrings = {attrs ->
+        if (!attrs.values)
+            return ""
+        def list = attrs.values.tokenize(' ')
+        out << (list.size() == 1 ? list[0] : list[0..list.size()-2].join(', ') + " and " + list.last())
     }
 
     /**
@@ -529,10 +539,9 @@ class CollectoryTagLib {
         if (!attrs?.json)
             return ""
         def list = JSON.parse(attrs.json.toString())
-        String str = "<ul>"
-        list.each {str += "<li>${it.encodeAsHTML()}</li>"}
-        str += "</ul>"
-        out << str
+        out << "<ul>"
+        list.each {out << "<li>${it.encodeAsHTML()}</li>"}
+        out << "</ul>"
     }
 
     def membershipWithGraphics = { attrs ->
@@ -788,17 +797,24 @@ class CollectoryTagLib {
     /**
      * Builds the link to bio-cache records for the passed collection.
      *
-     * @param collection the collectio to search for
+     * @param collection the collection to search for
+     * @param onlyIf a boolean switch
      * @body the body of the link
      */
     def recordsLink = {attrs, body ->
+        attrs.each {println it}
         // must have at least one value to build a query
         if (attrs.collection) {
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForUID?q=" + attrs.collection?.generatePermalink()
-            out << "<a class='recordsLink' href='"
-            out << url
-            out << "'>" << body() << "</a>"
+            if (attrs.containsKey('onlyIf') && !attrs.onlyIf) {
+                out << body()
+            }
+            else {
+                def baseUrl = ConfigurationHolder.config.biocache.baseURL
+                def url = baseUrl + "occurrences/searchForUID?q=" + attrs.collection?.generatePermalink()
+                out << "<a class='recordsLink' href='"
+                out << url
+                out << "'>" << body() << "</a>"
+            }
         }
     }
 
@@ -854,9 +870,28 @@ class CollectoryTagLib {
             // replace first & with ?
             codes = "?" + codes.substring(1)
             def baseUrl = ConfigurationHolder.config.spatial.baseURL
-            def url = baseUrl + "ws/density/map${codes}"
+            def url = baseUrl + "alaspatial/ws/density/map${codes}"
             out << "<div class='distributionImage'>${body()}<img src='${url}' width='350' /></div>"
         }
+    }
+
+    /**
+     * Show map of records based on UID
+     *
+     * @param uid of the entity
+     * @param type collection, institution, dataProvider or dataResource
+     * @body html fragment to include above map
+     */
+    def recordsMap = {attrs, body ->
+        def entityType = "collectionUid"
+        switch (attrs.type) {
+            case "institution": entityType = "institutionUid"; break;
+            case "dataProvider": entityType = "dataProviderUid"; break;
+            case "dataResource": entityType = "dataResourceUid"; break;
+        }
+        def baseUrl = ConfigurationHolder.config.spatial.baseURL
+        def url = baseUrl + "alaspatial/ws/density/map?${entityType}=${attrs.uid}"
+        out << "<div class='distributionImage'>${body()}<img src='${url}' width='350' /></div>"
     }
 
     def decadeBreakdown = {attrs ->

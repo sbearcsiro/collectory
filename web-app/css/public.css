@@ -132,7 +132,7 @@ div.distributionImage {
 
 .vertical-charts div.distributionImage img {
     position: relative;
-    z-index: -4;
+    z-index: 4;
 }
 
 #taxonChart iFrame {
@@ -141,13 +141,19 @@ div.distributionImage {
     z-index: 0;
 }
 
-#speedo {
+.vertical-charts #taxonChart iFrame {
+    margin-top: -20px;
     position: relative;
+    z-index: 0;
+}
+
+#speedo {
+    /*position: relative;
     z-index: 2;
-    float:right;
+    float:right;*/
     text-align:center;
-    padding-right:60px;
-    margin-top:-40px;
+    /*padding-right:60px;
+    margin-top:-40px;*/
 }
 
 a.recordsLink {
@@ -171,9 +177,19 @@ p.contactName {
 span.taxonChartCaption {
     position:relative;
     left:575px;
-    top:-110px;
+    top:-120px;
     padding-left:40px;
     color: #555;
+}
+
+span#resetTaxonChart {
+    position:relative;
+    left:350px;
+    top:-100px;
+    padding-left:40px;
+    color: #01716E;
+    text-decoration:underline;
+    cursor:pointer;
 }
 
 div#decadeChart img {
@@ -189,7 +205,38 @@ div#decadeChart img {
 }*/
 
 img.no-radius {
-    -moz-border-radius: 0; /* FF1+ */
-    -webkit-border-radius: 0; /* Saf3+, Chrome */
-    border-radius: 0; /* Opera 10.5, IE 9 */
+    -moz-border-radius: 0 !important; /* FF1+ */
+    -webkit-border-radius: 0 !important; /* Saf3+, Chrome */
+    border-radius: 0 !important; /* Opera 10.5, IE 9 */
+}
+
+div#progress {
+}
+
+img.percentImage1 {
+ background: white url(../images/percentImage_back1.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 10px 0;
+ background-position: 1px 0;
+}
+
+img.percentImage2 {
+ background: white url(../images/percentImage_back2.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+img.percentImage3 {
+ background: white url(../images/percentImage_back3.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+img.percentImage4 {
+ background: white url(../images/percentImage_back4.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
 }

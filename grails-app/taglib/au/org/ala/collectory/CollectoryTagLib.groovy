@@ -515,10 +515,13 @@ class CollectoryTagLib {
      * The last separator is the word 'and'.
      */
     def JSONListAsStrings = {attrs ->
+        println ">>>" + attrs.json
         if (!attrs?.json)
             return ""
         def list = JSON.parse(attrs.json.toString())
-        out << (list.size() == 1 ? list[0] : list[0..list.size()-2].join(', ') + " and " + list.last())
+        if (list) {
+            out << (list.size() == 1 ? list[0] : list[0..list.size()-2].join(', ') + " and " + list.last())
+        }
     }
 
     /**
@@ -891,7 +894,7 @@ class CollectoryTagLib {
         }
         def baseUrl = ConfigurationHolder.config.spatial.baseURL
         def url = baseUrl + "alaspatial/ws/density/map?${entityType}=${attrs.uid}"
-        out << "<div class='distributionImage'>${body()}<img src='${url}' width='350' /></div>"
+        out << "<div class='distributionImage'>${body()}<img class='no-radius' src='${url}' width='340' /><img src='http://spatial.ala.org.au/alaspatial/output/sampling/legend_co13.png' width='128' /></div>"
     }
 
     def decadeBreakdown = {attrs ->
@@ -1084,6 +1087,19 @@ class CollectoryTagLib {
         }
         else {
             out << 'institution'
+        }
+    }
+
+    def progressBar = {attrs ->
+        def percent = attrs.percent
+        def initial = -120
+        def imageWidth = 240
+        def eachPercent = (imageWidth/2)/100
+        def offset = initial + (percent * eachPercent)
+        if (percent) {
+            out << "<img src='" + resource(dir:'images', file:'percentImage.png') +
+                    "' alt='" + formatPercent(percent:percent) +
+                    "%' class='no-radius percentImage1' style='background-position: ${offset}px 0pt; '>"
         }
     }
 }

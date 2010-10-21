@@ -20,7 +20,6 @@
           });
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
-        <g:javascript library="progress" />
     </head>
     <body class="two-column-right">
       <div id="content">
@@ -264,7 +263,7 @@
               <div id="speedo">
                 <g:if test="${percentBiocacheRecords != -1}">
                   <div id="progress">
-                    <script>display ('element1',<cl:formatPercent percent="${percentBiocacheRecords}"/>,1);</script>
+                    <cl:progressBar percent="${percentBiocacheRecords}"/>
                   </div>
                   <p class="caption">
                   <g:if test="${percentBiocacheRecords}">
@@ -289,7 +288,7 @@
                   <h3>Map of occurrence records</h3>
                   <cl:recordsMap type="collection" uid="${collectionInstance.uid}"/>
                 </div>
-                <div id="taxonChart" style="display: inline;padding-right: 20px; width: 500px;">
+                <div id="taxonChart" style="display: inline; width: 500px;">
                 </div>
                 <span class="taxonChartCaption">Click a slice to drill into a group.<br/>
                   Click a legend box to view records for a group.</span>
@@ -401,7 +400,11 @@ function drawTaxonChart(dataTable) {
   options.width = 500;
   options.height = 500;
   options.is3D = false;
-  options.title = "Number of records by " + dataTable.getTableProperty('rank');
+  if (dataTable.getTableProperty('scope') == "all") {
+    options.title = "Number of records by " + dataTable.getTableProperty('rank');
+  } else {
+    options.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank')
+  }
   options.titleTextStyle = {color: "#555", fontName: 'Arial', fontSize: 15};
   //options.sliceVisibilityThreshold = 1/2000;
   //options.pieSliceText = "label";

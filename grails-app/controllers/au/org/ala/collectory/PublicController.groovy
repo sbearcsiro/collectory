@@ -156,6 +156,49 @@ class PublicController {
     }
 
     /**
+     * Returns JSON in Google charts DataTable format showing breakdown of records for the specified taxonomic group.
+     *
+     * Makes request to biocache service for namerank breakdown data.
+     *
+     */
+    def rankBreakdown = {
+        response.setHeader("Pragma","no-cache")
+        response.setDateHeader("Expires",1L)
+        response.setHeader("Cache-Control","no-cache")
+        response.addHeader("Cache-Control","no-store")
+        def instance = ProviderGroup._get(params.id)
+        if (!instance) {
+            log.error "Unable to find entity for id = ${params.id}"
+            def error = ["error":"unable to find entity for id = " + params.id]
+            render error as JSON
+        } else {
+            /* get rank breakdown */
+            def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${instance.uid}.json?name=${params.name}&rank=${params.rank}"
+            def conn = new URL(rankUrl).openConnection()
+            conn.setConnectTimeout 3000
+            def dataTable = null
+            def json
+            try {
+                json = conn.content.text
+                //println "Response = " + json
+                def breakdown = JSON.parse(json)?.breakdown
+                if (breakdown && breakdown.toString() != "null") {
+                    dataTable = buildPieChartDataTable(breakdown)
+                    if (dataTable) {
+                        render dataTable
+                    } else {
+                        log.warn "unable to build data table from taxa json = " + json
+                        def error = ["error":"Unable to build data table from taxa json"]
+                        render error as JSON
+                    }
+                }
+            } catch (Exception e) {
+                log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
+            }
+        }
+    }
+
+    /**
      * Shows the public page for an institution.
      */
     def showInstitution = {

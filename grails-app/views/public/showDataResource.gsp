@@ -85,9 +85,9 @@
             </div>
           </div>
           <div class="section vertical-charts">
-            <h3>Distribution and statistics</h3>
-            <cl:distributionImg inst="${['ANIC']}" coll="${['Insects']}"/>
-            <div id="taxonChart" style="margin-left:-15px;margin-top:-20px;">
+            <h3>Map of records</h3>
+            <cl:recordsMap type="dataResource" uid="${instance.uid}"/>
+            <div id="taxonChart" style="margin-left:-15px;">
             </div>
             <!--span class="taxonChartCaption">Click a segment to view its records.</span-->
             <div id="decadeChart" style="padding-right: 20px;width:500">

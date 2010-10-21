@@ -20,6 +20,7 @@
           });
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+        <g:javascript library="progress" />
     </head>
     <body class="two-column-right">
       <div id="content">
@@ -262,9 +263,9 @@
               </div>
               <div id="speedo">
                 <g:if test="${percentBiocacheRecords != -1}">
-                  <cl:recordsLink collection="${collectionInstance}" onlyIf="${numBiocacheRecords}">
-                    <img src="http://chart.apis.google.com/chart?chs=200x90&cht=gm&chd=t:${percentBiocacheRecords}" width="200" height="90" alt="% of specimens available as database records" />
-                  </cl:recordsLink>
+                  <div id="progress">
+                    <script>display ('element1',<cl:formatPercent percent="${percentBiocacheRecords}"/>,1);</script>
+                  </div>
                   <p class="caption">
                   <g:if test="${percentBiocacheRecords}">
                     Records for <cl:formatPercent percent="${percentBiocacheRecords}"/>% of specimens are<br/>available for viewing in the Atlas.
@@ -290,7 +291,9 @@
                 </div>
                 <div id="taxonChart" style="display: inline;padding-right: 20px; width: 500px;">
                 </div>
-                <span class="taxonChartCaption">Click a segment to view its records.</span>
+                <span class="taxonChartCaption">Click a slice to drill into a group.<br/>
+                  Click a legend box to view records for a group.</span>
+                <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>
                 <div style="clear:both;"></div>
                 <div id="decadeChart" style="display: inline;padding-right: 20px;">
                 </div>
@@ -299,114 +302,152 @@
           </div>
         </div>
       <script type="text/javascript">
-        var queryString = '';
-        var decadeUrl = '';
-        var taxonUrl = '';
+/************************************************************\
+*
+\************************************************************/
+var queryString = '';
+var decadeUrl = '';
+var taxonUrl = '';
+/************************************************************\
+*
+\************************************************************/
+function onLoadCallback() {
+  if (${numBiocacheRecords != -1 && numBiocacheRecords != 0}) {
+    if (decadeUrl.length > 0) {
+      var query = new google.visualization.Query(decadeUrl);
+      query.setQuery(queryString);
+      query.send(handleQueryResponse);
+    } else {
+      decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.uid}";
+      $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
+    }
+    if (taxonUrl.length > 0) {
+      var taxonQuery = new google.visualization.Query(taxonUrl);
+      taxonQuery.setQuery(queryString);
+      taxonQuery.send(handleQueryResponse);
+    } else {
+      taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
+      $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+    }
+  }
+}
+/************************************************************\
+*
+\************************************************************/
+function decadeBreakdownRequestHandler(response) {
+  var data = new google.visualization.DataTable(response);
+  if (data.getNumberOfRows() > 0) {
+    draw(data);
+  }
+}
+/************************************************************\
+*
+\************************************************************/
+function taxonBreakdownRequestHandler(response) {
+  var data = new google.visualization.DataTable(response);
+  if (data.getNumberOfRows() > 0) {
+    drawTaxonChart(data);
+  }
+}
+/************************************************************\
+*
+\************************************************************/
+function drawDecadeChart(dataTable) {
+  var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
 
-        function onLoadCallback() {
-          if (${numBiocacheRecords != -1 && numBiocacheRecords != 0}) {
-            if (decadeUrl.length > 0) {
-              var query = new google.visualization.Query(decadeUrl);
-              query.setQuery(queryString);
-              query.send(handleQueryResponse);
-            } else {
-              decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.uid}";
-              $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
-            }
-            if (taxonUrl.length > 0) {
-              var taxonQuery = new google.visualization.Query(taxonUrl);
-              taxonQuery.setQuery(queryString);
-              taxonQuery.send(handleQueryResponse);
-            } else {
-              taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
-              $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
-            }
-          }
-        }
+  vis.draw(dataTable, {
+    width: 500,
+    height: 400,
+    title: "Additions by decade",
+    titleTextStyle: {color: "#7D8804", fontName: 'Arial', fontSize: 15},
+    hAxis: {title:"decades", showTextEvery: 3},
+    legend: 'none',
+    colors: ['#3398cc']
+  });
+}
+/************************************************************\
+*
+\************************************************************/
+function draw(dataTable) {
+  var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
+  var options = {};
 
-        function decadeBreakdownRequestHandler(response) {
-          var data = new google.visualization.DataTable(response);
-          if (data.getNumberOfRows() > 0) {
-            draw(data);
-          }
-        }
+  // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
+  // The grouping is irrelevant here since there is only one numeric column.
+  options.cht = 'bvg';
 
-        function taxonBreakdownRequestHandler(response) {
-          var data = new google.visualization.DataTable(response);
-          if (data.getNumberOfRows() > 0) {
-            drawTaxonChart(data);
-          }
-        }
+  // Add a data range.
+  var min = 0;
+  var max = dataTable.getTableProperty('max');
+  options.chds = min + ',' + max;
 
-        function drawDecadeChart(dataTable) {
-          var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
+  // Chart title and style
+  options.chtt = 'Additions by decade';  // chart title
+  options.chts = '7D8804,15';
 
-          vis.draw(dataTable, {
-            width: 500,
-            height: 400,
-            title: "Additions by decade",
-            titleTextStyle: {color: "#7D8804", fontName: 'Arial', fontSize: 15},
-            hAxis: {title:"decades", showTextEvery: 3},
-            legend: 'none',
-            colors: ['#3398cc']
-          });
-        }
+  //options.chxt = 'x,x,y';
+  //options.chxl = '2:|Decade';
+  //options.chxp = '0,50';
 
-        function draw(dataTable) {
-          var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
-          var options = {};
+  vis.draw(dataTable, options);
+}
+/************************************************************\
+*
+\************************************************************/
+function drawTaxonChart(dataTable) {
+  var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
+  var options = {};
 
-          // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
-          // The grouping is irrelevant here since there is only one numeric column.
-          options.cht = 'bvg';
+  options.width = 500;
+  options.height = 500;
+  options.is3D = false;
+  options.title = "Number of records by " + dataTable.getTableProperty('rank');
+  options.titleTextStyle = {color: "#555", fontName: 'Arial', fontSize: 15};
+  //options.sliceVisibilityThreshold = 1/2000;
+  //options.pieSliceText = "label";
+  options.legend = "left";
+  google.visualization.events.addListener(chart, 'select', function() {
+    // differentiate between clicks on legend versus slices
+    if (chart.getSelection()[0].column == undefined) {
+      // clicked legend - show records
+      var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${collectionInstance.uid}&fq=" +
+        dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
+      document.location.href = linkUrl;
+    } else {
+      // clicked slice - drill down
+      var drillUrl = "${ConfigurationHolder.config.grails.context}/public/rankBreakdown/${collectionInstance.uid}?name=" +
+              dataTable.getValue(chart.getSelection()[0].row,0) +
+             "&rank=" + dataTable.getTableProperty('rank')
+      $.get(drillUrl, {}, taxonBreakdownRequestHandler);
+      if ($('span#resetTaxonChart').html() == "") {
+        $('span#resetTaxonChart').html("reset to " + dataTable.getTableProperty('rank'));
+      }
+    }
+  });
 
-          // Add a data range.
-          var min = 0;
-          var max = dataTable.getTableProperty('max');
-          options.chds = min + ',' + max;
-
-          // Chart title and style
-          options.chtt = 'Additions by decade';  // chart title
-          options.chts = '7D8804,15';
-
-          //options.chxt = 'x,x,y';
-          //options.chxl = '2:|Decade';
-          //options.chxp = '0,50';
-
-          vis.draw(dataTable, options);
-        }
-
-        function drawTaxonChart(dataTable) {
-          var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
-          var options = {};
-
-          options.width = 500;
-          options.height = 500;
-          options.is3D = false;
-          options.title = "Specimen numbers by " + dataTable.getTableProperty('rank');
-          options.titleTextStyle = {color: "#7D8804", fontName: 'Arial', fontSize: 15};
-          //options.sliceVisibilityThreshold = 1/2000;
-          //options.pieSliceText = "label";
-          options.legend = "left";
-          google.visualization.events.addListener(chart, 'select', function() {
-            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${collectionInstance.uid}&fq=" +
-              dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
-            document.location.href = linkUrl;
-          });
-          //google.visualization.events.addListener(chart, 'onmouseover', function() {
-          //  $("div#taxonChart").css("cursor") = "pointer";
-          //});
-
-          chart.draw(dataTable, options);
-        }
-
-        function handleQueryResponse(response) {
-          if (response.isError()) {
-            alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-            return;
-          }
-          draw(response.getDataTable());
-        }
+  chart.draw(dataTable, options);
+}
+/************************************************************\
+*
+\************************************************************/
+function resetTaxonChart() {
+  taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
+  $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+  $('span#resetTaxonChart').html("");
+}
+/************************************************************\
+*
+\************************************************************/
+function handleQueryResponse(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
+  draw(response.getDataTable());
+}
+/************************************************************\
+*
+\************************************************************/
 
         google.load("visualization", "1", {packages:["imagechart","corechart"]});
         google.setOnLoadCallback(onLoadCallback);

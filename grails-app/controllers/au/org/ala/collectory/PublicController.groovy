@@ -140,8 +140,9 @@ class PublicController {
                 //println "Response = " + json
                 def breakdown = JSON.parse(json)?.breakdown
                 if (breakdown && breakdown.toString() != "null") {
-                    dataTable = buildPieChartDataTable(breakdown)
+                    dataTable = buildPieChartDataTable(breakdown,"all","")
                     if (dataTable) {
+                        println dataTable
                         render dataTable
                     } else {
                         log.warn "unable to build data table from taxa json = " + json
@@ -183,7 +184,7 @@ class PublicController {
                 //println "Response = " + json
                 def breakdown = JSON.parse(json)?.breakdown
                 if (breakdown && breakdown.toString() != "null") {
-                    dataTable = buildPieChartDataTable(breakdown)
+                    dataTable = buildPieChartDataTable(breakdown,params.rank,params.name)
                     if (dataTable) {
                         render dataTable
                     } else {
@@ -193,7 +194,7 @@ class PublicController {
                     }
                 }
             } catch (Exception e) {
-                log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
+                log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${rankUrl}."
             }
         }
     }
@@ -416,6 +417,14 @@ class PublicController {
         return result
     }
 
+    def stripGenusName(name) {
+        def list = name.tokenize(" ")
+        if (list.size() > 1) {
+            list = list - list[0]
+        }
+        return list.join(" ")
+    }
+    
     /**
      * // input of form: [count:1, fieldValue:null1870, prefix:null, label:1870],
      *                   [count:16, fieldValue:null1880, prefix:null, label:1880],
@@ -437,18 +446,25 @@ class PublicController {
      * "p":null}
      *
      * @param input
+     * @param scope the rank of the group being displayed if this is a drill-down
+     * @param name of the group being displayed if this is a drill-down
      * @return
      */
-    private String buildPieChartDataTable(input) {
+    private String buildPieChartDataTable(input,scope,name) {
+        boolean stripGenus = input.rank == "species" && scope != "all"
         String result = """{"cols":[{"id":"","label":"${input.rank}","pattern":"","type":"string"},{"id":"","label":"No. specimens","pattern":"","type":"number"}],"rows":["""
         def list = input.taxa.collect {
-            [label: it.label, count: it.count]
+            def label = it.label
+            if (stripGenus) {
+                label = stripGenusName(label)
+            }
+            [label: label, count: it.count]
         }
         list.eachWithIndex {it, index ->
             result += '{"c":[{"v":"' + it.label + '","f":null},{"v":' + it.count + ',"f":null}]}'
             result += (index == list.size() - 1) ? "" : ","
         }
-        result += '],"p":{"rank":"' + input.rank + '"}}'
+        result += '],"p":{"rank":"' + input.rank + '","scope":"' + scope + '","name":"' + name + '"}}'
         return result
     }
 

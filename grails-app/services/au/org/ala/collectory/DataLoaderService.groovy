@@ -70,7 +70,7 @@ class DataLoaderService {
                     exists++
                     // update it
                     // TODO: limited testing
-                    updateProvider dp, params
+                    /* disable updateProvider dp, params
                     if (dp.isDirty()) {
                         if (!dp.hasErrors() && dp.save(flush: true)) {
                             updates++
@@ -80,7 +80,7 @@ class DataLoaderService {
                             log.info "Failed to update data provider ${params.name}"
                             dp.errors.each { log.info it }
                         }
-                    }
+                    }*/
                 }
             } else {
                 headerLines++
@@ -139,7 +139,7 @@ class DataLoaderService {
      * @return an object that summaries the changes that result
      */
     def importDataResources(String filename) {
-        CSVReader reader = new CSVReader(new FileReader(filename),'\t' as char)
+        CSVReader reader = new CSVReader(new FileReader(filename),',' as char)
         String [] nextLine;
         int headerLines = 0
         int dataLines = 0
@@ -178,12 +178,13 @@ class DataLoaderService {
                         dr.errors.each { println it }
                     }
                 } else {
+                    /* disable
                     // update it
                     // TODO: limited testing
                     updateResource dr, params
                     if (dr.isDirty()) {
                         updates++
-                    }
+                    }*/
                     exists++
                 }
             } else {

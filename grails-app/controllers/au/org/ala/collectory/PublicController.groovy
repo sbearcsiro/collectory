@@ -4,6 +4,8 @@ import java.text.ParseException
 import java.text.NumberFormat
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.util.GrailsUtil
+import org.codehaus.groovy.grails.commons.GrailsApplication
 
 /**
  * Handles all the public pages generated from the collectory.
@@ -15,6 +17,13 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
  * Handles ajax requests for data for those pages.
  */
 class PublicController {
+
+    def delay = 3000    // testing delay for responses
+    def sleep = {
+        if (GrailsUtil.getEnvironment() == GrailsApplication.ENV_DEVELOPMENT) {  // in case we forget to remove
+            this.sleep(delay)
+        }
+    }
 
     def index = { redirect(action: 'map')}
 
@@ -41,30 +50,40 @@ class PublicController {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params?.id])}"
                 redirect(controller: "public", action: "map")
             } else {
-                // lookup number of biocache records
-                def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
-
-                def count = 0
-                def conn = new URL(url).openConnection()
-                conn.setConnectTimeout 3000
-                try {
-                    def json = conn.content.text
-                    //println "Response = " + json
-                    count = JSON.parse(json)?.searchResult?.totalRecords
-                    //println "Count = " + count
-                } catch (Exception e) {
-                    log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
-                }
-                def percent = 0
-                if (count != 0 && collectionInstance.numRecords > 0) {
-                    percent = (count*100)/collectionInstance.numRecords
-                }
-
                 ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
                 [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
-                        numBiocacheRecords: count, percentBiocacheRecords: percent]
+                        biocacheRecordsAvailable: collectionInstance.providerMap]
             }
+        }
+    }
+
+    /**
+     * json call to retrieve a summary of biocache records
+     *
+     * @return total number + decade breakdown as Google data table
+     */
+    def biocacheRecords = {
+        // lookup number of biocache records
+        def baseUrl = ConfigurationHolder.config.biocache.baseURL
+        def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + params.uid
+
+        def count = 0
+        def conn = new URL(url).openConnection()
+        conn.setConnectTimeout 2000
+        try {
+            def json = conn.content.text
+            def searchResult = JSON.parse(json)?.searchResult
+            def result = [totalRecords: searchResult?.totalRecords, decades: buildDecadeDataTableFromFacetResults(searchResult?.facetResults)]
+   // sleep delay
+            render result as JSON
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out looking up record count. URL= ${url}."
+            def result = [error:"Timed out looking up record count.", totalRecords: 0, decades: null]
+            render result as JSON
+        } catch (Exception e) {
+            log.warn "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+            def error = ["error":"Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
+            render error as JSON
         }
     }
 
@@ -89,15 +108,19 @@ class PublicController {
             def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${instance.generatePermalink()}.json";
             //println decadeUrl
             def conn = new URL(decadeUrl).openConnection()
-            conn.setConnectTimeout 3000
+            conn.setConnectTimeout 1500
             def dataTable = null
             def json
             try {
                 json = conn.content.text
                 //println "Response = " + json
                 def decades = JSON.parse(json)?.decades
-                dataTable = buildDataTable(decades)
+                dataTable = buildDecadeDataTable(decades)
                 //println "dataTable = " + dataTable
+            } catch (SocketTimeoutException e) {
+                log.warn "Timed out getting decade breakdown. URL= ${url}."
+                def result = [error:"Timed out getting decade breakdown.", dataTable: null]
+                render result as JSON
             } catch (Exception e) {
                 log.error "Failed to lookup decade breakdown. ${e.getMessage()} URL= ${decadeUrl}."
             }
@@ -132,7 +155,7 @@ class PublicController {
             /* get taxon breakdown */
             def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${instance.uid}.json";
             def conn = new URL(taxonUrl).openConnection()
-            conn.setConnectTimeout 3000
+            conn.setConnectTimeout 1500
             def dataTable = null
             def json
             try {
@@ -142,14 +165,21 @@ class PublicController {
                 if (breakdown && breakdown.toString() != "null") {
                     dataTable = buildPieChartDataTable(breakdown,"all","")
                     if (dataTable) {
-                        println dataTable
                         render dataTable
                     } else {
                         log.warn "unable to build data table from taxa json = " + json
                         def error = ["error":"Unable to build data table from taxa json"]
                         render error as JSON
                     }
+                } else {
+                    log.warn "no data returned from taxa json = " + json
+                    def error = ["error":"No data returned from taxa json"]
+                    render error as JSON
                 }
+            } catch (SocketTimeoutException e) {
+                log.warn "Timed out getting taxa breakdown."
+                def result = [error:"Timed out getting taxa breakdown.", dataTable: null]
+                render result as JSON
             } catch (Exception e) {
                 log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
             }
@@ -176,7 +206,7 @@ class PublicController {
             /* get rank breakdown */
             def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${instance.uid}.json?name=${params.name}&rank=${params.rank}"
             def conn = new URL(rankUrl).openConnection()
-            conn.setConnectTimeout 3000
+            conn.setConnectTimeout 1500
             def dataTable = null
             def json
             try {
@@ -186,6 +216,7 @@ class PublicController {
                 if (breakdown && breakdown.toString() != "null") {
                     dataTable = buildPieChartDataTable(breakdown,params.rank,params.name)
                     if (dataTable) {
+                        //sleep delay
                         render dataTable
                     } else {
                         log.warn "unable to build data table from taxa json = " + json
@@ -193,9 +224,57 @@ class PublicController {
                         render error as JSON
                     }
                 }
+            } catch (SocketTimeoutException e) {
+                log.warn "Timed out getting rank breakdown."
+                def result = [error:"Timed out getting rank breakdown.", dataTable: null]
+                render result as JSON
             } catch (Exception e) {
                 log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${rankUrl}."
             }
+        }
+    }
+
+    def recordsMapService = {
+        // lookup urls for displaying records map and legend
+        def baseUrl = ConfigurationHolder.config.spatial.baseURL
+        def uidType = 'collectionUid'
+        if (params.uid?.size() > 2) {
+            switch (params.uid[0..1]) {
+                case DataResource.ENTITY_PREFIX: uidType = 'dataResourceUid'; break
+                case DataProvider.ENTITY_PREFIX: uidType = 'dataProviderUid'; break
+                case Institution.ENTITY_PREFIX: uidType = 'institutionUid'; break
+             }
+        }
+        def url = baseUrl + "alaspatial/ws/density/map?${uidType}=" + params.uid
+
+        def conn = new URL(url).openConnection()
+        conn.setConnectTimeout 2000
+        conn.addRequestProperty("accept","application/json")
+        def json
+        try {
+            json = conn.content.text
+            def mapResponse = JSON.parse(json)
+            def mapType = mapResponse.type
+            def legendUrl = mapResponse.legendUrl
+            def mapUrl = mapResponse.mapUrl
+            if (mapType == 'blank' || mapType == '' || mapUrl.endsWith('mapaus1_white.png')) {
+                // means no data available
+                legendUrl = resource(dir:'images/map',file:'mapping-data-not-available.png')
+            }
+            if (mapType == 'points') {
+                legendUrl = resource(dir:'images/map',file:'single-occurrences.png')
+            }
+            def result = [mapUrl: mapUrl, legendUrl: legendUrl, type: mapType]
+      //sleep delay
+            render result as JSON
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out getting records map urls. ${e.getMessage()}"
+            def result = [error:"Timed out getting records map urls.", dataTable: null]
+            render result as JSON
+        } catch (Exception e) {
+            log.warn "failed to get records map urls - json = ${json} ${e.getMessage()}"
+            def error = ["error":"failed to get records map urls"]
+            render error as JSON
         }
     }
 
@@ -237,21 +316,21 @@ class PublicController {
             redirect(controller: "public", action: "map")
         } else {
             // lookup number of biocache records
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
+            /*def baseUrl = ConfigurationHolder.config.biocache.baseURL
             def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + instance.generatePermalink()
 
             def count = 0
             def conn = new URL(url).openConnection()
-            conn.setConnectTimeout 3000
+            conn.setConnectTimeout 1500
             try {
                 def json = conn.content.text
                 count = JSON.parse(json)?.searchResult?.totalRecords
             } catch (Exception e) {
                 log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
-            }
+            }*/
 
             ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
-            [instance: instance, numBiocacheRecords: count]
+            [instance: instance]
         }
     }
 
@@ -403,15 +482,60 @@ class PublicController {
      * @param input
      * @return
      */
-    private String buildDataTable(input) {
+    private String buildDecadeDataTable(input) {
         int maximum = 0
         boolean stagger = input.size() > 6
         String result = """{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":["""
         input.eachWithIndex {it, index ->
-            maximum = Math.max(maximum, it.count)
+            maximum = Math.max(maximum, it.count) as Integer
             String label = (stagger && (index % 2) == 0) ? "" : it.label + "s"
             result += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
             result += (index == input.size() - 1) ? "" : ","
+        }
+        result += '],"p":{"max":' + maximum + '}}'
+        return result
+    }
+
+    /**
+     * // input of form:
+     * searchResult.facetResults.fieldResult[fieldName:'occurrence_date']
+     *  [
+     * {fieldValue: 1850-01-01T12:00:00Z,count: 0,label: 1850-01-01T12:00:00Z,prefix: null},
+     * {fieldValue: 1860-01-01T12:00:00Z,count: 0,label: 1860-01-01T12:00:00Z,prefix: null},
+     * {fieldValue: 1870-01-01T12:00:00Z,count: 2,label: 1870-01-01T12:00:00Z,prefix: null}
+     *  ]
+     *
+     * // output of form: {"cols":[
+     *      {"id":"","label":"","pattern":"","type":"string"},
+     *      {"id":"","label":"","pattern":"","type":"number"}],
+     *   "rows":[
+     *      {"c":[{"v":"1870","f":null},{"v":1,"f":null}]},
+     *      {"c":[{"v":"1880","f":null},{"v":16,"f":null}]},
+     *      {"c":[{"v":"1890","f":null},{"v":44,"f":null}]}
+     *      ],
+     *  "p":null}
+     *
+     * @param input
+     * @return
+     */
+    private String buildDecadeDataTableFromFacetResults(facetResults) {
+        def decades = facetResults.find {it.fieldName == "occurrence_date"}
+        def input = decades?.fieldResult
+        if (!input) {return ""}
+        int maximum = 0
+        boolean stagger = input.size() > 6
+        boolean started = false
+        String result = """{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":["""
+        input.eachWithIndex {it, index ->
+            // don't show the 'before' set
+            // don't show decades with no records at the start
+            if (it.label != "before" && !(it.count == 0 && !started)) {
+                maximum = Math.max(maximum, it.count) as Integer
+                String label = (stagger && (index % 2) == 0) ? "" : it.label[0..3] + "s"
+                result += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
+                result += (index == input.size() - 1) ? "" : ","
+                started = true
+            }
         }
         result += '],"p":{"max":' + maximum + '}}'
         return result
@@ -424,7 +548,7 @@ class PublicController {
         }
         return list.join(" ")
     }
-    
+
     /**
      * // input of form: [count:1, fieldValue:null1870, prefix:null, label:1870],
      *                   [count:16, fieldValue:null1880, prefix:null, label:1880],

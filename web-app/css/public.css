@@ -34,6 +34,13 @@ div.center {
     text-align:center !important;
 }
 
+a.current {
+    text-decoration: none;
+    color: #333;
+    cursor: default;
+    background-image:none !important;
+}
+
 .institutionImage {
     max-width:300px;
     -moz-border-radius: 0 !important; /* FF1+ */
@@ -122,26 +129,35 @@ div.distributionImage {
 }
 
 #statistics div.distributionImage {
+    z-index: 2000;
     display: inline;
 }
 
-#statistics div.distributionImage img:first-child {
+#statistics div.distributionImage img {
+    z-index: 2000;
+    vertical-align: top;
+}
+
+#statistics div.distributionImage img#recordsMap {
     margin-top: 10px;
 }
 
-#statistics div.distributionImage img {
-    vertical-align: top;
+#statistics div.distributionImage img#mapLegend {
     margin-top: 50px;
+    position: relative;
+    z-index: 4;
 }
 
 .vertical-charts div.distributionImage img {
     position: relative;
     z-index: 4;
     vertical-align: middle;
+    margin-left: 35px;
 }
 
 #taxonChart iFrame {
-    margin-top: -70px;
+    margin-top: -60px;
+    margin-left: -15px;
     position: relative;
     z-index: 0;
 }
@@ -153,12 +169,15 @@ div.distributionImage {
 }
 
 #speedo {
-    /*position: relative;
-    z-index: 2;*/
     float:right;
     text-align:center;
     padding-right:130px;
     /*margin-top:-40px;*/
+}
+
+#speedoCaption {
+    position: relative;
+    z-index: 2;
 }
 
 a.recordsLink {
@@ -178,32 +197,57 @@ p.contactName {
     font-weight: bold;
 }
 
+p.lastUpdated {
+    font-size: 11px;
+    color: #666 !important;
+    margin-left: 15px;
+    padding-bottom: 0 !important;
+}
+
 /* painful positioning of chart label because of the dynamic generation of the div content and IE bugs */
+/* all */
 span.taxonChartCaption {
-    position:relative;
-    left:575px;
-    top:-120px;
-    padding-left:40px;
     color: #555;
 }
 
 span#resetTaxonChart {
-    position:relative;
-    left:350px;
-    top:-100px;
-    padding-left:40px;
     color: #01716E;
     text-decoration:underline;
     cursor:pointer;
 }
 
+/* 2 column */
+#statistics span.taxonChartCaption {
+    position:relative;
+    left:630px;
+    top:-120px;
+    color: #555;
+    padding-left:40px;
+}
+
+#statistics span#resetTaxonChart {
+    position:relative;
+    left:380px;
+    top:-100px;
+    color: #01716E;
+    text-decoration:underline;
+    cursor:pointer;
+    padding-left:40px;
+}
+
+/* 1 column */
+#taxonChartCaption {
+    text-align:center;
+    position:relative;
+    top:-120px;
+    left: -20px;
+}
+/* ------------*/
+
 div#decadeChart img {
     margin-top: -100px;
 }
 
-.vertical-charts div#decadeChart img {
-    margin-top: -50px;
-}
 /*a[target='_blank'] {
     background: url(../images/skin/external.png) center right no-repeat;
     padding-right: 13px;
@@ -221,5 +265,26 @@ img.percentImage1 {
  background: white url(../images/percentImage_back1.png) top left no-repeat;
  padding: 0;
  margin: 5px 0 10px 0;
+ background-position: 1px 0;
+}
+
+img.percentImage2 {
+ background: white url(../images/percentImage_back2.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+img.percentImage3 {
+ background: white url(../images/percentImage_back3.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+img.percentImage4 {
+ background: white url(../images/percentImage_back4.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
  background-position: 1px 0;
 }

@@ -515,7 +515,6 @@ class CollectoryTagLib {
      * The last separator is the word 'and'.
      */
     def JSONListAsStrings = {attrs ->
-        println ">>>" + attrs.json
         if (!attrs?.json)
             return ""
         def list = JSON.parse(attrs.json.toString())
@@ -565,7 +564,7 @@ class CollectoryTagLib {
                         out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg") + "'/>"
                     }
                     if (it == "CHACM") {
-                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png") + "'/>"
+                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chacm.png") + "'/>"
                     }
                     out << "<br/>"
                 }
@@ -805,7 +804,7 @@ class CollectoryTagLib {
      * @body the body of the link
      */
     def recordsLink = {attrs, body ->
-        attrs.each {println it}
+        //attrs.each {println it}
         // must have at least one value to build a query
         if (attrs.collection) {
             if (attrs.containsKey('onlyIf') && !attrs.onlyIf) {
@@ -886,15 +885,16 @@ class CollectoryTagLib {
      * @body html fragment to include above map
      */
     def recordsMap = {attrs, body ->
+/*
         def entityType = "collectionUid"
         switch (attrs.type) {
             case "institution": entityType = "institutionUid"; break;
             case "dataProvider": entityType = "dataProviderUid"; break;
             case "dataResource": entityType = "dataResourceUid"; break;
         }
-        def baseUrl = ConfigurationHolder.config.spatial.baseURL
-        def url = baseUrl + "alaspatial/ws/density/map?${entityType}=${attrs.uid}"
-        out << "<div class='distributionImage'>${body()}<img class='no-radius' src='${url}' width='340' /><img src='http://spatial.ala.org.au/alaspatial/output/sampling/legend_co13.png' width='128' /></div>"
+*/
+        out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
+                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' /></div>"
     }
 
     def decadeBreakdown = {attrs ->
@@ -1097,9 +1097,88 @@ class CollectoryTagLib {
         def eachPercent = (imageWidth/2)/100
         def offset = initial + (percent * eachPercent)
         if (percent) {
-            out << "<img src='" + resource(dir:'images', file:'percentImage.png') +
+            out << "<img id='progressBar' src='" + resource(dir:'images', file:'percentImage.png') +
                     "' alt='" + formatPercent(percent:percent) +
                     "%' class='no-radius percentImage1' style='background-position: ${offset}px 0pt; '>"
         }
+    }
+
+    /**
+     * Writes a para with date last updated.
+     *
+     * @param date
+     */
+    def lastUpdated = {attrs ->
+        if (attrs.date) {
+            out << "<p class='lastUpdated'>last updated: ${attrs.date}</p>"
+        }
+    }
+
+    def breadcrumbTrail = {attrs ->
+        out << "<a href='${ConfigurationHolder.config.ala.baseURL}'>Home</a> " +
+                "<a href='${ConfigurationHolder.config.ala.baseURL}/explore/'>Explore</a> " +
+                link(controller:'public', action:'map') {"Natural History Collections"}
+    }
+
+    def pageOptionsLink = {attrs, body ->
+        out << "<a href='#optionsText' class='current'>"
+        out << body()
+        out << "</a>"
+    }
+
+    def pageOptionsPopup = {attrs ->
+        out << """<div style="display:none; text-align: left;">\n"""
+        out << """<div id="optionsText" style="text-align: left;">\n"""
+        out << """<p class='pageOptions' width="100%" style="color:#666;padding-bottom:5px;text-align:center">Page options</p>\n"""
+        out << """<p class='editLink' style="padding-left:30px;text-indent:-30px;">\n"""
+        out << "<img class='editImg' style='margin-right:5px;vertical-align:middle' src='${resource(dir:'images/ala',file:'edit.png')}'/>\n"
+        out << link(controller:attrs.instance.urlForm(), action:'show', id:attrs.instance.uid) {"Edit metadata"}
+        out << " for this ${attrs.instance.textFormOfEntityType(attrs.instance.uid)}. You need<br/>appropriate authorisation to do this. You will<br/>be asked to log in if you are not already.</p>\n"
+        if (attrs.instance.ENTITY_TYPE == Institution.ENTITY_TYPE) {
+            boolean first = true
+            DataResource.findAllByInstitution(attrs.instance).each {
+                // only write the header if we have at least one resource
+                if (first) {
+                    out << "<p class='viewList' style='margin-top:5px;'>View data resources<br/><ul>\n"
+                    first = false
+                }
+                def name =  it.name
+                out << "<li>" +
+                        link(action:'show',id:it.uid) {name} +
+                        "</li>\n"
+            }
+            out << "</ul></p>\n"
+        }
+        out << "</div>\n"
+        out << "</div>\n"
+    }
+
+    def linkLengthLimit = 42
+
+    def wrappedLink = {attrs, body ->
+        def text = body().toString()
+        if (text.size() > linkLengthLimit) {
+            def chunks = splitText(text)
+            out << "<a href='${attrs.href}' target='_blank'>${chunks[0]}</a><br/><a href='${attrs.href}' class='external' target='_blank'>${chunks[1]}</a>"
+        } else {
+            out << "<a href='${attrs.href}' class='external' target='_blank'>${text}</a>"
+        }
+    }
+
+    private String[] splitText(text) {
+        def linkPart = ""
+        def rest = ""
+        // find whitespace within the length limit
+        def words = text.tokenize()
+        boolean broken = false
+        words.each {
+            if (!broken && (linkPart.size() + it.size()) < linkLengthLimit) {
+                linkPart += (linkPart ? " " + it : it)
+            } else {
+                broken = true
+                rest += (rest ? " " + it : it)
+            }
+        }
+        return [linkPart, rest] as String[]
     }
 }

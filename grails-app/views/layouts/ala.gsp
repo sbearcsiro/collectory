@@ -7,21 +7,22 @@
 
   <title><g:layoutTitle/></title>
 
-    <link rel="stylesheet" href="http://test.ala.org.au/wp-content/themes/ala/style.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/style.css" type="text/css" media="screen" />
     <!--link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"-->
-    <link rel="icon" type="image/x-icon" href="http://test.ala.org.au/wp-content/themes/ala/images/favicon.ico" />
-    <link rel="shortcut icon" type="image/x-icon" href="http://test.ala.org.au/wp-content/themes/ala/images/favicon.ico" />
-	<link rel="stylesheet" type="text/css" media="screen" href="http://test.ala.org.au/wp-content/themes/ala/css/sf.css" />
-	<link rel="stylesheet" type="text/css" media="screen" href="http://test.ala.org.au/wp-content/themes/ala/css/highlights.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="http://test.ala.org.au/wp-content/themes/ala/css/jquery.autocomplete.css" />
-    <script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/iframe.js"></script>
-	<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/form.js"></script>
-	<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/ui.core.js"></script>
-	<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/ui.tabs.js"></script>
-	<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/hoverintent-min.js"></script>
-	<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/superfish/superfish.js"></script>
-    <script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
+    <link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
+	<link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/sf.css" />
+	<link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/highlights.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/jquery.autocomplete.css" />
+    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/iframe.js"></script>
+	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/form.js"></script>
+	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
+	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/ui.core.js"></script>
+	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/ui.tabs.js"></script>
+	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/hoverintent-min.js"></script>
+	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/superfish/superfish.js"></script>
+    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
+    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/uservoice.js"></script>
 	<script type="text/javascript">
 
 		// initialise plugins
@@ -57,18 +58,18 @@
               max: 10,
               selectFirst: false
           });
-
+          _loadUserVoice();
+          
 		});
 
 	</script>
   <meta name='robots' content='noindex,nofollow' />
-  <link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://test.ala.org.au/xmlrpc.php?rsd" />
-  <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://test.ala.org.au/wp-includes/wlwmanifest.xml" />
-  <link rel='index' title='Atlas Living Australia NG' href='http://test.ala.org.au/' />
-  <link rel='prev' title='My Profile' href='http://test.ala.org.au/my-profile/' />
-  <link rel='next' title='Search' href='http://test.ala.org.au/tools-services/search-tools/' />
-  <meta name="generator" content="WordPress 3.0" />
-  <link rel='canonical' href='http://test.ala.org.au/' />
+  <link rel="EditURI" type="application/rsd+xml" title="RSD" href="${ConfigurationHolder.config.ala.baseURL}/xmlrpc.php?rsd" />
+  <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="${ConfigurationHolder.config.ala.baseURL}/wp-includes/wlwmanifest.xml" />
+  <link rel='index' title='Atlas Living Australia NG' href='${ConfigurationHolder.config.ala.baseURL}/' />
+  <link rel='prev' title='My Profile' href='${ConfigurationHolder.config.ala.baseURL}/my-profile/' />
+  <link rel='next' title='Search' href='${ConfigurationHolder.config.ala.baseURL}/tools-services/search-tools/' />
+  <link rel='canonical' href='${ConfigurationHolder.config.ala.baseURL}/' />
 
   <link rel="stylesheet" href="${resource(dir:'css',file:'temp-style.css')}"/>
   <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
@@ -82,11 +83,11 @@
   <div id="wrapper">
     <div id="banner">
       <div id="logo">
-        <a href="http://test.ala.org.au" title="Atlas of Living Australia home"><img src="http://test.ala.org.au/wp-content/themes/ala/images/ala_logo.png" width="216" height="88" alt="Atlas of Living Ausralia logo" /></a>
+        <a href="${ConfigurationHolder.config.ala.baseURL}" title="Atlas of Living Australia home"><img src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/ala_logo.png" width="216" height="88" alt="Atlas of Living Ausralia logo" /></a>
       </div><!--close logo-->
       <div id="nav">
         <!-- WP Menubar 4.8: start menu nav-site-loggedout, template Superfish, CSS  -->
-        <ul class="sf"><li class="nav-home"><a href="http://test.ala.org.au/" ><span>Home</span></a></li><li class="nav-explore selected"><a href="http://test.ala.org.au/explore/" ><span>Explore</span></a><ul><li><a href="http://biocache.ala.org.au/explore/your-area" ><span>Your Area</span></a></li><li><a href="http://bie.ala.org.au/regions/" ><span>Regions</span></a></li><li><a href="http://test.ala.org.au/explore/species-maps/" ><span>Species Maps</span></a></li><li><a href="http://collections.ala.org.au/public/map" ><span>Natural History Collections</span></a></li><li><a href="http://test.ala.org.au/explore/themes/" ><span>Themes & Case Studies</span></a></li></ul></li><li class="nav-tools"><a href="http://test.ala.org.au/tools-services/" ><span>Tools</span></a><ul><li><a href="http://test.ala.org.au/tools-services/sds/" ><span>Sensitive Data Service</span></a></li><li><a href="http://test.ala.org.au/tools-services/spatial-analysis/" ><span>Spatial Analysis</span></a></li><li><a href="http://test.ala.org.au/tools-services/community-science/" ><span>Citizen Science</span></a></li><li><a href="http://test.ala.org.au/tools-services/identification-tools/" ><span>Identification Tools</span></a></li><li><a href="http://test.ala.org.au/tools-services/for-developers/" ><span>For Developers</span></a></li><li><a href="http://test.ala.org.au/tools-services/onlinedesktop-tools-review/" ><span>Online & Desktop Tools Review </span></a></li></ul></li><li class="nav-share"><a href="http://test.ala.org.au/share/" title="Share - links, images, images, literature, your time"><span>Share</span></a><ul><li><a href="http://test.ala.org.au/share/general-contribute/" ><span>General Comments</span></a></li><li><a href="http://test.ala.org.au/share/sighting/" ><span>Record Sightings</span></a></li><li><a href="http://test.ala.org.au/share/share-links/" ><span>Share links, ideas, information</span></a></li><li><a href="http://test.ala.org.au/share/share-images/" ><span>Share Photos</span></a></li><li><a href="http://test.ala.org.au/share/share-data/" ><span>Upload Data Sets</span></a></li><li><a href="http://test.ala.org.au/share/share-analogue-data/" ><span>Non-digital Information</span></a></li><li><a href="http://test.ala.org.au/share/about-sharing/" ><span>About Sharing</span></a></li></ul></li><li class="nav-support"><a href="http://test.ala.org.au/support/" ><span>Support</span></a><ul><li><a href="http://test.ala.org.au/support/get-started/" ><span>Get Started</span></a></li><li><a href="http://test.ala.org.au/support/forum/" ><span>Forum</span></a></li><li><a href="http://test.ala.org.au/support/faq/" ><span>Frequently Asked Questions</span></a></li><li><a href="http://test.ala.org.au/support/how-to/" ><span>How To</span></a></li></ul></li><li class="nav-contact"><a href="http://test.ala.org.au/contact-us/" ><span>Contact Us</span></a></li><li class="nav-about"><a href="http://test.ala.org.au/about/" ><span>About the Atlas</span></a><ul><li><a href="http://test.ala.org.au/about/people/" ><span>Working Together</span></a></li><li><a href="http://test.ala.org.au/about/program/" ><span>Atlas Projects</span></a></li><li><a href="http://test.ala.org.au/about/governance/" ><span>Governance</span></a></li><li><a href="http://test.ala.org.au/about/media-centre/" ><span>Media Centre</span></a></li><li><a href="http://test.ala.org.au/about/newsevents/" ><span>News & Events</span></a></li></ul></li><li class="nav-myprofile nav-right"><a href="https://auth.ala.org.au/cas/login?service=http://test.ala.org.au/wp-login.php?redirect_to=http://test.ala.org.au/my-profile/" ><span>My Profile</span></a></li><li class="nav-login nav-right"><a href="https://auth.ala.org.au/cas/login?service=http://test.ala.org.au/wp-login.php?redirect_to=http://test.ala.org.au/" ><span>Log in</span></a></li></ul>
+        <ul class="sf"><li class="nav-home"><a href="http://www.ala.org.au/" ><span>Home</span></a></li><li class="nav-explore selected"><a href="http://www.ala.org.au/explore/" ><span>Explore</span></a><ul><li><a href="http://biocache.ala.org.au/explore/your-area" ><span>Your Area</span></a></li><li><a href="http://bie.ala.org.au/regions/ " ><span>Regions</span></a></li><li><a href="http://www.ala.org.au/explore/species-maps/" ><span>Species Maps</span></a></li><li><a href="http://collections.ala.org.au/public/map " ><span>National History Collections</span></a></li><li><a href="http://www.ala.org.au/explore/themes/" ><span>Themes & Case Studies</span></a></li></ul></li><li class="nav-tools"><a href="http://www.ala.org.au/tools-services/" ><span>Tools</span></a><ul><li><a href="http://www.ala.org.au/tools-services/images/" ><span>Images</span></a></li><li><a href="http://www.ala.org.au/tools-services/citizen-science/" ><span>Citizen Science</span></a></li><li><a href="http://www.ala.org.au/tools-services/identification-tools/" ><span>Identification Tools</span></a></li><li><a href="http://www.ala.org.au/tools-services/sds/" ><span>Sensitive Data Service</span></a></li><li><a href="http://www.ala.org.au/tools-services/spatial-analysis/" ><span>Spatial Analysis</span></a></li><li><a href="http://www.ala.org.au/tools-services/species-name-services/" ><span>Taxon Web Services</span></a></li><li><a href="http://www.ala.org.au/tools-services/onlinedesktop-tools-review/" ><span>Online & Desktop Tools Review </span></a></li></ul></li><li class="nav-share"><a href="http://www.ala.org.au/share/" title="Share - links, images, images, literature, your time"><span>Share</span></a><ul><li><a href="http://www.ala.org.au/share/share-links/" ><span>Share links, ideas, information</span></a></li><li><a href="http://www.ala.org.au/share/share-data/" ><span>Share Datasets</span></a></li><li><a href="http://www.ala.org.au/share/about-sharing/" ><span>About Sharing</span></a></li></ul></li><li class="nav-support"><a href="http://www.ala.org.au/support/" ><span>Support</span></a><ul><li><a href="http://www.ala.org.au/support/contact-us/" ><span>Contact Us</span></a></li><li><a href="http://www.ala.org.au/support/get-started/" ><span>Get Started</span></a></li><li><a href="http://www.ala.org.au/support/user-feedback/" ><span>User Feedback</span></a></li><li><a href="http://www.ala.org.au/support/faq/" ><span>Frequently Asked Questions</span></a></li></ul></li><li class="nav-contact"><a href="http://www.ala.org.au/support/contact-us/" ><span>Contact Us</span></a></li><li class="nav-about"><a href="http://www.ala.org.au/about/" ><span>About the Atlas</span></a><ul><li><a href="http://www.ala.org.au/about/progress/" ><span>A Work In Progress</span></a></li><li><a href="http://www.ala.org.au/about/atlas-partners/" ><span>Atlas Partners</span></a></li><li><a href="http://www.ala.org.au/about/people/" ><span>Working Together</span></a></li><li><a href="http://www.ala.org.au/about/contributors/" ><span>Atlas Contributors</span></a></li><li><a href="http://www.ala.org.au/about/project-time-line/" ><span>Project Time Line</span></a></li><li><a href="http://www.ala.org.au/about/program-of-projects/" ><span>Atlas Projects</span></a></li><li><a href="http://www.ala.org.au/about/international-collaborations/" ><span>Associated Projects</span></a></li><li><a href="http://www.ala.org.au/about/communications-centre/" ><span>Communications Centre</span></a></li><li><a href="http://www.ala.org.au/about/governance/" ><span>Atlas Governance</span></a></li><li><a href="http://www.ala.org.au/about/terms-of-use/" ><span>Terms of Use</span></a></li></ul></li><li class="nav-myprofile nav-right"><a href="https://auth.ala.org.au/cas/login?service=http://www.ala.org.au/wp-login.php?redirect_to=http://www.ala.org.au/my-profile/" ><span>My Profile</span></a></li><li class="nav-logout nav-right"><a href="http://www.ala.org.au/Logout.php" ><span>Log out</span></a></li></ul>
         <!-- WP Menubar 4.8: end menu nav-site-loggedout, template Superfish, CSS  -->
 	  </div><!--close nav-->
       <div id="wrapper_search">
@@ -102,21 +103,20 @@
 
     <div id="footer">
       <div id="footer-nav">
-      <ul id="menu-footer-site"><li id="menu-item-1046" class="menu-item menu-item-type-post_type menu-item-1046"><a href="http://test.ala.org.au/">Home</a></li>
-      <li id="menu-item-8090" class="menu-item menu-item-type-post_type current-menu-item page_item page-item-883 current_page_item menu-item-8090"><a href="http://test.ala.org.au/explore/">Explore</a></li>
-      <li id="menu-item-1051" class="menu-item menu-item-type-post_type menu-item-1051"><a href="http://test.ala.org.au/tools-services/">Tools</a></li>
-      <li id="menu-item-8091" class="menu-item menu-item-type-post_type menu-item-8091"><a href="http://test.ala.org.au/share/">Share</a></li>
-      <li id="menu-item-1050" class="menu-item menu-item-type-post_type menu-item-1050"><a href="http://test.ala.org.au/support/">Support</a></li>
-      <li id="menu-item-1048" class="menu-item menu-item-type-post_type menu-item-1048"><a href="http://test.ala.org.au/contact-us/">Contact Us</a></li>
-      <li id="menu-item-1047" class="menu-item menu-item-type-post_type menu-item-1047"><a href="http://test.ala.org.au/about/">About the Atlas</a></li>
-      <li id="menu-item-1052" class="last menu-item menu-item-type-custom menu-item-1052"><a href="http://test.ala.org.au/wp-login.php">Log in</a></li>
-      </ul>		<ul id="menu-footer-legal"><li id="menu-item-1042" class="menu-item menu-item-type-post_type menu-item-1042"><a href="http://test.ala.org.au/about/media-centre/terms-of-use/citing-the-atlas/">Citing the Atlas</a></li>
-      <li id="menu-item-1043" class="menu-item menu-item-type-post_type menu-item-1043"><a href="http://test.ala.org.au/about/media-centre/terms-of-use/disclaimer/">Disclaimer</a></li>
-      <li id="menu-item-3090" class="menu-item menu-item-type-post_type menu-item-3090"><a href="http://test.ala.org.au/site-map/">Site Map</a></li>
-      <li id="menu-item-1045" class="last menu-item menu-item-type-post_type menu-item-1045"><a href="http://test.ala.org.au/about/media-centre/terms-of-use/">Terms of Use</a></li>
-      </ul>
-      </div> 
-      <div class="copyright"><p><a href="http://creativecommons.org/licenses/by/2.5/au/" title="External link to Creative Commons" class="left no-pipe"><img src="http://test.ala.org.au/wp-content/themes/ala/images/somerights20.png" width="88" height="31" alt="" /></a>This work is licensed under a <a href="http://creativecommons.org/licenses/by/2.5/au/" title="External link to Creative Commons">Creative Commons Attribution 2.5 Australia License</a></p></div>
+      <ul id="menu-footer-site"><li id="menu-item-1046" class="menu-item menu-item-type-post_type menu-item-1046"><a href="http://www.ala.org.au/">Home</a></li>
+      <li id="menu-item-8090" class="menu-item menu-item-type-post_type current-menu-item page_item page-item-883 current_page_item menu-item-8090"><a href="http://www.ala.org.au/explore/">Explore</a></li>
+      <li id="menu-item-1051" class="menu-item menu-item-type-post_type menu-item-1051"><a href="http://www.ala.org.au/tools-services/">Tools</a></li>
+      <li id="menu-item-8091" class="menu-item menu-item-type-post_type menu-item-8091"><a href="http://www.ala.org.au/share/">Share</a></li>
+      <li id="menu-item-1050" class="menu-item menu-item-type-post_type menu-item-1050"><a href="http://www.ala.org.au/support/">Support</a></li>
+      <li id="menu-item-1048" class="menu-item menu-item-type-post_type menu-item-1048"><a href="http://www.ala.org.au/support/contact-us/">Contact Us</a></li>
+      <li id="menu-item-1047" class="menu-item menu-item-type-post_type menu-item-1047"><a href="http://www.ala.org.au/about/">About the Atlas</a></li>
+      <li id="menu-item-1052" class="last menu-item menu-item-type-custom menu-item-1052"><a href="http://www.ala.org.au/wp-login.php">Log in</a></li>
+      </ul>		<ul id="menu-footer-legal"><li id="menu-item-1045" class="menu-item menu-item-type-post_type menu-item-1045"><a href="http://www.ala.org.au/about/terms-of-use/">Terms of Use</a></li>
+      <li id="menu-item-1042" class="menu-item menu-item-type-post_type menu-item-1042"><a href="http://www.ala.org.au/about/terms-of-use/citing-the-atlas/">Citing the Atlas</a></li>
+      <li id="menu-item-12256" class="menu-item menu-item-type-custom menu-item-12256"><a href="/about/privacy-policy">Privacy Policy</a></li>
+      <li id="menu-item-3090" class="last menu-item menu-item-type-post_type menu-item-3090"><a href="http://www.ala.org.au/site-map/">Site Map</a></li>
+      </ul>		</div>
+      <div class="copyright"><p><a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="left no-pipe"><img src="http://www.ala.org.au/wp-content/themes/ala/images/creativecommons.png" width="88" height="31" alt="" /></a>This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons">Creative Commons Attribution 3.0 Australia License</a></p><p>Provider content may be covered by other <span class="asterisk-container"><a href="http://www.ala.org.au/about/terms-of-use/" title="Terms of Use">Terms of Use</a>.</span></div>
   </div><!--close footer-->
   </div><!--close wrapper-->
   <script type="text/javascript"> 

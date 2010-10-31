@@ -10,7 +10,9 @@
 //    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
 // }
 
-/******* Start time config **********/
+/******************************************************************************\
+ *  CONFIG MANAGEMENT
+\******************************************************************************/
 def ENV_NAME = "COLLECTORY_CONFIG"
 def default_config = "/data/collectory/config/${appName}-config.properties"
 if(!grails.config.locations || !(grails.config.locations instanceof List)) {
@@ -33,12 +35,21 @@ if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
 }
 println "(*) grails.config.locations = ${grails.config.locations}"
 
+/******************************************************************************\
+ *  EXTERNAL SERVERS
+\******************************************************************************/
 if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
 }
 if (!spatial.baseURL) {
      spatial.baseURL = "http://spatial.ala.org.au/"
 }
+if (!ala.baseURL) {
+    ala.baseURL = "http://www.ala.org.au"
+}
+/******************************************************************************\
+ *  SECURITY
+\******************************************************************************/
 if (!security.cas.urlPattern) {
     security.cas.urlPattern = "/admin.*,/collection.*,/institution.*," +
             "/contact.*,/reports.*,/providerCode.*,/providerMap.*,/dataProvider.*,/dataResource.*,/dataHub.*"
@@ -103,7 +114,9 @@ repository.location.images = '/data/collectory/data'
 /******* log files **********/
 def logDirectory = "/data/collectory/logs"
 
-// set per-environment serverURL stem for creating absolute links
+/******************************************************************************\
+ *  ENVIRONMENT SPECIFIC
+\******************************************************************************/
 environments {
     production {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
@@ -139,7 +152,9 @@ println "cas.context = " + security.cas.context
 
 hibernate = "off"
 
-/******* config audit logging plugin **********/
+/******************************************************************************\
+ *  AUDIT LOGGING
+\******************************************************************************/
 auditLog {
   actorClosure = { request, session ->
       def cas = session?.getAttribute('_const_cas_assertion_')
@@ -153,7 +168,9 @@ auditLog {
 }
 auditLog.verbose = false
 
-/******* log4j configuration **********/
+/******************************************************************************\
+ *  log4j configuration
+\******************************************************************************/
 log4j = {
 
     appenders {

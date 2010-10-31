@@ -16,6 +16,13 @@
                     'width' : 600,
                     'height' : 180
                 });
+            $("a.current").fancybox({
+                    'hideOnContentClick' : false,
+                    'titleShow' : false,
+                        'titlePosition' : 'inside',
+                    'autoDimensions' : true,
+                    'width' : 300
+            });
           });
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
@@ -24,13 +31,19 @@
       <div id="content">
         <div id="header" class="collectory">
           <!--Breadcrumbs-->
-          <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${instance.name}</span></div>
+          <div id="breadcrumb"><cl:breadcrumbTrail/>
+            <cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink>
+          </div>
+          <cl:pageOptionsPopup instance="${instance}"/>
           <div class="section full-width">
             <div class="hrgroup col-8">
               <cl:h1 value="${instance.name}"/>
               <g:set var="dp" value="${instance.dataProvider}"/>
               <g:if test="${dp}">
                 <h2><g:link action="show" id="${dp.uid}">${dp.name}</g:link></h2>
+              </g:if>
+              <g:if test="${instance.institution}">
+                <h2><g:link action="show" id="${instance.institution.uid}">${instance.institution.name}</g:link></h2>
               </g:if>
               <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
               <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
@@ -64,8 +77,13 @@
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
             <h2>Citation</h2>
-            <cl:formattedText>${fieldValue(bean: instance, field: "citation")}</cl:formattedText>
-            <cl:formattedText>${fieldValue(bean: instance, field: "citableAgent")}</cl:formattedText>
+            <g:if test="${instance.citation || instance.citableAgent}">
+              <cl:formattedText>${fieldValue(bean: instance, field: "citation")}</cl:formattedText>
+              <cl:formattedText>${fieldValue(bean: instance, field: "citableAgent")}</cl:formattedText>
+            </g:if>
+            <g:else>
+              <p>No citation information available.</p>
+            </g:else>
 
             <g:if test="${instance.rights}">
               <h2>Rights</h2>
@@ -73,26 +91,25 @@
             </g:if>
             
             <h2>Digitised records</h2>
-            <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
             <div>
-              <g:if test="${recordsAvailable}">
-                <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.</p>
-                <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
-              </g:if>
-              <g:else>
-                <p>No digitised records for this data resource can be accessed through the Atlas of Living Australia.</p>
-              </g:else>
+              <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
+              <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
             </div>
           </div>
           <div class="section vertical-charts">
             <h3>Map of records</h3>
             <cl:recordsMap type="dataResource" uid="${instance.uid}"/>
-            <div id="taxonChart" style="margin-left:-15px;">
+            <div id="taxonChart">
+              <img style="margin-left:230px;margin-top:140px;margin-bottom:308px" alt="loading..." src="${resource(dir:'images/map',file:'single-occurrences.png')}"/>
             </div>
-            <!--span class="taxonChartCaption">Click a segment to view its records.</span-->
+            <div id="taxonChartCaption">
+              <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch to view records for a group.</span><br/>
+              <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;
+            </div>
             <div id="decadeChart" style="padding-right: 20px;width:500">
             </div>
           </div>
+          <cl:lastUpdated date="${instance.lastUpdated}"/>
         </div><!--close column-one-->
 
         <div id="column-two">
@@ -148,7 +165,7 @@
               <div class="section">
                 <h3>Web site</h3>
                 <div class="webSite">
-                  <a class='external_icon' target="_blank" href="${instance.websiteUrl}">Visit the collection's website</a>
+                  <a class='external_icon' target="_blank" href="${instance.websiteUrl}">Visit the data resource's website</a>
                 </div>
               </div>
             </g:if>
@@ -171,7 +188,7 @@
                 </g:if>
                 <g:if test="${instance.isMemberOf('CHACM')}">
                   <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
-                  <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
+                  <img src="${resource(absolute:"true", dir:"data/network/",file:"chacm.png")}"/>
                 </g:if>
               </div>
             </g:if>
@@ -193,45 +210,110 @@
       </div>
 
       <script type="text/javascript">
+        /************************************************************\
+        *
+        \************************************************************/
         var queryString = '';
         var decadeUrl = '';
         var taxonUrl = '';
 
+        $('img#mapLegend').each(function(i, n) {
+          // if legend doesn't load, then it must be a point map
+          $(this).error(function() {
+            $(this).attr('src',"http://nemo-be.nexus.csiro.au:8080/Collectory/images/map/single-occurrences.png");
+          });
+          // IE hack as IE doesn't trigger the error handler
+          if ($.browser.msie && !n.complete) {
+            $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
+          }
+        });
+        /************************************************************\
+        *
+        \************************************************************/
         function onLoadCallback() {
-          if (${numBiocacheRecords != -1 && numBiocacheRecords != 0}) {
-            if (decadeUrl.length > 0) {
-              var query = new google.visualization.Query(decadeUrl);
-              query.setQuery(queryString);
-              query.send(handleQueryResponse);
-            } else {
-              decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${instance.uid}";
-              $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
-            }
-            if (taxonUrl.length > 0) {
-              var taxonQuery = new google.visualization.Query(taxonUrl);
-              taxonQuery.setQuery(queryString);
-              taxonQuery.send(handleQueryResponse);
-            } else {
-              taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.uid}?threshold=55";
-              $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
-            }
-          }
-        }
+          // summary biocache data
+          var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
+          $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
 
+          // taxon chart
+          taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.uid}?threshold=55";
+          $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+
+          // records map
+          //var mapServiceUrl = "${ConfigurationHolder.config.spatial.baseURL}/alaspatial/ws/density/map?collectionUid=${instance.uid}";
+          var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
+          $.get(mapServiceUrl, {}, mapRequestHandler);
+        }
+        /************************************************************\
+        *
+        \************************************************************/
+        function biocacheRecordsHandler(response) {
+          setNumbers(response.totalRecords);
+          drawDecadeImage(response.decades);
+        }
+        /************************************************************\
+        *
+        \************************************************************/
+        function setNumbers(totalBiocacheRecords) {
+          var recordsClause = "";
+          switch (totalBiocacheRecords) {
+            case 0: recordsClause = "No records"; break;
+            case 1: recordsClause = "1 record"; break;
+            default: recordsClause = addCommas(totalBiocacheRecords) + " records";
+          }
+          $('#numBiocacheRecords').html(recordsClause);
+        }
+        /************************************************************\
+        *
+        \************************************************************/
+        function addCommas(nStr)
+        {
+            nStr += '';
+            x = nStr.split('.');
+            x1 = x[0];
+            x2 = x.length > 1 ? '.' + x[1] : '';
+            var rgx = /(\d+)(\d{3})/;
+            while (rgx.test(x1)) {
+                x1 = x1.replace(rgx, '$1' + ',' + '$2');
+            }
+            return x1 + x2;
+        }
+        /************************************************************\
+        *
+        \************************************************************/
+        function mapRequestHandler(response) {
+          if (response.error != undefined) {
+            // set map url
+            $('#recordsMap').attr("src","${resource(dir:'images/map',file:'mapaus1_white-340.png')}");
+            // set legend url
+            $('#mapLegend').attr("src","${resource(dir:'images/map',file:'mapping-data-not-available.png')}");
+          }
+          // set map url
+          $('#recordsMap').attr("src",response.mapUrl);
+          // set legend url
+          $('#mapLegend').attr("src",response.legendUrl);
+        }
+        /************************************************************\
+        *
+        \************************************************************/
         function decadeBreakdownRequestHandler(response) {
           var data = new google.visualization.DataTable(response);
           if (data.getNumberOfRows() > 0) {
             draw(data);
           }
         }
-
+        /************************************************************\
+        *
+        \************************************************************/
         function taxonBreakdownRequestHandler(response) {
           var data = new google.visualization.DataTable(response);
           if (data.getNumberOfRows() > 0) {
             drawTaxonChart(data);
           }
         }
-
+        /************************************************************\
+        *
+        \************************************************************/
         function drawDecadeChart(dataTable) {
           var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
 
@@ -245,57 +327,100 @@
             colors: ['#3398cc']
           });
         }
+        /************************************************************\
+        *
+        \************************************************************/
+        function drawDecadeImage(decades) {
+          var dataTable = new google.visualization.DataTable(decades);
+          if (dataTable.getNumberOfRows() > 0) {
+            var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
+            var options = {};
 
-        function draw(dataTable) {
-          var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
-          var options = {};
+            // 'bvg' is a vertical grouped bar chart in the Google Chart API.
+            // The grouping is irrelevant here since there is only one numeric column.
+            options.cht = 'bvg';
 
-          // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
-          // The grouping is irrelevant here since there is only one numeric column.
-          options.cht = 'bvg';
+            // Add a data range.
+            var min = 0;
+            var max = dataTable.getTableProperty('max');
+            options.chds = min + ',' + max;
 
-          // Add a data range.
-          var min = 0;
-          var max = dataTable.getTableProperty('max');
-          options.chds = min + ',' + max;
+            // Chart title and style
+            options.chtt = 'Additions by decade';  // chart title
+            options.chts = '7D8804,15';
 
-          // Chart title and style
-          options.chtt = 'Additions by decade';  // chart title
-          options.chts = '7D8804,15';
+            // width
+            options.chs = '500x250';
+            //options.chxt = 'x,x,y';
+            //options.chxl = '2:|Decade';
+            //options.chxp = '0,50';
 
-          options.chs = '400x200';
-
-          //options.chxt = 'x,x,y';
-          //options.chxl = '2:|Decade';
-          //options.chxp = '0,50';
-
-          vis.draw(dataTable, options);
+            vis.draw(dataTable, options);
+          }
         }
-
+        /************************************************************\
+        *
+        \************************************************************/
         function drawTaxonChart(dataTable) {
           var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
           var options = {};
 
-          options.width = 500;
+          options.width = 600;
           options.height = 500;
           options.is3D = false;
-          options.title = "Record numbers by " + dataTable.getTableProperty('rank');
-          options.titleTextStyle = {color: "#7D8804", fontName: 'Arial', fontSize: 15};
+          if (dataTable.getTableProperty('scope') == "all") {
+            options.title = "Number of records by " + dataTable.getTableProperty('rank');
+          } else {
+            options.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank')
+          }
+          options.titleTextStyle = {color: "#555", fontName: 'Arial', fontSize: 15};
           //options.sliceVisibilityThreshold = 1/2000;
           //options.pieSliceText = "label";
           options.legend = "left";
           google.visualization.events.addListener(chart, 'select', function() {
-            var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${instance.uid}&fq=" +
-              dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
-            document.location.href = linkUrl;
+            var rank = dataTable.getTableProperty('rank')
+            var name = dataTable.getValue(chart.getSelection()[0].row,0);
+            // differentiate between clicks on legend versus slices
+            if (chart.getSelection()[0].column == undefined) {
+              // clicked legend - show records
+              var scope = dataTable.getTableProperty('scope');
+              if (scope == "genus" && rank == "species") {
+                name = dataTable.getTableProperty('name') + " " + name;
+              }
+              var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${instance.uid}&fq=" +
+                rank + ":" + name;
+              document.location.href = linkUrl;
+            } else {
+              // clicked slice - drill down unles already at species
+              if (rank != "species") {
+                $('div#taxonChart').html('<img style="margin-left:230px;margin-top:140px;margin-bottom:308px;" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>');
+                var drillUrl = "${ConfigurationHolder.config.grails.context}/public/rankBreakdown/${instance.uid}?name=" +
+                        dataTable.getValue(chart.getSelection()[0].row,0) +
+                       "&rank=" + dataTable.getTableProperty('rank')
+                $.get(drillUrl, {}, taxonBreakdownRequestHandler);
+              }
+              if ($('span#resetTaxonChart').html() == "") {
+                $('span#resetTaxonChart').html("reset to " + dataTable.getTableProperty('rank'));
+              }
+            }
           });
-          //google.visualization.events.addListener(chart, 'onmouseover', function() {
-          //  $("div#taxonChart").css("cursor") = "pointer";
-          //});
 
           chart.draw(dataTable, options);
-        }
 
+          // show taxon caption
+          $('span.taxonChartCaption').css('visibility', 'visible');
+        }
+        /************************************************************\
+        *
+        \************************************************************/
+        function resetTaxonChart() {
+          taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.uid}?threshold=55";
+          $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+          $('span#resetTaxonChart').html("");
+        }
+        /************************************************************\
+        *
+        \************************************************************/
         function handleQueryResponse(response) {
           if (response.isError()) {
             alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
@@ -303,6 +428,9 @@
           }
           draw(response.getDataTable());
         }
+        /************************************************************\
+        *
+        \************************************************************/
 
         google.load("visualization", "1", {packages:["imagechart","corechart"]});
         google.setOnLoadCallback(onLoadCallback);

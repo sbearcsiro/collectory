@@ -1,10 +1,11 @@
-<%@ page import="au.org.ala.collectory.Collection" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.Collection" %>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
   <meta name="layout" content="main"/>
   <g:set var="entityName" value="${message(code: 'collection.label', default: 'Collection')}"/>
   <title><g:message code="default.show.label" args="[entityName]"/></title>
+  <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
 </head>
 <body onload="initializeLocationMap('${instance.canBeMapped()}',${instance.latitude},${instance.longitude});">
 <style>
@@ -167,6 +168,7 @@
         </tr>
       </table>
 
+      <!-- estimate of records -->
       <h2 style="padding-top:10px;">Number of specimens in the collection</h2>
       <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
         <p>The estimated number of specimens within <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
@@ -176,21 +178,37 @@
         This represents <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> of the collection.</p>
       </g:if>
 
-      <!-- biocache records -->
-      <g:if test="${numBiocacheRecords}">
-        <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record"/> can be accessed through the Atlas of Living Australia.
-        <g:if test="${percentBiocacheRecords}">
-          (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
-          <cl:recordsLink collection="${instance}">Click to view records these records.</cl:recordsLink>
-        </g:if></p>
-        <p>The mapping of these records to this collection is based on <cl:institutionCodes collection="${instance}"/> and <cl:collectionCodes collection="${instance}"/>.</p>
-        <cl:warnIfInexactMapping collection="${instance}"/>
-      </g:if>
-      <g:else>
-        <p>No digitised records for this collection can be accessed through the Atlas of Living Australia.</p>
-      </g:else>
+      <!-- actual biocache records -->
+      <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.
+      <g:if test="${percentBiocacheRecords}">
+        (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
+        <cl:recordsLink collection="${instance}">Click to view records these records.</cl:recordsLink>
+      </g:if></p>
+      <p>The mapping of records to this collection is based on the provider codes shown in the next section.</p>
+      <cl:warnIfInexactMapping collection="${instance}"/>
 
       <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'range']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+    </div>
+
+    <!-- Provider codes -->
+    <div class="show-section">
+      <h2>Provider codes</h2>
+      <p>These codes control the mapping of online records to this collection.</p>
+      <p>Institution codes: ${instance.getListOfInstitutionCodesForLookup().join(" ")}</p>
+      <p>Collection codes: ${instance.getListOfCollectionCodesForLookup().join(" ")}</p>
+      <g:if test="${instance.providerMap}">
+        <g:if test="${instance.providerMap?.matchAnyCollectionCode || !instance.providerMap?.exact}">
+          <p>
+            <cl:valueOrOtherwise value="${instance.providerMap?.matchAnyCollectionCode}">Will match any collection code. </cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${!instance.providerMap?.exact}">Codes do not map exactly to this collection. </cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${instance.providerMap?.warning}">Warning is: ${instance.providerMap?.warning}</cl:valueOrOtherwise>
+          </p>
+        </g:if>
+        <div style="clear:both;"><span class="buttons"><g:link class="edit" controller="providerMap" action='show' id="${instance.providerMap?.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      </g:if>
+      <g:else>
+        <div style="clear:both;"><span class="buttons"><g:link class="edit" controller="providerMap" action='list'>${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      </g:else>
     </div>
 
     <!-- Contacts -->
@@ -198,23 +216,6 @@
 
     <!-- Attributions -->
     <g:render template="/shared/attributions" model="[instance: instance]"/>
-
-    <!-- Provider codes -->
-    <g:if test="${instance.providerMap}">
-      <div class="show-section">
-        <h2>Provider codes</h2>
-        <p>Institution codes: ${instance.getListOfInstitutionCodesForLookup().join(" ")}</p>
-        <p>Collection codes: ${instance.getListOfCollectionCodesForLookup().join(" ")}</p>
-        <g:if test="${instance.providerMap.matchAnyCollectionCode || !instance.providerMap.exact}">
-          <p>
-            <cl:valueOrOtherwise value="${instance.providerMap.matchAnyCollectionCode}">Will match any collection code. </cl:valueOrOtherwise>
-            <cl:valueOrOtherwise value="${!instance.providerMap.exact}">Codes do not map exactly to this collection. </cl:valueOrOtherwise>
-            <cl:valueOrOtherwise value="${instance.providerMap.warning}">Warning is: ${instance.providerMap.warning}</cl:valueOrOtherwise>
-          </p>
-        </g:if>
-        <div style="clear:both;"><span class="buttons"><g:link class="edit" controller="providerMap" action='show' id="${instance.providerMap.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
-      </div>
-    </g:if>
 
     <!-- change history -->
     <g:render template="/shared/changes" model="[changes: changes, instance: instance]"/>
@@ -229,12 +230,62 @@
   </div>
 </div>
 <script type="text/javascript">
+/************************************************************\
+*
+\************************************************************/
+function onLoadCallback() {
+  // summary biocache data
+  var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
+  $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
+}
+/************************************************************\
+*
+\************************************************************/
+function biocacheRecordsHandler(response) {
+  setNumbers(response.totalRecords);
+}
+/************************************************************\
+*
+\************************************************************/
+function setNumbers(totalBiocacheRecords) {
+  var recordsClause = "";
+  switch (totalBiocacheRecords) {
+    case 0: recordsClause = "No records"; break;
+    case 1: recordsClause = "1 record"; break;
+    default: recordsClause = addCommas(totalBiocacheRecords) + " records";
+  }
+  $('#numBiocacheRecords').html(recordsClause);
+}
+/************************************************************\
+*
+\************************************************************/
+function addCommas(nStr)
+{
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    }
+    return x1 + x2;
+}
+/************************************************************\
+*
+\************************************************************/
+
+google.setOnLoadCallback(onLoadCallback);
+
+/************************************************************\
+*
+\************************************************************/
   function contactCurator(email, firstName, uid, instUid) {
       var subject = "Request to review web pages presenting information about your natural history collection.";
       var content = "Dear " + firstName + ",\n\n";
       content = content + "The Atlas of Living Australia aims to amalgamate biodiversity information, data and images on all the living plants, animals and microbes found within Australia.  In addition to this, the Atlas has created a tool to promote knowledge of Natural History Collections throughout Australia and to highlight the importance of our partners (Council Heads of Museums and Herbaria).\n\n";
       content = content + "This database of Natural History Collections was created based on the Biodiversity Collections Index (http://www.biodiversitycollectionsindex.org/static/index.html) and the information we could find for your collection at this resource.  However, as some of this information is out-of-date, we would like you to take a sneak peak at the web site we are creating and provide feedback and edits to the information displayed.  In the future, and in consultation with the Australian Biological Resources Study (ABRS), we intend to build an on-line data collection and editing tool that will allow curators to maintain metadata on their collections and allow key elements of the ABRS \"taxonomic workforce and Institutional Surveys\" to be completed on-line.\n\n";
-      content = content + "The current web address for the Atlas of Living Australia is: http://test.ala.org.au and will replace www.ala.org.au in late October 2010.\n\n";
+      content = content + "The web address for the Atlas of Living Australia is: http://www.ala.org.au.\n\n";
       content = content + "However, you can find:\n\n";
       content = content + "Your Collection page at: http://collections.ala.org.au/public/show/" + uid + ".\n\n";
       content = content + "Your Institution page at: http://collections.ala.org.au/public/showInstitution/" + instUid + ".\n\n";

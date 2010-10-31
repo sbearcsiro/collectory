@@ -30,6 +30,7 @@ import org.hibernate.ObjectNotFoundException
  * .@history 2010-06-02 MEW Renamed providerCodes, changed to list, added internal mirror field
  * .@history 2010-07-02 MEW Replaced providerCodes with ProviderCode and ProviderMap tables
  * .@history 2010-08-02 MEW Refactored using inheritance
+ * --further history in SVN comments and release notes--
  */
 
 abstract class ProviderGroup implements Serializable {
@@ -52,6 +53,7 @@ abstract class ProviderGroup implements Serializable {
     String techDescription      // technical description
     String focus                //
     Address address
+//    Address postalAddress
     BigDecimal latitude = NO_INFO_AVAILABLE     // decimal latitude
     BigDecimal longitude = NO_INFO_AVAILABLE    // decimal longitude
     String altitude             // may include units eg 700m
@@ -79,7 +81,7 @@ abstract class ProviderGroup implements Serializable {
 
     static mapping = {
         tablePerHierarchy false
-        uid index: 'uid_idx'
+        uid index:'uid_idx'
     }
 
     static constraints = {
@@ -91,6 +93,7 @@ abstract class ProviderGroup implements Serializable {
         techDescription(nullable:true, maxSize:2048)
         focus(nullable:true, maxSize:2048)
         address(nullable:true)
+//        postalAddress(nullable:true)
         latitude(max:360.0, min:-360.0, scale:10)
         longitude(max:360.0, min:-360.0, scale:10)
         altitude(nullable:true)
@@ -211,7 +214,7 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
-     * Trims the passed string to the specified length breaking at word boundaries and adding an elipsis if trimmed.
+     * Trims the passed string to the specified length breaking at word boundaries and adding an ellipsis if trimmed.
      */
     def trimLength = {trimString, stringLength ->
 
@@ -239,11 +242,12 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
-     * Returns descriptive text trimmed to the specified length.
+     * Returns descriptive text trimmed to the lesser of the first newline and the specified length.
      *
      * @return abstract
      */
     String makeAbstract(int length) {
+        // accumulate text
         String chunk = ""
         if (pubDescription) {
             chunk = pubDescription
@@ -252,6 +256,16 @@ abstract class ProviderGroup implements Serializable {
         } else if (focus) {
             chunk = focus
         }
+        // break at first newline
+        def chunks = chunk.tokenize('\n')
+        if (chunks.size()) {
+            chunk = chunks[0]
+        }
+        // add second token if first is short
+        if (chunk.size() < 10 && chunks.size() > 1) {
+            chunk += " " + chunk[1]
+        }
+        // trim if still too long
         if (chunk.size() < length) {
             return (chunk) ? chunk : ""
         } else {
@@ -330,7 +344,15 @@ abstract class ProviderGroup implements Serializable {
         return pgs
     }
 
+    /**
+     * Returns the entity type, one of:
+     * Collection, Institution, DataProvider, DataResource, DataHub
+     *
+     * @param uid
+     * @return
+     */
     static String entityTypeFromUid(String uid) {
+        if (!uid) {return ""}
         switch (uid[0..1]) {
             case Institution.ENTITY_PREFIX: return Institution.ENTITY_TYPE
             case Collection.ENTITY_PREFIX: return Collection.ENTITY_TYPE
@@ -340,10 +362,43 @@ abstract class ProviderGroup implements Serializable {
         }
     }
 
+    /**
+     * Returns the form that can be used in url path, ie as a controller name, one of:
+     * collection, institution, dataProvider, dataResource, dataHub
+     *
+     * @param uid
+     * @return
+     */
     static String urlFormOfEntityType(String entityType) {
         return entityType[0..0].toLowerCase() + entityType[1..entityType.size()-1]
     }
 
+    /**
+     * Returns the form that can be used in plain text, one of:
+     * collection, institution, data provider, data resource, data hub
+     *
+     * @param uid
+     * @return
+     */
+    static String textFormOfEntityType(String uid) {
+        String entityType = entityTypeFromUid(uid)
+        String result = ""
+        entityType.each {
+            if (Character.isUpperCase(it[0] as Character)) {
+                result += " " + it.toLowerCase()
+            } else {
+                result += it
+            }
+        }
+        return result
+    }
+
+    /**
+     * Returns the instance identified by the uid.
+     *
+     * @param uid
+     * @return
+     */
     static ProviderGroup _get(String uid) {
         if (!uid || uid.size() < 3) {return null}
         switch (uid[0..1]) {
@@ -388,7 +443,7 @@ abstract class ProviderGroup implements Serializable {
      * @return true if same
      */
     def boolean equals(Object obj) {
-        return uid == obj?.uid
+        return obj instanceof ProviderGroup && uid == obj?.uid
     }
 }
 
@@ -398,6 +453,8 @@ abstract class ProviderGroup implements Serializable {
  * Used 'in-line' in ProviderGroup, ie does not create a separate table.
  */
 class Address implements Serializable {
+    static final long serialVersionUID = 1L;//1681261914339207268L;
+
     String street           // includes number eg 186 Tinaroo Creek Road
     String postBox          // eg PO Box 2104
     String city
@@ -417,7 +474,8 @@ class Address implements Serializable {
     }
 
     boolean isEmpty() {
-        return !(street || postBox || city || state || postcode || country)
+        return [street, postBox, city, state, postcode, country].every {!it}
+        //return !(street || postBox || city || state || postcode || country)
     }
 
     List<String> nonEmptyAddressElements(includePostal) {
@@ -458,6 +516,8 @@ class Address implements Serializable {
  * Used 'in-line' in ProviderGroup, ie does not create a separate table.
  */
 class Image implements Serializable {
+    static final long serialVersionUID = 1L;
+
     String file
     String caption
     String attribution

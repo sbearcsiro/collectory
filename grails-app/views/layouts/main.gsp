@@ -8,19 +8,13 @@
 <title><g:layoutTitle default="Atlas of Living Australia %naquo; Collectory" /></title>
  
 <link rel="stylesheet" href="${resource(dir:'css',file:'style.css')}" type="text/css" media="screen"/>
-<!--link rel="stylesheet" type="text/css" media="print" href="http://www.ala.org.au/wp-content/themes/ala-theme/print.css"-->
- 
-<!--link rel="stylesheet" type="text/css" href="${resource(dir:'css',file:'superfish.css')}" media="screen" /-->
-<!--script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/jquery-1.2.6.min.js"></script>
-<script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/superfish.js"></script>
-<script type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala-theme/lib/js/supersubs.js"></script-->
 <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
 
-<script language="JavaScript" type="text/javascript" src="http://test.ala.org.au/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
-<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.ala.org.au/xmlrpc.php?rsd" />
-<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.ala.org.au/wp-includes/wlwmanifest.xml" /> 
-<link rel='index' title='Atlas of Living Australia' href='http://www.ala.org.au' />
-<link rel="stylesheet" href="http://www.ala.org.au/wp-content/plugins/contact-form-7/stylesheet.css" type="text/css" />
+<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="${ConfigurationHolder.config.ala.baseURL}/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="${ConfigurationHolder.config.ala.baseURL}/wp-includes/wlwmanifest.xml" />
+<link rel='index' title='Atlas of Living Australia' href='${ConfigurationHolder.config.ala.baseURL}' />
+<link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/plugins/contact-form-7/stylesheet.css" type="text/css" />
 
 <link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
 <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon" />
@@ -30,7 +24,7 @@
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <!--resource:include components="autoComplete, dateChooser" autoComplete="[skin: 'default']" /-->
 <gui:resources components="['tabView']"/>
-
+<g:layoutHead />
 </head>
  
 <body class="yui-skin-sam" onload="${pageProperty(name:'body.onload')}">
@@ -38,8 +32,8 @@
 <div id="page">
  
 	<div id="header" class="clearfix">
-		<h1 id="blog-title"><a href="http://www.ala.org.au">Atlas of Living Australia</a>
-		    <span id="blog-url">&lt;http://www.ala.org.au&gt;</span></h1>
+		<h1 id="blog-title"><a href="${ConfigurationHolder.config.ala.baseURL}">Atlas of Living Australia</a>
+		    <span id="blog-url">&lt;${ConfigurationHolder.config.ala.baseURL}&gt;</span></h1>
 		<h2 id="blog-description">A biodiversity data management system for Australia</h2>
 
 
@@ -80,12 +74,12 @@
 <div id="footer">
 	
 	<div id="legal">
-		<p><a href="http://www.ala.org.au">Atlas of Living Australia</a> &copy; 2010 </p>
+		<p><a href="${ConfigurationHolder.config.ala.baseURL}">Atlas of Living Australia</a> &copy; 2010 </p>
 	</div>
 	   <div id="webdemar">
-		<p> <a href="http://www.ala.org.au">ala site</a> |
+		<p> <a href="${ConfigurationHolder.config.ala.baseURL}">ala site</a> |
 		    <cl:emailLink email="support@ala.org.au">support</cl:emailLink> |
-            <a href="http://www.ala.org.au/about/media-centre/terms-of-use/">terms of use</a>
+            <a href="${ConfigurationHolder.config.ala.baseURL}/about/media-centre/terms-of-use/">terms of use</a>
         </p>
 	</div>
 		

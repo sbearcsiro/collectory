@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.Institution"%>
+<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.DataResource; org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.Institution"%>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -16,7 +16,14 @@
                     'autoDimensions' : false,
                     'width' : 600,
                     'height' : 180
-                });
+        });
+        $("a.current").fancybox({
+                    'hideOnContentClick' : false,
+                    'titleShow' : false,
+                    'titlePosition' : 'inside',
+                    'autoDimensions' : true,
+                    'width' : 300
+        });
       });
     </script>
   </head>
@@ -24,7 +31,10 @@
     <div id="content">
       <div id="header" class="collectory">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${fieldValue(bean:institution,field:'name')}</span></div>
+        <div id="breadcrumb"><cl:breadcrumbTrail/>
+          <cl:pageOptionsLink>${fieldValue(bean:institution,field:'name')}</cl:pageOptionsLink>
+        </div>
+        <cl:pageOptionsPopup instance="${institution}"/>
         <div class="section full-width">
           <div class="hrgroup col-8">
             <cl:h1 value="${institution.name}"/>
@@ -72,6 +82,8 @@
             <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
           </g:each>
         </ol>
+        <cl:lastUpdated date="${institution.lastUpdated}"/>
+
       </div><!--close section-->
     </div><!--close column-one-->
 
@@ -147,7 +159,7 @@
             </g:if>
             <g:if test="${institution.isMemberOf('CHACM')}">
               <p>Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
-              <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
+              <img src="${resource(absolute:"true", dir:"data/network/",file:"chacm.png")}"/>
             </g:if>
           </div>
         </g:if>
@@ -157,5 +169,14 @@
     </div><!--close column-two-->
 
   </div><!--close content-->
+  <script type="text/javascript">
+/************************************************************\
+*
+\************************************************************/
+function pageOptions() {
+  // popup a dialog with some links
+
+}
+  </script>
   </body>
 </html>

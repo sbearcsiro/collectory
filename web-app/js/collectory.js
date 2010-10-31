@@ -131,7 +131,7 @@ function initializeLocationMap(canBeMapped,lat,lng) {
 function contactCurator(email, firstName, uid, instUid, name) {
     var subject = "Request to review web pages presenting information about the " + name + ".";
     var content = "Dear " + firstName + ",\n\n";
-    content = content + "The current web address for the Atlas of Living Australia is: http://test.ala.org.au and will replace www.ala.org.au in late October 2010.\n\n";
+    content = content + "The web address for the Atlas of Living Australia is: http://www.ala.org.au.\n\n";
     content = content + "However, you can find:\n\n";
     content = content + "Your Collection page at: http://collections.ala.org.au/public/show/" + uid + ".\n\n";
     if (instUid != "") {

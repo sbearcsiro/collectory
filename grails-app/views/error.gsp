@@ -1,3 +1,4 @@
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
   <head>
 	  <title>Grails Runtime Exception</title>
@@ -37,8 +38,8 @@
   <body>
     <div id="page">
       <div id="header" class="clearfix">
-          <h1 id="blog-title"><a href="http://www.ala.org.au">Atlas of Living Australia</a>
-              <span id="blog-url">&lt;http://www.ala.org.au&gt;</span></h1>
+          <h1 id="blog-title"><a href="${ConfigurationHolder.config.ala.baseUrl}">Atlas of Living Australia</a>
+              <span id="blog-url">&lt;${ConfigurationHolder.config.ala.baseUrl}&gt;</span></h1>
           <h2 id="blog-description">A biodiversity data management system for Australia</h2>
     </div><!-- end header -->
 

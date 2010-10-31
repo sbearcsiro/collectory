@@ -16,7 +16,14 @@
                     'autoDimensions' : false,
                     'width' : 600,
                     'height' : 180
-                });
+            });
+            $("a.current").fancybox({
+                    'hideOnContentClick' : false,
+                    'titleShow' : false,
+                        'titlePosition' : 'inside',
+                    'autoDimensions' : true,
+                    'width' : 300
+            });
           });
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
@@ -25,7 +32,10 @@
       <div id="content">
         <div id="header" class="collectory">
           <!--Breadcrumbs-->
-          <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${collectionInstance.name}</span></div>
+          <div id="breadcrumb"><cl:breadcrumbTrail/>
+            <cl:pageOptionsLink>${fieldValue(bean:collectionInstance,field:'name')}</cl:pageOptionsLink>
+          </div>
+          <cl:pageOptionsPopup instance="${collectionInstance}"/>
           <div class="section full-width">
             <div class="hrgroup col-8">
               <cl:h1 value="${collectionInstance.name}"/>
@@ -120,6 +130,8 @@
                 <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> contains these significant collections:</p>
                 <cl:subCollectionList list="${collectionInstance.subCollections}"/>
               </g:if>
+
+              <cl:lastUpdated date="${collectionInstance.lastUpdated}"/>
             </div><!--close section-->
           </div><!--close column-one-->
 
@@ -212,7 +224,7 @@
                   </g:if>
                   <g:if test="${collectionInstance.isMemberOf('CHACM')}">
                     <p>Council of Heads of Australian Collections of Microorganisms</p>
-                    <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
+                    <img src="${resource(absolute:"true", dir:"data/network/",file:"chacm.png")}"/>
                   </g:if>
                 </div>
               </g:if>
@@ -225,7 +237,7 @@
                   <ul>
                     <g:each var="a" in="${attribs}">
                       <g:if test="${a.url}">
-                        <li><a href="${a.url}" class="external" target="_blank">${a.name}</a></li>
+                        <li><cl:wrappedLink href="${a.url}">${a.name}</cl:wrappedLink></li>
                       </g:if>
                       <g:else>
                         <li>${a.name}</li>
@@ -240,7 +252,6 @@
           <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
             <div class="section">
               <h2>Digitised records available through the Atlas</h2>
-              <g:set var="recordsAvailable" value="${numBiocacheRecords != -1 && numBiocacheRecords != 0}"/>
               <div style="float:left;">
                 <g:if test="${collectionInstance.numRecords != -1}">
                   <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
@@ -249,49 +260,38 @@
                     </g:if>
                   </p>
                 </g:if>
-                <g:if test="${recordsAvailable}">
-                  <p><cl:numberOf number="${numBiocacheRecords}" noun="specimen record" none="No"/> can be accessed through the Atlas of Living Australia.</p>
+                <g:if test="${biocacheRecordsAvailable}">
+                  <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
                   <cl:warnIfInexactMapping collection="${collectionInstance}"/>
                   <cl:recordsLink collection="${collectionInstance}">
                     <img src="${resource(dir:"images/ala/",file:"database_go.png")}"/>
-                    Click to view <cl:numberOf number="${numBiocacheRecords}" noun="record" none="No"/> for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
+                    Click to view all records for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
                 </g:if>
                 <g:else>
                   <p>No database records for this collection can be accessed through the Atlas of Living Australia.</p>
                 </g:else>
               </div>
               <div id="speedo">
-                <g:if test="${percentBiocacheRecords != -1}">
-                  <div id="progress">
-                    <cl:progressBar percent="${percentBiocacheRecords}"/>
-                  </div>
-                  <p class="caption">
-                  <g:if test="${percentBiocacheRecords}">
-                    Records for <cl:formatPercent percent="${percentBiocacheRecords}"/>% of specimens are<br/>available for viewing in the Atlas.
-                  </g:if>
-                  <g:else>
-                    <g:if test="${collectionInstance.numRecords > 0}">
-                      No records are available for viewing in the Atlas.
-                    </g:if>
-                    <g:else>
-                      There is no estimate of the total number<br/>of specimens in this collection.
-                    </g:else>
-                  </g:else>
-                  </p>
-                </g:if>
+                <div id="progress">
+                  <img id="progressBar" src="${resource(dir:'images', file:'percentImage.png')}" alt="0%"
+                          class="no-radius percentImage1" style='background-position: -120px 0;'/>
+                  <!--cl:progressBar percent="0.0"/-->
+                </div>
+                <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
               </div>
             </div>
             <div class="section">
-              <g:if test="${recordsAvailable}">
+              <g:if test="${biocacheRecordsAvailable}">
                 <div style="clear:both;"></div>
                 <div class="inline">
                   <h3>Map of occurrence records</h3>
                   <cl:recordsMap type="collection" uid="${collectionInstance.uid}"/>
                 </div>
                 <div id="taxonChart" style="display: inline; width: 500px;">
+                  <img style="margin-left:230px;margin-top:150px;margin-bottom:288px" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>
                 </div>
-                <span class="taxonChartCaption">Click a slice to drill into a group.<br/>
-                  Click a legend box to view records for a group.</span>
+                <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>
+                  Click a legend colour patch to view records for a group.</span>
                 <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>
                 <div style="clear:both;"></div>
                 <div id="decadeChart" style="display: inline;padding-right: 20px;">
@@ -306,29 +306,97 @@
 \************************************************************/
 var queryString = '';
 var decadeUrl = '';
-var taxonUrl = '';
+var initial = -120;
+var imageWidth=240;
+var eachPercent = (imageWidth/2)/100;
+
+$('img#mapLegend').each(function(i, n) {
+  // if legend doesn't load, then it must be a point map
+  $(this).error(function() {
+    $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
+  });
+  // IE hack as IE doesn't trigger the error handler
+  if ($.browser.msie && !n.complete) {
+    $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
+  }
+});
 /************************************************************\
 *
 \************************************************************/
 function onLoadCallback() {
-  if (${numBiocacheRecords != -1 && numBiocacheRecords != 0}) {
-    if (decadeUrl.length > 0) {
-      var query = new google.visualization.Query(decadeUrl);
-      query.setQuery(queryString);
-      query.send(handleQueryResponse);
-    } else {
-      decadeUrl = "${ConfigurationHolder.config.grails.context}/public/decadeBreakdown/${collectionInstance.uid}";
-      $.get(decadeUrl, {}, decadeBreakdownRequestHandler);
-    }
-    if (taxonUrl.length > 0) {
-      var taxonQuery = new google.visualization.Query(taxonUrl);
-      taxonQuery.setQuery(queryString);
-      taxonQuery.send(handleQueryResponse);
-    } else {
-      taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
-      $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
-    }
+  // summary biocache data
+  var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${collectionInstance.uid}";
+  $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
+
+  // taxon breakdown
+  var taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
+  $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+
+  // records map
+  //var mapServiceUrl = "${ConfigurationHolder.config.spatial.baseURL}/alaspatial/ws/density/map?collectionUid=${collectionInstance.uid}";
+  var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${collectionInstance.uid}";
+  $.get(mapServiceUrl, {}, mapRequestHandler);
+}
+/************************************************************\
+*
+\************************************************************/
+function biocacheRecordsHandler(response) {
+  setNumbers(response.totalRecords, ${collectionInstance.numRecords});
+  if (response.totalRecords < 1) {
+    $('a.recordsLink').css('visibility','hidden');
+    $('div#taxonChart').html('');
   }
+  drawDecadeImage(response.decades);
+}
+/************************************************************\
+*
+\************************************************************/
+function setNumbers(totalBiocacheRecords, totalRecords) {
+  var recordsClause = "";
+  switch (totalBiocacheRecords) {
+    case 0: recordsClause = "No records"; break;
+    case 1: recordsClause = "1 record"; break;
+    default: recordsClause = addCommas(totalBiocacheRecords) + " records";
+  }
+  $('#numBiocacheRecords').html(recordsClause);
+
+  if (totalRecords > 0) {
+    var percent = totalBiocacheRecords/totalRecords * 100;
+    setProgress(percent);
+  } else {
+    // to update the speedo caption
+    setProgress(0);
+  }
+}
+/************************************************************\
+*
+\************************************************************/
+function addCommas(nStr)
+{
+	nStr += '';
+	x = nStr.split('.');
+	x1 = x[0];
+	x2 = x.length > 1 ? '.' + x[1] : '';
+	var rgx = /(\d+)(\d{3})/;
+	while (rgx.test(x1)) {
+		x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	}
+	return x1 + x2;
+}
+/************************************************************\
+*
+\************************************************************/
+function mapRequestHandler(response) {
+  if (response.error != undefined) {
+    // set map url
+    $('#recordsMap').attr("src","${resource(dir:'images/map',file:'mapaus1_white-340.png')}");
+    // set legend url
+    $('#mapLegend').attr("src","${resource(dir:'images/map',file:'mapping-data-not-available.png')}");
+  }
+  // set map url
+  $('#recordsMap').attr("src",response.mapUrl);
+  // set legend url
+  $('#mapLegend').attr("src",response.legendUrl);
 }
 /************************************************************\
 *
@@ -343,10 +411,22 @@ function decadeBreakdownRequestHandler(response) {
 *
 \************************************************************/
 function taxonBreakdownRequestHandler(response) {
-  var data = new google.visualization.DataTable(response);
-  if (data.getNumberOfRows() > 0) {
-    drawTaxonChart(data);
+  if (response.error != undefined) {
+    clearTaxonChart(response.error);
+  } else {
+    var data = new google.visualization.DataTable(response);
+    if (data.getNumberOfRows() > 0) {
+      drawTaxonChart(data);
+    } else {
+      clearTaxonChart();
+    }
   }
+}
+/************************************************************\
+*
+\************************************************************/
+function clearTaxonChart(error) {
+  $('div#taxonChart img').attr('src',"${resource(dir:'images/ala',file:'missing.png')}");
 }
 /************************************************************\
 *
@@ -367,28 +447,31 @@ function drawDecadeChart(dataTable) {
 /************************************************************\
 *
 \************************************************************/
-function draw(dataTable) {
-  var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
-  var options = {};
+function drawDecadeImage(decades) {
+  var dataTable = new google.visualization.DataTable(decades);
+  if (dataTable.getNumberOfRows() > 0) {
+    var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
+    var options = {};
 
-  // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
-  // The grouping is irrelevant here since there is only one numeric column.
-  options.cht = 'bvg';
+    // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
+    // The grouping is irrelevant here since there is only one numeric column.
+    options.cht = 'bvg';
 
-  // Add a data range.
-  var min = 0;
-  var max = dataTable.getTableProperty('max');
-  options.chds = min + ',' + max;
+    // Add a data range.
+    var min = 0;
+    var max = dataTable.getTableProperty('max');
+    options.chds = min + ',' + max;
 
-  // Chart title and style
-  options.chtt = 'Additions by decade';  // chart title
-  options.chts = '7D8804,15';
+    // Chart title and style
+    options.chtt = 'Additions by decade';  // chart title
+    options.chts = '7D8804,15';
 
-  //options.chxt = 'x,x,y';
-  //options.chxl = '2:|Decade';
-  //options.chxp = '0,50';
+    //options.chxt = 'x,x,y';
+    //options.chxl = '2:|Decade';
+    //options.chxp = '0,50';
 
-  vis.draw(dataTable, options);
+    vis.draw(dataTable, options);
+  }
 }
 /************************************************************\
 *
@@ -397,8 +480,8 @@ function drawTaxonChart(dataTable) {
   var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
   var options = {};
 
-  options.width = 500;
-  options.height = 500;
+  options.width = 510;
+  options.height = 460;
   options.is3D = false;
   if (dataTable.getTableProperty('scope') == "all") {
     options.title = "Number of records by " + dataTable.getTableProperty('rank');
@@ -410,18 +493,27 @@ function drawTaxonChart(dataTable) {
   //options.pieSliceText = "label";
   options.legend = "left";
   google.visualization.events.addListener(chart, 'select', function() {
+    var rank = dataTable.getTableProperty('rank')
+    var name = dataTable.getValue(chart.getSelection()[0].row,0);
     // differentiate between clicks on legend versus slices
     if (chart.getSelection()[0].column == undefined) {
       // clicked legend - show records
+      var scope = dataTable.getTableProperty('scope');
+      if (scope == "genus" && rank == "species") {
+        name = dataTable.getTableProperty('name') + " " + name;
+      }
       var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${collectionInstance.uid}&fq=" +
-        dataTable.getTableProperty('rank') + ":" + dataTable.getValue(chart.getSelection()[0].row,0);
+        rank + ":" + name;
       document.location.href = linkUrl;
     } else {
-      // clicked slice - drill down
-      var drillUrl = "${ConfigurationHolder.config.grails.context}/public/rankBreakdown/${collectionInstance.uid}?name=" +
-              dataTable.getValue(chart.getSelection()[0].row,0) +
-             "&rank=" + dataTable.getTableProperty('rank')
-      $.get(drillUrl, {}, taxonBreakdownRequestHandler);
+      // clicked slice - drill down unless already at species
+      if (rank != "species") {
+        $('div#taxonChart').html('<img style="margin-left:230px;margin-top:150px;margin-bottom:238px;" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>');
+        var drillUrl = "${ConfigurationHolder.config.grails.context}/public/rankBreakdown/${collectionInstance.uid}?name=" +
+                dataTable.getValue(chart.getSelection()[0].row,0) +
+               "&rank=" + dataTable.getTableProperty('rank')
+        $.get(drillUrl, {}, taxonBreakdownRequestHandler);
+      }
       if ($('span#resetTaxonChart').html() == "") {
         $('span#resetTaxonChart').html("reset to " + dataTable.getTableProperty('rank'));
       }
@@ -429,6 +521,9 @@ function drawTaxonChart(dataTable) {
   });
 
   chart.draw(dataTable, options);
+
+  // show taxon caption
+  $('span.taxonChartCaption').css('visibility', 'visible');
 }
 /************************************************************\
 *
@@ -441,12 +536,30 @@ function resetTaxonChart() {
 /************************************************************\
 *
 \************************************************************/
-function handleQueryResponse(response) {
-  if (response.isError()) {
-    alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-    return;
+function setProgress(percentage)
+{
+  var captionText = "";
+  if (${collectionInstance.numRecords < 1}) {
+    captionText = "There is no estimate of the total number<br/>of specimens in this collection.";
+  } else if (percentage == 0) {
+    captionText = "No records are available for viewing in the Atlas.";
+  } else {
+    var displayPercent = percentage.toFixed(1);
+    if (percentage < 0.1) {displayPercent = percentage.toFixed(2)}
+    if (percentage > 20) {displayPercent = percentage.toFixed(0)}
+    if (percentage > 100) {displayPercent = "over 100"}
+    captionText = "Records for " + displayPercent + "% of specimens are<br/>available for viewing in the Atlas.";
   }
-  draw(response.getDataTable());
+  $('#speedoCaption').html(captionText);
+
+  if (percentage > 100) {
+    $('#progressBar').removeClass('percentImage1');
+    $('#progressBar').addClass('percentImage4');
+    percentage = 101;
+  }
+  var percentageWidth = eachPercent * percentage;
+  var newProgress = eval(initial)+eval(percentageWidth)+'px';
+  $('#progressBar').css('backgroundPosition',newProgress+' 0');
 }
 /************************************************************\
 *

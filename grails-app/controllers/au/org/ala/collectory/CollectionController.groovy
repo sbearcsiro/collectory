@@ -90,7 +90,7 @@ class CollectionController extends ProviderGroupController {
                 body = "Dear ${contact.firstName},%0A%0A" +
 
 """
-The current web address for the Atlas of Living Australia is: http://test.ala.org.au and will replace www.ala.org.au in late October 2010.%0A%0A
+The web address for the Atlas of Living Australia is: http://www.ala.org.au.%0A%0A
 
 However, you can find:%0A%0A
 

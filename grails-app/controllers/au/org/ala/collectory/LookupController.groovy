@@ -4,6 +4,7 @@ import java.text.ParseException
 import java.text.NumberFormat
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import au.com.bytecode.opencsv.CSVWriter
 
 class LookupController {
 
@@ -74,13 +75,13 @@ class LookupController {
 
     def citation = {
         // input is a json object of the form ['co123','in23','dp45']
-        def uids
+        def uids = null
         switch (request.method) {
             case "POST":
-                uids = request.JSON;
+                if (request.JSON) { uids = request.JSON }
                 break;
             case "GET":
-                uids = JSON.parse(params.uids);
+                if (params.uids) { uids = JSON.parse(params.uids) }
                 break;
         }
         if (uids) {
@@ -89,12 +90,38 @@ class LookupController {
             }
             withFormat {
                 text {  // handles text/plain and text/html
+                    StringWriter sw = new StringWriter()
+                    CSVWriter writer = new CSVWriter(sw)
+                    writer.writeNext(["Resource name","Citation","Rights","More information"] as String[])
+                    uids.each {
+                        // get each pg
+                        def pg = ProviderGroup._get(it)
+                        if (pg) {
+                            writer.writeNext(buildCitation(pg,"array") as String[])
+                        }
+                    }
+                    render sw.toString()
+                }
+                csv {  // same as text - handles text/csv
+                    StringWriter sw = new StringWriter()
+                    CSVWriter writer = new CSVWriter(sw)
+                    writer.writeNext(["Resource name","Citation","Rights","More information"] as String[])
+                    uids.each {
+                        // get each pg
+                        def pg = ProviderGroup._get(it)
+                        if (pg) {
+                            writer.writeNext(buildCitation(pg,"array") as String[])
+                        }
+                    }
+                    render sw.toString()
+                }
+                tsv {  // old
                     String result = "Resource name\tCitation\tRights\tMore information"
                     uids.each {
                         // get each pg
                         def pg = ProviderGroup._get(it)
                         if (pg) {
-                            result += "\n" + buildCitation(pg,true)
+                            result += "\n" + buildCitation(pg,"tab separated")
                         }
                     }
                     render result
@@ -104,14 +131,14 @@ class LookupController {
                         // get each pg
                         def pg = ProviderGroup._get(it)
                         if (pg) {
-                            return buildCitation(pg,false)
+                            return buildCitation(pg,"map")
                         }
                     }
                     render result as JSON
                 }
             }
         } else {
-            render (["error":"no uids posted"]) as JSON
+            render ([error:"no uids posted"] as JSON)
         }
     }
 
@@ -136,7 +163,7 @@ class LookupController {
         render (result) as JSON
     }
 
-    def buildCitation(ProviderGroup pg, boolean asString) {
+    def buildCitation(ProviderGroup pg, format) {
         def citation = ConfigurationHolder.config.citation.template
         def rights = ConfigurationHolder.config.citation.rights.template
         def name = pg.name
@@ -151,10 +178,10 @@ class LookupController {
         def link = ConfigurationHolder.config.citation.link.template
         link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))
         citation =  citation.replaceAll("@entityName@",name)
-        if (asString) {
-            return "${name}\t${citation}\t${rights}\t${link}"
-        } else {
-            return ['name': name, 'citation': citation, 'rights': rights, 'link': link]
+        switch (format) {
+            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}"
+            case "map": return ['name': name, 'citation': citation, 'rights': rights, 'link': link]
+            case "array": return [name, citation, rights, link]
         }
     }
 

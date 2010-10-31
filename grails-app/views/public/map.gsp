@@ -21,7 +21,7 @@
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a href="http://test.ala.org.au">Home</a> <a href="http://test.ala.org.au/explore/">Explore</a><span class="current">Natural History Collections</span></div>
+        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}">Home</a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/">Explore</a><span class="current">Natural History Collections</span></div>
         <div class="section full-width">
           <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>

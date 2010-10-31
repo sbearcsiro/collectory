@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.DataProvider"%>
+<%@ page contentType="text/html;charset=UTF-8" import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.DataProvider"%>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -16,7 +16,14 @@
                     'autoDimensions' : false,
                     'width' : 600,
                     'height' : 180
-                });
+        });
+        $("a.current").fancybox({
+                    'hideOnContentClick' : false,
+                    'titleShow' : false,
+                    'titlePosition' : 'inside',
+                    'autoDimensions' : true,
+                    'width' : 300
+        });
       });
     </script>
   </head>
@@ -24,7 +31,10 @@
     <div id="content">
       <div id="header" class="collectory">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a  href="http://test.ala.org.au">Home</a> <a  href="http://test.ala.org.au/explore/">Explore</a> <g:link controller="public" action="map">Natural History Collections</g:link> <span class="current">${fieldValue(bean:instance,field:'name')}</span></div>
+        <div id="breadcrumb"><cl:breadcrumbTrail/>
+          <cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink>
+        </div>
+        <cl:pageOptionsPopup instance="${instance}"/>
         <div class="section full-width">
           <div class="hrgroup col-8">
             <cl:h1 value="${instance.name}"/>
@@ -65,14 +75,11 @@
         <h2>Resources</h2>
         <ol>
           <g:each var="c" in="${instance.getResources().sort{it.name}}">
-            <g:if test="${c.institution}">
-              <li><g:link controller="public" action="show" id="${c.institution.uid}">${c?.name}</g:link></li>
-            </g:if>
-            <g:else>
-              <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link> ${c?.makeAbstract(400)}</li>
-            </g:else>
+            <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link><span style="color:#555;"> ${c?.makeAbstract(400)}</span></li>
           </g:each>
         </ol>
+        <cl:lastUpdated date="${instance.lastUpdated}"/>
+
       </div><!--close section-->
     </div><!--close column-one-->
 
@@ -142,7 +149,7 @@
             </g:if>
             <g:if test="${instance.isMemberOf('CHACM')}">
               <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
-              <img src="${resource(absolute:"true", dir:"data/network/",file:"amrrnlogo.png")}"/>
+              <img src="${resource(absolute:"true", dir:"data/network/",file:"chacm.png")}"/>
             </g:if>
           </div>
         </g:if>

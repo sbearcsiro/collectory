@@ -899,3 +899,33 @@ span.dataWarning a {
 .yui-skin-sam .yui-navset .yui-content {
     background-color: transparent ! important;
 }
+
+/* for percent records progress bar */
+
+img.percentImage1 {
+ background: white url(../images/percentImage_back1.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 10px 0;
+ background-position: 1px 0;
+}
+
+img.percentImage2 {
+ background: white url(../images/percentImage_back2.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+img.percentImage3 {
+ background: white url(../images/percentImage_back3.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}
+
+img.percentImage4 {
+ background: white url(../images/percentImage_back4.png) top left no-repeat;
+ padding: 0;
+ margin: 5px 0 0 0;
+ background-position: 1px 0;
+}

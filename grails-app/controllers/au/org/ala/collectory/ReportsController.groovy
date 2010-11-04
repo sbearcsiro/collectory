@@ -6,6 +6,8 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 class ReportsController {
 
+    def authService
+
     def index = {
         redirect action: list, params: params
     }
@@ -34,35 +36,35 @@ class ReportsController {
     }
     
     def data = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'data'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'data'
         [reports: new ReportCommand('data')]
     }
 
     def activity = {
-        //ActivityLog.log username(), isAdmin(), Action.REPORT, 'activity'
+        //ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'activity'
         [reports: new ReportCommand('activity')]
     }
 
     def membership = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'membership'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'membership'
         [reports: new ReportCommand('membership')]
     }
 
     def collections = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'collections'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'collections'
         [reports: new ReportCommand('collections')]
     }
 
     def institutions = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'institutions'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'institutions'
     }
 
     def providers = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'providers'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'providers'
     }
 
     def contacts = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'contacts'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'contacts'
     }
 
     def codes = {
@@ -74,7 +76,7 @@ class ReportsController {
     }
 
     def classification = {
-        ActivityLog.log username(), isAdmin(), Action.REPORT, 'classifications'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'classifications'
         [collections: Collection.list([sort:'name'])]
     }
 
@@ -293,11 +295,4 @@ class ReportsController {
         }
     }
 
-    private String username() {
-        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
-    }
-
-    private boolean isAdmin() {
-        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
-    }
 }

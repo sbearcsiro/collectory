@@ -63,26 +63,6 @@ class CollectionController extends ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
         } else {
-
-            // lookup number of biocache records - TODO: this code should be shared with public controller via a service
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + collectionInstance.generatePermalink()
-            def count = 0
-            def conn = new URL(url).openConnection()
-            conn.setConnectTimeout 3000
-            try {
-                def json = conn.content.text
-                //println "Response = " + json
-                count = JSON.parse(json)?.searchResult?.totalRecords
-                //println "Count = " + count
-            } catch (Exception e) {
-                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
-            }
-            def percent = 0
-            if (count != 0 && collectionInstance.numRecords > 0) {
-                percent = (count*100)/collectionInstance.numRecords
-            }
-
             // contact email - temp
             def contact = collectionInstance.getPrimaryContact()?.contact
             def body = ""
@@ -112,10 +92,9 @@ CSIRO
             }
 
             // show it
-            log.info ">>${username()} showing ${collectionInstance.name}"
+            log.debug ">>${username()} showing ${collectionInstance.name}"
             ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
             [instance: collectionInstance, contacts: collectionInstance.getContacts(),
-                    numBiocacheRecords: count, percentBiocacheRecords: percent,
                     changes: getChanges(collectionInstance.uid), contactEmailBody: body]
         }
     }

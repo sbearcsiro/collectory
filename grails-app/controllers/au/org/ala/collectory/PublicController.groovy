@@ -18,6 +18,8 @@ import org.codehaus.groovy.grails.commons.GrailsApplication
  */
 class PublicController {
 
+    def authService
+
     def delay = 3000    // testing delay for responses
     def sleep = {
         if (GrailsUtil.getEnvironment() == GrailsApplication.ENV_DEVELOPMENT) {  // in case we forget to remove
@@ -50,7 +52,7 @@ class PublicController {
                 flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params?.id])}"
                 redirect(controller: "public", action: "map")
             } else {
-                ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
+                ActivityLog.log authService.username(), authService.isAdmin(), collectionInstance.uid, Action.VIEW
                 [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
                         biocacheRecordsAvailable: collectionInstance.providerMap]
             }
@@ -246,7 +248,6 @@ class PublicController {
              }
         }
         def url = baseUrl + "alaspatial/ws/density/map?${uidType}=" + params.uid
-
         def conn = new URL(url).openConnection()
         conn.setConnectTimeout 2000
         conn.addRequestProperty("accept","application/json")
@@ -257,7 +258,7 @@ class PublicController {
             def mapType = mapResponse.type
             def legendUrl = mapResponse.legendUrl
             def mapUrl = mapResponse.mapUrl
-            if (mapType == 'blank' || mapType == '' || mapUrl.endsWith('mapaus1_white.png')) {
+            if (mapType == 'basemap' || mapType == '' || mapUrl.endsWith('mapaus1_white.png')) {
                 // means no data available
                 legendUrl = resource(dir:'images/map',file:'mapping-data-not-available.png')
             }
@@ -287,7 +288,7 @@ class PublicController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
-            ActivityLog.log username(), isAdmin(), institution.uid, Action.VIEW
+            ActivityLog.log authService.username(), authService.isAdmin(), institution.uid, Action.VIEW
             [institution: institution]
         }
     }
@@ -301,7 +302,7 @@ class PublicController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataProvider.label', default: 'Data provider'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
-            ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
+            ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
             [instance: instance]
         }
     }
@@ -329,7 +330,7 @@ class PublicController {
                 log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
             }*/
 
-            ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
+            ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
             [instance: instance]
         }
     }
@@ -341,7 +342,15 @@ class PublicController {
      * list is used if the callback fails.
      */
     def map = {
-        ActivityLog.log username(), isAdmin(), Action.LIST, 'map'
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
+        def partnerCollections = Collection.list([sort:"name"]).findAll {
+            it.isALAPartner()
+        }
+        [collections: partnerCollections]
+    }
+
+    def map3 = {
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
         def partnerCollections = Collection.list([sort:"name"]).findAll {
             it.isALAPartner()
         }
@@ -590,14 +599,6 @@ class PublicController {
         }
         result += '],"p":{"rank":"' + input.rank + '","scope":"' + scope + '","name":"' + name + '"}}'
         return result
-    }
-
-    private String username() {
-        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
-    }
-
-    private boolean isAdmin() {
-        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
     }
 
 }

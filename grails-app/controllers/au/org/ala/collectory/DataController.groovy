@@ -6,7 +6,7 @@ import org.codehaus.groovy.grails.web.json.JSONObject
 
 class DataController {
 
-    def crudService
+    def crudService, authService
     
     def index = { }
 
@@ -345,7 +345,7 @@ class DataController {
 
     def delete = {
         // check role
-        if (isAdmin()) {
+        if (authService.isAdmin()) {
             if (params.uid) {
                 def pg = ProviderGroup._get(params.uid)
                 if (pg) {
@@ -364,7 +364,4 @@ class DataController {
         }
     }
 
-    protected boolean isAdmin() {
-        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
-    }
 }

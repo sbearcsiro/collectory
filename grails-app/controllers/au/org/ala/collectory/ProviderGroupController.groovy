@@ -15,11 +15,35 @@ abstract class ProviderGroupController {
     static String entityName = "ProviderGroup"
     static String entityNameLower = "providerGroup"
 
-    def idGeneratorService
+    def idGeneratorService, authService
+
+/*
+ * Access control
+ *
+ * All methods require EDITOR role.
+ * Edit methods require ADMIN or the user to be an administrator for the entity.
+ */
+    def beforeInterceptor = [action:this.&auth]
+    def auth() {
+        if (!authService.userInRole(ProviderGroup.ROLE_EDITOR)) {
+            render "You are not authorised to access this page."
+            return false
+        }
+    }
+    // helpers for subclasses
+    protected username = {
+            authService?.username() ?: 'unavailable'
+    }
+    protected isAdmin = {
+            authService?.isAdmin() ?: false
+    }
+/*
+ End access control
+ */
 
     /**
      * Edit base attributes.
-     * @param id - the database id
+     * @param id
      */
     def edit = {
         def pg = get(params.id)
@@ -27,8 +51,13 @@ abstract class ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
-            params.page = params.page ?: '/shared/base'
-            render(view:params.page, model:[command: pg, target: params.target])
+            // are they allowed to edit
+            if (authService.isAuthorisedToEdit(pg.uid)) {
+                params.page = params.page ?: '/shared/base'
+                render(view:params.page, model:[command: pg, target: params.target])
+            } else {
+                render("You are not authorised to access this page.")
+            }
         }
     }
 
@@ -38,8 +67,13 @@ abstract class ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
-            render(view: '/shared/attributions', model:[BCI: pg.hasAttribution('at1'), CHAH: pg.hasAttribution('at2'),
-                    CHACM: pg.hasAttribution('at3'), command: pg])
+            // are they allowed to edit
+            if (authService.isAuthorisedToEdit(pg.uid)) {
+                render(view: '/shared/attributions', model:[BCI: pg.hasAttribution('at1'), CHAH: pg.hasAttribution('at2'),
+                        CHACM: pg.hasAttribution('at3'), command: pg])
+            } else {
+                render("You are not authorised to access this page.")
+            }
         }
     }
 
@@ -51,23 +85,23 @@ abstract class ProviderGroupController {
         ProviderGroup pg
         switch (entityName) {
             case Collection.ENTITY_TYPE:
-                pg = new Collection(uid: idGeneratorService.getNextCollectionId(), name: 'enter name', userLastModified: username())
+                pg = new Collection(uid: idGeneratorService.getNextCollectionId(), name: 'enter name', userLastModified: authService.username())
                 if (params.institutionUid && Institution.findByUid(params.institutionUid)) {
                     pg.institution = Institution.findByUid(params.institutionUid)
                 }
                 break
             case Institution.ENTITY_TYPE:
-                pg = new Institution(uid: idGeneratorService.getNextInstitutionId(), name: 'enter name', userLastModified: username()); break
+                pg = new Institution(uid: idGeneratorService.getNextInstitutionId(), name: 'enter name', userLastModified: authService.username()); break
             case DataProvider.ENTITY_TYPE:
-                pg = new DataProvider(uid: idGeneratorService.getNextDataProviderId(), name: 'enter name', userLastModified: username()); break
+                pg = new DataProvider(uid: idGeneratorService.getNextDataProviderId(), name: 'enter name', userLastModified: authService.username()); break
             case DataResource.ENTITY_TYPE:
-                pg = new DataResource(uid: idGeneratorService.getNextDataResourceId(), name: 'enter name', userLastModified: username())
+                pg = new DataResource(uid: idGeneratorService.getNextDataResourceId(), name: 'enter name', userLastModified: authService.username())
             if (params.dataProviderUid && DataProvider.findByUid(params.dataProviderUid)) {
                 pg.dataProvider = DataProvider.findByUid(params.dataProviderUid)
             }
             break
             case DataHub.ENTITY_TYPE:
-                pg = new DataHub(uid: idGeneratorService.getNextDataHubId(), name: 'enter name', userLastModified: username()); break
+                pg = new DataHub(uid: idGeneratorService.getNextDataHubId(), name: 'enter name', userLastModified: authService.username()); break
         }
         if (!pg.hasErrors() && pg.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: "${pg.urlForm()}", default: pg.urlForm()), pg.uid])}"
@@ -115,7 +149,7 @@ abstract class ProviderGroupController {
                 params.remove('networkMembership')
 
                 pg.properties = params
-                pg.userLastModified = username()
+                pg.userLastModified = authService.username()
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message =
                         "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
@@ -153,7 +187,7 @@ abstract class ProviderGroupController {
             entitySpecificDescriptionProcessing(pg, params)
 
             pg.properties = params
-            pg.userLastModified = username()
+            pg.userLastModified = authService.username()
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message =
                   "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
@@ -201,13 +235,19 @@ abstract class ProviderGroupController {
                 if (!params.longitude) { params.longitude = -1 }
 
                 // special handling for embedded address - need to create address obj if none exists and we have data
-                if (!pg.address && [params.address.street, params.address.postBox, params.address.city,
-                    params.address.state, params.address.postcode, params.address.country].join('').size() > 0) {
+                if (!pg.address && [params.address?.street, params.address?.postBox, params.address?.city,
+                    params.address?.state, params.address?.postcode, params.address?.country].join('').size() > 0) {
                     pg.address = new Address()
                 }
 
+                // special handling for embedded postal address - need to create address obj if none exists and we have data
+                /*if (!pg.postalAddress && [params.postalAddress?.street, params.postalAddress?.postBox, params.postalAddress?.city,
+                    params.postalAddress?.state, params.postalAddress?.postcode, params.postalAddress?.country].join('').size() > 0) {
+                    pg.postalAddress = new Address()
+                }*/
+
                 pg.properties = params
-                pg.userLastModified = username()
+                pg.userLastModified = authService.username()
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message =
                       "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
@@ -228,7 +268,7 @@ abstract class ProviderGroupController {
         def contactFor = ContactFor.get(params.contactForId)
         if (contactFor) {
             contactFor.properties = params
-            contactFor.userLastModified = username()
+            contactFor.userLastModified = authService.username()
             if (!contactFor.hasErrors() && contactFor.save(flush: true)) {
                 flash.message = "${message(code: 'contactRole.updated.message', args: [params.id])}"
                 redirect(action: "edit", id: params.id, params: [page: '/shared/showContacts'])
@@ -248,10 +288,14 @@ abstract class ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
-            Contact contact = Contact.get(params.addContact)
-            if (contact) {
-                pg.addToContacts(contact, "editor", true, false, username())
-                redirect(action: "edit", params: [page:"/shared/showContacts"], id: params.id)
+            if (authService.isAuthorisedToEdit(pg.uid)) {
+                Contact contact = Contact.get(params.addContact)
+                if (contact) {
+                    pg.addToContacts(contact, "editor", true, false, authService.username())
+                    redirect(action: "edit", params: [page:"/shared/showContacts"], id: params.id)
+                }
+            } else {
+                render("You are not authorised to access this page.")
             }
         }
     }
@@ -261,16 +305,20 @@ abstract class ProviderGroupController {
         def contact = Contact.get(params.contactId)
         if (contact && pg) {
             // add the contact to the collection
-            pg.addToContacts(contact, "editor", true, false, username())
+            pg.addToContacts(contact, "editor", true, false, authService.username())
             redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.id)
         } else {
             if (!pg) {
                 flash.message = "Contact was created but ${entityNameLower} could not be found. Please edit ${entityNameLower} and add contact from existing."
                 redirect(action: "list")
             } else {
-                // contact must be null
-                flash.message = "Contact was created but could not be added to the ${pg.urlForm()}. Please add contact from existing."
-                redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.id)
+                if (authService.isAuthorisedToEdit(pg.uid)) {
+                    // contact must be null
+                    flash.message = "Contact was created but could not be added to the ${pg.urlForm()}. Please add contact from existing."
+                    redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.id)
+                } else {
+                    render("You are not authorised to access this page.")
+                }
             }
         }
     }
@@ -281,16 +329,16 @@ abstract class ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "list")
         } else {
-            ContactFor cf = ContactFor.get(params.idToRemove)
-            if (cf) {
-                cf.delete()
-                redirect(action: "edit", params: [page:"/shared/showContacts"], id: params.id)
+            // are they allowed to edit
+            if (authService.isAuthorisedToEdit(pg.uid)) {
+                ContactFor cf = ContactFor.get(params.idToRemove)
+                if (cf) {
+                    cf.delete()
+                    redirect(action: "edit", params: [page:"/shared/showContacts"], id: params.id)
+                }
+            } else {
+                render("You are not authorised to access this page.")
             }
-            /*Contact contact = Contact.get(params.contactIdToRemove)
-            if (contact) {
-                collection.deleteFromContacts(contact)
-                redirect(action: "edit", params: [page:"/shared/showContacts"], id: params.id)
-            }*/
         }
     }
 
@@ -302,9 +350,15 @@ abstract class ProviderGroupController {
         } else {
             ProviderGroup pg = ProviderGroup._get(contactFor.entityUid)
             if (pg) {
-                render(view: '/shared/contactRole', model: [command: pg, cf: contactFor, returnTo: params.returnTo])
+                // are they allowed to edit
+                if (authService.isAuthorisedToEdit(pg.uid)) {
+                    render(view: '/shared/contactRole', model: [command: pg, cf: contactFor, returnTo: params.returnTo])
+                } else {
+                    render("You are not authorised to access this page.")
+                }
             } else {
-                // TODO:
+                flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'contactFor.entityUid.label', default: "Entity for ${entityNameLower}"), params.id])}"
+                redirect(action: "list")
             }
         }
     }
@@ -358,7 +412,7 @@ abstract class ProviderGroupController {
                     File f = new File(colDir, filename)
                     log.debug "saving ${filename} to ${f.absoluteFile}"
                     file.transferTo(f)
-                    ActivityLog.log username(), isAdmin(), Action.UPLOAD_IMAGE, filename
+                    ActivityLog.log authService.username(), authService.isAdmin(), Action.UPLOAD_IMAGE, filename
                 } else {
                     println "reject file of size ${file.size}"
                     pg.errors.rejectValue('imageRef', 'image.too.big', 'The image you selected is too large. Images are limited to 200KB.')
@@ -367,7 +421,7 @@ abstract class ProviderGroupController {
                 }
             }
             pg.properties = params
-            pg.userLastModified = username()
+            pg.userLastModified = authService.username()
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
                 redirect(action: "show", id: pg.id)
@@ -383,26 +437,30 @@ abstract class ProviderGroupController {
     def removeImage = {
         def pg = get(params.id)
         if (pg) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.entityType()} while you were editing")
-                    render(view: "/shared/images", model: [command: pg])
-                    return
+            if (authService.isAuthorisedToEdit(pg.uid)) {
+                if (params.version) {
+                    def version = params.version.toLong()
+                    if (pg.version > version) {
+                        pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.entityType()} while you were editing")
+                        render(view: "/shared/images", model: [command: pg])
+                        return
+                    }
                 }
-            }
 
-            if (params.target == 'logoRef') {
-                pg.logoRef = null
+                if (params.target == 'logoRef') {
+                    pg.logoRef = null
+                } else {
+                    pg.imageRef = null
+                }
+                pg.userLastModified = authService.username()
+                if (!pg.hasErrors() && pg.save(flush: true)) {
+                    flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                    redirect(action: "show", id: pg.id)
+                } else {
+                    render(view: "/shared/images", model: [command: pg])
+                }
             } else {
-                pg.imageRef = null
-            }
-            pg.userLastModified = username()
-            if (!pg.hasErrors() && pg.save(flush: true)) {
-                flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                redirect(action: "show", id: pg.id)
-            } else {
-                render(view: "/shared/images", model: [command: pg])
+                render("You are not authorised to access this page.")
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
@@ -444,7 +502,7 @@ abstract class ProviderGroupController {
             }
 
             if (pg.isDirty()) {
-                pg.userLastModified = username()
+                pg.userLastModified = authService.username()
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message =
                       "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
@@ -466,22 +524,26 @@ abstract class ProviderGroupController {
     def delete = {
         def pg = get(params.id)
         if (pg) {
-            def name = pg.name
-            log.info ">>${username()} deleting ${entityName} " + name
-            ActivityLog.log username(), isAdmin(), pg.uid, Action.DELETE
-            try {
-                // remove contact links (does not remove the contact)
-                ContactFor.findAllByEntityUid(pg.uid).each {
-                    log.info "Removing link to contact " + it.contact?.buildName()
-                    it.delete()
+            if (authService.isAdmin()) {
+                def name = pg.name
+                log.info ">>${authService.username()} deleting ${entityName} " + name
+                ActivityLog.log authService.username(), authService.isAdmin(), pg.uid, Action.DELETE
+                try {
+                    // remove contact links (does not remove the contact)
+                    ContactFor.findAllByEntityUid(pg.uid).each {
+                        log.info "Removing link to contact " + it.contact?.buildName()
+                        it.delete()
+                    }
+                    // delete
+                    pg.delete(flush: true)
+                    flash.message = "${message(code: 'default.deleted.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), name])}"
+                    redirect(action: "list")
+                } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), name])}"
+                    redirect(action: "show", id: params.id)
                 }
-                // delete
-                pg.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), name])}"
-                redirect(action: "list")
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), name])}"
-                redirect(action: "show", id: params.id)
+            } else {
+                render("You are not authorised to access this page.")
             }
         } else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
@@ -504,14 +566,6 @@ abstract class ProviderGroupController {
     def getChanges(uid) {
         // get audit records
         return AuditLogEvent.findAllByUri(uid,[sort:'lastUpdated',order:'desc',max:10])
-    }
-
-    protected String username() {
-        return (request.getUserPrincipal()?.attributes?.email) ? request.getUserPrincipal()?.attributes?.email :'not available'
-    }
-
-    protected boolean isAdmin() {
-        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
     }
 
     protected String toJson(param) {

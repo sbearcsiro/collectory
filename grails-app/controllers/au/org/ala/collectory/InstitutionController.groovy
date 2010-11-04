@@ -10,7 +10,7 @@ class InstitutionController extends ProviderGroupController {
         entityName = "Institution"
         entityNameLower = "institution"
     }
-    
+
     def scaffold = Institution
 
     def list = {
@@ -45,27 +45,31 @@ class InstitutionController extends ProviderGroupController {
     def delete = {
         def providerGroupInstance = get(params.id)
         if (providerGroupInstance) {
-            /* need to remove it as a parent from all children otherwise they will be deleted */
-            def collections = providerGroupInstance.collections as List
-            collections.each {
-                providerGroupInstance.removeFromCollections it
-                it.userLastModified = username()
-                it.save()  // necessary?
-            }
-            // remove contact links (does not remove the contact)
-            ContactFor.findAllByEntityUid(providerGroupInstance.uid).each {
-                it.delete()
-            }
-            // now delete
-            try {
-                ActivityLog.log username(), isAdmin(), params.id as long, Action.DELETE
-                providerGroupInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
-                redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
-                redirect(action: "show", id: params.id)
+            if (isAdmin()) {
+                /* need to remove it as a parent from all children otherwise they will be deleted */
+                def collections = providerGroupInstance.collections as List
+                collections.each {
+                    providerGroupInstance.removeFromCollections it
+                    it.userLastModified = username()
+                    it.save()  // necessary?
+                }
+                // remove contact links (does not remove the contact)
+                ContactFor.findAllByEntityUid(providerGroupInstance.uid).each {
+                    it.delete()
+                }
+                // now delete
+                try {
+                    ActivityLog.log username(), isAdmin(), params.id as long, Action.DELETE
+                    providerGroupInstance.delete(flush: true)
+                    flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
+                    redirect(action: "list")
+                }
+                catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'providerGroup.label', default: 'ProviderGroup'), params.id])}"
+                    redirect(action: "show", id: params.id)
+                }
+            } else {
+                render("You are not authorised to access this page.")
             }
         }
         else {

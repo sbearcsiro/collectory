@@ -83,7 +83,7 @@
   <div id="wrapper">
     <div id="banner">
       <div id="logo">
-        <a href="${ConfigurationHolder.config.ala.baseURL}" title="Atlas of Living Australia home"><img src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/ala_logo.png" width="216" height="88" alt="Atlas of Living Ausralia logo" /></a>
+        <a href="${ConfigurationHolder.config.ala.baseURL}" title="Atlas of Living Australia home"><img src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/ala_logo.png" width="215" height="80" alt="Atlas of Living Ausralia logo" /></a>
       </div><!--close logo-->
       <div id="nav">
         <!-- WP Menubar 4.8: start menu nav-site-loggedout, template Superfish, CSS  -->

@@ -1,10 +1,29 @@
 package au.org.ala.collectory
 
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class ContactController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+
+/*
+ * Access control
+ *
+ * All methods require EDITOR role.
+ * Delete requires ADMIN role.
+ */
+    def authService
+    def beforeInterceptor = [action:this.&auth]
+    def auth() {
+        if (!authService.userInRole(ProviderGroup.ROLE_EDITOR)) {
+            render "You are not authorised to access this page."
+            return false
+        }
+    }
+/*
+ End access control
+ */
 
     def index = {
         redirect(action: "list", params: params)
@@ -18,13 +37,13 @@ class ContactController {
     def create = {
         def contactInstance = new Contact()
         contactInstance.properties = params
-        contactInstance.userLastModified = username()
+        contactInstance.userLastModified = authService.username()
         return [contactInstance: contactInstance, returnTo: params.returnTo]
     }
 
     def save = {
         def contactInstance = new Contact(params)
-        contactInstance.userLastModified = username()?:'not available'
+        contactInstance.userLastModified = authService.username()?:'not available'
         params.each{println it}
         contactInstance.validate()
         contactInstance.errors.each{println it}
@@ -78,9 +97,9 @@ class ContactController {
                 }
             }
             contactInstance.properties = params
-            contactInstance.userLastModified = username()
+            contactInstance.userLastModified = authService.username()
             if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
-                ActivityLog.log username(), isAdmin(), Action.EDIT_SAVE, "contact ${params.id}"
+                ActivityLog.log authService.username(), authService.isAdmin(), Action.EDIT_SAVE, "contact ${params.id}"
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'contact.label', default: 'Contact'), contactInstance.id])}"
                 if (params.returnTo) {
                     redirect(uri: params.returnTo)
@@ -104,18 +123,22 @@ class ContactController {
     def delete = {
         def contactInstance = Contact.get(params.id)
         if (contactInstance) {
-            try {
-                ActivityLog.log username(), isAdmin(), Action.DELETE, "contact ${contactInstance.buildName()}"
-                // need to delete any ContactFor links first
-                ContactFor.findAllByContact(contactInstance).each {
-                    it.delete(flush: true)
+            if (authService.isAdmin()) {
+                try {
+                    ActivityLog.log authService.username(), authService.isAdmin(), Action.DELETE, "contact ${contactInstance.buildName()}"
+                    // need to delete any ContactFor links first
+                    ContactFor.findAllByContact(contactInstance).each {
+                        it.delete(flush: true)
+                    }
+                    contactInstance.delete(flush: true)
+                    flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
+                    redirect(action: "list")
+                } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
+                    redirect(action: "show", id: params.id)
                 }
-                contactInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
-                redirect(action: "list")
-            } catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
-                redirect(action: "show", id: params.id)
+            } else {
+                render "You are not authorised to access this page."
             }
         }
         else {
@@ -124,11 +147,4 @@ class ContactController {
         }
     }
 
-    private String username() {
-        return (request.getUserPrincipal()?.attributes?.email)?:'not available'
-    }
-
-    private boolean isAdmin() {
-        return (request.isUserInRole(ProviderGroup.ROLE_ADMIN))
-    }
 }

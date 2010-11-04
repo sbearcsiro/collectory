@@ -21,7 +21,7 @@
   <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]"/></g:link></span>
   <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]"/></g:link></span>
   <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span>
-  <span class="buttons"><input type="submit" class="special" value="Contact the curator"/></span>
+  <!--span class="buttons"><input type="submit" class="special" value="Contact the curator"/></span-->
   <span class="entityType" style="float:right;">Collection</span>
   </g:form>
 </div>
@@ -60,8 +60,8 @@
 
       <!-- last edit -->
       <p><span class="category">Last change</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
-    
-      <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/base']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+
+      <cl:editButton uid="${instance.uid}" page="/shared/base"/>
     </div>
 
     <!-- collection description -->
@@ -105,7 +105,7 @@
       <h2>Sub-collections</h2>
       <cl:subCollectionList list="${instance.subCollections}"/>
 
-      <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      <cl:editButton uid="${instance.uid}" page="description"/>
   </div>
 
     <!-- images -->
@@ -180,14 +180,22 @@
 
       <!-- actual biocache records -->
       <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.
-      <g:if test="${percentBiocacheRecords}">
-        (${cl.formatPercent(percent: percentBiocacheRecords)}% of all specimens in the collection.)
-        <cl:recordsLink collection="${instance}">Click to view records these records.</cl:recordsLink>
-      </g:if></p>
-      <p>The mapping of records to this collection is based on the provider codes shown in the next section.</p>
+      <cl:recordsLink collection="${instance}">Click to view these records.</cl:recordsLink>
+      </p>
+
+      <div id="speedo">
+        <div id="progress">
+          <img id="progressBar" src="${resource(dir:'images', file:'percentImage.png')}" alt="0%"
+                  class="no-radius percentImage1" style='background-position: -120px 0;margin-left:35px;'/>
+          <!--cl:progressBar percent="0.0"/-->
+        </div>
+        <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
+      </div>
+
+      <p style="margin-top:20px;">The mapping of records to this collection is based on the provider codes shown in the next section.</p>
       <cl:warnIfInexactMapping collection="${instance}"/>
 
-      <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'range']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+      <cl:editButton uid="${instance.uid}" page="range"/>
     </div>
 
     <!-- Provider codes -->
@@ -204,10 +212,10 @@
             <cl:valueOrOtherwise value="${instance.providerMap?.warning}">Warning is: ${instance.providerMap?.warning}</cl:valueOrOtherwise>
           </p>
         </g:if>
-        <div style="clear:both;"><span class="buttons"><g:link class="edit" controller="providerMap" action='show' id="${instance.providerMap?.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+        <cl:editButton uid="${instance.uid}" id="${instance.providerMap?.id}" controller="providerMap" action="show"/>
       </g:if>
       <g:else>
-        <div style="clear:both;"><span class="buttons"><g:link class="edit" controller="providerMap" action='list'>${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+        <cl:editButton controller="providerMap" action="list"/>
       </g:else>
     </div>
 
@@ -230,6 +238,10 @@
   </div>
 </div>
 <script type="text/javascript">
+  var initial = -120;
+  var imageWidth=240;
+  var eachPercent = (imageWidth/2)/100;
+  
 /************************************************************\
 *
 \************************************************************/
@@ -242,12 +254,12 @@ function onLoadCallback() {
 *
 \************************************************************/
 function biocacheRecordsHandler(response) {
-  setNumbers(response.totalRecords);
+  setNumbers(response.totalRecords, ${instance.numRecords});
 }
 /************************************************************\
 *
 \************************************************************/
-function setNumbers(totalBiocacheRecords) {
+function setNumbers(totalBiocacheRecords, totalRecords) {
   var recordsClause = "";
   switch (totalBiocacheRecords) {
     case 0: recordsClause = "No records"; break;
@@ -255,6 +267,42 @@ function setNumbers(totalBiocacheRecords) {
     default: recordsClause = addCommas(totalBiocacheRecords) + " records";
   }
   $('#numBiocacheRecords').html(recordsClause);
+
+  if (totalRecords > 0) {
+    var percent = totalBiocacheRecords/totalRecords * 100;
+    setProgress(percent);
+  } else {
+    // to update the speedo caption
+    setProgress(0);
+  }
+}
+/************************************************************\
+*
+\************************************************************/
+function setProgress(percentage)
+{
+  var captionText = "";
+  if (${instance.numRecords < 1}) {
+    captionText = "There is no estimate of the total number<br/>of specimens in this collection.";
+  } else if (percentage == 0) {
+    captionText = "No records are available for viewing in the Atlas.";
+  } else {
+    var displayPercent = percentage.toFixed(1);
+    if (percentage < 0.1) {displayPercent = percentage.toFixed(2)}
+    if (percentage > 20) {displayPercent = percentage.toFixed(0)}
+    if (percentage > 100) {displayPercent = "over 100"}
+    captionText = "Records for " + displayPercent + "% of specimens are<br/>available for viewing in the Atlas.";
+  }
+  $('#speedoCaption').html(captionText);
+
+  if (percentage > 100) {
+    $('#progressBar').removeClass('percentImage1');
+    $('#progressBar').addClass('percentImage4');
+    percentage = 101;
+  }
+  var percentageWidth = eachPercent * percentage;
+  var newProgress = eval(initial)+eval(percentageWidth)+'px';
+  $('#progressBar').css('backgroundPosition',newProgress+' 0');
 }
 /************************************************************\
 *

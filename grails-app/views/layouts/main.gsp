@@ -14,7 +14,6 @@
 <link rel="EditURI" type="application/rsd+xml" title="RSD" href="${ConfigurationHolder.config.ala.baseURL}/xmlrpc.php?rsd" />
 <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="${ConfigurationHolder.config.ala.baseURL}/wp-includes/wlwmanifest.xml" />
 <link rel='index' title='Atlas of Living Australia' href='${ConfigurationHolder.config.ala.baseURL}' />
-<link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/plugins/contact-form-7/stylesheet.css" type="text/css" />
 
 <link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
 <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon" />

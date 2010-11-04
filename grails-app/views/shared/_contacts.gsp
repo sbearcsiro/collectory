@@ -13,5 +13,6 @@
      </li>
    </g:each>
  </ul>
- <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/showContacts']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+ <div style="clear:both;"></div>
+ <cl:editButton uid="${instance.uid}" page="/shared/showContacts"/>
  </div>

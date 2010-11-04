@@ -14,6 +14,7 @@
         </g:link></li>
       </g:each>
     </ul>
-    <div style="clear:both;"><span class="buttons"><g:link class="edit" action="showChanges" id="${instance?.id}">${message(code: 'default.button.showAll.label', default: 'Show all')}</g:link></span></div>
+    <div style="clear:both;"></div>
+    <cl:editButton uid="${instance.uid}" action="showChanges">Show all</cl:editButton>
   </div>
 </g:if>

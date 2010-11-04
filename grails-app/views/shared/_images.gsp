@@ -25,5 +25,6 @@
     <p class="caption">${fieldValue(bean: image, field: "copyright")}</p>
   </g:if>
 
-  <div style="clear:both;"><span class="buttons"><g:link class="edit" action='edit' params='[page:"/shared/images",target:"${target}"]' id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+  <div style="clear:both;"></div>
+  <cl:editButton uid="${instance.uid}" page="/shared/images" target="${target}"/>
 </div>

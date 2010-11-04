@@ -60,8 +60,7 @@
       <td valign="top" class="value">${fieldValue(bean: instance, field: "phone")}</td>
     </tr>
   </table>
-  <div style="clear:both;"><span class="buttons">
-    <g:link class="edit" action='edit' params="[page:'/shared/location']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link>
-  </span></div>
+  <div style="clear:both;"></div>
+  <cl:editButton uid="${instance.uid}" page="/shared/location"/>
 </div>
 

@@ -100,26 +100,28 @@ class CollectoryTagLib {
         return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
     }
 
+    private boolean isAuthorisedToEdit(uid, email) {
+        if (isAdmin()) {
+            return true
+        } else {
+            if (email) {
+                Contact c = Contact.findByEmail(email)
+                if (c) {
+                    ContactFor cf = ContactFor.findByContactAndEntityUid(c, uid)
+                    return cf?.administrator
+                }
+            }
+        }
+        return false
+    }
+
     /**
      * Authorisation for editing is determined by roles and rights
      *
      * @attrs uid - the uid of the entity
      */
     def isAuth = { attrs, body ->
-        boolean authorised = false
-        if (isAdmin()) {
-            authorised = true
-        } else {
-            def email = request.getUserPrincipal()?.attributes?.email
-            if (email) {
-                Contact c = Contact.findByEmail(email)
-                if (c) {
-                    ContactFor cf = ContactFor.findByContactAndEntityUid(c, attrs.uid)
-                    authorised = cf?.administrator
-                }
-            }
-        }
-        if (authorised) {
+        if (isAuthorisedToEdit(attrs.uid, request.getUserPrincipal()?.attributes?.email)) {
             out << body()
         } else {
             out << ' You are not authorised to change this record '// + debugString
@@ -1180,5 +1182,38 @@ class CollectoryTagLib {
             }
         }
         return [linkPart, rest] as String[]
+    }
+
+    /**
+     * Outputs a button to link to the edit page if the user is authorised to edit.
+     *
+     * @params uid the entity uid
+     * @params action optional action - defaults to edit
+     * @params controller optional controller - defaults to not specified (current)
+     * @params id optional id to edit if it is different to the uid
+     * @params any other attrs are passed to link as url params
+     * @body the label for the button - defaults to 'Edit' if not specified
+     */
+    def editButton = { attrs, body ->
+        if (isAuthorisedToEdit(attrs.uid, request.getUserPrincipal()?.attributes?.email)) {
+            def paramsMap
+            // anchor class
+            paramsMap = [class:'edit']
+            // action
+            paramsMap << [action: (attrs.containsKey('action')) ? attrs.remove('action').toString() : 'edit']
+            // optional controller
+            if (attrs.containsKey('controller')) { paramsMap << [controller: attrs.remove('controller').toString()] }
+            // id of target
+            paramsMap << [id: (attrs.containsKey('id')) ? attrs.remove('id').toString() : attrs.uid]
+            attrs.remove('uid')
+            // add any remaining attrs as params
+            paramsMap << [params: attrs]
+
+            out << "<div><span class='buttons'>"
+            out << link(paramsMap) {body() ?: 'Edit'}
+            out << "</span></div>"
+        } else {
+            out << "Not authorised to edit."
+        }
     }
 }

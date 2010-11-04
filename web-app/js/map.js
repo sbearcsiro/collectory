@@ -21,6 +21,10 @@ var baseUrl;
 // the ajax url for getting filtered features
 var featuresUrl;
 
+if (altMap == undefined) {
+    var altMap = false;
+}
+
 /* initialise the map */
 /* note this must be called from body.onload() not jQuery document.ready() as the latter is too early */
 function initMap(serverUrl) {
@@ -152,7 +156,11 @@ function initMap(serverUrl) {
 
 /* load features via ajax call */
 function reloadData() {
-  $.get(featuresUrl, {filters: getAll()}, dataRequestHandler);
+    if (altMap) {
+        $.get(featuresUrl, {filters: getSelectedFilters()}, dataRequestHandler);
+    } else {
+        $.get(featuresUrl, {filters: getAll()}, dataRequestHandler);
+    }
 }
 
 /* handler for loading features */
@@ -188,16 +196,45 @@ function dataRequestHandler(data) {
     $('span#numUnMappable').html(unMappedText);
 
     // update display of number of features
+    var selectedFilters = getSelectedFiltersAsString();
+    var selectedFrom = "";
+    if (selectedFilters != 'all') {
+        selectedFrom = " from " + selectedFilters;
+    }
     var innerFeatures = "";
     switch (features.length) {
         case 0: innerFeatures = "No collections are selected."; break;
-        case 1: innerFeatures = features.length + " collection is selected."; break;
-        default: innerFeatures = features.length + " collections are selected."; break;
+        case 1: innerFeatures = features.length + " collection is selected" + selectedFrom + "."; break;
+        default: innerFeatures = features.length + " collections are selected" + selectedFrom + "."; break;
     }
     $('span#numFeatures').html(innerFeatures);
 
     // fire moved to initialise number visible
     moved(null);
+}
+
+function getSelectedFiltersAsString() {
+    var list;
+    //alert(altMap);
+    if (altMap) {
+        // new style
+        list = getSelectedFilters();
+    } else {
+        // old style
+        list = getAll();
+    }
+    // remove trailing comma
+    if (list.substr(list.length - 1) == ',') {
+        list = list.substring(0,list.length - 1);
+    }
+    // replace last with 'and'
+    var last = list.lastIndexOf(',');
+    if (last > 0) {
+        list = list.substr(0,last) + " and " + list.substr(last + 1);
+    }
+    // insert space after remaining commas
+    list = list.replace(/,/g,", ");
+    return list;
 }
 
 function updateList(features) {
@@ -212,7 +249,7 @@ function updateList(features) {
 
     var innerHtml = "";
     for (var i = 0; i < features.length; i++) {
-        var acronym = ""
+        var acronym = "";
         if (features[i].attributes.acronym != undefined) {
             acronym = " (" + features[i].attributes.acronym + ")"
         }
@@ -268,14 +305,19 @@ function hoverOn(evt) {
 function moved(evt) {
     // determine how many individual features are visible
     var visibleCount = 0;
+    var totalCount = 0;
     for (var c = 0; c < vectors.features.length; c++) {
         var f = vectors.features[c];
-        if (f.onScreen(true)) {
-            if (f.cluster) {
-                // for clusters count each feature
+        if (f.cluster) {
+            totalCount += f.cluster.length;
+            // for clusters count each feature
+            if (f.onScreen(true)) {
                 visibleCount += f.cluster.length;
-            } else {
-                // single feature
+            }
+        } else {
+            totalCount++;
+            // single feature
+            if (f.onScreen(true)) {
                 visibleCount++;
             }
         }
@@ -283,9 +325,23 @@ function moved(evt) {
     // update display of number of features visible
     var innerFeatures = "";
     switch (visibleCount) {
-        case 0: innerFeatures = "No collections are currently visible on the map."; break;
-        case 1: innerFeatures = visibleCount + " collection is currently visible on the map."; break;
-        default: innerFeatures = visibleCount + " collections are currently visible on the map."; break;
+        case 0:
+            innerFeatures = "No collections are currently visible on the map.";
+            break;
+        case 1:
+            if (totalCount == 1) {
+                innerFeatures = "It is currently visible on the map.";
+            } else {
+                innerFeatures = visibleCount + " collection is currently visible on the map.";
+            }
+            break;
+        default:
+            if (visibleCount == totalCount) {
+                innerFeatures = "All are currently visible on the map.";
+            } else {
+                innerFeatures = visibleCount + " collections are currently visible on the map.";
+            }
+            break;
     }
     $('span#numVisible').html(innerFeatures);
 }
@@ -356,6 +412,16 @@ function selected(evt) {
 
     // add to map
     map.addPopup(popup);
+}
+
+function outputClusteredFeature(feature) {
+    content = "Multiple collections at this location:<ul>";
+    // build map of institutions and orphan collections
+    var parents;
+    for(var c = 0; c < feature.cluster.length; c++) {
+        
+    }
+
 }
 
 function onPopupClose(evt) {
@@ -438,3 +504,36 @@ function filterChange() {
 }
 /* END filter checkboxes */
 
+/*
+ * Helpers for managing Filter buttons
+ */
+function toggleButton(button) {
+    $(button).toggleClass("selected");
+    // if fauna is selected then insects must be too
+    if (button.id == "fauna" && $('div.filter-buttons div#fauna').hasClass('selected')) {
+        $('div.filter-buttons div#entomology').toggleClass('selected',true);
+    }
+    // if insects are not selected then neither can fauna
+    if (button.id == "entomology" && !$('div.filter-buttons div#entomology').hasClass('selected')) {
+        $('div.filter-buttons div#fauna').toggleClass('selected',false);
+    }
+
+    //reloadData();
+    $.get(featuresUrl, {filters: getSelectedFilters()}, dataRequestHandler);
+    
+}
+
+function getSelectedFilters() {
+    var checked = "";
+    $('div.filter-buttons div').each(function(index, element){
+        if ($(element).hasClass('selected')) {
+            checked += element.id + ",";
+        }
+    });
+    if (checked == 'fauna,entomology,microbes,plants,') {
+        checked = 'all';
+    }
+
+    return checked;
+}
+/* END filter buttons */

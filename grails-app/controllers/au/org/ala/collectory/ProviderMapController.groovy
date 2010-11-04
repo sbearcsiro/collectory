@@ -1,8 +1,28 @@
 package au.org.ala.collectory
 
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+
 class ProviderMapController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
+
+    def authService
+/*
+ * Access control
+ *
+ * All methods require EDITOR role.
+ * Edit methods require ADMIN or the user to be an administrator for the entity.
+ */
+    def beforeInterceptor = [action:this.&auth]
+    def auth() {
+        if (!authService.userInRole(ProviderGroup.ROLE_EDITOR)) {
+            render "You are not authorised to access this page."
+            return false
+        }
+    }
+/*
+ End access control
+ */
 
     def index = {
         redirect(action: "list", params: params)
@@ -62,7 +82,11 @@ class ProviderMapController {
             redirect(action: "list")
         }
         else {
-            return [providerMapInstance: providerMapInstance]
+            if (authService.isAuthorisedToEdit(providerMapInstance.collection.uid)) {
+                return [providerMapInstance: providerMapInstance]
+            } else {
+                render "You are not authorised to access this page."
+            }
         }
     }
 
@@ -96,14 +120,18 @@ class ProviderMapController {
     def delete = {
         def providerMapInstance = ProviderMap.get(params.id)
         if (providerMapInstance) {
-            try {
-                providerMapInstance.delete(flush: true)
-                flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-                redirect(action: "list")
-            }
-            catch (org.springframework.dao.DataIntegrityViolationException e) {
-                flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-                redirect(action: "show", id: params.id)
+            if (authService.isAuthorisedToEdit(providerMapInstance.collection.uid)) {
+                try {
+                    providerMapInstance.delete(flush: true)
+                    flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
+                    redirect(action: "list")
+                }
+                catch (org.springframework.dao.DataIntegrityViolationException e) {
+                    flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
+                    redirect(action: "show", id: params.id)
+                }
+            } else {
+                render "You are not authorised to access this page."
             }
         }
         else {

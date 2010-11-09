@@ -54,9 +54,58 @@ a.current {
     padding-top: 0;
 }
 
+/********************************\
+* Styling for map pop-up
+\********************************/
 /* eliminate excess space below list in map popups */
 .olFramedCloudPopupContent ul {
     padding-bottom: 0;
+}
+
+/* default charcoal text for collections */
+.olFramedCloudPopupContent a {
+    color: #333;
+}
+
+/* indent inner list items in popups */
+.olFramedCloudPopupContent ul ul li a {
+    margin-left: 20px;
+}
+
+/* header colour for institutions */
+.olFramedCloudPopupContent a.highlight {
+    color: #718804;
+}
+
+/* colour for other text */
+.olFramedCloudPopupContent span {
+    color: #333;
+}
+
+/* hr in popups */
+.olFramedCloudPopupContent hr {
+    height: 0;
+    margin-bottom: 0 !important;
+    background-color: transparent;
+}
+
+/*div#featurePopup_contentDiv {
+    padding-right: 0;
+    padding-bottom: 0;
+}*/
+
+.olFramedCloudPopupContent div.address {
+    color: #555;
+    margin-left: 6px;
+    font-size: smaller;
+    font-style: italic;
+}
+
+.olFramedCloudPopupContent div.desc {
+    color: #333;
+    margin-left: 6px;
+    font-size: smaller;
+    margin-top: 0;
 }
 
 /* control space in map hover */
@@ -216,32 +265,30 @@ span#resetTaxonChart {
     cursor:pointer;
 }
 
+/* 1 column */
+div#taxonChartCaption {
+    text-align:center;
+    width: 200px;
+    position:relative;
+    top:-120px;
+    left: 260px;
+}
+
 /* 2 column */
 #statistics span.taxonChartCaption {
-    position:relative;
-    left:630px;
-    top:-120px;
     color: #555;
-    padding-left:40px;
 }
 
 #statistics span#resetTaxonChart {
-    position:relative;
-    left:380px;
-    top:-100px;
     color: #01716E;
     text-decoration:underline;
     cursor:pointer;
-    padding-left:40px;
 }
 
-/* 1 column */
-#taxonChartCaption {
-    text-align:center;
-    position:relative;
-    top:-120px;
-    left: -20px;
+#statistics div#taxonChartCaption {
+    left: 685px;    
 }
+
 /* ------------*/
 
 div#decadeChart img {

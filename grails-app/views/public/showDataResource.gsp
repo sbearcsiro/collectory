@@ -103,10 +103,10 @@
               <img style="margin-left:230px;margin-top:140px;margin-bottom:308px" alt="loading..." src="${resource(dir:'images/map',file:'single-occurrences.png')}"/>
             </div>
             <div id="taxonChartCaption">
-              <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch to view records for a group.</span><br/>
+              <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>
               <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;
             </div>
-            <div id="decadeChart" style="padding-right: 20px;width:500">
+            <div id="decadeChart" style="padding-right:20px;padding-top:20px;width:500">
             </div>
           </div>
           <cl:lastUpdated date="${instance.lastUpdated}"/>

@@ -167,6 +167,7 @@ class PublicController {
                 if (breakdown && breakdown.toString() != "null") {
                     dataTable = buildPieChartDataTable(breakdown,"all","")
                     if (dataTable) {
+                        //sleep delay
                         render dataTable
                     } else {
                         log.warn "unable to build data table from taxa json = " + json
@@ -362,10 +363,8 @@ class PublicController {
      */
     def mapFeatures = {
         //log.info ">>Map features action called"
-        def locations = [:]
+        def locations = [type:"FeatureCollection",features: new ArrayList()]
         def showAll = params.filters == 'all'
-        locations.type = "FeatureCollection"
-        locations.features = new ArrayList()
         List<CollectionLocation> collections = new ArrayList<CollectionLocation>()
         Collection.list([sort:"name"]).each {
             // only show ALA partners
@@ -377,29 +376,28 @@ class PublicController {
                 def inst = it.getInstitution()
                 if (inst && lat == -1) {lat = inst.latitude}
                 if (inst && lon == -1) {lon = inst.longitude}
-                // only show if we have lat and long
-                //if (lat != -1 && lon != -1) {
-                    // and if matches current filter
-                    if (showAll || Classification.matchKeywords(it.keywords, params.filters)) {
-                        def loc = [:]
-                        loc.type = "Feature"
-                        loc.properties = [
-                                name: it.name,
-                                acronym: it.acronym,
-                                uid: it.uid,
-                                isMappable: it.canBeMapped(),
-                                address: it.address?.buildAddress(),
-                                desc: it.makeAbstract(),
-                                url: request.getContextPath() + "/public/show/" + it.uid]
-                        loc.geometry = [type: "Point", coordinates: [lon,lat]]
-                        locations.features << loc
-                    }
-                //}
+                // show if matches current filter
+                if (showAll || Classification.matchKeywords(it.keywords, params.filters)) {
+                    def loc = [type:"Feature"]
+                    loc.properties = [
+                            name: it.name,
+                            acronym: it.acronym,
+                            uid: it.uid,
+                            instName: inst?.name,
+                            instUid: inst?.uid,
+                            instAcronym: inst?.acronym,
+                            isMappable: it.canBeMapped(),
+                            address: it.address?.buildAddress(),
+                            desc: it.makeAbstract(),
+                            url: request.getContextPath() + "/public/show/" + it.uid]
+                    loc.geometry = [type: "Point", coordinates: [lon,lat]]
+                    locations.features << loc
+                }
             }
         }
 
         //def json = JSON.parse(features)
-        render(locations as JSON)
+        render( locations as JSON )
     }
 
     private boolean matchNetwork(pg, filterString) {

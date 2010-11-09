@@ -16,6 +16,7 @@ div > div#map-container {
     background:transparent url(../images/map/map-shadow.png) right bottom no-repeat;
     width: 603px;
     height: 485px;
+    padding-left: 30px;
 }
 
 .fudge {
@@ -23,7 +24,7 @@ div > div#map-container {
 }
 
 .map-alt .fudge {
-    width: 360px ! important;
+    width: 310px ! important;
 }
 
 .abstract {
@@ -49,14 +50,14 @@ div > div#map-container {
     width:638px !important;
 }
 
-/* move tabs across to where they relate to tabbed content */
+/* move tabs across to where they relate to tabbed content
 #nav-tabs li a[href='#map'] {
     margin-left: 230px;
 }
 
 #nav-tabs .narrow li a[href='#map'] {
     margin-left: 380px;
-}
+}*/
 
 /*body {
     background:transparent url(../images/ala/header.png) center 0 repeat-x;
@@ -91,18 +92,23 @@ div#warnings {
 
 /* for collections home */
 p.collectionsCount {
-    margin-top: 10px;
+    margin-top: 5px;
     text-align: center;
+    padding-bottom: 3px !important;
 }
+/********************************\
+* Styling for map filter buttons
+\********************************/
 
 .filter-buttons {
     margin-left: 25px;
+    margin-top: 15px;
 }
 
 .filter-buttons div {
-    /*border-top:4px solid #d9d9d9;*/
-    /*border-bottom:4px solid #d9d9d9;*/
-    margin-bottom: 10px;
+    padding-top: 0;
+    width:300px;
+    margin-bottom: 0;
     float:left;
     padding: 0 0 0 0;
     opacity: 0.4;
@@ -114,12 +120,20 @@ p.collectionsCount {
     filter:alpha(opacity=100);
 }
 
-.filter-buttons a {
-    margin:0 15px 0 0;
-    padding:10px;
+.filter-buttons h2 a span {
+    width:200px;
+    padding-top:.3em;
     display:block;
-    height:5em;
-    width:127px;
+    color:#000;
+    font-size:.6em;
+    line-height:1.2em;
+}
+
+.filter-buttons a {
+    margin:0 15px 10px 0;
+    padding: 4px 10px 3px 10px;
+    height: 60px;
+    display:block;
     overflow:hidden;
     border:1px solid #ccc;
     -moz-border-radius: 7px; /* FF1+ */
@@ -138,20 +152,24 @@ p.collectionsCount {
     box-shadow: 4px 4px 0px #d9d9d9;
 }
 
+.filter-buttons .all a {
+    background: transparent url(../images/ala/all_button_bgwd.png) no-repeat;
+}
+
 .filter-buttons .fauna a {
-    background-image:url(../images/ala/fauna_button_bg.png);
+    background: transparent url(../images/ala/fauna_button_bgwd.png) no-repeat;
 }
 
 .filter-buttons .insects a {
-    background-image:url(../images/ala/insects_button_bg4.png);
+    background: transparent url(../images/ala/insects_button_bgwd.png) no-repeat;
 }
 
 .filter-buttons .microbes a {
-    background-image:url(../images/ala/microbes_button_bg.png);
+    background: transparent url(../images/ala/microbes_button_bgwd.png) no-repeat;
 }
 
 .filter-buttons .plants a {
-    background-image:url(../images/ala/plants_button_bg.png);
+    background: transparent url(../images/ala/plants_button_bgwd.png) no-repeat;
 }
 
 .filter-buttons h2 a:hover, .filter-buttons h2 a:active, .filter-buttons h2 a:hover span, .filter-buttons h2 a:active span {
@@ -167,12 +185,4 @@ p.collectionsCount {
     -moz-box-shadow: 4px 4px 0px #dd3102;
     -webkit-box-shadow: 4px 4px 0px #dd3102;
     box-shadow: 4px 4px 0px #dd3102;
-}
-
-.filter-buttons h2 a span {
-    padding-top:.3em;
-    display:block;
-    color:#000;
-    font-size:.6em;
-    line-height:1.5em;
 }

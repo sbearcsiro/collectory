@@ -288,11 +288,13 @@
                   <cl:recordsMap type="collection" uid="${collectionInstance.uid}"/>
                 </div>
                 <div id="taxonChart" style="display: inline; width: 500px;">
-                  <img style="margin-left:230px;margin-top:150px;margin-bottom:288px" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>
+                  <!-- NOTE *** margin-bottom value must match the value in the javascript (drawTaxonChart - dril down handler) -->
+                  <img style="margin-left:230px;margin-top:150px;margin-bottom:218px" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>
                 </div>
-                <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>
-                  Click a legend colour patch to view records for a group.</span>
-                <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>
+                <div id="taxonChartCaption">
+                  <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>
+                  <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;
+                </div>
                 <div style="clear:both;"></div>
                 <div id="decadeChart" style="display: inline;padding-right: 20px;">
                 </div>
@@ -508,7 +510,8 @@ function drawTaxonChart(dataTable) {
     } else {
       // clicked slice - drill down unless already at species
       if (rank != "species") {
-        $('div#taxonChart').html('<img style="margin-left:230px;margin-top:150px;margin-bottom:238px;" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>');
+        // NOTE *** margin-bottom value must match the value in the source html
+        $('div#taxonChart').html('<img style="margin-left:230px;margin-top:150px;margin-bottom:218px;" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>');
         var drillUrl = "${ConfigurationHolder.config.grails.context}/public/rankBreakdown/${collectionInstance.uid}?name=" +
                 dataTable.getValue(chart.getSelection()[0].row,0) +
                "&rank=" + dataTable.getTableProperty('rank')

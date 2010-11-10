@@ -528,24 +528,59 @@ class PublicController {
     private String buildDecadeDataTableFromFacetResults(facetResults) {
         def decades = facetResults.find {it.fieldName == "occurrence_date"}
         def input = decades?.fieldResult
-        if (!input) {return ""}
-        int maximum = 0
-        boolean stagger = input.size() > 6
+        if (!input) {
+            log.warn "Failed to find any decade breakdown. Response= ${facetResults}."
+            return ""
+        }
+
         boolean started = false
-        String result = """{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":["""
+
+        // describe columns
+        String prefix = """{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":["""
+        String beforeLabel = ""
+        int beforeCount = 0
+
+        // build rows
+        String records = ""
         input.eachWithIndex {it, index ->
             // don't show the 'before' set
             // don't show decades with no records at the start
-            if (it.label != "before" && !(it.count == 0 && !started)) {
-                maximum = Math.max(maximum, it.count) as Integer
-                String label = (stagger && (index % 2) == 0) ? "" : it.label[0..3] + "s"
-                result += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
-                result += (index == input.size() - 1) ? "" : ","
+            if (it.label != "before" && (it.count > 0 || started)) {
+
+                // build a label from the input date
+                String label = it.label[0..3] + "s"
+
+                // grab the label for the first decade shown (first non-zero count)
+                if (!records) {beforeLabel = label}
+
+                // add the record
+                records += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
+
+                // put a comma after each record but the last
+                records += (index == input.size() - 1) ? "" : ","
+
+                // flag that we have started - so don't skip decades with zero count
                 started = true
             }
+
+            // grab the before count
+            if (it.label == 'before') {
+                beforeCount = it.count
+            }
         }
-        result += '],"p":{"max":' + maximum + '}}'
-        return result
+
+        // check whether there is anything to show
+        if (!records) {
+            return ""
+        }
+        
+        // add the before data (if it exists) before the other records
+        if (beforeCount) {
+            records = '{"c":[{"v":"earlier' + '","f":null},{"v":' + beforeCount + ',"f":null}]},' + records
+        }
+
+        // build the table
+        return prefix + records + '],"p":null}'
     }
 
     def stripGenusName(name) {

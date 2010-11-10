@@ -100,13 +100,17 @@
             <h3>Map of records</h3>
             <cl:recordsMap type="dataResource" uid="${instance.uid}"/>
             <div id="taxonChart">
-              <img style="margin-left:230px;margin-top:140px;margin-bottom:308px" alt="loading..." src="${resource(dir:'images/map',file:'single-occurrences.png')}"/>
+              <img style="margin-left:230px;margin-top:140px;margin-bottom:308px" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>
             </div>
             <div id="taxonChartCaption">
               <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>
               <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;
             </div>
-            <div id="decadeChart" style="padding-right:20px;padding-top:20px;width:500">
+            <div id="decadeChart">
+              <img style="margin-left:130px;margin-top:-20px;margin-bottom:108px" alt="loading..." src="${resource(dir:'images/ala',file:'decade-loader.gif')}"/>
+            </div>
+            <div id="decadeChartCaption">
+              <span style="visibility:hidden;" class="decadeChartCaption">Click a column to view records for that decade.</span>
             </div>
           </div>
           <cl:lastUpdated date="${instance.lastUpdated}"/>
@@ -236,7 +240,7 @@
           $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
 
           // taxon chart
-          taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.uid}?threshold=55";
+          taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${instance.uid}?threshold=25";
           $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
 
           // records map
@@ -249,7 +253,7 @@
         \************************************************************/
         function biocacheRecordsHandler(response) {
           setNumbers(response.totalRecords);
-          drawDecadeImage(response.decades);
+          drawDecadeChart(response.decades);
         }
         /************************************************************\
         *
@@ -309,54 +313,50 @@
           var data = new google.visualization.DataTable(response);
           if (data.getNumberOfRows() > 0) {
             drawTaxonChart(data);
+          } else {
+              // no data
+              $('div#taxonChart').css("display","none");
           }
         }
         /************************************************************\
         *
         \************************************************************/
-        function drawDecadeChart(dataTable) {
-          var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
-
-          vis.draw(dataTable, {
-            width: 500,
-            height: 400,
-            title: "Additions by decade",
-            titleTextStyle: {color: "#7D8804", fontName: 'Arial', fontSize: 15},
-            hAxis: {title:"decades", showTextEvery: 3},
-            legend: 'none',
-            colors: ['#3398cc']
-          });
-        }
-        /************************************************************\
-        *
-        \************************************************************/
-        function drawDecadeImage(decades) {
-          var dataTable = new google.visualization.DataTable(decades);
+        function drawDecadeChart(decadeData) {
+          var dataTable = new google.visualization.DataTable(decadeData,0.6);
           if (dataTable.getNumberOfRows() > 0) {
-            var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
-            var options = {};
-
-            // 'bvg' is a vertical grouped bar chart in the Google Chart API.
-            // The grouping is irrelevant here since there is only one numeric column.
-            options.cht = 'bvg';
-
-            // Add a data range.
-            var min = 0;
-            var max = dataTable.getTableProperty('max');
-            options.chds = min + ',' + max;
-
-            // Chart title and style
-            options.chtt = 'Additions by decade';  // chart title
-            options.chts = '7D8804,15';
-
-            // width
-            options.chs = '500x250';
-            //options.chxt = 'x,x,y';
-            //options.chxl = '2:|Decade';
-            //options.chxp = '0,50';
-
-            vis.draw(dataTable, options);
+            var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
+            google.visualization.events.addListener(vis, 'select', function() {
+              var decade = dataTable.getValue(vis.getSelection()[0].row,0);
+              // TODO: handle 'earlier' label
+              if (decade != 'earlier' && decade.length > 3) {
+                decade = decade.substr(0,4);
+                var dateTo = addDecade(decade);
+                var dateRange = "occurrence_date:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
+                // eg. occurrence_date:[1990-01-01T12:00:00Z%20TO%202000-01-01T12:00:00Z]
+                document.location.href = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${instance.uid}&fq=" + dateRange;
+              }
+            });
+            vis.draw(dataTable, {
+              width: 600,
+              height: 300,
+              chartArea:  {left: 50},
+              title: "Additions by decade",
+              titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
+              legend: 'none'
+            });
+            // show caption
+            $('span.decadeChartCaption').css('visibility', 'visible');
+          } else {
+            // no data
+            $('div#decadeChart').css("display","none");
           }
+        }
+        /************************************************************\
+        * increment year by a decade, eg 1990 -> 2000
+        \************************************************************/
+        function addDecade(from) {
+          var num = parseInt(from);
+          return num + 10;
         }
         /************************************************************\
         *
@@ -391,7 +391,7 @@
                 rank + ":" + name;
               document.location.href = linkUrl;
             } else {
-              // clicked slice - drill down unles already at species
+              // clicked slice - drill down unless already at species
               if (rank != "species") {
                 $('div#taxonChart').html('<img style="margin-left:230px;margin-top:140px;margin-bottom:308px;" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>');
                 var drillUrl = "${ConfigurationHolder.config.grails.context}/public/rankBreakdown/${instance.uid}?name=" +
@@ -432,7 +432,7 @@
         *
         \************************************************************/
 
-        google.load("visualization", "1", {packages:["imagechart","corechart"]});
+        google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(onLoadCallback);
 
       </script>

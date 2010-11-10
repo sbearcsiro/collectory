@@ -24,8 +24,8 @@
                   <tr class="reportGroupTitle"><td>All providers (${DataProvider.count()})</td><td>UID</td><td>Resources</td></tr>
                   <g:each var='c' in="${DataProvider.list([sort: 'name'])}">
                     <tr>
-                      <td><g:link controller="dataProvider" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
-                      <td>${c.uid}</td>
+                      <td><g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
+                      <td><g:link controller="dataProvider" action="show" id="${c.uid}">${c.uid}</g:link></td>
                       <td>${c.resources?.size()}</td>
                     </tr>
                   </g:each>
@@ -40,8 +40,8 @@
                     <tr class="reportGroupTitle"><td>All resources (${DataResource.count()})</td><td>UID</td><td>Provider</td><td>Institution</td></tr>
                     <g:each var='c' in="${DataResource.list([sort: 'name'])}">
                       <tr>
-                        <td><g:link controller="dataResource" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
-                        <td>${c.uid}</td>
+                        <td><g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
+                        <td><g:link controller="dataResource" action="show" id="${c.uid}">${c.uid}</g:link></td>
                         <td><cl:ifNotBlank tagName="" value="${c.shortProviderName()}"/></td>
                         <td><cl:acronymOrShortName entity="${c.institution}"/></td>
                       </tr>

@@ -295,8 +295,11 @@
                   <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>
                   <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;
                 </div>
-                <div style="clear:both;"></div>
-                <div id="decadeChart" style="display: inline;padding-right: 20px;">
+                <div id="decadeChart">
+                  <img style="margin-left:130px;margin-top:-20px;margin-bottom:108px" alt="loading..." src="${resource(dir:'images/ala',file:'decade-loader.gif')}"/>
+                </div>
+                <div id="decadeChartCaption">
+                  <span style="visibility:hidden;" class="decadeChartCaption">Click a column to view records for that decade.</span>
                 </div>
               </g:if>
             </div>
@@ -323,7 +326,7 @@ $('img#mapLegend').each(function(i, n) {
   }
 });
 /************************************************************\
-*
+* initiate ajax calls
 \************************************************************/
 function onLoadCallback() {
   // summary biocache data
@@ -340,7 +343,7 @@ function onLoadCallback() {
   $.get(mapServiceUrl, {}, mapRequestHandler);
 }
 /************************************************************\
-*
+* Handle biocache records response
 \************************************************************/
 function biocacheRecordsHandler(response) {
   setNumbers(response.totalRecords, ${collectionInstance.numRecords});
@@ -348,10 +351,10 @@ function biocacheRecordsHandler(response) {
     $('a.recordsLink').css('visibility','hidden');
     $('div#taxonChart').html('');
   }
-  drawDecadeImage(response.decades);
+  drawDecadeChart(response.decades);
 }
 /************************************************************\
-*
+* Set total and percent biocache record numbers
 \************************************************************/
 function setNumbers(totalBiocacheRecords, totalRecords) {
   var recordsClause = "";
@@ -371,7 +374,7 @@ function setNumbers(totalBiocacheRecords, totalRecords) {
   }
 }
 /************************************************************\
-*
+* Add commas to number display
 \************************************************************/
 function addCommas(nStr)
 {
@@ -386,7 +389,7 @@ function addCommas(nStr)
 	return x1 + x2;
 }
 /************************************************************\
-*
+* Handle map response
 \************************************************************/
 function mapRequestHandler(response) {
   if (response.error != undefined) {
@@ -401,7 +404,7 @@ function mapRequestHandler(response) {
   $('#mapLegend').attr("src",response.legendUrl);
 }
 /************************************************************\
-*
+* DEPRECATED
 \************************************************************/
 function decadeBreakdownRequestHandler(response) {
   var data = new google.visualization.DataTable(response);
@@ -410,7 +413,7 @@ function decadeBreakdownRequestHandler(response) {
   }
 }
 /************************************************************\
-*
+* Handle taxon breakdown response
 \************************************************************/
 function taxonBreakdownRequestHandler(response) {
   if (response.error != undefined) {
@@ -425,58 +428,53 @@ function taxonBreakdownRequestHandler(response) {
   }
 }
 /************************************************************\
-*
+* No chart available
 \************************************************************/
 function clearTaxonChart(error) {
   $('div#taxonChart img').attr('src',"${resource(dir:'images/ala',file:'missing.png')}");
 }
 /************************************************************\
-*
+* Decade breakdown chart
 \************************************************************/
-function drawDecadeChart(dataTable) {
-  var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
-
-  vis.draw(dataTable, {
-    width: 500,
-    height: 400,
-    title: "Additions by decade",
-    titleTextStyle: {color: "#7D8804", fontName: 'Arial', fontSize: 15},
-    hAxis: {title:"decades", showTextEvery: 3},
-    legend: 'none',
-    colors: ['#3398cc']
-  });
-}
-/************************************************************\
-*
-\************************************************************/
-function drawDecadeImage(decades) {
-  var dataTable = new google.visualization.DataTable(decades);
+function drawDecadeChart(decadeData) {
+  var dataTable = new google.visualization.DataTable(decadeData,0.6);
   if (dataTable.getNumberOfRows() > 0) {
-    var vis = new google.visualization.ImageChart(document.getElementById('decadeChart'));
-    var options = {};
-
-    // 'bhg' is a horizontal grouped bar chart in the Google Chart API.
-    // The grouping is irrelevant here since there is only one numeric column.
-    options.cht = 'bvg';
-
-    // Add a data range.
-    var min = 0;
-    var max = dataTable.getTableProperty('max');
-    options.chds = min + ',' + max;
-
-    // Chart title and style
-    options.chtt = 'Additions by decade';  // chart title
-    options.chts = '7D8804,15';
-
-    //options.chxt = 'x,x,y';
-    //options.chxl = '2:|Decade';
-    //options.chxp = '0,50';
-
-    vis.draw(dataTable, options);
+    var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
+    google.visualization.events.addListener(vis, 'select', function() {
+      var decade = dataTable.getValue(vis.getSelection()[0].row,0);
+      // TODO: handle 'earlier' label
+      if (decade != 'earlier' && decade.length > 3) {
+        decade = decade.substr(0,4);
+        var dateTo = addDecade(decade);
+        var dateRange = "occurrence_date:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
+        // eg. occurrence_date:[1990-01-01T12:00:00Z%20TO%202000-01-01T12:00:00Z]
+        document.location.href = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${collectionInstance.uid}&fq=" + dateRange;
+      }
+    });
+    vis.draw(dataTable, {
+      width: 600,
+      height: 300,
+      chartArea:  {left: 50},
+      title: "Additions by decade",
+      titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
+      legend: 'none'
+    });
+    // show caption
+    $('span.decadeChartCaption').css('visibility', 'visible');
+  } else {
+    // no data
+    $('div#decadeChart').css("display","none");
   }
 }
 /************************************************************\
-*
+* increment year by a decade, eg 1990 -> 2000
+\************************************************************/
+function addDecade(from) {
+  var num = parseInt(from);
+  return num + 10;
+}
+/************************************************************\
+* Taxonomic breakdown chart
 \************************************************************/
 function drawTaxonChart(dataTable) {
   var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
@@ -529,7 +527,7 @@ function drawTaxonChart(dataTable) {
   $('span.taxonChartCaption').css('visibility', 'visible');
 }
 /************************************************************\
-*
+* Put back in orginal state
 \************************************************************/
 function resetTaxonChart() {
   taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
@@ -537,7 +535,7 @@ function resetTaxonChart() {
   $('span#resetTaxonChart').html("");
 }
 /************************************************************\
-*
+* Draw % digitised bar (progress bar)
 \************************************************************/
 function setProgress(percentage)
 {
@@ -565,10 +563,10 @@ function setProgress(percentage)
   $('#progressBar').css('backgroundPosition',newProgress+' 0');
 }
 /************************************************************\
-*
+* Load charts
 \************************************************************/
 
-        google.load("visualization", "1", {packages:["imagechart","corechart"]});
+        google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(onLoadCallback);
 
       </script>

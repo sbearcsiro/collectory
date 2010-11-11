@@ -346,12 +346,23 @@ function onLoadCallback() {
 * Handle biocache records response
 \************************************************************/
 function biocacheRecordsHandler(response) {
-  setNumbers(response.totalRecords, ${collectionInstance.numRecords});
-  if (response.totalRecords < 1) {
-    $('a.recordsLink').css('visibility','hidden');
-    $('div#taxonChart').html('');
+  if (response.error == undefined) {
+    setNumbers(response.totalRecords, ${collectionInstance.numRecords});
+    if (response.totalRecords < 1) {
+      noBiocacheData();
+    }
+    drawDecadeChart(response.decades);
+  } else {
+    noBiocacheData();
   }
-  drawDecadeChart(response.decades);
+}
+/************************************************************\
+* Set biocache record numbers to none and hide link and chart
+\************************************************************/
+function noBiocacheData() {
+  setNumbers(0);
+  $('a.recordsLink').css('visibility','hidden');
+  $('div#decadeChart').css("display","none");
 }
 /************************************************************\
 * Set total and percent biocache record numbers
@@ -416,15 +427,15 @@ function decadeBreakdownRequestHandler(response) {
 * Handle taxon breakdown response
 \************************************************************/
 function taxonBreakdownRequestHandler(response) {
-  if (response.error != undefined) {
-    clearTaxonChart(response.error);
-  } else {
+  if (response.error == undefined) {
     var data = new google.visualization.DataTable(response);
     if (data.getNumberOfRows() > 0) {
       drawTaxonChart(data);
     } else {
       clearTaxonChart();
     }
+  } else {
+    clearTaxonChart(response.error);
   }
 }
 /************************************************************\
@@ -489,12 +500,12 @@ function drawTaxonChart(dataTable) {
     options.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank')
   }
   options.titleTextStyle = {color: "#555", fontName: 'Arial', fontSize: 15};
-  //options.sliceVisibilityThreshold = 1/2000;
+  options.sliceVisibilityThreshold = 0;
   //options.pieSliceText = "label";
   options.legend = "left";
   google.visualization.events.addListener(chart, 'select', function() {
-    var rank = dataTable.getTableProperty('rank')
     var name = dataTable.getValue(chart.getSelection()[0].row,0);
+    var rank = dataTable.getTableProperty('rank')
     // differentiate between clicks on legend versus slices
     if (chart.getSelection()[0].column == undefined) {
       // clicked legend - show records

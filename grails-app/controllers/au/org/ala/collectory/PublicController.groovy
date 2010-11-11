@@ -71,17 +71,19 @@ class PublicController {
 
         def count = 0
         def conn = new URL(url).openConnection()
-        conn.setConnectTimeout 2000
         try {
+            conn.setConnectTimeout(5000)
+            conn.setReadTimeout(10000)
             def json = conn.content.text
             def searchResult = JSON.parse(json)?.searchResult
+            //println buildDecadeDataTableFromFacetResults(searchResult?.facetResults)
             def result = [totalRecords: searchResult?.totalRecords, decades: buildDecadeDataTableFromFacetResults(searchResult?.facetResults)]
    // sleep delay
             render result as JSON
         } catch (SocketTimeoutException e) {
             log.warn "Timed out looking up record count. URL= ${url}."
-            def result = [error:"Timed out looking up record count.", totalRecords: 0, decades: null]
-            render result as JSON
+            def error = [error:"Timed out looking up record count.", totalRecords: 0, decades: null]
+            render error as JSON
         } catch (Exception e) {
             log.warn "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
             def error = ["error":"Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
@@ -136,6 +138,11 @@ class PublicController {
         }
     }
 
+    def slowResponseForTesting = {
+        sleep 5000
+        render "Done."
+    }
+
     /**
      * Returns JSON in Google charts DataTable format showing breakdown of records by taxonomic group.
      *
@@ -156,16 +163,17 @@ class PublicController {
         } else {
             /* get taxon breakdown */
             def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${instance.uid}.json";
+            //taxonUrl = ConfigurationHolder.config.grails.serverURL + "/public/slowResponseForTesting"
             def conn = new URL(taxonUrl).openConnection()
-            conn.setConnectTimeout 1500
-            def dataTable = null
             def json
             try {
+                conn.setConnectTimeout(5000)
+                conn.setReadTimeout(10000)
                 json = conn.content.text
                 //println "Response = " + json
                 def breakdown = JSON.parse(json)?.breakdown
                 if (breakdown && breakdown.toString() != "null") {
-                    dataTable = buildPieChartDataTable(breakdown,"all","")
+                    def dataTable = buildPieChartDataTable(breakdown,"all","")
                     if (dataTable) {
                         //sleep delay
                         render dataTable
@@ -181,10 +189,12 @@ class PublicController {
                 }
             } catch (SocketTimeoutException e) {
                 log.warn "Timed out getting taxa breakdown."
-                def result = [error:"Timed out getting taxa breakdown.", dataTable: null]
-                render result as JSON
+                def error = [error:"Timed out getting taxa breakdown.", dataTable: null]
+                render error as JSON
             } catch (Exception e) {
                 log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
+                def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}.", dataTable: null]
+                render error as JSON
             }
         }
     }
@@ -209,10 +219,11 @@ class PublicController {
             /* get rank breakdown */
             def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${instance.uid}.json?name=${params.name}&rank=${params.rank}"
             def conn = new URL(rankUrl).openConnection()
-            conn.setConnectTimeout 1500
             def dataTable = null
             def json
             try {
+                conn.setConnectTimeout 5000
+                conn.setReadTimeout 10000
                 json = conn.content.text
                 //println "Response = " + json
                 def breakdown = JSON.parse(json)?.breakdown
@@ -229,10 +240,12 @@ class PublicController {
                 }
             } catch (SocketTimeoutException e) {
                 log.warn "Timed out getting rank breakdown."
-                def result = [error:"Timed out getting rank breakdown.", dataTable: null]
-                render result as JSON
+                def error = [error:"Timed out getting rank breakdown.", dataTable: null]
+                render error as JSON
             } catch (Exception e) {
                 log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${rankUrl}."
+                def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}.", dataTable: null]
+                render error as JSON
             }
         }
     }
@@ -250,10 +263,11 @@ class PublicController {
         }
         def url = baseUrl + "alaspatial/ws/density/map?${uidType}=" + params.uid
         def conn = new URL(url).openConnection()
-        conn.setConnectTimeout 2000
         conn.addRequestProperty("accept","application/json")
         def json
         try {
+            conn.setConnectTimeout 5000
+            conn.setReadTimeout 10000
             json = conn.content.text
             def mapResponse = JSON.parse(json)
             def mapType = mapResponse.type
@@ -553,11 +567,11 @@ class PublicController {
                 // grab the label for the first decade shown (first non-zero count)
                 if (!records) {beforeLabel = label}
 
+                // put a comma before each record but the first
+                records += (records == "") ? "" : ","
+
                 // add the record
                 records += '{"c":[{"v":"' + label + '","f":null},{"v":' + it.count + ',"f":null}]}'
-
-                // put a comma after each record but the last
-                records += (index == input.size() - 1) ? "" : ","
 
                 // flag that we have started - so don't skip decades with zero count
                 started = true
@@ -573,7 +587,7 @@ class PublicController {
         if (!records) {
             return ""
         }
-        
+
         // add the before data (if it exists) before the other records
         if (beforeCount) {
             records = '{"c":[{"v":"earlier' + '","f":null},{"v":' + beforeCount + ',"f":null}]},' + records

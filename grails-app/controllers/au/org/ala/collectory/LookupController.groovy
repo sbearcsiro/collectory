@@ -73,6 +73,32 @@ class LookupController {
         }
     }
 
+    /**
+     * Returns the name for the entity with the passed UID.
+     */
+    def name = {
+        def uid = params.id
+        def result
+        if (uid && uid.size() > 2) {
+            def nm = ''
+            switch (uid[0..1]) {
+                case 'co': nm = Collection.executeQuery("select c.name from Collection c where c.uid = ?",[uid]); break
+                case 'in': nm = Collection.executeQuery("select c.name from Institution as c where c.uid = ?",[uid]); break
+                case 'dp': nm = Collection.executeQuery("select c.name from DataProvider as c where c.uid = ?",[uid]); break
+                case 'dr': nm = Collection.executeQuery("select c.name from DataResource as c where c.uid = ?",[uid]); break
+                case 'dh': nm = Collection.executeQuery("select c.name from DataHub as c where c.uid = ?",[uid]); break
+            }
+            if (nm) {
+                result = [name: nm[0]]
+            } else {
+                result = ["error":"uid not found: " + params.id]
+            }
+        } else {
+            result = ["error":"invalid uid = " + params.id]
+        }
+        render result as JSON
+    }
+
     def citation = {
         // input is a json object of the form ['co123','in23','dp45']
         def uids = null

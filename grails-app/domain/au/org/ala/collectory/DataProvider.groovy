@@ -29,11 +29,18 @@ class DataProvider extends ProviderGroup implements Serializable {
      */
     DataProviderSummary buildSummary() {
         DataProviderSummary dps = init(new DataProviderSummary()) as DataProviderSummary
-        def list = []
-        resources.each {
-            list << [it.uid, it.name]
+        // safety
+        if (resources) {
+            def list = []
+            resources.each {
+                if (it.hasProperty('uid')) {
+                    list << [it.uid, it.name]
+                } else {
+                    log.error("problem accessing resources for uid = " + uid)
+                }
+            }
+            dps.resources = list
         }
-        dps.resources = list
         return dps
     }
 

@@ -137,17 +137,6 @@ ul.taxaBreakdown input {
     padding-left: 15px;
 }
 
-/*#fishBreakdown { background:url("../images/taxa/pisces.gif")  no-repeat; padding-left:40px; background-position: left;}
-#birdsBreakdown { background:url("../images/taxa/aves.png") no-repeat; padding-left:40px; background-position: left;}
-#frogsBreakdown { background:url("../images/taxa/amphibia.png") no-repeat; padding-left:40px; background-position: left;}
-#reptilesBreakdown { background:url("../images/taxa/reptilia.png") no-repeat ; padding-left:40px; background-position: left;}
-#mammalsBreakdown { background:url("../images/taxa/mammalia.png") no-repeat; padding-left:40px; background-position: left;}
-#invertsBreakdown { background:url("../images/taxa/arthropoda.png") no-repeat; padding-left:40px; background-position: left;}
-#plantsBreakdown { background:url("../images/taxa/flower.png") no-repeat; padding-left:40px; background-position: left;}
-#fernsBreakdown { background:url("../images/taxa/fern.png") no-repeat; padding-left:40px; background-position: left;}
-#fungiBreakdown { background:url("../images/taxa/fungi.png") no-repeat; padding-left:40px; background-position: left;}
-#microbesBreakdown { background:url("../images/taxa/microbe.png") no-repeat; padding-left:40px; background-position: left;}*/
-
 .olControlPanel {
     position:relative;
     top:130px;
@@ -183,9 +172,51 @@ ul.taxaBreakdown input {
 
 /*  charts */
 
+div.vertical-charts {
+    height: auto !important;
+}
+
+#statistics div.inline {
+    width:400px;
+}
+
+/************************************************************\
+* Records maps
+\************************************************************/
+
 div.distributionImage {
     margin-left: 10px;
 }
+
+p.asterisk-container {
+    position:relative;
+    z-index: 3000;
+    width: 200px;
+    padding-left: 80px;
+}
+
+.vertical-charts div.dodgy-label {
+    padding-left: 70px;
+    margin-bottom: 30px;
+}
+
+#statistics div.dodgy-label {
+    position: relative;
+    z-index: 5000;
+    top: -180px;
+    left: 60px;
+}
+
+/* 1 column */
+
+.vertical-charts div.distributionImage img {
+    position: relative;
+    z-index: 4;
+    vertical-align: middle;
+    margin-left: 35px;
+}
+
+/* 2 column */
 
 #statistics div.distributionImage {
     z-index: 2000;
@@ -207,40 +238,33 @@ div.distributionImage {
     z-index: 4;
 }
 
-div.vertical-charts {
-    height: auto !important;
+/************************************************************\
+* Taxon charts
+\************************************************************/
+.vertical-charts #taxonChart {
+    margin-left: 40px;
 }
 
-.vertical-charts div.distributionImage img {
-    position: relative;
-    z-index: 4;
-    vertical-align: middle;
-    margin-left: 35px;
-}
-
-#taxonChart iFrame {
-    margin-top: -60px;
-    margin-left: -15px;
+.vertical-charts #taxonChart iFrame {
     position: relative;
     z-index: 0;
 }
 
-.vertical-charts #taxonChart iFrame {
-    margin-top: -20px;
+#statistics div#taxonChart {
+    padding-left: 50px;
+}
+
+#taxonChart iFrame {
     position: relative;
     z-index: 0;
 }
 
 #speedo {
-    float:right;
     text-align:center;
-    padding-right:130px;
-    /*margin-top:-40px;*/
 }
 
 #speedoCaption {
     position: relative;
-    z-index: 2;
 }
 
 a.recordsLink {
@@ -279,18 +303,24 @@ span#resetTaxonChart {
     cursor:pointer;
 }
 
+div#taxonCaveat {
+    padding-top:10px;
+}
 /* 1 column */
 div#taxonChartCaption {
     text-align:center;
-    width: 200px;
+    width: 245px;
     position:relative;
-    top:-120px;
-    left: 260px;
+    top:-20px;
+    left: 230px;
 }
 
-div#decadeChart {
+/************************************************************\
+* Decade charts
+\************************************************************/
+#statistics div#decadeChart {
     position: relative;
-    margin-top: -100px;
+    margin-top: -80px;
     z-index: 20;
     width: 600px;
 }
@@ -305,9 +335,6 @@ div#decadeChartCaption {
 }
 
 /* 2 column */
-#statistics span.taxonChartCaption {
-    color: #555;
-}
 
 #statistics span#resetTaxonChart {
     color: #01716E;
@@ -316,7 +343,8 @@ div#decadeChartCaption {
 }
 
 #statistics div#taxonChartCaption {
-    left: 685px;    
+    left: 670px;    
+    top:-120px;
 }
 
 #statistics div#decadeChart {

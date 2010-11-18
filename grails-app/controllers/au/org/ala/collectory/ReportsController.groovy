@@ -80,6 +80,11 @@ class ReportsController {
         [collections: Collection.list([sort:'name'])]
     }
 
+    def collectionTypes = {
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'collection types'
+        [collections: Collection.list([sort:'name'])]
+    }
+
     def attributions = {
         def collAttributions = []
         Collection.list([sort: 'name']).each {

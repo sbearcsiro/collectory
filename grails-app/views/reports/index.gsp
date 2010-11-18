@@ -71,6 +71,8 @@
           <span class="linkText">- lists collections where the number of digitised records declared significantly exceeds the number of biocache records.</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="classification">Show classifications</g:link>
           <span class="linkText">- shows how collections are classified according to their keywords into the filter groups used on the collections map page.</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="collectionTypes">Show material types</g:link>
+          <span class="linkText">- shows the type keywords associated with each collection, eg preserved, living, tissue.</span></p>
         </div>
       </div>
 

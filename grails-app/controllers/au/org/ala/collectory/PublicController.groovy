@@ -29,6 +29,10 @@ class PublicController {
 
     def index = { redirect(action: 'map')}
 
+    def chartTest = {
+        
+    }
+
     /**
      * Shows the public page for any entity when passed a UID.
      *
@@ -273,7 +277,7 @@ class PublicController {
             def mapType = mapResponse.type
             def legendUrl = mapResponse.legendUrl
             def mapUrl = mapResponse.mapUrl
-            if (mapType == 'basemap' || mapType == '' || mapUrl.endsWith('mapaus1_white.png')) {
+            if (mapType == 'blank' || mapType == '' || mapUrl.endsWith('mapaus1_white.png')) {
                 // means no data available
                 legendUrl = resource(dir:'images/map',file:'mapping-data-not-available.png')
             }
@@ -303,8 +307,47 @@ class PublicController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'institution.label', default: 'Institution'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
+            // get some data on child institutions
+            def childInstitutions = []
+            def ciCollectionsCount = 0
+            institution.childInstitutions?.tokenize(' ')?.each {
+                def inst = ProviderGroup._get(it as String)
+                if (inst) {
+                    childInstitutions << inst
+                    ciCollectionsCount += inst.listCollections().size()
+                }
+            }
+            def recordExceptions = [:]
+            if (childInstitutions) {
+                recordExceptions['childInstitutions'] = childInstitutions
+                recordExceptions['listType'] = "excludes"  // default
+
+                def includes = [:]
+                // if all collection are from child institutions - use excludes
+                if (institution.listCollections().size() == ciCollectionsCount) {
+                    recordExceptions['listType'] = "excludes-all"
+                } else
+                // we want to list either the included or excluded collections whichever is shorter
+                if ((institution.listCollections().size() - ciCollectionsCount) < ciCollectionsCount) {
+                    // it's better to list the includes
+                    institution.listCollections().each { coll ->
+                        boolean isFromChildInstitution = false
+                        childInstitutions.each { inst ->
+                            if (inst.uid == coll.institution?.uid) {
+                                isFromChildInstitution = true
+                            }
+                        }
+                        if (!isFromChildInstitution) {
+                            includes[coll.uid] = coll.name
+                        }
+                    }
+                    recordExceptions['listType'] = "includes"
+                    recordExceptions['includes'] = includes
+                }
+            }
+
             ActivityLog.log authService.username(), authService.isAdmin(), institution.uid, Action.VIEW
-            [institution: institution]
+            [instance: institution, exceptions: recordExceptions]
         }
     }
 
@@ -331,20 +374,6 @@ class PublicController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataResource.label', default: 'Data resource'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
-            // lookup number of biocache records
-            /*def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + instance.generatePermalink()
-
-            def count = 0
-            def conn = new URL(url).openConnection()
-            conn.setConnectTimeout 1500
-            try {
-                def json = conn.content.text
-                count = JSON.parse(json)?.searchResult?.totalRecords
-            } catch (Exception e) {
-                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
-            }*/
-
             ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
             [instance: instance]
         }
@@ -365,6 +394,14 @@ class PublicController {
     }
 
     def map3 = {
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
+        def partnerCollections = Collection.list([sort:"name"]).findAll {
+            it.isALAPartner()
+        }
+        [collections: partnerCollections]
+    }
+
+    def map4 = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
         def partnerCollections = Collection.list([sort:"name"]).findAll {
             it.isALAPartner()

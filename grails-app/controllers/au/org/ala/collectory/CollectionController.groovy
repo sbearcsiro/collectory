@@ -23,11 +23,41 @@ class CollectionController extends ProviderGroupController {
     def list = {
         if (params.message)
             flash.message = params.message
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
         params.sort = params.sort ?: "name"
+        def colls = Collection.list(params)
+        def sortOrder = (params.order == 'desc') ? -1 : 1
+        if (params.sort == 'institution') {
+            // need to sort by institution name
+            colls.sort { a,b ->
+                if (!a.institution) return sortOrder
+                if (!b.institution) return -1 * sortOrder
+                return (a.institution?.name <=> b.institution?.name) * sortOrder
+            }
+        }
+        if (params.sort == 'acronym') {
+            // need to sort by name
+            colls.sort { a,b ->
+                if (!a.acronym) return sortOrder
+                if (!b.acronym) return -1 * sortOrder
+                return (a.acronym <=> b.acronym) * sortOrder
+            }
+        }
+        if (params.sort == 'keywords') {
+            // need to sort by derived classification
+            colls.sort { a,b ->
+                def aClass = cl.reportClassification(keywords: a.keywords).toString()
+                def bClass = cl.reportClassification(keywords: b.keywords).toString()
+                if (!aClass) return sortOrder
+                if (!bClass) return -1 * sortOrder
+                if (aClass == bClass) {
+                    // secondary sort on name
+                    return a.name <=> b.name
+                }
+                return (aClass <=> bClass) * sortOrder
+            }
+        }
         ActivityLog.log username(), isAdmin(), Action.LIST
-        [collInstanceList: Collection.list(params),
-                collInstanceTotal: Collection.count()]
+        [collInstanceList: colls, collInstanceTotal: Collection.count()]
     }
 
     def myList = {

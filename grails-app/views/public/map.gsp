@@ -45,7 +45,7 @@
       <div><!-- wrap map and list-->
         <div id="column-one" class="fudge">
           <div class="section">
-            <p style="padding:5px 10px 0 10px">Map these collections:</p>
+            <p style="padding:15px 10px 0 10px">Show these collections:</p>
             <ul id="map-collections">
               <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all">Select all</label>
                 <ul class="taxaBreakdown">
@@ -58,16 +58,20 @@
                   <li id="microbialBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes">Microbial collections</label></li>
                 </ul>
               </li>
-              <p><span id='numFeatures'></span></p>
             </ul>
-            <!--div><textarea class="output" id="output"></textarea></div-->
+            <div style="width:235px;margin-left:0;">
+              <p class="collectionsCount"><span id='numFeatures'></span></p>
+              <p class="collectionsCount"><span id='numVisible'></span> <span id="numUnMappable"></span></p>
+            </div>
           </div><!--close section-->
         </div><!--close column-one-->
         <div id="map">
           <div id="column-two" class="map-column">
             <div class="section">
-              <span id='numVisible' style="padding-left:10px;"></span> <span id="numUnMappable"></span>
-              <div id="map_canvas"></div>
+              <p style="width:588px;padding-bottom:8px;padding-left:30px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
+              <div id="map-container">
+                <div id="map_canvas"></div>
+              </div>
               <p style="padding-left:150px;"><img style="vertical-align: middle;" src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
             </div><!--close section-->
           </div><!--close column-two-->
@@ -76,18 +80,11 @@
         <div id="list">
           <div id="column-two" class="list-column">
             <div class="nameList section" id="names">
-              <p><span id="numFilteredCollections">No collections are selected</span>. Click on a collection name to see more details including the digitised specimen records for the collection.
-              Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>.</p>
-              <ul id="filtered-list" style="padding-left:15px;">
-                <g:each var="c" in="${collections}" status="i">
-                  <li>
-                    <g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link>
-                    <g:if test="${!c.canBeMapped()}">
-                      <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>
-                    </g:if>
-                  </li>
-                </g:each>
+              <p>Collections are shown grouped by their institution. Click on a collection name to see more details including the digitised specimen records for the collection.
+                Click on the institution name to learn more about the institution.</p>
+              <ul id="filtered-list">
               </ul>
+              <p>Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>.</p>
             </div><!--close nameList-->
           </div><!--close column-one-->
         </div><!--close list-->

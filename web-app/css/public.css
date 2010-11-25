@@ -170,95 +170,95 @@ ul.taxaBreakdown input {
     left: -10000px;
 }
 
-/*  charts */
+/************************************************************\
+* Charts
+\************************************************************/
+
+div.child-institutions {
+    padding-top: 20px;
+}
+
+table.charts {
+    margin-left: 20px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border: none;
+}
 
 div.vertical-charts {
     height: auto !important;
+    margin-left: 30px;
 }
 
-#statistics div.inline {
-    width:400px;
+.vertical-charts h3 {
+    margin-top: 40px;
+}
+
+div.vertical-charts h3:first-child {
+    margin-top: 15px;
 }
 
 /************************************************************\
 * Records maps
 \************************************************************/
 
-div.distributionImage {
-    margin-left: 10px;
+div.learnMaps {
+    padding-left: 45px;
 }
 
-p.asterisk-container {
-    position:relative;
-    z-index: 3000;
-    width: 200px;
-    padding-left: 80px;
-}
-
-.vertical-charts div.dodgy-label {
-    padding-left: 70px;
-    margin-bottom: 30px;
-}
-
-#statistics div.dodgy-label {
-    position: relative;
-    z-index: 5000;
-    top: -180px;
-    left: 60px;
-}
-
-/* 1 column */
-
-.vertical-charts div.distributionImage img {
-    position: relative;
-    z-index: 4;
-    vertical-align: middle;
-    margin-left: 35px;
-}
-
-/* 2 column */
-
-#statistics div.distributionImage {
-    z-index: 2000;
-    display: inline;
-}
-
-#statistics div.distributionImage img {
-    z-index: 2000;
-    vertical-align: top;
-}
-
-#statistics div.distributionImage img#recordsMap {
-    margin-top: 10px;
-}
-
-#statistics div.distributionImage img#mapLegend {
+img#mapLegend {
     margin-top: 50px;
-    position: relative;
-    z-index: 4;
+    vertical-align: top;
+    padding-left: 10px;
 }
 
 /************************************************************\
 * Taxon charts
 \************************************************************/
-.vertical-charts #taxonChart {
-    margin-left: 40px;
+img.taxon-loading {
+    margin-left: 230px;
+    margin-top: 150px;
+    margin-bottom: 218px;
 }
 
-.vertical-charts #taxonChart iFrame {
+span.taxonChartCaption {
+    color: #555;
+}
+
+span#resetTaxonChart {
+    color: #01716E;
+    text-decoration:underline;
+    cursor:pointer;
+}
+
+div#taxonCaveat {
+    padding-top:10px;
+}
+/* 1 column */
+div#taxonChartCaption {
+    text-align:center;
+}
+
+/* 2 column */
+#statistics span#resetTaxonChart {
+    color: #01716E;
+    text-decoration:underline;
+    cursor:pointer;
+}
+
+div#taxonChartCaption {
     position: relative;
-    z-index: 0;
+    z-index: 2;
+    margin-top: -50px;
 }
 
-#statistics div#taxonChart {
-    padding-left: 50px;
+div#taxonChartCaption {
+    width: 430px;
 }
 
-#taxonChart iFrame {
-    position: relative;
-    z-index: 0;
-}
-
+/************************************************************\
+* Progress bar (speedo)
+\************************************************************/
 #speedo {
     text-align:center;
 }
@@ -291,64 +291,21 @@ p.lastUpdated {
     padding-bottom: 0 !important;
 }
 
-/* painful positioning of chart label because of the dynamic generation of the div content and IE bugs */
-/* all */
-span.taxonChartCaption {
-    color: #555;
-}
-
-span#resetTaxonChart {
-    color: #01716E;
-    text-decoration:underline;
-    cursor:pointer;
-}
-
-div#taxonCaveat {
-    padding-top:10px;
-}
-/* 1 column */
-div#taxonChartCaption {
-    text-align:center;
-    width: 245px;
-    position:relative;
-    top:-20px;
-    left: 230px;
-}
 
 /************************************************************\
 * Decade charts
 \************************************************************/
-#statistics div#decadeChart {
-    position: relative;
-    margin-top: -80px;
-    z-index: 20;
-    width: 600px;
+img.decade-loading {
+    margin-left: 130px;
+    margin-bottom: 108px;
 }
 
 div#decadeChartCaption {
-    margin-top: -10px;
     padding-left: 100px;
     padding-bottom: 20px;
     color: #555;
     position: relative;
-    z-index: 22;
-}
-
-/* 2 column */
-
-#statistics span#resetTaxonChart {
-    color: #01716E;
-    text-decoration:underline;
-    cursor:pointer;
-}
-
-#statistics div#taxonChartCaption {
-    left: 670px;    
-    top:-120px;
-}
-
-#statistics div#decadeChart {
-    margin-top: -150px;
+    z-index: 2;
 }
 
 /* ------------*/

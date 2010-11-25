@@ -663,6 +663,14 @@ class CollectoryTagLib {
         out << "<a href='#' onclick=\"return sendBugEmail('${email}','${attrs.message}')\">${body()}</a>"
     }
 
+    /**
+     * Massages the collection name for display.
+     *  - adds collection at the end unless the name contains collection or herbarium
+     *  - adds the specified prefix if the name doesn't already start with it (handles collections that start with 'The')
+     *
+     * @name name of the collection
+     * @prefix added before the name
+     */
     def collectionName = { attrs ->
         def name = attrs.name
         if (name && !(name =~ 'Collection' || name =~ 'Herbarium')) {
@@ -732,11 +740,20 @@ class CollectoryTagLib {
     def formattedText = {attrs, body ->
         def text = body().toString()
         if (text) {
-            // links
+            // in-line links
             if (!attrs.noLink) {
-                def urlMatch = /\bhttp:\S*\b/   // word boundary + http: + non-whitespace + word boundary
+                def urlMatch = /[^\[]http:\S*\b/   // word boundary + http: + non-whitespace + word boundary
                 text = text.replaceAll(urlMatch) {
                     "<a class='external_icon' target='_blank' href='${it}'>${it}</a>"
+                }
+            }
+
+            // wiki-like links
+            if (!attrs.noLink) {
+                def urlMatch = /\[(http:\S*)\b ([^\]]*)\]/   // [http: + text to next word boundary + space + all text ubtil next ]
+                text = text.replaceAll(urlMatch) {s1, s2, s3 ->
+                    println "matched ${s2} - ${s3}"
+                    "<a class='external_icon' target='_blank' href='${s2}'>${s3}</a>"
                 }
             }
 
@@ -799,15 +816,13 @@ class CollectoryTagLib {
     }
 
     /**
-     * Builds the link to bio-cache records for the passed collection.
+     * Builds the link to bio-cache records for the passed entity.
      *
      * @param collection the collection to search for
      * @param onlyIf a boolean switch
      * @body the body of the link
      */
     def recordsLink = {attrs, body ->
-        //attrs.each {println it}
-        // must have at least one value to build a query
         if (attrs.collection) {
             if (attrs.containsKey('onlyIf') && !attrs.onlyIf) {
                 out << body()
@@ -882,23 +897,24 @@ class CollectoryTagLib {
     /**
      * Show map of records based on UID
      *
-     * @param uid of the entity
-     * @param type collection, institution, dataProvider or dataResource
-     * @body html fragment to include above map
+     * - content is loaded by ajax calls
      */
-    def recordsMap = {attrs, body ->
-/*
-        def entityType = "collectionUid"
-        switch (attrs.type) {
-            case "institution": entityType = "institutionUid"; break;
-            case "dataProvider": entityType = "dataProviderUid"; break;
-            case "dataResource": entityType = "dataResourceUid"; break;
-        }
-*/
-        out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
-                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' /></div>"
+    def recordsMap = {
+        out <<
+            "<div class='recordsMap'>" +
+            " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
+            " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
+            "</div>" +
+            "<div class='learnMaps'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps<span class='asterisk-container'>&nbsp;</span></a></div>"
+
+        /*out << "<div class='distributionImage'>${body()}<img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'map-loader.gif')}' width='340' />" +
+                "<img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
+                "</div>"*/
     }
 
+    /**
+     * @deprecated
+     */
     def decadeBreakdown = {attrs ->
         if (attrs.data) {
             def labels = ""
@@ -915,6 +931,43 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Draw elements for taxa breakdown chart
+     */
+    def taxonChart = {
+        out <<
+            "<div id='taxonChart'>" +
+            " <img class='taxon-loading' alt='loading...' src='${resource(dir:'images/ala',file:'ajax-loader.gif')}'/>" +
+            "</div>" +
+            "<div id='taxonChartCaption' style='visibility:hidden;'>" +
+            " <span class='taxonChartCaption'>Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>" +
+            " <span id='resetTaxonChart' onclick='resetTaxonChart()'></span>&nbsp;" +
+            " <div class='taxonCaveat'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/wrong-classification/'>Learn more about classification errors</a>&nbsp;</span></div>" +
+            "</div>"
+
+        /*out << '<div id="taxonChart">\n' +
+                '<img class="taxon-loading" alt="loading..." src="' + resource(dir:'images/ala',file:'ajax-loader.gif') + '"/>\n' +
+                '</div>\n' +
+                '<div id="taxonChartCaption" style="visibility:hidden;">\n' +
+                '<span class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>\n' +
+                '<span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;\n' +
+                '<div class="taxonCaveat"><span class="asterisk-container"><a href="http://www.ala.org.au/about/progress/wrong-classification/">Learn more about classification errors</a>&nbsp;</span></div>\n' +
+                '</div>\n'*/
+    }
+
+    /**
+     * Draw elements for decade breakdown chart
+     */
+    def decadeChart = {
+        out << """                <div id="decadeChart">
+                  <img class="decade-loading alt="loading..." src='""" + resource(dir:'images/ala',file:'decade-loader.gif') + """'/>
+                </div>
+                <div id="decadeChartCaption">
+                  <span style="visibility:hidden;" class="decadeChartCaption">Click a column to view records for that decade.</span>
+                </div>
+        """
+    }
+    
     def homeLink = {
         out << '<a class="home" href="' + createLink(uri:"/admin") + '">Home</a>'
     }
@@ -958,12 +1011,56 @@ class CollectoryTagLib {
 
     def reportClassification = { attrs ->
         def filter = attrs.filter
-        def pg = attrs.entity
-        if (Classification.matchKeywords(pg?.keywords, filter)) {
+        if (filter) {
+            // if filter specified: return tick if present
+            if (Classification.matchKeywords(attrs.keywords, filter)) {
+                out << "<img src='" + resource(dir:'images/ala', file:'olive-tick.png') + "'/>"
+            }
+        } else {
+            // otherwise return classification in priority order
+            if (Classification.matchKeywords(attrs.keywords, 'plants')) {
+                out << 'herbarium'
+            } else
+            if (Classification.matchKeywords(attrs.keywords, 'entomology')) {
+                out << 'entomology'
+            } else
+            if (Classification.matchKeywords(attrs.keywords, 'fauna')) {
+                out << 'fauna'
+            } else
+            if (Classification.matchKeywords(attrs.keywords, 'microbes')) {
+                out << 'microbial'
+            }
+        }
+    }
+
+    def tick = { attrs ->
+        if (attrs.isTrue) {
             out << "<img src='" + resource(dir:'images/ala', file:'olive-tick.png') + "'/>"
         }
     }
 
+    /**
+     * Calculates a noun for a phrase like "holds 13,000 specimens" where specimens may be replaced by cultures
+     * or some other appropriate noun.
+     * @param types the list of collection types
+     */
+    def nounForTypes = {attrs ->
+        def nouns = []
+        if (attrs.types =~ "preserved") {
+            nouns << "specimens"
+        }
+        if (attrs.types =~ "cellcultures" || attrs.types =~ "living") {
+            nouns << "cultures"
+        }
+        if (attrs.types =~ "genetic") {
+            nouns << "samples"
+        }
+        if (!nouns) {
+            nouns << "specimens"  // default
+        }
+        out << nouns.join(" and ")
+    }
+    
     /**
      * Adds site context to page title.
      */
@@ -1214,6 +1311,92 @@ class CollectoryTagLib {
             out << "</span></div>"
         } else {
             out << "Not authorised to edit."
+        }
+    }
+
+    def showRecordsExceptions = {attrs ->
+        def exceptions = attrs.exceptions
+        println exceptions
+        if (exceptions) {
+           out << '<div class="child-institutions">'
+           switch (exceptions.listType) {
+           case 'excludes':
+               out << '<span>Note that totals and charts do not include records provided by the related institution' +
+                       (exceptions.childInstitutions.size() > 1 ? 's' : '') + ':</span>'
+               out << '<ul>'
+               exceptions.childInstitutions.each {inst ->
+                   def collections = inst.listCollections()
+                   switch (collections?.size()) {
+                       case 0: break
+                       case 1:
+                           out << "<li>the ${link(controller: 'public', action: 'show', id: inst.uid) {inst.name}} which includes "
+                           out << "the ${link(controller: 'public', action: 'show', id: collections[0].uid) {collectionName(name: collections[0].name)}}.</li>"
+                           break;
+                       default:
+                           out << "the " + link(controller: 'public', action: 'show', id: inst.uid) {inst.name} + " which includes"
+                           out << "<ul>"
+                           collections.eachWithIndex { co, index ->
+                               out << "<li>the ${link(controller: 'public', action: 'show', id: co.uid) {collectionName(name: co.name)}}"
+                               out << (index == collections.size() - 1 ? "." : " and")
+                               out << "</li>"
+                           }
+                           out << "</ul>"
+                           break;
+                   }
+               }
+               out << "</ul>"
+               break;
+           case 'excludes-all':
+               out << '<span>Records for collections supported by this institution can be viewed on the pages of the related institution' +
+                       (exceptions.childInstitutions.size() > 1 ? 's' : '') + ':</span>'
+               out << '<ul>'
+               exceptions.childInstitutions.each {inst ->
+                   def collections = inst.listCollections()
+                   switch (collections?.size()) {
+                       case 0: break
+                       case 1:
+                           out << "<li>the ${link(controller: 'public', action: 'show', id: inst.uid) {inst.name}} which includes "
+                           out << "the ${link(controller: 'public', action: 'show', id: collections[0].uid) {collectionName(name: collections[0].name)}}.</li>"
+                           break;
+                       default:
+                           out << "the " + link(controller: 'public', action: 'show', id: inst.uid) {inst.name} + " which includes"
+                           out << "<ul>"
+                           collections.eachWithIndex { co, index ->
+                               out << "<li>the ${link(controller: 'public', action: 'show', id: co.uid) {collectionName(name: co.name)}}"
+                               out << (index == collections.size() - 1 ? "." : " and")
+                               out << "</li>"
+                           }
+                           out << "</ul>"
+                           break;
+                   }
+               }
+               out << "</ul>"
+               break;
+           case 'includes':
+               out << '<span>Note that totals and charts only include records from'
+               switch (exceptions.includes?.size()) {
+                   case 0: break
+                   case 1:
+                       out << " the ${link(controller: 'public', action: 'show', id: exceptions.includes[0].key) {collectionName(name: exceptions.includes[0].value)}}.</span>"
+                       break;
+                   default:
+                       out << ":</span><ul>"
+                       exceptions.includes.eachWithIndex { key, value, index ->
+                           out << "<li>the ${link(controller: 'public', action: 'show', id: key) {collectionName(name: value)}}"
+                           out << (index == exceptions.includes.size() - 1 ? "." : " and")
+                           out << "</li>"
+                       }
+                       out << "</ul>"
+                       break;
+               }
+               out << "<span>Totals and charts for the other collections can be viewed in the related institution" +
+                       (exceptions.childInstitutions.size() > 1 ? "s" : "") + ":</span><ul>"
+               exceptions.childInstitutions.each { inst ->
+                   out << "<li>" + link(controller: 'public', action: 'show', id: inst.uid) {inst.name} + "</li>"
+               }
+               out << "</ul>"
+           }
+          out << "</div>"
         }
     }
 }

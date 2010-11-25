@@ -91,14 +91,13 @@ class Institution extends ProviderGroup {
      * @return List of Collection
      */
     def listCollections() {
-        if (!childInstitutions) {
-            return collections
-        }
-        def result = collections
-        childInstitutions.tokenize(' ').each {
-            def i = _get(it)
-            if (i) {
-                result.addAll i.listCollections()
+        List result = collections.collect {it}
+        if (childInstitutions) {
+            childInstitutions.tokenize(' ').each {
+                def i = _get(it)
+                if (i) {
+                    result.addAll i.listCollections()
+                }
             }
         }
         return result

@@ -5,7 +5,7 @@
     height:470px;
 }
 
-#page-collections-map .map-alt #map_canvas {
+#page-collections-map #map_canvas {
     border:1px solid #333;
     width:588px ! important;
     height:470px;
@@ -19,12 +19,21 @@ div > div#map-container {
     padding-left: 30px;
 }
 
-.fudge {
-    width: 235px ! important;
-}
-
 .map-alt .fudge {
     width: 310px ! important;
+}
+
+.fudge {
+    width: 250px ! important;
+}
+
+.map-column div.section {
+    margin-top: 0;
+}
+
+div.nameList {
+    margin-top: 0;
+    margin-left: 35px;
 }
 
 .abstract {
@@ -46,8 +55,18 @@ div > div#map-container {
     width:755px !important;
 }
 
-.map-alt .list-column {
+.list-column {
     width:638px !important;
+}
+
+/* header colour for institutions */
+#filtered-list .highlight {
+    color: #718804;
+    font-size: 15px;
+}
+
+ul#filtered-list ul li {
+    margin-left: 25px;
 }
 
 /* move tabs across to where they relate to tabbed content

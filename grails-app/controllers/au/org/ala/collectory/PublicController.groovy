@@ -29,10 +29,6 @@ class PublicController {
 
     def index = { redirect(action: 'map')}
 
-    def chartTest = {
-        
-    }
-
     /**
      * Shows the public page for any entity when passed a UID.
      *
@@ -394,14 +390,6 @@ class PublicController {
     }
 
     def map3 = {
-        ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
-        def partnerCollections = Collection.list([sort:"name"]).findAll {
-            it.isALAPartner()
-        }
-        [collections: partnerCollections]
-    }
-
-    def map4 = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
         def partnerCollections = Collection.list([sort:"name"]).findAll {
             it.isALAPartner()

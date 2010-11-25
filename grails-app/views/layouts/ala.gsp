@@ -1,10 +1,11 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
 
 <head profile="http://gmpg.org/xfn/11">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8; IE=EmulateIE9">
+  
   <title><g:layoutTitle/></title>
 
     <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/style.css" type="text/css" media="screen" />
@@ -59,7 +60,7 @@
               selectFirst: false
           });
           _loadUserVoice();
-          
+
 		});
 
 	</script>
@@ -119,7 +120,7 @@
       <div class="copyright"><p><a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="left no-pipe"><img src="http://www.ala.org.au/wp-content/themes/ala/images/creativecommons.png" width="88" height="31" alt="" /></a>This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons">Creative Commons Attribution 3.0 Australia License</a></p><p>Provider content may be covered by other <span class="asterisk-container"><a href="http://www.ala.org.au/about/terms-of-use/" title="Terms of Use">Terms of Use</a>.</span></div>
   </div><!--close footer-->
   </div><!--close wrapper-->
-  <script type="text/javascript"> 
+  <script type="text/javascript">
       var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
       document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
   </script>

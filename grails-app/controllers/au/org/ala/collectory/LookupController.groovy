@@ -5,6 +5,9 @@ import java.text.NumberFormat
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
+import groovy.xml.MarkupBuilder
+import groovy.xml.MarkupBuilderHelper
+import groovy.xml.StreamingMarkupBuilder
 
 class LookupController {
 
@@ -276,5 +279,29 @@ class LookupController {
     def generateDataHubUid = {
         def resultMap = ['uid':idGeneratorService.getNextDataHubId()]
         render resultMap as JSON
+    }
+
+    def sitemap = {
+        def xml = new StreamingMarkupBuilder()
+        xml.encoding = "UTF-8"
+        response.contentType = 'text/xml'
+        render xml.bind {
+            mkp.xmlDeclaration()
+            urlset(xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9") {
+                url {
+                    loc(g.createLink(absolute: true, controller: 'public', action: 'map'))
+                    changefreq('weekly')
+                    priority(1.0)
+                }
+                [Collection, Institution, DataProvider, DataResource].each {
+                    it.list().each {domain->
+                        url {
+                            loc(g.createLink(absolute: true, controller: 'public', action: 'show', id: domain.uid))
+                            changefreq('weekly')
+                        }
+                    }
+                }
+            }
+        }.toString()
     }
 }

@@ -623,7 +623,7 @@ td.name-align {
 
 /* MEW for home page */
 .mainLink {
-    color: #363 !important;
+    color: #373 !important;
     font-size: 14px;
 }
 .mainText {
@@ -874,7 +874,7 @@ span.editLink a {
 }
 
 span.dataWarning a {
-    color: red;
+    color: #dd3102;
 }
 
 /* override YUI tabview colours
@@ -928,4 +928,26 @@ img.percentImage4 {
  padding: 0;
  margin: 5px 0 0 0;
  background-position: 1px 0;
+}
+
+/* styling for alphabetic index in list pages */
+div#index {
+    display: inline;
+    border: #ccc solid 1px;
+    padding: 1px 5px 1px 5px;
+    margin-left: 100px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+
+div#index span {
+    color: #bbb;
+}
+
+div#index a {
+    color: #48802c;
+}
+
+div.list {
+    margin-top: 10px;
 }

@@ -84,20 +84,22 @@
           </g:each>
         </ol>
 
-        <h2>Digitised records</h2>
-        <div>
-          <p style="padding-bottom:8px;"><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
-          <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name}.</cl:recordsLink>
-          <cl:showRecordsExceptions exceptions="${exceptions}"/>
-        </div>
-        <div class="section vertical-charts">
-          <h3>Map of records</h3>
-          <cl:recordsMap/>
-          <h3>Records by taxonomic group</h3>
-          <cl:taxonChart/>
-          <h3>Records by collection date</h3>
-          <cl:decadeChart/>
-        </div>
+        <g:if test="${ConfigurationHolder.config.ui.showChartsForInstitutions != 'false'}">
+          <h2>Digitised records</h2>
+          <div>
+            <p style="padding-bottom:8px;"><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
+            <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name}.</cl:recordsLink>
+            <cl:showRecordsExceptions exceptions="${exceptions}"/>
+          </div>
+          <div class="section vertical-charts">
+            <h3>Map of records</h3>
+            <cl:recordsMap/>
+            <h3>Records by taxonomic group</h3>
+            <cl:taxonChart/>
+            <h3>Records by collection date</h3>
+            <cl:decadeChart/>
+          </div>
+        </g:if>
 
         <cl:lastUpdated date="${instance.lastUpdated}"/>
 
@@ -193,16 +195,23 @@
 \************************************************************/
 function onLoadCallback() {
 
-  // summary biocache data
-  var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
-  $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
+  var showStats = true;
+  if ("${ConfigurationHolder.config.ui.showChartsForInstitutions}" == "false") {
+    showStats = false;
+  }
 
-  // taxon chart
-  loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 55);
+  if (showStats) {
+    // summary biocache data
+    var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
+    $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
 
-  // records map
-  var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-  $.get(mapServiceUrl, {}, mapRequestHandler);
+    // taxon chart
+    loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 55);
+
+    // records map
+    var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
+    $.get(mapServiceUrl, {}, mapRequestHandler);
+  }
 }
 /************************************************************\
 *

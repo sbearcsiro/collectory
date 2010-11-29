@@ -89,7 +89,7 @@
                 <p>Kingdoms covered include: <cl:concatenateStrings values='${fieldValue(bean: collectionInstance, field: "kingdomCoverage")}'/>.</p>
               </g:if>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'scientificNames')}">
-                <p>Specimens in the ${collectionInstance.name} include members from the following taxa:<br/>
+                <p><cl:collectionName name="${collectionInstance.name}" prefix="The "/> includes members from the following taxa:<br/>
                 <cl:JSONListAsStrings json='${fieldValue(bean: collectionInstance, field: "scientificNames")}'/>.</p>
               </g:if>
 
@@ -115,9 +115,10 @@
                 </g:if>
               </g:if>
 
-              <h2>Number of specimens in the collection</h2>
+              <g:set var="nouns" value="${cl.nounForTypes(types:collectionInstance.listCollectionTypes())}"/>
+              <h2>Number of <cl:nounForTypes types="${collectionInstance.listCollectionTypes()}"/> in the collection</h2>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecords') != '-1'}">
-                <p>The estimated number of specimens within <cl:collectionName prefix="the " name="${collectionInstance.name}"/> is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
+                <p>The estimated number of ${nouns} in <cl:collectionName prefix="the " name="${collectionInstance.name}"/> is ${fieldValue(bean: collectionInstance, field: "numRecords")}.</p>
               </g:if>
               <g:if test="${fieldValue(bean: collectionInstance, field: 'numRecordsDigitised') != '-1'}">
                 <p>Of these ${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} are databased.
@@ -254,7 +255,7 @@
               <h2>Digitised records available through the Atlas</h2>
               <div style="float:left;">
                 <g:if test="${collectionInstance.numRecords != -1}">
-                  <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} specimens.
+                  <p><cl:collectionName prefix="The " name="${collectionInstance.name}"/> has an estimated ${fieldValue(bean: collectionInstance, field: "numRecords")} ${nouns}.
                     <g:if test="${collectionInstance.numRecordsDigitised != -1}">
                       <br/>The collection has databased <cl:percentIfKnown dividend='${collectionInstance.numRecordsDigitised}' divisor='${collectionInstance.numRecords}'/> of these (${fieldValue(bean: collectionInstance, field: "numRecordsDigitised")} records).
                     </g:if>
@@ -283,24 +284,25 @@
             <div class="section">
               <g:if test="${biocacheRecordsAvailable}">
                 <div style="clear:both;"></div>
-                <div class="inline">
-                  <h3>Map of occurrence records</h3>
-                  <cl:recordsMap type="collection" uid="${collectionInstance.uid}"/>
-                </div>
-                <div id="taxonChart" style="display: inline; width: 500px;">
-                  <!-- NOTE *** margin-bottom value must match the value in the javascript (drawTaxonChart - dril down handler) -->
-                  <img style="margin-left:230px;margin-top:150px;margin-bottom:218px" alt="loading..." src="${resource(dir:'images/ala',file:'ajax-loader.gif')}"/>
-                </div>
-                <div id="taxonChartCaption">
-                  <span style="visibility:hidden;" class="taxonChartCaption">Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>
-                  <span id="resetTaxonChart" onclick="resetTaxonChart()"></span>&nbsp;
-                </div>
-                <div id="decadeChart">
-                  <img style="margin-left:130px;margin-top:-20px;margin-bottom:108px" alt="loading..." src="${resource(dir:'images/ala',file:'decade-loader.gif')}"/>
-                </div>
-                <div id="decadeChartCaption">
-                  <span style="visibility:hidden;" class="decadeChartCaption">Click a column to view records for that decade.</span>
-                </div>
+                <table class="charts">
+                  <colgroup><col width="530"><col width="400"></colgroup>
+                  <tr>
+                    <td>
+                      <h3>Map of occurrence records</h3>
+                      <cl:recordsMap/>
+                    </td>
+                    <td rowspan="2">
+                      <h3>Records by taxonomic group</h3>
+                      <cl:taxonChart/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding-top:35px;">
+                      <h3>Records by collection date</h3>
+                      <cl:decadeChart/>
+                    </td>
+                  </tr>
+                </table>
               </g:if>
             </div>
           </div>
@@ -334,8 +336,11 @@ function onLoadCallback() {
   $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
 
   // taxon breakdown
-  var taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
-  $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
+  loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${collectionInstance.uid}", 55, {
+    width: 400,
+    height: 400//,
+    //chartArea: {left:10, top:40, width:"90%", height: "75%"}
+  });
 
   // records map
   //var mapServiceUrl = "${ConfigurationHolder.config.spatial.baseURL}/alaspatial/ws/density/map?collectionUid=${collectionInstance.uid}";
@@ -351,7 +356,10 @@ function biocacheRecordsHandler(response) {
     if (response.totalRecords < 1) {
       noBiocacheData();
     }
-    drawDecadeChart(response.decades);
+    drawDecadeChart(response.decades, "${collectionInstance.uid}", {
+      width: 470,
+      chartArea:  {left: 50, width:"88%", height: "75%"}
+    });
   } else {
     noBiocacheData();
   }
@@ -408,11 +416,12 @@ function mapRequestHandler(response) {
     $('#recordsMap').attr("src","${resource(dir:'images/map',file:'mapaus1_white-340.png')}");
     // set legend url
     $('#mapLegend').attr("src","${resource(dir:'images/map',file:'mapping-data-not-available.png')}");
+  } else {
+    // set map url
+    $('#recordsMap').attr("src",response.mapUrl);
+    // set legend url
+    $('#mapLegend').attr("src",response.legendUrl);
   }
-  // set map url
-  $('#recordsMap').attr("src",response.mapUrl);
-  // set legend url
-  $('#mapLegend').attr("src",response.legendUrl);
 }
 /************************************************************\
 * DEPRECATED
@@ -424,75 +433,14 @@ function decadeBreakdownRequestHandler(response) {
   }
 }
 /************************************************************\
-* Handle taxon breakdown response
-\************************************************************/
-function taxonBreakdownRequestHandler(response) {
-  if (response.error == undefined) {
-    var data = new google.visualization.DataTable(response);
-    if (data.getNumberOfRows() > 0) {
-      drawTaxonChart(data);
-    } else {
-      clearTaxonChart();
-    }
-  } else {
-    clearTaxonChart(response.error);
-  }
-}
-/************************************************************\
-* No chart available
-\************************************************************/
-function clearTaxonChart(error) {
-  $('div#taxonChart img').attr('src',"${resource(dir:'images/ala',file:'missing.png')}");
-}
-/************************************************************\
-* Decade breakdown chart
-\************************************************************/
-function drawDecadeChart(decadeData) {
-  var dataTable = new google.visualization.DataTable(decadeData,0.6);
-  if (dataTable.getNumberOfRows() > 0) {
-    var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
-    google.visualization.events.addListener(vis, 'select', function() {
-      var decade = dataTable.getValue(vis.getSelection()[0].row,0);
-      // TODO: handle 'earlier' label
-      if (decade != 'earlier' && decade.length > 3) {
-        decade = decade.substr(0,4);
-        var dateTo = addDecade(decade);
-        var dateRange = "occurrence_date:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
-        // eg. occurrence_date:[1990-01-01T12:00:00Z%20TO%202000-01-01T12:00:00Z]
-        document.location.href = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${collectionInstance.uid}&fq=" + dateRange;
-      }
-    });
-    vis.draw(dataTable, {
-      width: 600,
-      height: 300,
-      chartArea:  {left: 50},
-      title: "Additions by decade",
-      titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
-      legend: 'none'
-    });
-    // show caption
-    $('span.decadeChartCaption').css('visibility', 'visible');
-  } else {
-    // no data
-    $('div#decadeChart').css("display","none");
-  }
-}
-/************************************************************\
-* increment year by a decade, eg 1990 -> 2000
-\************************************************************/
-function addDecade(from) {
-  var num = parseInt(from);
-  return num + 10;
-}
-/************************************************************\
 * Taxonomic breakdown chart
 \************************************************************/
-function drawTaxonChart(dataTable) {
+function drawTaxonChart2(dataTable) {
   var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
   var options = {};
 
-  options.width = 510;
-  options.height = 460;
+  options.width = 400;
+  options.height = 400;
   options.is3D = false;
   if (dataTable.getTableProperty('scope') == "all") {
     options.title = "Number of records by " + dataTable.getTableProperty('rank');
@@ -501,8 +449,8 @@ function drawTaxonChart(dataTable) {
   }
   options.titleTextStyle = {color: "#555", fontName: 'Arial', fontSize: 15};
   options.sliceVisibilityThreshold = 0;
-  //options.pieSliceText = "label";
   options.legend = "left";
+  options.chartArea = {left:10, top:40, width:"90%"};
   google.visualization.events.addListener(chart, 'select', function() {
     var name = dataTable.getValue(chart.getSelection()[0].row,0);
     var rank = dataTable.getTableProperty('rank')
@@ -535,15 +483,7 @@ function drawTaxonChart(dataTable) {
   chart.draw(dataTable, options);
 
   // show taxon caption
-  $('span.taxonChartCaption').css('visibility', 'visible');
-}
-/************************************************************\
-* Put back in orginal state
-\************************************************************/
-function resetTaxonChart() {
-  taxonUrl = "${ConfigurationHolder.config.grails.context}/public/taxonBreakdown/${collectionInstance.uid}?threshold=55";
-  $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
-  $('span#resetTaxonChart').html("");
+  $('div#taxonChartCaption').css('visibility', 'visible');
 }
 /************************************************************\
 * Draw % digitised bar (progress bar)
@@ -552,7 +492,7 @@ function setProgress(percentage)
 {
   var captionText = "";
   if (${collectionInstance.numRecords < 1}) {
-    captionText = "There is no estimate of the total number<br/>of specimens in this collection.";
+    captionText = "There is no estimate of the total number<br/>of ${nouns} in this collection.";
   } else if (percentage == 0) {
     captionText = "No records are available for viewing in the Atlas.";
   } else {
@@ -560,7 +500,7 @@ function setProgress(percentage)
     if (percentage < 0.1) {displayPercent = percentage.toFixed(2)}
     if (percentage > 20) {displayPercent = percentage.toFixed(0)}
     if (percentage > 100) {displayPercent = "over 100"}
-    captionText = "Records for " + displayPercent + "% of specimens are<br/>available for viewing in the Atlas.";
+    captionText = "Records for " + displayPercent + "% of ${nouns} are<br/>available for viewing in the Atlas.";
   }
   $('#speedoCaption').html(captionText);
 

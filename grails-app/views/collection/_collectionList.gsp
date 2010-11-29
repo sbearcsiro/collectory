@@ -4,13 +4,9 @@
       <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
         <thead>
             <tr>
-
                 <g:sortableColumn property="name" title="${message(code: 'collection.name.label', default: 'Name')}" params="${params}"/>
-
                 <g:sortableColumn property="acronym" title="${message(code: 'collection.acronym.label', default: 'Acronym')}" params="${params}"/>
-
-                <g:sortableColumn property="focus" title="${message(code: 'collection.focus.label', default: 'Focus')}" params="${params}" />
-
+                <g:sortableColumn params="[sort: 'institution.name']" property="institution" title="${message(code: 'collection.institution.label', default: 'Institution')}" />
             </tr>
         </thead>
         <tbody>
@@ -21,7 +17,7 @@
 
             <td>${fieldValue(bean: collectionInstance, field: "acronym")}</td>
 
-            <td>${fieldValue(bean: collectionInstance, field: "focus")}</td>
+            <td>${collectionInstance.institution?.name}</td>
 
           </tr>
         </g:each>

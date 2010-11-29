@@ -202,8 +202,8 @@
     <div class="show-section">
       <h2>Provider codes</h2>
       <p>These codes control the mapping of online records to this collection.</p>
-      <p>Institution codes: ${instance.getListOfInstitutionCodesForLookup().join(" ")}</p>
-      <p>Collection codes: ${instance.getListOfCollectionCodesForLookup().join(" ")}</p>
+      <p>Institution codes: ${instance.getListOfInstitutionCodesForLookup().join(", ")}</p>
+      <p>Collection codes: ${instance.getListOfCollectionCodesForLookup().join(", ")}</p>
       <g:if test="${instance.providerMap}">
         <g:if test="${instance.providerMap?.matchAnyCollectionCode || !instance.providerMap?.exact}">
           <p>

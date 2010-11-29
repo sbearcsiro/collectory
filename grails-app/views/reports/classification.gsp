@@ -31,10 +31,10 @@
                         <span class="dataWarning"><cl:showOrEdit entity="${c}"/></span>
                       </g:else>
                     </td>
-                    <td style="text-align:center;"><cl:reportClassification entity="${c}" filter="plants"/></td>
-                    <td style="text-align:center;"><cl:reportClassification entity="${c}" filter="fauna"/></td>
-                    <td style="text-align:center;"><cl:reportClassification entity="${c}" filter="entomology"/></td>
-                    <td style="text-align:center;"><cl:reportClassification entity="${c}" filter="microbes"/></td>
+                    <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="plants"/></td>
+                    <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="fauna"/></td>
+                    <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="entomology"/></td>
+                    <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="microbes"/></td>
                   </tr>
                 </g:each>
 

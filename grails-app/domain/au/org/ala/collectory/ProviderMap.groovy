@@ -56,8 +56,8 @@ class ProviderMap implements Serializable {
         return null
     }
 
-    static long findMatchId(String institutionCode, String collectionCode) {
-        return ProviderMap.findMatch(institutionCode, collectionCode)?.id
+    static String findMatchUid(String institutionCode, String collectionCode) {
+        return ProviderMap.findMatch(institutionCode, collectionCode)?.uid
     }
 
 

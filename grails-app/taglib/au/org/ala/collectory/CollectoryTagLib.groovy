@@ -740,11 +740,19 @@ class CollectoryTagLib {
     def formattedText = {attrs, body ->
         def text = body().toString()
         if (text) {
+
+            // italic - first to avoid underscores in generated links (eg _blank)
+            def italicMarkup = /_([^\r\n_]*)_/
+            text = text.replaceAll(italicMarkup) {match, group -> '<em>' + group + '</em>'}
+
             // in-line links
             if (!attrs.noLink) {
-                def urlMatch = /[^\[]http:\S*\b/   // word boundary + http: + non-whitespace + word boundary
-                text = text.replaceAll(urlMatch) {
-                    "<a class='external_icon' target='_blank' href='${it}'>${it}</a>"
+                def urlMatch = /[^\[](http:\S*)\b/   // word boundary + http: + non-whitespace + word boundary
+                text = text.replaceAll(urlMatch) {s1, s2 ->
+                    if (s2.indexOf('ala.org.au') > 0)
+                        "<a href='${s2}'>${s2}</a>"
+                    else
+                        "<a class='external' target='_blank' href='${s2}'>${s2}</a>"
                 }
             }
 
@@ -752,14 +760,12 @@ class CollectoryTagLib {
             if (!attrs.noLink) {
                 def urlMatch = /\[(http:\S*)\b ([^\]]*)\]/   // [http: + text to next word boundary + space + all text ubtil next ]
                 text = text.replaceAll(urlMatch) {s1, s2, s3 ->
-                    println "matched ${s2} - ${s3}"
-                    "<a class='external_icon' target='_blank' href='${s2}'>${s3}</a>"
+                    if (s2.indexOf('ala.org.au') > 0)
+                        "<a href='${s2}'>${s3}</a>"
+                    else
+                        "<a class='external' target='_blank' href='${s2}'>${s3}</a>"
                 }
             }
-
-            // italic
-            def italicMarkup = /_([^\r\n_]*)_/
-            text = text.replaceAll(italicMarkup) {match, group -> '<em>' + group + '</em>'}
 
             // bold
             def regex = /\+([^\r\n+]*)\+/
@@ -772,6 +778,7 @@ class CollectoryTagLib {
                 def newText = ""
                 // for each line
                 lines.each {
+                    println "line: " + it
                     if (it[0] == '*') {
                         // replace list markup
                         def item = "<li>" + it.substring(1,it.length()) + "</li>"

@@ -98,7 +98,7 @@ OpenLayers.Format.Text = OpenLayers.Class(OpenLayers.Format, {
                     var set = false;
                     for (var valIndex = 0; valIndex < vals.length; valIndex++) {
                         if (vals[valIndex]) {
-                            if (columns[valIndex] == 'point') {
+                            if (columns[valIndex] == 'centrePoint') {
                                 var coords = vals[valIndex].split(',');
                                 geometry.y = parseFloat(coords[0]);
                                 geometry.x = parseFloat(coords[1]);

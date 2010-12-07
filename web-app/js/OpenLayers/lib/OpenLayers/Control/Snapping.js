@@ -326,7 +326,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
             }
         }
         this.feature = null;
-        this.point = null;
+        this.centrePoint = null;
         return deactivated;
     },
     
@@ -403,7 +403,7 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
             if(proceed !== false) {
                 point.x = best.x;
                 point.y = best.y;
-                this.point = point;
+                this.centrePoint = point;
                 this.events.triggerEvent("snap", {
                     point: point,
                     snapType: this.precedence[best.rank],
@@ -414,10 +414,10 @@ OpenLayers.Control.Snapping = OpenLayers.Class(OpenLayers.Control, {
                 snapped = false;
             }
         }
-        if(this.point && !snapped) {
+        if(this.centrePoint && !snapped) {
             point.x = loc.x;
             point.y = loc.y;
-            this.point = null;
+            this.centrePoint = null;
             this.events.triggerEvent("unsnap", {point: point});
         }
     },

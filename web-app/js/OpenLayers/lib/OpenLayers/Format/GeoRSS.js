@@ -97,7 +97,7 @@ OpenLayers.Format.GeoRSS = OpenLayers.Class(OpenLayers.Format.XML, {
      * {<OpenLayers.Geometry>} A geometry representing the node.
      */
     createGeometryFromItem: function(item) {
-        var point = this.getElementsByTagNameNS(item, this.georssns, "point");
+        var point = this.getElementsByTagNameNS(item, this.georssns, "centrePoint");
         var lat = this.getElementsByTagNameNS(item, this.geons, 'lat');
         var lon = this.getElementsByTagNameNS(item, this.geons, 'long');
         

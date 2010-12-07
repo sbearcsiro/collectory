@@ -141,12 +141,12 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
      */
     createFeature: function(pixel) {
         var lonlat = this.map.getLonLatFromPixel(pixel);
-        this.point = new OpenLayers.Feature.Vector(
+        this.centrePoint = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
         );
-        this.callback("create", [this.point.geometry, this.point]);
-        this.point.geometry.clearBounds();
-        this.layer.addFeatures([this.point], {silent: true});
+        this.callback("create", [this.centrePoint.geometry, this.centrePoint]);
+        this.centrePoint.geometry.clearBounds();
+        this.layer.addFeatures([this.centrePoint], {silent: true});
     },
 
     /**
@@ -182,7 +182,7 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
         if(this.layer) {
             this.layer.destroyFeatures();
         }
-        this.point = null;
+        this.centrePoint = null;
     },
 
     /**
@@ -254,10 +254,10 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
      */
     modifyFeature: function(pixel) {
         var lonlat = this.map.getLonLatFromPixel(pixel);
-        this.point.geometry.x = lonlat.lon;
-        this.point.geometry.y = lonlat.lat;
-        this.callback("modify", [this.point.geometry, this.point]);
-        this.point.geometry.clearBounds();
+        this.centrePoint.geometry.x = lonlat.lon;
+        this.centrePoint.geometry.y = lonlat.lat;
+        this.callback("modify", [this.centrePoint.geometry, this.centrePoint]);
+        this.centrePoint.geometry.clearBounds();
         this.drawFeature();
     },
 
@@ -266,7 +266,7 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
      * Render features on the temporary layer.
      */
     drawFeature: function() {
-        this.layer.drawFeature(this.point, this.style);
+        this.layer.drawFeature(this.centrePoint, this.style);
     },
     
     /**
@@ -278,7 +278,7 @@ OpenLayers.Handler.Point = OpenLayers.Class(OpenLayers.Handler, {
      * {<OpenLayers.Geometry.Point>}
      */
     getGeometry: function() {
-        var geometry = this.point && this.point.geometry;
+        var geometry = this.centrePoint && this.centrePoint.geometry;
         if(geometry && this.multi) {
             geometry = new OpenLayers.Geometry.MultiPoint([geometry]);
         }

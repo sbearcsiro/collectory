@@ -61,18 +61,18 @@ OpenLayers.Handler.Polygon = OpenLayers.Class(OpenLayers.Handler.Path, {
      */
     createFeature: function(pixel) {
         var lonlat = this.control.map.getLonLatFromPixel(pixel);
-        this.point = new OpenLayers.Feature.Vector(
+        this.centrePoint = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
         );
         this.line = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.LinearRing([this.point.geometry])
+            new OpenLayers.Geometry.LinearRing([this.centrePoint.geometry])
         );
         this.polygon = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Polygon([this.line.geometry])
         );
-        this.callback("create", [this.point.geometry, this.getSketch()]);
-        this.point.geometry.clearBounds();
-        this.layer.addFeatures([this.polygon, this.point], {silent: true});
+        this.callback("create", [this.centrePoint.geometry, this.getSketch()]);
+        this.centrePoint.geometry.clearBounds();
+        this.layer.addFeatures([this.polygon, this.centrePoint], {silent: true});
     },
 
     /**
@@ -90,7 +90,7 @@ OpenLayers.Handler.Polygon = OpenLayers.Class(OpenLayers.Handler.Path, {
      */
     drawFeature: function() {
         this.layer.drawFeature(this.polygon, this.style);
-        this.layer.drawFeature(this.point, this.style);
+        this.layer.drawFeature(this.centrePoint, this.style);
     },
     
     /**

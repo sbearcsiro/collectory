@@ -79,15 +79,15 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
      */
     createFeature: function(pixel) {
         var lonlat = this.control.map.getLonLatFromPixel(pixel);
-        this.point = new OpenLayers.Feature.Vector(
+        this.centrePoint = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
         );
         this.line = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.LineString([this.point.geometry])
+            new OpenLayers.Geometry.LineString([this.centrePoint.geometry])
         );
-        this.callback("create", [this.point.geometry, this.getSketch()]);
-        this.point.geometry.clearBounds();
-        this.layer.addFeatures([this.line, this.point], {silent: true});
+        this.callback("create", [this.centrePoint.geometry, this.getSketch()]);
+        this.centrePoint.geometry.clearBounds();
+        this.layer.addFeatures([this.line, this.centrePoint], {silent: true});
     },
         
     /**
@@ -104,8 +104,8 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
      * Destroy the temporary point.
      */
     removePoint: function() {
-        if(this.point) {
-            this.layer.removeFeatures([this.point]);
+        if(this.centrePoint) {
+            this.layer.removeFeatures([this.centrePoint]);
         }
     },
     
@@ -118,16 +118,16 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
      * pixel - {<OpenLayers.Pixel>} The pixel location for the new point.
      */
     addPoint: function(pixel) {
-        this.layer.removeFeatures([this.point]);
+        this.layer.removeFeatures([this.centrePoint]);
         var lonlat = this.control.map.getLonLatFromPixel(pixel);
-        this.point = new OpenLayers.Feature.Vector(
+        this.centrePoint = new OpenLayers.Feature.Vector(
             new OpenLayers.Geometry.Point(lonlat.lon, lonlat.lat)
         );
         this.line.geometry.addComponent(
-            this.point.geometry, this.line.geometry.components.length
+            this.centrePoint.geometry, this.line.geometry.components.length
         );
-        this.callback("point", [this.point.geometry, this.getGeometry()]);
-        this.callback("modify", [this.point.geometry, this.getSketch()]);
+        this.callback("centrePoint", [this.centrePoint.geometry, this.getGeometry()]);
+        this.callback("modify", [this.centrePoint.geometry, this.getSketch()]);
         this.drawFeature();
     },
     
@@ -153,10 +153,10 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
      */
     modifyFeature: function(pixel) {
         var lonlat = this.control.map.getLonLatFromPixel(pixel);
-        this.point.geometry.x = lonlat.lon;
-        this.point.geometry.y = lonlat.lat;
-        this.callback("modify", [this.point.geometry, this.getSketch()]);
-        this.point.geometry.clearBounds();
+        this.centrePoint.geometry.x = lonlat.lon;
+        this.centrePoint.geometry.y = lonlat.lat;
+        this.callback("modify", [this.centrePoint.geometry, this.getSketch()]);
+        this.centrePoint.geometry.clearBounds();
         this.drawFeature();
     },
 
@@ -166,7 +166,7 @@ OpenLayers.Handler.Path = OpenLayers.Class(OpenLayers.Handler.Point, {
      */
     drawFeature: function() {
         this.layer.drawFeature(this.line, this.style);
-        this.layer.drawFeature(this.point, this.style);
+        this.layer.drawFeature(this.centrePoint, this.style);
     },
 
     /**

@@ -299,7 +299,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             var p = null;
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
-                    p = this.parseCoords["point"].apply(this, [array[i]]);
+                    p = this.parseCoords["centrePoint"].apply(this, [array[i]]);
                 } catch(err) {
                     throw err;
                 }
@@ -324,7 +324,7 @@ OpenLayers.Format.GeoJSON = OpenLayers.Class(OpenLayers.Format.JSON, {
             var p = null;
             for(var i=0, len=array.length; i<len; ++i) {
                 try {
-                    p = this.parseCoords["point"].apply(this, [array[i]]);
+                    p = this.parseCoords["centrePoint"].apply(this, [array[i]]);
                 } catch(err) {
                     throw err;
                 }

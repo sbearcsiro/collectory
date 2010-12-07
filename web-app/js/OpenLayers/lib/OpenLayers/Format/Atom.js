@@ -596,7 +596,7 @@ OpenLayers.Format.Atom = OpenLayers.Class(OpenLayers.Format.XML, {
         }
         
         var components = locations.components;
-        var point = this.getElementsByTagNameNS(node, georssns, "point");
+        var point = this.getElementsByTagNameNS(node, georssns, "centrePoint");
         if (point && point.length > 0) {
             for (var i=0, ii=point.length; i<ii; i++) {
                 var xy = OpenLayers.String.trim(

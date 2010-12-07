@@ -384,7 +384,7 @@ OpenLayers.Format.OSM = OpenLayers.Class(OpenLayers.Format.XML, {
             var way = this.createElementNS(null, "way");
             way.setAttribute("id", id);
             for (var i = 0; i < geometry.components.length; i++) {
-                var node = this.createXML['point'].apply(this, [geometry.components[i]]);
+                var node = this.createXML['centrePoint'].apply(this, [geometry.components[i]]);
                 if (node.length) {
                     node = node[0];
                     var node_ref = node.getAttribute("id");

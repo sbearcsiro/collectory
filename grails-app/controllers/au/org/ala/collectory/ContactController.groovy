@@ -31,9 +31,20 @@ class ContactController {
 
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
-        [contactInstanceList: Contact.listOrderByLastName(params), contactInstanceTotal: Contact.count()]
+        params.sort = 'lastName'
+        [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
     }
 
+    def name = {
+        def contactInstance = Contact.get(params.id)
+        if (!contactInstance) {
+            render "contact not found"
+        }
+        else {
+            render contactInstance.buildName()
+        }
+    }
+    
     def create = {
         def contactInstance = new Contact()
         contactInstance.properties = params

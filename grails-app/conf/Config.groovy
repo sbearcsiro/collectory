@@ -79,6 +79,7 @@ grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
                       atom: 'application/atom+xml',
                       css: 'text/css',
                       csv: 'text/csv',
+                      tsv: 'text/tsv',
                       all: '*/*',
                       json: ['application/json','text/json'],
                       form: 'application/x-www-form-urlencoded',
@@ -125,9 +126,9 @@ environments {
         security.cas.contextPath = grails.context
     }
     testserver {
-        grails.serverURL = "http://alatstdb1-cbr.vm.csiro.au/Collectory"
+        grails.serverURL = "http://alatstweb1-cbr.vm.csiro.au:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://alatstdb1-cbr.vm.csiro.au"
+        security.cas.serverName = "http://alatstweb1-cbr.vm.csiro.au"
         security.cas.contextPath = grails.context
     }
     development {

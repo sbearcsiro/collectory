@@ -130,8 +130,8 @@ p.collectionsCount {
     margin-bottom: 0;
     float:left;
     padding: 0 0 0 0;
-    opacity: 0.4;
-    filter:alpha(opacity=40);
+    opacity: 0.45;
+    filter:alpha(opacity=45);
 }
 
 .filter-buttons div.selected {

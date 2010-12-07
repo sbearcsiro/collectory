@@ -15,8 +15,6 @@
 
 package au.org.ala.collectory
 
-import org.hibernate.ObjectNotFoundException
-
 /**
  *  Base class for an organisational group in the collectory, such as an
  *  institution or collection.
@@ -67,6 +65,7 @@ abstract class ProviderGroup implements Serializable {
     String notes
     String networkMembership    // a list of names of networks (CHAH, etc) that the group belongs to as JSON list
     String attributions = ''    // list of space-separated uids for attributions
+    String taxonomyHints        // JSON object holding hints for taxonomic coverage
     Date dateCreated
     Date lastUpdated
     String userLastModified
@@ -85,9 +84,9 @@ abstract class ProviderGroup implements Serializable {
     }
 
     static constraints = {
-        guid(nullable:true, maxSize:45)         // allow blank for institutions - therefore can't make unique
+        guid(nullable:true, maxSize:45)
         uid(blank:false, maxSize:20)
-        name(blank:false, maxSize:1024)          // unique:true - ideally should be unique but relax so we can view all BCI data
+        name(blank:false, maxSize:1024)
         acronym(nullable:true, maxSize:45)
         pubDescription(nullable:true, maxSize:2048)
         techDescription(nullable:true, maxSize:2048)
@@ -107,6 +106,7 @@ abstract class ProviderGroup implements Serializable {
         notes(nullable:true, maxSize:2048)
         networkMembership(nullable:true, maxSize:256)
         attributions(nullable:true, maxSize:256)
+        taxonomyHints(nullable:true, maxSize:1024)
     }
 
     /*  Contacts  */
@@ -341,6 +341,7 @@ abstract class ProviderGroup implements Serializable {
         if (guid?.startsWith('urn:lsid:')) {
             pgs.lsid = guid
         }
+        pgs.taxonomyCoverageHints = JSONHelper.taxonomyHints(taxonomyHints)
         return pgs
     }
 

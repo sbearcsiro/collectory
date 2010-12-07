@@ -151,7 +151,7 @@
                 <p>${contact?.role}</p>
                 <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
                 <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: contact, field: "contact.fax")}'/>
-                <p>email: <cl:emailLink>${contact?.contact?.email}</cl:emailLink></p>
+	            <p><cl:emailLink email="${contact?.contact?.email}">email</cl:emailLink></p>
               </div>
             </g:if>
 

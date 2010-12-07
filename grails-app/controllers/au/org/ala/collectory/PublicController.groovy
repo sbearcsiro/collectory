@@ -67,18 +67,19 @@ class PublicController {
     def biocacheRecords = {
         // lookup number of biocache records
         def baseUrl = ConfigurationHolder.config.biocache.baseURL
-        def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + params.uid
+        def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + params.uid
 
-        def count = 0
         def conn = new URL(url).openConnection()
         try {
-            conn.setConnectTimeout(5000)
-            conn.setReadTimeout(10000)
+            conn.setConnectTimeout(10000)
+            conn.setReadTimeout(50000)
+            //conn.setRequestProperty('Connection','close')
             def json = conn.content.text
+            //println json
             def searchResult = JSON.parse(json)?.searchResult
+            // sleep delay
             //println buildDecadeDataTableFromFacetResults(searchResult?.facetResults)
             def result = [totalRecords: searchResult?.totalRecords, decades: buildDecadeDataTableFromFacetResults(searchResult?.facetResults)]
-   // sleep delay
             render result as JSON
         } catch (SocketTimeoutException e) {
             log.warn "Timed out looking up record count. URL= ${url}."
@@ -165,28 +166,15 @@ class PublicController {
             def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${instance.uid}.json";
             //taxonUrl = ConfigurationHolder.config.grails.serverURL + "/public/slowResponseForTesting"
             def conn = new URL(taxonUrl).openConnection()
-            def json
+            def jsonResponse = null
+            def breakdown = null
             try {
-                conn.setConnectTimeout(5000)
-                conn.setReadTimeout(10000)
-                json = conn.content.text
+                conn.setConnectTimeout(10000)
+                conn.setReadTimeout(50000)
+                jsonResponse = conn.content.text
                 //println "Response = " + json
-                def breakdown = JSON.parse(json)?.breakdown
-                if (breakdown && breakdown.toString() != "null") {
-                    def dataTable = buildPieChartDataTable(breakdown,"all","")
-                    if (dataTable) {
-                        //sleep delay
-                        render dataTable
-                    } else {
-                        log.warn "unable to build data table from taxa json = " + json
-                        def error = ["error":"Unable to build data table from taxa json"]
-                        render error as JSON
-                    }
-                } else {
-                    log.warn "no data returned from taxa json = " + json
-                    def error = ["error":"No data returned from taxa json"]
-                    render error as JSON
-                }
+                //sleep delay
+                breakdown = JSON.parse(jsonResponse)?.breakdown
             } catch (SocketTimeoutException e) {
                 log.warn "Timed out getting taxa breakdown."
                 def error = [error:"Timed out getting taxa breakdown.", dataTable: null]
@@ -194,6 +182,19 @@ class PublicController {
             } catch (Exception e) {
                 log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
                 def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}.", dataTable: null]
+                render error as JSON
+            }
+            if (breakdown && breakdown.toString() != "null") {
+                def dataTable = buildPieChartDataTable(breakdown,"all","")
+                withFormat {
+                    // seems weird but only way to include csv but default to json
+                    html { render dataTable }
+                    json {render dataTable}
+                    csv { render buildCsvForTaxonBreakdown(breakdown)}
+                }
+            } else {
+                log.warn "no data returned from taxa json = " + jsonResponse
+                def error = ["error":"No data returned from taxa json"]
                 render error as JSON
             }
         }
@@ -222,8 +223,8 @@ class PublicController {
             def dataTable = null
             def json
             try {
-                conn.setConnectTimeout 5000
-                conn.setReadTimeout 10000
+                conn.setConnectTimeout 10000
+                conn.setReadTimeout 50000
                 json = conn.content.text
                 //println "Response = " + json
                 def breakdown = JSON.parse(json)?.breakdown
@@ -386,7 +387,11 @@ class PublicController {
         def partnerCollections = Collection.list([sort:"name"]).findAll {
             it.isALAPartner()
         }
-        [collections: partnerCollections]
+        if (GrailsUtil.environment == 'production') {
+            render(view: 'map', model: [collections: partnerCollections])
+        } else {
+            render(view: 'map3', model: [collections: partnerCollections])
+        }
     }
 
     def map3 = {
@@ -673,4 +678,17 @@ class PublicController {
         return result
     }
 
+    /**
+     * Simple 2 column csv showing label and count.
+     *
+     * @param breakdown
+     * @return
+     */
+    private String buildCsvForTaxonBreakdown(input) {
+        def out = new StringWriter()
+        def list = input.taxa.collect {
+            out << "${it.label},${it.count}\n"
+        }
+        return out.toString()
+    }
 }

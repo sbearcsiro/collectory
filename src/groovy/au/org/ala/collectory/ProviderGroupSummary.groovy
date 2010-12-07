@@ -14,4 +14,5 @@ class ProviderGroupSummary {
     String acronym
     String shortDescription
     String lsid
+    Object taxonomyCoverageHints
 }

@@ -5,8 +5,7 @@ import java.text.NumberFormat
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
-import groovy.xml.MarkupBuilder
-import groovy.xml.MarkupBuilderHelper
+
 import groovy.xml.StreamingMarkupBuilder
 
 class LookupController {
@@ -40,7 +39,7 @@ class LookupController {
     def institution = {
         Institution inst = null
         if (params.id) {
-            inst = findInstitution(params.id)
+            inst = findInstitution(params.id) as Institution
         } else {
             def error = ["error":"no code or id passed in request"]
             render error as JSON
@@ -100,6 +99,22 @@ class LookupController {
             result = ["error":"invalid uid = " + params.id]
         }
         render result as JSON
+    }
+
+    /**
+     * Returns a list of rank:name pairs that describe the expected taxonomic range of the entity.
+     *
+     * @return a JSON list of rank:name pairs - may be empty
+     */
+    def taxonomyCoverageHints = {
+        ProviderGroup instance = ProviderGroup._get(params.id)
+        if (instance) {
+            render JSONHelper.taxonomyHints(instance.taxonomyHints) as JSON
+        } else {
+            log.error "Unable to find entity for id = ${params.id}"
+            def error = ["error":"unable to find an entity for id = " + params.id]
+            render error as JSON
+        }
     }
 
     def citation = {

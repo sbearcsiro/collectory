@@ -3,10 +3,11 @@ package au.org.ala.collectory
 import grails.converters.JSON
 import au.org.ala.collectory.exception.InvalidUidException
 import org.codehaus.groovy.grails.web.json.JSONObject
+import grails.converters.XML
 
 class DataController {
 
-    def crudService, authService
+    def crudService, authService, emlRenderService
     
     def index = { }
 
@@ -364,4 +365,23 @@ class DataController {
         }
     }
 
+    /************ EML services *************/
+
+    def eml = {
+        if (params.id) {
+            def dr = DataResource.findByUid(params.id)
+            if (dr) {
+                response.contentType = 'text/xml'
+                render emlRenderService.emlForResource(dr)
+            } else {
+                def error = 'no such resource ' + params.id
+                response.status = 400
+                render error
+            }
+        } else {
+            def error = 'you must specify a resource'
+            response.status = 400
+            render error
+        }
+    }
 }

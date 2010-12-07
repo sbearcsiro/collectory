@@ -11,7 +11,4 @@ class LookupControllerTests extends ControllerUnitTestCase {
         super.tearDown()
     }
 
-    void testSomething() {
-
-    }
 }

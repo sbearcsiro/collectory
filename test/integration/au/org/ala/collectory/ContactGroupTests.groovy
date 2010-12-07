@@ -6,21 +6,22 @@ import grails.test.*
 
 class ContactGroupTests extends GrailsUnitTestCase {
 
-    Contact pete, mark
-    def group
+    // some contacts
+    Contact pete = new Contact(firstName: "Peter", lastName: "Flemming", publish: true, email: "pete@csiro.au", userLastModified: "test").save(flush: true)
+    Contact mark = new Contact(firstName: "Mark", lastName: "Woolston", publish: true, userLastModified: "test").save(flush: true)
+    // an entity of type ProviderGroup
+    def group = new Institution(guid: "ABC", uid:'in13', name: "XYZ", userLastModified: "test").save(flush: true)
 
     protected void setUp() {
         super.setUp()
-        // some contacts
-        pete = new Contact(firstName: "Peter", lastName: "Flemming", publish: true, email: "pete@csiro.au", userLastModified: "test")
-        pete.save(flush: true)
         if (pete.hasErrors()) pete.errors.each {println it}
-        mark = new Contact(firstName: "Mark", lastName: "Woolston", publish: true, userLastModified: "test")
-        mark.save(flush: true)
         if (mark.hasErrors()) mark.errors.each {println it}
-        // an entity of type ProviderGroup
-        group = new Institution(guid: "ABC", uid:'in13', name: "XYZ", userLastModified: "test").save(flush: true)
         if (group.hasErrors()) group.errors.each {println it}
+        // clear any existing contacts
+        def cfs = ContactFor.list()
+        cfs.each {
+            it.delete(flush:true)
+        }
    }
 
     protected void tearDown() {
@@ -52,11 +53,12 @@ class ContactGroupTests extends GrailsUnitTestCase {
                 administrator: true, primaryContact: false, userLastModified: "test").save(flush: true)
 
         // retrieve links for an entity
-        def ecf = ContactFor.findAllByEntityId(group.id)
+        def ecf = ContactFor.findAllByEntityUid(group.uid)
         assertEquals 2, ecf.size()
     }
 
     void testGroupContactsManualAdd() {
+        println "entering testGroupContactsManualAdd " + group.getContacts().size()
         // create contact links manually
         new ContactFor(contact: pete, entityUid: group.uid, role: "Manager",
                 administrator: true, primaryContact: true, userLastModified: "test").save(flush: true)
@@ -117,12 +119,15 @@ class ContactGroupTests extends GrailsUnitTestCase {
         new ContactFor(contact: pete, entityUid: group.uid, role: "Manager",
                 administrator: true, primaryContact: true, userLastModified: "test").save(flush: true)
 
+        assertEquals 1, ContactFor.count()
+
         def userContact = Contact.findByEmail("pete@csiro.au")
         assertNotNull userContact
 
         def collectionList = []
-        ContactFor.findAllByContact(userContact).each {
-            ProviderGroup pg = ProviderGroup.findById(it.entityId)
+        ContactFor.findAllByContact(pete).each {
+            println it.entityUid
+            def pg = ProviderGroup._get(it.entityUid)
             if (pg) {
                 collectionList << pg
             }

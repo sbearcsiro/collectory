@@ -49,8 +49,8 @@ class DataLoaderTests extends GrailsUnitTestCase {
     }
 
     void testRecogniseInstitution() {
-        assertEquals 'Commonwealth Scientific and Industrial Research Organisation', dataLoaderService.recogniseInstitution('CSIRO')
-        assertEquals 'Tasmanian Museum and Art Gallery', dataLoaderService.recogniseInstitution('Department of Tasmanian Museum and Art Gallery.')
+        assertEquals 'Commonwealth Scientific and Industrial Research Organisation', dataLoaderService.standardiseInstitutionName('CSIRO')
+        assertEquals 'Tasmanian Museum and Art Gallery', dataLoaderService.standardiseInstitutionName('Department of Tasmanian Museum and Art Gallery.')
     }
 
     void testIsALAPartner() {

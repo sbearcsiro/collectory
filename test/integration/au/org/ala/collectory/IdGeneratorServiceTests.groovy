@@ -20,15 +20,18 @@ class IdGeneratorServiceTests extends GrailsUnitTestCase {
         sql.execute("""
         create table sequence(
             id bigint primary key,
-            next_id bigint not null)
+            next_id bigint not null,
+            name varchar(45) not null,
+            prefix varchar(5) not null)
         """)
         // plant seeds
-        def insertSeed = "insert into sequence(id, next_id) values (?,?)"
-        sql.execute(insertSeed, [1, 1])
-        sql.execute(insertSeed, [2, 1])
-        sql.execute(insertSeed, [3, 1])
-        sql.execute(insertSeed, [4, 1])
-        sql.execute(insertSeed, [5, 1])
+        def insertSeed = "insert into sequence(id, next_id, name, prefix) values (?,?,?,?)"
+        sql.execute(insertSeed, [1, 1, 'collection', 'co'])
+        sql.execute(insertSeed, [2, 1, 'institution', 'in'])
+        sql.execute(insertSeed, [3, 1, 'dataProvider', 'dp'])
+        sql.execute(insertSeed, [4, 1, 'dataResource', 'dr'])
+        sql.execute(insertSeed, [5, 1, 'dataHub', 'dh'])
+        sql.execute(insertSeed, [6, 1, 'attribution', 'at'])
     }
 
     protected void tearDown() {

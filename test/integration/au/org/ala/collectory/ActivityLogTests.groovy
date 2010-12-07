@@ -6,6 +6,7 @@ class ActivityLogTests extends GrailsUnitTestCase {
 
     protected void setUp() {
         super.setUp()
+        mockDomain ActivityLog
     }
 
     protected void tearDown() {
@@ -33,7 +34,7 @@ class ActivityLogTests extends GrailsUnitTestCase {
     }
 
     void testLog() {
-        ActivityLog.log('mark', Action.LOGIN)
+        ActivityLog.log('mark', true, Action.LOGIN)
         assertEquals 1, ActivityLog.findAllByAction('logged in').size()
     }
 }

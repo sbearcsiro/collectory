@@ -1,32 +1,28 @@
 package au.org.ala.collectory
 
-import grails.test.GrailsUnitTestCase
-
 /**
  * Created by markew
  * Date: Jul 30, 2010
  * Time: 9:17:23 AM
  */
-class ProviderMapIntTests extends GrailsUnitTestCase {
+class ProviderMapIntTests extends GroovyTestCase {
 
-    ProviderMap map
-    ProviderCode code1
-    ProviderCode code2
-    ProviderCode code3
-    ProviderGroup pg1
+    def grailsApplication
+    
+    ProviderCode code1, code2, code3
+    Collection pg1
 
     protected void setUp() {
         super.setUp()
-        code1 = new ProviderCode(code:'code1').save(flush:true)
-        code2 = new ProviderCode(code:'code2').save(flush:true)
-        code3 = new ProviderCode(code:'code3').save(flush:true)
-        map = new ProviderMap()
-        map.addToInstitutionCodes(code1)
-        map.addToCollectionCodes(code2)
-        map.addToCollectionCodes(code3)
-        pg1 = new Collection(id:12, name:'pg name').save(flush:true)
-        map.collection = pg1
-        map.save(flush:true)
+        code1 = createIfRequired('ProviderCode', [code:'code1'], ProviderCode.findByCode('code1')) as ProviderCode
+        assertNotNull code1
+        code2 = createIfRequired('ProviderCode', [code:'code2'], ProviderCode.findByCode('code2')) as ProviderCode
+        assertNotNull code2
+        code3 = createIfRequired('ProviderCode', [code:'code3'], ProviderCode.findByCode('code3')) as ProviderCode
+        assertNotNull code3
+
+        pg1 = createIfRequired('Collection', [uid:"co12", name:'collection1', userLastModified:'test'], Collection.findByUid("co12")) as Collection
+
     }
 
     protected void tearDown() {
@@ -38,23 +34,50 @@ class ProviderMapIntTests extends GrailsUnitTestCase {
     }
 
     void testMatches() {
-        def cCodes = map.getCollectionCodes()
+        ProviderMap pm = new ProviderMap(collection: pg1)
+        pm.addToInstitutionCodes(code1)
+        pm.addToCollectionCodes(code2)
+        pm.addToCollectionCodes(code3)
+
+        def cCodes = pm.getCollectionCodes()
         assertEquals 2, cCodes.size()
         assertTrue cCodes.collect{it.code}.contains("code2")
 
-        assertTrue map.matches("code1", "code2")
-        assertTrue map.matches("code1", "code3")
-        assertFalse map.matches("code2", "code3")
+        assertTrue pm.matches("code1", "code2")
+        assertTrue pm.matches("code1", "code3")
+        assertFalse pm.matches("code2", "code3")
+
+        pm.discard()
     }
 
     void testFindMatch() {
-        def pg1 = ProviderMap.find("from ProviderMapProviderCode as pp, ProviderCode as c, ProviderMap as m where c.code = 'CSIRO' and pp.providerCodeId = c.id and m.id = pp.providerMapInstitutionCodesId")
+        ProviderMap pm = new ProviderMap(collection: pg1)
+        pm.addToInstitutionCodes(code1)
+        pm.addToCollectionCodes(code2)
+        pm.addToCollectionCodes(code3)
+        pm.save(flush:true)
 
-
+        assertEquals 1, ProviderMap.count()
         def pg = ProviderMap.findMatch("code1", "code2")
         assertNotNull pg
-        assertEquals "pg name", pg.name
-        assertEquals 12, ProviderMap.findMatchId("code1", "code2")
+        assertEquals "collection1", pg.name
+        assertEquals 'co12', ProviderMap.findMatchUid("code1", "code2")
+    }
 
+    // def targetObjects = propertyClass."findBy${idName}"(idValue)
+
+    /**
+     * This shouldn't be necessary as in-mem db is meant to be cleared for each test. However..
+     */
+    def createIfRequired(domain, props, exists) {
+        if (exists) return exists
+        def result = grailsApplication.getDomainClass('au.org.ala.collectory.' + domain).newInstance()
+        result.properties = props
+        result.save(flush:true)
+        if (result.hasErrors()) {
+            result.errors.each { println it }
+        }
+        println result
+        return result
     }
 }

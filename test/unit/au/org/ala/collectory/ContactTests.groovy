@@ -3,20 +3,11 @@ package au.org.ala.collectory
 import grails.test.*
 
 class ContactTests extends GrailsUnitTestCase {
-    Contact contact
 
     protected void setUp() {
         super.setUp()
-        contact = new Contact(
-            title: "Dr",
-            firstName: "contact",
-            lastName: "Woolston",
-            phone: "0262465909",
-            mobile: "0419468551",
-            email: "contact.woolston@csiro.au",
-            notes: "to be treated with exaggerated respect",
-            publish: true)
-
+        mockDomain(Contact)
+        mockForConstraintsTests(Contact)
     }
 
     protected void tearDown() {
@@ -25,28 +16,37 @@ class ContactTests extends GrailsUnitTestCase {
 
     void testConstraints() {
 
-        mockForConstraintsTests(Contact, [ contact ])
+        def contact = new Contact(
+            title: "Dr",
+            firstName: "contact",
+            lastName: "Woolston",
+            phone: "0262465909",
+            mobile: "0419468551",
+            email: "contact.woolston@csiro.au",
+            notes: "to be treated with exaggerated respect",
+            publish: true,
+            userLastModified: 'test')
+
         contact.validate()
-        if (contact.hasErrors())
-            println badContact.errors
-        assertTrue contact.validate()
+        if (contact.hasErrors()) {
+            println contact.errors
+            fail "contact has errors"
+        }        
 
         // test validation
         def testContact = new Contact()
         assertFalse testContact.validate()
-        assertEquals "nullable", testContact.errors["firstName"]
-        assertEquals "nullable", testContact.errors["lastName"]
+        assertEquals "nullable", testContact.errors["userLastModified"]
     }
 
     void testTitle() {
-        mockForConstraintsTests(Contact)
 
-        def testContact = new Contact(title: "Dr", firstName: "Lemmy", lastName: "Caution")
+        def testContact = new Contact(title: "Dr", firstName: "Lemmy", lastName: "Caution", userLastModified: 'test')
+        assertTrue testContact.validate()
         if (testContact.hasErrors())
             println testContact.errors
-        assertTrue testContact.validate()
 
-        def badContact = new Contact(title: "Archbishop", firstName: "Lemmy", lastName: "Caution")
+        def badContact = new Contact(title: "Archbishop", firstName: "Lemmy", lastName: "Caution", userLastModified: 'test')
         assertFalse badContact.validate()
         if (badContact.hasErrors())
             println badContact.errors
@@ -54,12 +54,11 @@ class ContactTests extends GrailsUnitTestCase {
     }
 
     void testEmail() {
-        mockForConstraintsTests(Contact)
 
-        def testContact = new Contact(firstName: "Lemmy", lastName: "Caution", email: "contact@csiro.au")
+        def testContact = new Contact(firstName: "Lemmy", lastName: "Caution", email: "contact@csiro.au", userLastModified: 'test')
         assertTrue testContact.validate()
 
-        def badContact = new Contact(firstName: "Lemmy", lastName: "Caution", email: "contact.csiro")
+        def badContact = new Contact(firstName: "Lemmy", lastName: "Caution", email: "contact.csiro", userLastModified: 'test')
         badContact.validate()
         if (badContact.hasErrors())
             println badContact.errors
@@ -67,7 +66,7 @@ class ContactTests extends GrailsUnitTestCase {
     }
 
     void testparseName() {
-        contact = new Contact()
+        def contact = new Contact()
         contact.parseName("Dr Lemmy Caution")
         assertEquals "Dr", contact.title
         assertEquals "Lemmy", contact.firstName

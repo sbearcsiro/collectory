@@ -25,7 +25,7 @@ class ContactForTests extends GrailsUnitTestCase {
     void testPrint() {
         assertEquals([
             "Contact id: 4",
-            "Entity id: in27",
+            "Entity uid: in27",
             "Role: Manager",
             "isAdmin: true",
             "isPrimary: true"]

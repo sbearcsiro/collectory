@@ -778,7 +778,6 @@ class CollectoryTagLib {
                 def newText = ""
                 // for each line
                 lines.each {
-                    println "line: " + it
                     if (it[0] == '*') {
                         // replace list markup
                         def item = "<li>" + it.substring(1,it.length()) + "</li>"

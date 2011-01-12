@@ -387,19 +387,7 @@ class PublicController {
         def partnerCollections = Collection.list([sort:"name"]).findAll {
             it.isALAPartner()
         }
-        if (GrailsUtil.environment == 'production') {
-            render(view: 'map', model: [collections: partnerCollections])
-        } else {
-            render(view: 'map3', model: [collections: partnerCollections])
-        }
-    }
-
-    def map3 = {
-        ActivityLog.log authService.username(), authService.isAdmin(), Action.LIST, 'map'
-        def partnerCollections = Collection.list([sort:"name"]).findAll {
-            it.isALAPartner()
-        }
-        [collections: partnerCollections]
+        render(view: 'map3', model: [collections: partnerCollections])
     }
 
     /**

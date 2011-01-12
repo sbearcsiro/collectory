@@ -262,8 +262,8 @@ abstract class ProviderGroup implements Serializable {
             chunk = chunks[0]
         }
         // add second token if first is short
-        if (chunk.size() < 10 && chunks.size() > 1) {
-            chunk += " " + chunk[1]
+        if (chunk.size() < 40 && chunks.size() > 1) {
+            chunk += " " + chunks[1]
         }
         // trim if still too long
         if (chunk.size() < length) {

@@ -38,7 +38,7 @@
 
                 <!-- Institution -->
                 <g:if test="${instance.institution}">
-                  <p><span class="category">Source of records</span>: <g:link controller="institution" action="show" id="${instance.institution?.id}">${instance.institution?.name}</g:link></p>
+                  <p><span class="category">Source of records</span>: <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
                 </g:if>
 
                 <!-- GUID    -->

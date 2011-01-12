@@ -22,6 +22,7 @@ class UrlMappings {
       "/dh/$uid?" (controller:'data') {
           action = [GET:'getDataHub', PUT:'saveDataHub', DELETE:'delete', POST:'saveDataHub']
        }
+      "/eml/$id" (controller:'data',action:'eml')
       "/"(controller:'public', action:'map')
 	  "500"(view:'/error')
 	}

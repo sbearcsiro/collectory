@@ -38,7 +38,7 @@
       <div class="homeCell">
         <span class="mainLink">Search for collections</span>
         <p class="mainText">Enter a part of the name of a collection or its acronym, eg insects, fungi, ANIC</p>
-        <g:form controller="collection" action="searchList">
+        <g:form action="search">
           <g:textField class="mainText" name="term"/><g:submitButton style="margin-left:20px;" name="search" value="Search"/>
         </g:form>
       </div>

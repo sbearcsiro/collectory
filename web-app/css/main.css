@@ -951,3 +951,49 @@ div#index a {
 div.list {
     margin-top: 10px;
 }
+
+/* styling for search results page */
+
+.resultsPage {
+    padding-bottom: 40px;
+}
+
+.pageTitle h1 {
+    font-size: 26px;
+}
+
+.resultsGroup {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.resultsGroup h2 {
+    font-size: 20px;
+    color: #48802C;
+}
+
+.resultsGroup ul {
+    list-style: none;
+    margin-left:20px;
+    padding-right: 20px;
+}
+
+.resultsGroup li {
+    list-style: none;
+    margin-left:20px;
+    padding-top: 5px;
+}
+
+.resultsGroup a {
+    padding-right: 5px;
+    color: #777;
+}
+
+.resultsName a {
+    color: #444;
+}
+
+span.resultsName {
+    font-size: 15px;
+    padding-right: 10px;
+}

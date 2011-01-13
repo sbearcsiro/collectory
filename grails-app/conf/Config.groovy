@@ -38,6 +38,9 @@ println "(*) grails.config.locations = ${grails.config.locations}"
 /******************************************************************************\
  *  EXTERNAL SERVERS
 \******************************************************************************/
+if (!bie.baseURL) {
+     bie.baseURL = "http://bie.ala.org.au/"
+}
 if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
 }
@@ -132,11 +135,11 @@ environments {
         security.cas.contextPath = grails.context
     }
     development {
-        grails.serverURL = "http://nemo-be.nexus.csiro.au:8080/Collectory"
+        grails.serverURL = "http://localhost:8080/Collectory"    //"http://drover-fr.nexus.csiro.au:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://nemo-be.nexus.csiro.au:8080"
+        security.cas.serverName = "http://drover-fr.nexus.csiro.au:8080"
         security.cas.contextPath = grails.context
-        security.cas.bypass = false
+        security.cas.bypass = true
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

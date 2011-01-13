@@ -18,12 +18,36 @@ class AdminController {
             render "You are not authorised to access this page."
             return false
         }
+        return true
     }
 /*
  End access control
  */
 
     def index = { }
+
+    def search = {
+        // use bie search and filter results
+        def baseUrl = ConfigurationHolder.config.bie.baseURL
+        def url = baseUrl + "search.json?q=" + params.term.encodeAsURL() + "&fq&pageSize=1000"
+
+        def conn = new URL(url).openConnection()
+        try {
+            conn.setConnectTimeout(10000)
+            conn.setReadTimeout(50000)
+            def json = conn.content.text
+            def result = [results: extractSearchResults(json)]
+            render(view:'searchResults',model:result)
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out searching the BIE. URL= ${url}."
+            def error = [error:"Timed out searching the BIE.", totalRecords: 0, decades: null]
+            render error as JSON
+        } catch (Exception e) {
+            log.warn "Failed to search the BIE. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+            def error = ["error":"Failed to search the BIE. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
+            render error as JSON
+        }
+    }
 
     def loadSupplementary = {
         boolean override = params.override ? params.override : false
@@ -226,5 +250,38 @@ class AdminController {
         ${result.inserts} records inserted<br/>
         ${result.failures} lines of data could not be processed<br/>
         ${afterCount} resources after"""
+    }
+
+    private def extractSearchResults(json) {
+        def results = [collections:[], institutions:[], dataResources:[], dataProviders:[], total:0]
+        def obj = JSON.parse(json).searchResults
+        //println "------------------------------------"
+        if (obj?.results) {
+            obj.results.each {
+                //println "type = ${it.idxType} name = ${it.name}"
+                switch (it.idxType) {
+                    case "COLLECTION":
+                        results.collections << [uid:extractUid(it.guid), name:it.name]
+                        break
+                    case "INSTITUTION":
+                        results.institutions << [uid:extractUid(it.guid), name:it.name]
+                        break
+                    case "DATASET":
+                        results.dataResources << [uid:extractUid(it.guid), name:it.name, provider:it.dataProviderName]
+                        break
+                    case "DATAPROVIDER":
+                        results.dataProviders << [uid:extractUid(it.guid), name:it.name]
+                        break
+                    default:
+                        break
+                }
+            }
+        }
+        results.total = results.collections.size() + results.institutions.size() + results.dataProviders.size() + results.dataResources.size()
+        return results
+    }
+
+    def extractUid = {url ->
+        url[url.lastIndexOf('/') + 1..url.size() - 1]
     }
 }

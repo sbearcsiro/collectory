@@ -37,7 +37,7 @@
 
 
 	</div><!-- end header -->
- 
+
 <div class="login-info">
     <cl:isLoggedIn>
         <span id="logged-in">Logged in as <cl:loggedInUsername/></span>
@@ -52,21 +52,14 @@
  
 	<div id="content-full-width">
  
- 
-			
+
+
 			<div id="post-2"  class="post">
-			
-				<!-- <h3 class="post-title">Home</h3> -->
-				
-				<!--h3 class="post-title">Welcome to the ALA Collectory</h3-->
-				
-		        <!--div id="spinner" class="spinner" style="display:none;">
-					<img src="${resource(dir:'images',file:'spinner.gif')}" alt="Spinner" />
-				</div-->
+
 				<g:layoutBody />
 
 			</div>
- 			
+
 	  </div>
 </div><!-- end content -->
 	

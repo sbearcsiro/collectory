@@ -136,6 +136,12 @@ input:focus, select:focus, textarea:focus {
     padding-left: 25px;
 }
 
+.menuButton a.return {
+    background: url(../images/skin/arrow_118.png) center left no-repeat;
+    color: #333;
+    padding-left: 21px;
+}
+
 /* MEW added to support in-line create links */
 .inlineButton {
     padding-left: 30px;

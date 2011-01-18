@@ -11,6 +11,7 @@
         <div class="nav">
             <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
+            <g:if test="${returnTo}"><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></g:if>
         </div>
         <div class="body">
             <h1><g:message code="default.create.label" args="[entityName]" /></h1>
@@ -23,6 +24,7 @@
             </div>
             </g:hasErrors>
             <g:form action="save" method="post" >
+                <g:hiddenField name="returnTo" value="${returnTo}" />
                 <div class="dialog">
                     <table>
                         <tbody>

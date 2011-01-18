@@ -47,6 +47,16 @@ class Institution extends ProviderGroup {
     InstitutionSummary buildSummary() {
         InstitutionSummary is = init(new InstitutionSummary()) as InstitutionSummary
         is.collections = collections.collect {[it.uid, it.name]}
+        listProviders().each {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                if (it[0..1] == 'dp') {
+                    is.relatedDataProviders << [uid: pg.uid, name: pg.name]
+                } else {
+                    is.relatedDataResources << [uid: pg.uid, name: pg.name]
+                }
+            }
+        }
         return is
     }
 

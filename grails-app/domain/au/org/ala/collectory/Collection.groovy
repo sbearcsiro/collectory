@@ -220,6 +220,16 @@ class Collection extends ProviderGroup implements Serializable {
         }
         cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()
+        listProviders().each {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                if (it[0..1] == 'dp') {
+                    cs.relatedDataProviders << [uid: pg.uid, name: pg.name]
+                } else {
+                    cs.relatedDataResources << [uid: pg.uid, name: pg.name]
+                }
+            }
+        }
         return cs
     }
 

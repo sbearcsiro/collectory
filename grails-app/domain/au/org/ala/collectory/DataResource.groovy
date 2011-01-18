@@ -7,6 +7,10 @@ class DataResource extends ProviderGroup implements Serializable {
 
     static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
 
+    static mapping = {
+        sort: 'name'
+    }
+
     String displayName
     String rights
     String citation
@@ -45,8 +49,23 @@ class DataResource extends ProviderGroup implements Serializable {
         drs.dataProvider = dataProvider?.name
         drs.dataProviderId = dataProvider?.id
         drs.dataProviderUid = dataProvider?.uid
-        drs.institution = institution?.name
-        drs.institutionUid = institution?.uid
+
+        def consumers = listConsumers()
+        consumers.each {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                if (it[0..1] == 'co') {
+                    drs.relatedCollections << [uid: pg.uid, name: pg.name]
+                } else {
+                    drs.relatedInstitutions << [uid: pg.uid, name: pg.name]
+                }
+            }
+        }
+        // for backward compatibility
+        if (drs.relatedInstitutions) {
+            drs.institution = drs.relatedInstitutions[0].name
+            drs.institutionUid = drs.relatedInstitutions[0].uid
+        }
         return drs
     }
 

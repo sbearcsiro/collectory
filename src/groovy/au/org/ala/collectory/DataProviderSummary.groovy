@@ -7,4 +7,6 @@ package au.org.ala.collectory
  */
 class DataProviderSummary extends ProviderGroupSummary {
     List resources
+    List relatedCollections = []     // list of map with name: and uid:
+    List relatedInstitutions = []    // list of map with name: and uid:
 }

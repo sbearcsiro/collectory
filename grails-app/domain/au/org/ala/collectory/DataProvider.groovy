@@ -9,6 +9,10 @@ class DataProvider extends ProviderGroup implements Serializable {
 
     static hasMany = [resources: DataResource]
 
+    static mapping = {
+        sort: 'name'
+    }
+
     static constraints = {
     }
 
@@ -40,6 +44,17 @@ class DataProvider extends ProviderGroup implements Serializable {
                 }
             }
             dps.resources = list
+        }
+        def consumers = listConsumers()
+        consumers.each {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                if (it[0..1] == 'co') {
+                    dps.relatedCollections << [uid: pg.uid, name: pg.name]
+                } else {
+                    dps.relatedInstitutions << [uid: pg.uid, name: pg.name]
+                }
+            }
         }
         return dps
     }

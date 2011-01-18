@@ -198,6 +198,9 @@
       <cl:editButton uid="${instance.uid}" page="range"/>
     </div>
 
+    <!-- Contacts -->
+    <g:render template="/shared/contacts" model="[contacts: contacts, instance: instance]"/>
+
     <!-- Provider codes -->
     <div class="show-section">
       <h2>Provider codes</h2>
@@ -212,15 +215,15 @@
             <cl:valueOrOtherwise value="${instance.providerMap?.warning}">Warning is: ${instance.providerMap?.warning}</cl:valueOrOtherwise>
           </p>
         </g:if>
-        <cl:editButton uid="${instance.uid}" id="${instance.providerMap?.id}" controller="providerMap" action="show"/>
+        <cl:editButton uid="${instance.uid}" id="${instance.providerMap?.id}" controller="providerMap" action="show" returnTo="${instance.uid}"/>
       </g:if>
       <g:else>
-        <cl:editButton controller="providerMap" action="list"/>
+        <cl:editButton controller="providerMap" action="create" returnTo="${instance.uid}" createFor="${instance.uid}"/>
       </g:else>
     </div>
 
-    <!-- Contacts -->
-    <g:render template="/shared/contacts" model="[contacts: contacts, instance: instance]"/>
+    <!-- Record providers and resources -->
+    <g:render template="/shared/providers" model="[instance: instance]"/>
 
     <!-- Attributions -->
     <g:render template="/shared/attributions" model="[instance: instance]"/>

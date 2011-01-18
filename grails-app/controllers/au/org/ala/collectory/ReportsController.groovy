@@ -126,6 +126,10 @@ class ReportsController {
         }
         [mrs: mrs]
     }
+
+    def dataLinks = {
+        [links: DataLink.list([sort:'provider'])]
+    }
     
     class ReportCommand {
         int totalCollections

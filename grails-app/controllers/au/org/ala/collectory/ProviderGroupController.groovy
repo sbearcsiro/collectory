@@ -42,6 +42,22 @@ abstract class ProviderGroupController {
  */
 
     /**
+     * List providers for institutions/collections
+     */
+    def showProviders = {
+        def provs = DataLink.findAllByConsumer(params.id).collect {it.provider}
+        render provs as JSON
+    }
+
+    /**
+     * List consumers of data resources/providers
+     */
+    def showConsumers = {
+        def cons = DataLink.findAllByProvider(params.id).collect {it.consumer}
+        render cons as JSON
+    }
+
+    /**
      * Edit base attributes.
      * @param id
      */

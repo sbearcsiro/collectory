@@ -419,10 +419,26 @@ abstract class ProviderGroup implements Serializable {
     abstract boolean canBeMapped()
 
     /**
-     * Returns the a summary object that extends ProviderGroupSummary and is specific to the type of entity.
+     * Returns a summary object that extends ProviderGroupSummary and is specific to the type of entity.
      * @return summary object
      */
     abstract ProviderGroupSummary buildSummary()
+
+    /**
+     * Returns a list of UIDs of data providers and data resources that contribute records to the entity.
+     * @return
+     */
+    def List<String> listProviders() {
+        DataLink.findAllByConsumer(this.uid).collect {it.provider}
+    }
+
+    /**
+     * Returns a list of UIDs of institutions and collections that consume records from the entity.
+     * @return
+     */
+    def List<String> listConsumers() {
+        DataLink.findAllByProvider(this.uid).collect {it.consumer}
+    }
 
     /*
      * The database id is not injected into this class but the subclass that is actually mapped to

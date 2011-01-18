@@ -108,6 +108,9 @@
               <!-- location -->
               <g:render template="/shared/location" model="[instance: instance]"/>
 
+              <!-- Record providers and resources -->
+              <g:render template="/shared/providers" model="[instance: instance]"/>
+
               <!-- Contacts -->
               <g:render template="/shared/contacts" model="[contacts: contacts, instance: instance]"/>
 

@@ -770,6 +770,12 @@ div.emulate-public > h2 {
     margin-left:40px;
 }
 
+.emulate-public ul.resources li {
+    list-style-image: none;
+    list-style-type: circle;
+    margin-left:80px;
+}
+
 .emulate-public p.caption {
     color: #666 ! important;
     font-size: 0.9em;

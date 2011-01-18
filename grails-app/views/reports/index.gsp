@@ -106,6 +106,8 @@
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="providers">List all data providers and resources</g:link>
           <span class="linkText">- list of all data providers, data resources and data hubs</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="dataLinks">Show data interactions</g:link>
+          <span class="linkText">- show which providers/resources provide data records for which institutions/collections</span></p>
         </div>
       </div>
 

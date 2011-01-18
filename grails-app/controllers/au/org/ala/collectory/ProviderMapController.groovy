@@ -44,23 +44,30 @@ class ProviderMapController {
                 order(params.sort, params.order)
             }
         }
-        [providerMapInstanceList: maps, providerMapInstanceTotal: ProviderMap.count()]
+        [providerMapInstanceList: maps, providerMapInstanceTotal: ProviderMap.count(), returnTo: params.returnTo]
     }
 
     def create = {
         def providerMapInstance = new ProviderMap()
         providerMapInstance.properties = params
-        return [providerMapInstance: providerMapInstance]
+        println "createFor = ${params.createFor}"
+        if (params.createFor) {
+            def pg = Collection._get(params.createFor) as Collection
+            if (pg) {
+                providerMapInstance.collection = pg
+            }
+        }
+        return [providerMapInstance: providerMapInstance, returnTo: params.returnTo]
     }
 
     def save = {
         def providerMapInstance = new ProviderMap(params)
         if (providerMapInstance.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), providerMapInstance.id])}"
-            redirect(action: "show", id: providerMapInstance.id)
+            redirect(action: "show", id: providerMapInstance.id, params:[returnTo: params.returnTo])
         }
         else {
-            render(view: "create", model: [providerMapInstance: providerMapInstance])
+            render(view: "create", model: [providerMapInstance: providerMapInstance, returnTo: params.returnTo])
         }
     }
 
@@ -68,10 +75,10 @@ class ProviderMapController {
         def providerMapInstance = ProviderMap.get(params.id)
         if (!providerMapInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-            redirect(action: "list")
+            redirect(action: "list", params:[returnTo: params.returnTo])
         }
         else {
-            [providerMapInstance: providerMapInstance]
+            [providerMapInstance: providerMapInstance, returnTo: params.returnTo]
         }
     }
 
@@ -79,11 +86,11 @@ class ProviderMapController {
         def providerMapInstance = ProviderMap.get(params.id)
         if (!providerMapInstance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-            redirect(action: "list")
+            redirect(action: "list", params:[returnTo: params.returnTo])
         }
         else {
             if (authService.isAuthorisedToEdit(providerMapInstance.collection.uid)) {
-                return [providerMapInstance: providerMapInstance]
+                return [providerMapInstance: providerMapInstance, returnTo: params.returnTo]
             } else {
                 render "You are not authorised to access this page."
             }
@@ -98,22 +105,22 @@ class ProviderMapController {
                 if (providerMapInstance.version > version) {
                     
                     providerMapInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'providerMap.label', default: 'ProviderMap')] as Object[], "Another user has updated this ProviderMap while you were editing")
-                    render(view: "edit", model: [providerMapInstance: providerMapInstance])
+                    render(view: "edit", model: [providerMapInstance: providerMapInstance], params:[returnTo: params.returnTo])
                     return
                 }
             }
             providerMapInstance.properties = params
             if (!providerMapInstance.hasErrors() && providerMapInstance.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), providerMapInstance.id])}"
-                redirect(action: "show", id: providerMapInstance.id)
+                redirect(action: "show", id: providerMapInstance.id, params:[returnTo: params.returnTo])
             }
             else {
-                render(view: "edit", model: [providerMapInstance: providerMapInstance])
+                render(view: "edit", model: [providerMapInstance: providerMapInstance, returnTo: params.returnTo])
             }
         }
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-            redirect(action: "list")
+            redirect(action: "list", params:[returnTo: params.returnTo])
         }
     }
 
@@ -122,13 +129,23 @@ class ProviderMapController {
         if (providerMapInstance) {
             if (authService.isAuthorisedToEdit(providerMapInstance.collection.uid)) {
                 try {
+                    // remove collection link
+                    providerMapInstance.collection?.providerMap = null
+                    // remove code links
+                    providerMapInstance.collectionCodes.each {
+                        providerMapInstance.removeFromCollectionCodes it
+                    }
+                    providerMapInstance.institutionCodes.each {
+                        providerMapInstance.removeFromInstitutionCodes it
+                    }
+                    // remove map
                     providerMapInstance.delete(flush: true)
                     flash.message = "${message(code: 'default.deleted.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-                    redirect(action: "list")
+                    redirect(action: "list", params:[returnTo: params.returnTo])
                 }
                 catch (org.springframework.dao.DataIntegrityViolationException e) {
                     flash.message = "${message(code: 'default.not.deleted.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-                    redirect(action: "show", id: params.id)
+                    redirect(action: "show", id: params.id, params:[returnTo: params.returnTo])
                 }
             } else {
                 render "You are not authorised to access this page."
@@ -136,7 +153,7 @@ class ProviderMapController {
         }
         else {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'providerMap.label', default: 'ProviderMap'), params.id])}"
-            redirect(action: "list")
+            redirect(action: "list", params:[returnTo: params.returnTo])
         }
     }
 }

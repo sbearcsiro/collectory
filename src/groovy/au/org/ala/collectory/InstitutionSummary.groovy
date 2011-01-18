@@ -6,4 +6,6 @@ package au.org.ala.collectory
 class InstitutionSummary extends ProviderGroupSummary {
 //    List derivedInstCodes
     List collections
+    List relatedDataProviders = []    // list of map with name: and uid:
+    List relatedDataResources = []    // list of map with name: and uid:
 }

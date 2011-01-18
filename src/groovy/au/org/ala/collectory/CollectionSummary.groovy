@@ -10,4 +10,6 @@ class CollectionSummary extends ProviderGroupSummary {
     List derivedInstCodes
     List derivedCollCodes
     String institutionLogoUrl
+    List relatedDataProviders = []    // list of map with name: and uid:
+    List relatedDataResources = []    // list of map with name: and uid:
 }

@@ -978,6 +978,15 @@ class CollectoryTagLib {
         out << '<a class="home" href="' + createLink(uri:"/admin") + '">Home</a>'
     }
 
+    def returnLink = { attrs ->
+        if (attrs.uid) {
+            def pg = ProviderGroup._get(attrs.uid)
+            if (pg) {
+                out << link(class: 'return', controller: controllerFromUid(uid: attrs.uid), action: 'show', id: pg.uid) {'Return to ' + pg.name}
+            }
+        }
+    }
+    
     def partner = { attrs->
         if (attrs.test) {
             out << "<span class='partner follow'>Atlas Partner</span>"
@@ -1157,7 +1166,7 @@ class CollectoryTagLib {
      * Returns the controller name for the specified uid.
      */
     def controllerFromUid = {attrs ->
-        if (attrs.uid.size() > 2) {
+        if (attrs.uid?.size() > 2) {
             switch (attrs.uid[0..1]) {
                 case 'co': out << 'collection'; break
                 case 'in': out << 'institution'; break
@@ -1239,17 +1248,40 @@ class CollectoryTagLib {
         out << "<img class='editImg' style='margin-right:5px;vertical-align:middle' src='${resource(dir:'images/ala',file:'edit.png')}'/>\n"
         out << link(controller:attrs.instance.urlForm(), action:'show', id:attrs.instance.uid) {"Edit metadata"}
         out << " for this ${attrs.instance.textFormOfEntityType(attrs.instance.uid)}. You need<br/>appropriate authorisation to do this. You will<br/>be asked to log in if you are not already.</p>\n"
-        if (attrs.instance.ENTITY_TYPE == Institution.ENTITY_TYPE) {
+        def providers = attrs.instance.listProviders()
+        if (attrs.instance instanceof Collection) {
+            providers += attrs.instance.institution?.listProviders()
+        }
+        if (providers) {
             boolean first = true
-            DataResource.findAllByInstitution(attrs.instance).each {
+            providers.each {
                 // only write the header if we have at least one resource
                 if (first) {
-                    out << "<p class='viewList' style='margin-top:5px;'>View data resources<br/><ul>\n"
+                    out << "<p class='viewList' style='margin-top:5px;'>View data sources<br/><ul>\n"
                     first = false
                 }
-                def name =  it.name
+                def provider = ProviderGroup._get(it)
                 out << "<li>" +
-                        link(action:'show',id:it.uid) {name} +
+                        link(action:'show',id:provider.uid) {provider.name} +
+                        "</li>\n"
+            }
+            out << "</ul></p>\n"
+        }
+        def consumers = attrs.instance.listConsumers()
+        if (attrs.instance instanceof DataResource) {
+            consumers += attrs.instance.dataProvider?.listConsumers()
+        }
+        if (consumers) {
+            boolean first = true
+            consumers.each {
+                // only write the header if we have at least one resource
+                if (first) {
+                    out << "<p class='viewList' style='margin-top:5px;'>View data consumers<br/><ul>\n"
+                    first = false
+                }
+                def consumer = ProviderGroup._get(it)
+                out << "<li>" +
+                        link(action:'show',id:consumer.uid) {consumer.name} +
                         "</li>\n"
             }
             out << "</ul></p>\n"
@@ -1404,5 +1436,19 @@ class CollectoryTagLib {
            }
           out << "</div>"
         }
+    }
+
+    def entityIndicator = { attrs ->
+        def ind = ""
+        if (attrs.entity) {
+            switch (attrs.entity.class) {
+                case Collection.class: ind = "(C)"; break
+                case Institution.class: ind = "(I)"; break
+                case DataProvider.class: ind = "(P)"; break
+                case DataResource.class: ind = "(R)"; break
+                case DataHub.class: ind = "(H)"; break
+            }
+        }
+        out << ind
     }
 }

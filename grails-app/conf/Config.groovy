@@ -131,7 +131,7 @@ environments {
     testserver {
         grails.serverURL = "http://alatstweb1-cbr.vm.csiro.au:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://alatstweb1-cbr.vm.csiro.au"
+        security.cas.serverName = "http://alatstweb1-cbr.vm.csiro.au:8080"
         security.cas.contextPath = grails.context
     }
     development {

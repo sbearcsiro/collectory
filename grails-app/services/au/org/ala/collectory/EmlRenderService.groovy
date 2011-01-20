@@ -44,7 +44,7 @@ class EmlRenderService {
 
         def eml = builder.bind {
             mkp.xmlDeclaration()
-            namespaces << [eml:"eml://ecoinformatics.org/eml-2.1.0",
+            namespaces << [eml:"eml://ecoinformatics.org/eml-2.1.1",
             xsi:"http://www.w3.org/2001/XMLSchema-instance",
             dc:"http://purl.org/dc/terms/"]
 
@@ -58,7 +58,7 @@ class EmlRenderService {
                 dataset() {
 
                     /* alt identifier */
-                    alternativeIdentifier('ala.org.au:' + dr.uid)
+                    alternateIdentifier('ala.org.au:' + dr.uid)
 
                     /* title */
                     title('xmlns:lang':'en', dr.name)
@@ -92,23 +92,17 @@ class EmlRenderService {
                     }
 
                     /* associated parties */
-                    out << ala
+                    associatedParty(ala(true))
 
-                    /* contact */
-                    mkp.comment "At least one human contact is required. This is sourced from the resource, provider, institution contacts in that order of precedence"
-                    mkp.comment "We should try to load metadata to support this for all resources."
-                    def cnt = dr.primaryContact
-                    if (!cnt) {cnt = dp.primaryContact}
-                    if (!cnt && dr.institution) {cnt = dr.institution.primaryContact}
-                    if (cnt) {
-                        out << addContact(cnt)
+                    /* pub date */
+                    def lastPub = dr.lastUpdated
+                    if (lastPub) {
+                      lastPub = lastPub.toString()[0..9]
                     }
+                    pubDate lastPub
 
                     /* language */
                     language "English"
-
-                    /* url */
-                    url('function':'information',"http://collections.ala.org.au/public/show/" + dr.uid)
 
                     /* abstract */
                     'abstract'() {
@@ -118,10 +112,27 @@ class EmlRenderService {
 
                     /* intellectual rights */
                     intellectualRights {
-                        para {
-                            literalLayout dr.rights
+                        para  dr.rights
+                    }
+
+                    /* distribution */
+                    distribution {
+                        online {
+                          url('function':'information',"http://collections.ala.org.au/public/show/" + dr.uid)
                         }
                     }
+
+                    /* contact */
+                    mkp.comment "At least one human contact is required. This is sourced from the resource, provider, institution contacts in that order of precedence"
+                    mkp.comment "We should try to load metadata to support this for all resources."
+                    def cnt = dr.primaryContact
+                    if (!cnt) {cnt = dp.primaryContact}
+                    if (cnt) {
+                        out << addContact(cnt)
+                    } else {
+                        contact(ala(false))
+                    }
+
                 }
             }
         }
@@ -160,16 +171,18 @@ class EmlRenderService {
                     }
                 }
                 out << addIf(cnt.contact.phone, 'phone')
-                println "email: ${cnt.contact.email}"
                 out << addIf(cnt.contact.email, 'electronicMailAddress')
             }
         }
     }
 
-    def ala = {
-        associatedParty {
+    /**
+     * inject ALA as an agentType or agentTypeWithRole
+     * @param boolean if true will include role
+     */
+    def ala = { withRole ->
+        { it ->
             organizationName "Atlas of Living Australia (ALA)"
-            role "distributor"
             address {
                 deliveryPoint "CSIRO Black Mountain Laboratories, Clunies Ross Street, ACTON"
                 city "Canberra"
@@ -178,6 +191,9 @@ class EmlRenderService {
                 country "Australia"
             }
             electronicMailAddress "info@ala.org.au"
+            if (withRole) {
+                role "distributor"
+            }
         }
     }
 

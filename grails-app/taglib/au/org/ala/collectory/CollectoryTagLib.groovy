@@ -1249,10 +1249,11 @@ class CollectoryTagLib {
         out << link(controller:attrs.instance.urlForm(), action:'show', id:attrs.instance.uid) {"Edit metadata"}
         out << " for this ${attrs.instance.textFormOfEntityType(attrs.instance.uid)}. You need<br/>appropriate authorisation to do this. You will<br/>be asked to log in if you are not already.</p>\n"
         def providers = attrs.instance.listProviders()
-        if (attrs.instance instanceof Collection) {
+        if (attrs.instance instanceof Collection && attrs.instance.institution) {
             providers += attrs.instance.institution?.listProviders()
         }
         if (providers) {
+            providers.each { println "Provider: " + it}
             boolean first = true
             providers.each {
                 // only write the header if we have at least one resource
@@ -1261,14 +1262,16 @@ class CollectoryTagLib {
                     first = false
                 }
                 def provider = ProviderGroup._get(it)
-                out << "<li>" +
-                        link(action:'show',id:provider.uid) {provider.name} +
-                        "</li>\n"
+                if (provider) {
+                    out << "<li>" +
+                            link(action:'show',id:provider.uid) {provider.name} +
+                            "</li>\n"
+                }
             }
             out << "</ul></p>\n"
         }
         def consumers = attrs.instance.listConsumers()
-        if (attrs.instance instanceof DataResource) {
+        if (attrs.instance instanceof DataResource && attrs.instance.dataProvider) {
             consumers += attrs.instance.dataProvider?.listConsumers()
         }
         if (consumers) {
@@ -1280,9 +1283,11 @@ class CollectoryTagLib {
                     first = false
                 }
                 def consumer = ProviderGroup._get(it)
-                out << "<li>" +
-                        link(action:'show',id:consumer.uid) {consumer.name} +
-                        "</li>\n"
+                if (consumer) {
+                    out << "<li>" +
+                            link(action:'show',id:consumer.uid) {consumer.name} +
+                            "</li>\n"
+                }
             }
             out << "</ul></p>\n"
         }

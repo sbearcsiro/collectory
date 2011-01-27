@@ -265,7 +265,6 @@
                   <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
                   <cl:warnIfInexactMapping collection="${collectionInstance}"/>
                   <cl:recordsLink collection="${collectionInstance}">
-                    <img src="${resource(dir:"images/ala/",file:"database_go.png")}"/>
                     Click to view all records for the <cl:collectionName name="${collectionInstance.name}"/></cl:recordsLink>
                 </g:if>
                 <g:else>
@@ -293,7 +292,7 @@
                     </td>
                     <td rowspan="2">
                       <h3>Records by taxonomic group</h3>
-                      <cl:taxonChart/>
+                      <cl:taxonChart uid="${collectionInstance.uid}"/>
                     </td>
                   </tr>
                   <tr>

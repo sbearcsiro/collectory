@@ -282,6 +282,7 @@ class PublicController {
                 legendUrl = resource(dir:'images/map',file:'single-occurrences.png')
             }
             def result = [mapUrl: mapUrl, legendUrl: legendUrl, type: mapType]
+            //println "mapType=${mapType}, mapUrl=${mapUrl}, legendUrl=${legendUrl}"
       //sleep delay
             render result as JSON
         } catch (SocketTimeoutException e) {

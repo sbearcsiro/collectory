@@ -63,31 +63,28 @@ function drawTaxonChart(dataTable) {
   if (dataTable.getTableProperty('scope') == "all") {
     taxaChartOptions.title = "Records by " + dataTable.getTableProperty('rank');
   } else {
-    taxaChartOptions.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank')
+    taxaChartOptions.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank');
   }
   google.visualization.events.addListener(chart, 'select', function() {
     var rank = dataTable.getTableProperty('rank');
     var name = dataTable.getValue(chart.getSelection()[0].row,0);
-    // differentiate between clicks on legend versus slices
-    if (chart.getSelection()[0].column == undefined) {
-      // clicked legend - show records
-      var scope = dataTable.getTableProperty('scope');
-      if (scope == "genus" && rank == "species") {
-        name = dataTable.getTableProperty('name') + " " + name;
-      }
-      document.location.href = biocacheUrl + "occurrences/searchForUID?q=" +
-              instanceUid + "&fq=" +
-              rank + ":" + name;
-    } else {
-      // clicked slice - drill down unless already at species
-      if (rank != "species") {
-        $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="' + baseUrl + '/images/ala/ajax-loader.gif"/>');
-        loadTaxonChartByRank(instanceUid, dataTable.getValue(chart.getSelection()[0].row,0), dataTable.getTableProperty('rank'));
-      }
-      if ($('span#resetTaxonChart').html() == "") {
-        $('span#resetTaxonChart').html("reset to " + dataTable.getTableProperty('rank'));
-      }
+    // add genus to name if we are at species level
+    var scope = dataTable.getTableProperty('scope');
+    if (scope == "genus" && rank == "species") {
+      name = dataTable.getTableProperty('name') + " " + name;
     }
+    var recordsLinkUrl = biocacheUrl + "occurrences/searchForUID?q=" + instanceUid + "&fq=" + rank + ":" + name;
+    // drill down unless already at species
+    if (rank != "species") {
+      $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="' + baseUrl + '/images/ala/ajax-loader.gif"/>');
+      loadTaxonChartByRank(instanceUid, dataTable.getValue(chart.getSelection()[0].row,0), dataTable.getTableProperty('rank'));
+    }
+    // show reset link if we were at top level
+    if ($('span#resetTaxonChart').html() == "") {
+      $('span#resetTaxonChart').html("Reset to " + dataTable.getTableProperty('rank'));
+    }
+    // show link to view records for the taxon group currently displayed
+    $('span#viewRecordsLink').html("<a class='recordsLink' href='" + recordsLinkUrl + "'>View records for " + name + "</a>");
   });
 
   //chart.draw(data, {width: 450, height: 300, title: 'My Daily Activities'});
@@ -95,6 +92,7 @@ function drawTaxonChart(dataTable) {
 
   // show taxon caption
   $('div#taxonChartCaption').css('visibility', 'visible');
+  $('div#taxonRecordsLink').css('visibility', 'visible');
 }
 /************************************************************\
 *
@@ -103,6 +101,7 @@ function resetTaxonChart() {
   $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="' + baseUrl + '/images/ala/ajax-loader.gif"/>');
   loadTaxonChart(baseUrl, instanceUid, taxaThreshold);
   $('span#resetTaxonChart').html("");
+  $('span#viewRecordsLink').html("<a href='" + biocacheUrl + "occurrences/searchForUID?q=" + instanceUid + "'>View all records</a>");
 }
 /*--(end)------------------ taxa breakdown charts ------------------------------*/
 

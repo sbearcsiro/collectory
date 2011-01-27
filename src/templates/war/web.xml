@@ -21,9 +21,6 @@
     <context-param>
         <!-- Parameter used by CAS filters -->
         <param-name>serverName</param-name>
-        <!--param-value>http://nemo-be.nexus.csiro.au:8080</param-value-->
-        <!--param-value>http://collections.ala.org.au</param-value-->
-        <!--param-value>http://alatstdb1-cbr.vm.csiro.au</param-value-->
         <param-value>@security.cas.serverName@</param-value>
     </context-param>
 

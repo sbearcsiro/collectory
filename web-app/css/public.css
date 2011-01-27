@@ -229,31 +229,24 @@ span#resetTaxonChart {
     color: #01716E;
     text-decoration:underline;
     cursor:pointer;
+    margin-bottom: 14px;
 }
 
-div#taxonCaveat {
-    padding-top:10px;
+div.taxonCaveat {
+    padding-top:5px;
 }
-/* 1 column */
+
 div#taxonChartCaption {
     text-align:center;
-}
-
-/* 2 column */
-#statistics span#resetTaxonChart {
-    color: #01716E;
-    text-decoration:underline;
-    cursor:pointer;
-}
-
-div#taxonChartCaption {
+    width: 430px;
     position: relative;
     z-index: 2;
     margin-top: -50px;
 }
 
-div#taxonChartCaption {
-    width: 430px;
+div#taxonRecordsLink {
+    z-index: 2;
+    margin-left: 5px;
 }
 
 /************************************************************\
@@ -268,6 +261,8 @@ div#taxonChartCaption {
 }
 
 a.recordsLink {
+    background: transparent url(../images/ala/database_go.png) center left no-repeat;
+    padding-left: 20px;
     position: relative;
     z-index: 2;
 }

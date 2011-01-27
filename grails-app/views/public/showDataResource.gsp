@@ -214,7 +214,7 @@
         $('img#mapLegend').each(function(i, n) {
           // if legend doesn't load, then it must be a point map
           $(this).error(function() {
-            $(this).attr('src',"http://nemo-be.nexus.csiro.au:8080/Collectory/images/map/single-occurrences.png");
+            $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
           });
           // IE hack as IE doesn't trigger the error handler
           if ($.browser.msie && !n.complete) {

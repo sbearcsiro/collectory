@@ -625,7 +625,7 @@ class CollectoryTagLib {
         if (attrs.states.toLowerCase() in ["all", "all states", "australian states"]) {
             out << "All Australian states are covered."
         } else {
-            out << "Australian states covered include " + attrs.states.encodeAsHTML()
+            out << "Australian states covered include: " + attrs.states.encodeAsHTML() + "."
         }
     }
 
@@ -940,13 +940,16 @@ class CollectoryTagLib {
     /**
      * Draw elements for taxa breakdown chart
      */
-    def taxonChart = {
+    def taxonChart = { attrs ->
         out <<
+            "<div id='taxonRecordsLink' style='visibility:hidden;'>" +
+            " <span id='viewRecordsLink' class='taxonChartCaption'><a class='recordsLink' href='${ConfigurationHolder.config.biocache.baseURL + "occurrences/searchForUID?q=" + attrs.uid}'>View all records</a></span><br/>" +
+            "</div>" +
             "<div id='taxonChart'>" +
             " <img class='taxon-loading' alt='loading...' src='${resource(dir:'images/ala',file:'ajax-loader.gif')}'/>" +
             "</div>" +
             "<div id='taxonChartCaption' style='visibility:hidden;'>" +
-            " <span class='taxonChartCaption'>Click a slice to drill into a group.<br/>Click a legend colour patch<br/>to view records for a group.</span><br/>" +
+            " <span class='taxonChartCaption'>Click a slice or legend to drill into a group.</span><br/>" +
             " <span id='resetTaxonChart' onclick='resetTaxonChart()'></span>&nbsp;" +
             " <div class='taxonCaveat'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/wrong-classification/'>Learn more about classification errors</a>&nbsp;</span></div>" +
             "</div>"
@@ -1253,7 +1256,6 @@ class CollectoryTagLib {
             providers += attrs.instance.institution?.listProviders()
         }
         if (providers) {
-            providers.each { println "Provider: " + it}
             boolean first = true
             providers.each {
                 // only write the header if we have at least one resource

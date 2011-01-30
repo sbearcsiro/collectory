@@ -88,14 +88,11 @@
           <h2>Digitised records</h2>
           <div>
             <p style="padding-bottom:8px;"><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
-            <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name}.</cl:recordsLink>
-            <cl:showRecordsExceptions exceptions="${exceptions}"/>
+            <cl:recordsLink entity="${instance}">Click to view records for the ${instance.name}.</cl:recordsLink>
           </div>
           <div class="section vertical-charts">
-            <h3>Map of records</h3>
-            <cl:recordsMap/>
             <h3>Records by taxonomic group</h3>
-            <cl:taxonChart/>
+            <cl:taxonChart uid="${instance.descendantUids().join(',')}"/>
             <h3>Records by collection date</h3>
             <cl:decadeChart/>
           </div>
@@ -202,15 +199,15 @@ function onLoadCallback() {
 
   if (showStats) {
     // summary biocache data
-    var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
+    var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.descendantUids().join(',')}";
     $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
 
     // taxon chart
-    loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 55);
+    loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.descendantUids().join(',')}", 55);
 
     // records map
-    var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-    $.get(mapServiceUrl, {}, mapRequestHandler);
+    //var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
+    //$.get(mapServiceUrl, {}, mapRequestHandler);
   }
 }
 /************************************************************\
@@ -219,7 +216,7 @@ function onLoadCallback() {
 function biocacheRecordsHandler(response) {
   if (response.error == undefined && response.totalRecords > 0) {
     setNumbers(response.totalRecords);
-    drawDecadeChart(response.decades, "${instance.uid}");
+    drawDecadeChart(response.decades, "${instance.descendantUids().join(',')}");
   } else {
     setNumbers(0);
     $('a.recordsLink').css("display","none");

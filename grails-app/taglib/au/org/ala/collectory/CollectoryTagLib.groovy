@@ -824,18 +824,21 @@ class CollectoryTagLib {
     /**
      * Builds the link to bio-cache records for the passed entity.
      *
-     * @param collection the collection to search for
+     * @param entity the entity to search for
+     * @param collection (same as entity - for backwards compat)
      * @param onlyIf a boolean switch
      * @body the body of the link
      */
     def recordsLink = {attrs, body ->
-        if (attrs.collection) {
+        def pg = attrs.entity ? attrs.entity : attrs.collection
+        if (pg) {
             if (attrs.containsKey('onlyIf') && !attrs.onlyIf) {
                 out << body()
             }
             else {
+                def uidStr = pg instanceof Institution ? pg.descendantUids().join(",") : pg.uid
                 def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "occurrences/searchForUID?q=" + attrs.collection?.generatePermalink()
+                def url = baseUrl + "occurrences/searchForUID?q=" + uidStr
                 out << "<a class='recordsLink' href='"
                 out << url
                 out << "'>" << body() << "</a>"

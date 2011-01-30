@@ -75,7 +75,6 @@ class PublicController {
             conn.setReadTimeout(50000)
             //conn.setRequestProperty('Connection','close')
             def json = conn.content.text
-            //println json
             def searchResult = JSON.parse(json)?.searchResult
             // sleep delay
             //println buildDecadeDataTableFromFacetResults(searchResult?.facetResults)
@@ -156,47 +155,39 @@ class PublicController {
         response.setHeader("Cache-Control","no-cache")
         response.addHeader("Cache-Control","no-store")
         def threshold = params.threshold ?: 20
-        def instance = ProviderGroup._get(params.id)
-        if (!instance) {
-            log.error "Unable to find entity for id = ${params.id}"
-            def error = ["error":"unable to find entity for id = " + params.id]
+        /* get taxon breakdown */
+        def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${params.id}.json";
+        def conn = new URL(taxonUrl).openConnection()
+        def jsonResponse = null
+        def breakdown = null
+        try {
+            conn.setConnectTimeout(10000)
+            conn.setReadTimeout(50000)
+            jsonResponse = conn.content.text
+            //println "Response = " + json
+            //sleep delay
+            breakdown = JSON.parse(jsonResponse)?.breakdown
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out getting taxa breakdown."
+            def error = [error:"Timed out getting taxa breakdown.", dataTable: null]
             render error as JSON
+        } catch (Exception e) {
+            log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
+            def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}.", dataTable: null]
+            render error as JSON
+        }
+        if (breakdown && breakdown.toString() != "null") {
+            def dataTable = buildPieChartDataTable(breakdown,"all","")
+            withFormat {
+                // seems weird but only way to include csv but default to json
+                html { render dataTable }
+                json {render dataTable}
+                csv { render buildCsvForTaxonBreakdown(breakdown)}
+            }
         } else {
-            /* get taxon breakdown */
-            def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${instance.uid}.json";
-            //taxonUrl = ConfigurationHolder.config.grails.serverURL + "/public/slowResponseForTesting"
-            def conn = new URL(taxonUrl).openConnection()
-            def jsonResponse = null
-            def breakdown = null
-            try {
-                conn.setConnectTimeout(10000)
-                conn.setReadTimeout(50000)
-                jsonResponse = conn.content.text
-                //println "Response = " + json
-                //sleep delay
-                breakdown = JSON.parse(jsonResponse)?.breakdown
-            } catch (SocketTimeoutException e) {
-                log.warn "Timed out getting taxa breakdown."
-                def error = [error:"Timed out getting taxa breakdown.", dataTable: null]
-                render error as JSON
-            } catch (Exception e) {
-                log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}."
-                def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}.", dataTable: null]
-                render error as JSON
-            }
-            if (breakdown && breakdown.toString() != "null") {
-                def dataTable = buildPieChartDataTable(breakdown,"all","")
-                withFormat {
-                    // seems weird but only way to include csv but default to json
-                    html { render dataTable }
-                    json {render dataTable}
-                    csv { render buildCsvForTaxonBreakdown(breakdown)}
-                }
-            } else {
-                log.warn "no data returned from taxa json = " + jsonResponse
-                def error = ["error":"No data returned from taxa json"]
-                render error as JSON
-            }
+            log.warn "no data returned from taxa json = " + jsonResponse
+            def error = ["error":"No data returned from taxa json"]
+            render error as JSON
         }
     }
 

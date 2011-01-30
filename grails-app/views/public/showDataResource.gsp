@@ -100,7 +100,7 @@
             <h3>Map of records</h3>
             <cl:recordsMap/>
             <h3>Records by taxonomic group</h3>
-            <cl:taxonChart/>
+            <cl:taxonChart uid="${instance.uid}"/>
             <h3>Records by collection date</h3>
             <cl:decadeChart/>
           </div>

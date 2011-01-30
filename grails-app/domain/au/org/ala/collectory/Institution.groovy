@@ -113,7 +113,6 @@ class Institution extends ProviderGroup {
         return result
     }
 
-
     /**
      * List of institutions that include this as a child institution.
      *
@@ -125,10 +124,8 @@ class Institution extends ProviderGroup {
     def listParents() {
         def list = []
         Institution.findAll("from Institution as i where i.childInstitutions like '%${uid}%'").each { inst->
-            println inst.uid + " " + inst.name
             def parents = inst.childInstitutions?.tokenize(' ')
             parents.each { child ->
-                println child
                 if (child == uid) {
                     list << inst
                 }
@@ -137,7 +134,25 @@ class Institution extends ProviderGroup {
         return list
     }
 
-    def List<Attribution> getAttributionList() {
+    /**
+     * List the uids that identify this institution and all its descendant institutions.
+     *
+     * @return list of UID
+     */
+    List<String> descendantUids() {
+        def uids = [uid]
+        if (childInstitutions) {
+            childInstitutions.tokenize(' ').each {
+                def child = _get(it as String)
+                if (child) {
+                    uids += child.descendantUids()
+                }
+            }
+        }
+        return uids
+    }
+
+    List<Attribution> getAttributionList() {
         List<Attribution> list = super.getAttributionList();
         // add institution
         list << new Attribution(name: name, url: websiteUrl, uid: uid)

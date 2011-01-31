@@ -292,7 +292,7 @@ function findPrevious(o, tag, limit){
   function anySelected(idOfSelect, message) {
     var d = new Date();
     var time = d.getHours();
-    var selected = document.getElementById(idOfSelect).selectedIndex
+    var selected = document.getElementById(idOfSelect).selectedIndex;
     if (selected == 0) {
       alert(message);
       return false;
@@ -323,7 +323,6 @@ function sendEmail(strEncoded) {
 *
 \************************************************************/
 // opens email window and adds error info
-var strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)";
 function sendBugEmail(strEncoded, message) {
     var strAddress;
     strAddress = strEncoded.split(strEncodedAtSign);

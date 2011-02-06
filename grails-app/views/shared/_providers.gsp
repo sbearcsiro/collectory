@@ -19,6 +19,16 @@
       </g:if>
       <g:else><li>The specified provider does not exist!</li></g:else>
     </g:each>
+    <!-- for collections try their institution -->
+    <g:if test="${instance instanceof au.org.ala.collectory.Collection && instance.institution}">
+      <g:each in="${instance.institution.listProviders()}" var="prov">
+        <g:set var="pg" value="${ProviderGroup._get(prov)}"/>
+        <g:if test="${pg}">
+          <li><g:link controller="${cl.controllerFromUid(uid:prov)}" action="show" id="${prov}">${pg.name}</g:link> (${isProvider ? 'provider' : 'resource'}) - (via the institution)</li>
+        </g:if>
+        <g:else><li>The specified provider does not exist!</li></g:else>
+      </g:each>
+    </g:if>
   </ul>
   <div style="clear:both;"></div>
   <cl:editButton uid="${instance.uid}" controller="dataLink" action="list" consumer="${instance.uid}"/>

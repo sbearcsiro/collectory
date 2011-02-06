@@ -90,7 +90,7 @@ class Contact implements Serializable {
 
     String buildName() {
         if (lastName)
-            return [(title ? title : ''), firstName, lastName].join(" ").trim()
+            return [(title ?: ''), (firstName ?: ''), lastName].join(" ").trim()
         else if (email)
             return email
         else if (phone)

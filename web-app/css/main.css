@@ -326,7 +326,7 @@ th.desc a {
     margin-top: 5px;
     overflow: hidden;
     padding: 0;
-    height: 22px;
+    height: 26px;
 }
 
 .contactButton {
@@ -813,6 +813,24 @@ a.preview {
     background: transparent;
     font-weight: bold;
     font-family: arial,helvetica,clean,sans-serif;
+}
+
+span.button img.json {
+    vertical-align: -3px;
+    padding-right: 3px;
+}
+
+span.button img.ala {
+    vertical-align: -5px;
+    padding-right: 3px;
+}
+
+a.json {
+    color: #333;
+    background: transparent; /* url(../images/json.png) left center no-repeat;*/
+    font-weight: bold;
+    font-family: arial,helvetica,clean,sans-serif;
+    margin-left: 10px;
 }
 
 a.edit-small {

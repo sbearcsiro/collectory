@@ -173,21 +173,7 @@
               </div>
 
               <!-- contacts -->
-              <g:set var="contacts" value="${collectionInstance.getContactsPrimaryFirst()}"/>
-              <g:if test="${contacts.size() > 0}">
-                <div class="section">
-                  <h3>Contact</h3>
-                  <g:each in="${contacts}" var="cf">
-                    <div class="contact">
-                      <p class="contactName">${cf?.contact?.buildName()}</p>
-                      <p>${cf?.role}</p>
-                      <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: cf, field: "contact.phone")}'/>
-                      <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: cf, field: "contact.fax")}'/>
-                      <p><cl:emailLink email="${cf?.contact?.email}">email</cl:emailLink></p>
-                    </div>
-                  </g:each>
-                </div>
-              </g:if>
+              <g:render template="contacts" bean="${collectionInstance.getContactsPrimaryFirst()}"/>
 
               <!-- web site -->
               <g:if test="${collectionInstance.websiteUrl || collectionInstance.institution?.websiteUrl}">
@@ -385,6 +371,10 @@ function setNumbers(totalBiocacheRecords, totalRecords) {
 
   if (totalRecords > 0) {
     var percent = totalBiocacheRecords/totalRecords * 100;
+    if (percent > 100 && ${collectionInstance.isInexactlyMapped()}) {
+      // don't show greater than 100 if the mapping is not exact as the estimated num records may be correct
+      percent = 100;
+    }
     setProgress(percent);
   } else {
     // to update the speedo caption

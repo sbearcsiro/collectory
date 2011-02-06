@@ -18,9 +18,9 @@
             </g:if>
             <div class="dialog">
               <table>
-                <col width="60%"/><col width="10%"/><col width="10%"/><col width="10%"/><col width="10%"/>
+                <col width="55%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/>
 
-                <tr class="reportGroupTitle"><th>Collection</th><th>Herbaria</th><th>Fauna</th><th>Ento</th><th>Microbes</th></tr>
+                <tr class="reportGroupTitle"><th>Collection</th><th>Acronym</th><th>Herbaria</th><th>Fauna</th><th>Ento</th><th>Microbes</th></tr>
                 <g:each var='c' in="${collections}" status="i">
                   <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                     <td>
@@ -31,6 +31,7 @@
                         <span class="dataWarning"><cl:showOrEdit entity="${c}"/></span>
                       </g:else>
                     </td>
+                    <td style="text-align:center;color:gray;">${c.acronym}</td>
                     <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="plants"/></td>
                     <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="fauna"/></td>
                     <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="entomology"/></td>

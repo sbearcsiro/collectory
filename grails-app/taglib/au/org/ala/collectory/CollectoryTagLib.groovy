@@ -633,6 +633,7 @@ class CollectoryTagLib {
      * A little bit of email scrambling for dumb scrappers.
      *
      * Uses email attribute as email if present else uses the body.
+     * If no attribute and the body is not an email address then nothing is shown.
      *
      * @attrs email the address to decorate
      * @body the text to use as the link text
@@ -643,11 +644,10 @@ class CollectoryTagLib {
         if (!email)
             email = body().toString()
         int index = email.indexOf('@')
-        //println "index=${index}"
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
+            out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
         }
-        out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
     }
 
     def emailBugLink = { attrs, body ->
@@ -1460,5 +1460,21 @@ class CollectoryTagLib {
             }
         }
         out << ind
+    }
+
+    def viewPublicLink = { attrs, body ->
+        out << link(class:"preview", controller:"public", action:'show', id:attrs.uid) { "<img class='ala' alt='ala' src='${resource(dir:"images", file:"favicon.ico")}'/>View public page" }
+    }
+
+    def jsonSummaryLink = { attrs, body ->
+        // have to use this method rather than 'link' so we can specify the accept format as json
+        out << "<a class='json' href='${resource(dir:"lookup",file:"summary/${attrs.uid}.json")}'><img class='json' alt='summary' src='${resource(dir:"images", file:"json.png")}'/>View summary</a>"
+    }
+
+    def jsonDataLink = { attrs, body ->
+        def action = controllerFromUid(uid: attrs.uid)
+        action = "get${action[0].toUpperCase()}${action[1..action.size()-1]}"
+        // have to use this method rather than 'link' so we can specify the accept format as json
+        out << "<a class='json' href='${resource(dir:"data",file:"${action}.json?uid=${attrs.uid}")}'><img class='json' alt='json' src='${resource(dir:"images", file:"json.png")}'/>View raw data</a>"
     }
 }

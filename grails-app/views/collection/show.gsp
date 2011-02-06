@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.Collection" %>
+<%@ page import="au.org.ala.collectory.ProviderGroup; org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.Collection" %>
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -235,8 +235,12 @@
   <div class="buttons">
     <g:form>
       <g:hiddenField name="id" value="${instance?.id}"/>
-      <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
-      <span class="button"><g:link class="preview" controller="public" action='show' id="${instance?.id}">${message(code: 'default.button.preview.label', default: 'Preview')}</g:link></span>
+      <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
+        <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
+      </cl:ifGranted>
+      <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
+      <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
+      <span class="button"><cl:jsonDataLink uid="${instance.uid}"/></span>
     </g:form>
   </div>
 </div>

@@ -110,17 +110,8 @@
           <cl:ifNotBlank value='${fieldValue(bean: instance, field: "phone")}'/>
         </div>
 
-        <g:set var="contact" value="${instance.getPrimaryContact()}"/>
-        <g:if test="${contact}">
-          <div class="section">
-            <h3>Contact</h3>
-            <p class="contactName">${contact?.contact?.buildName()}</p>
-            <p>${contact?.role}</p>
-            <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: contact, field: "contact.phone")}'/>
-            <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: contact, field: "contact.fax")}'/>
-            <p><cl:emailLink email="${contact?.contact?.email}">email</cl:emailLink></p>
-          </div>
-        </g:if>
+        <!-- contacts -->
+        <g:render template="contacts" bean="${instance.getContactsPrimaryFirst()}"/>
 
         <!-- web site -->
         <g:if test="${instance.websiteUrl}">

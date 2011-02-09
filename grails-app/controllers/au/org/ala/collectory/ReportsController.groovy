@@ -3,6 +3,7 @@ package au.org.ala.collectory
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.converters.JSON
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import grails.converters.XML
 
 class ReportsController {
 
@@ -34,7 +35,12 @@ class ReportsController {
         }
         [chafc: chafc, chaec: chaec, chacm: chacm]
     }
-    
+
+    def contactsForCollections = {
+        def model = DataController.buildContactsModel('html', Collection.list([sort:'name']))
+        [contacts:model]
+    }
+
     def data = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'data'
         [reports: new ReportCommand('data')]
@@ -125,6 +131,58 @@ class ReportsController {
             }
         }
         [mrs: mrs]
+    }
+
+    def collectionSpecimenData = {
+        def results = []
+        Collection.list([sort: 'name']).each {
+            def rec = new Records()
+            // find the number of biocache records
+            def baseUrl = ConfigurationHolder.config.biocache.baseURL
+            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + it.uid
+
+            def count = 0
+            def conn = new URL(url).openConnection()
+            conn.setConnectTimeout 3000
+            try {
+                def json = conn.content.text
+                rec.numBiocacheRecords = JSON.parse(json)?.searchResult?.totalRecords
+            } catch (Exception e) {
+                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+            }
+            rec.name = it.name
+            rec.uid = it.uid
+            rec.acronym = it.acronym
+            rec.numRecords = it.numRecords
+            rec.numRecordsDigitised = it.numRecordsDigitised
+            results << rec
+        }
+        [statistics: results]
+    }
+
+    def providerRecordsData = {
+        def results = []
+        DataProvider.list([sort: 'name']).each {
+            def rec = new Records()
+            // find the number of biocache records
+            def baseUrl = ConfigurationHolder.config.biocache.baseURL
+            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + it.uid
+
+            def count = 0
+            def conn = new URL(url).openConnection()
+            conn.setConnectTimeout 3000
+            try {
+                def json = conn.content.text
+                rec.numBiocacheRecords = JSON.parse(json)?.searchResult?.totalRecords
+            } catch (Exception e) {
+                log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+            }
+            rec.name = it.name
+            rec.uid = it.uid
+            rec.acronym = it.acronym
+            results << rec
+        }
+        [statistics: results]
     }
 
     def dataLinks = {
@@ -304,4 +362,13 @@ class ReportsController {
         }
     }
 
+}
+
+class Records {
+    String name
+    String uid
+    String acronym
+    int numRecords = -1
+    int numRecordsDigitised = -1
+    int numBiocacheRecords = -1
 }

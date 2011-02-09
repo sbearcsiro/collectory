@@ -2,8 +2,9 @@ package au.org.ala.collectory
 
 import grails.converters.JSON
 import au.org.ala.collectory.exception.InvalidUidException
-import org.codehaus.groovy.grails.web.json.JSONObject
 import grails.converters.XML
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.codehaus.groovy.grails.web.json.JSONException
 
 class DataController {
 
@@ -11,340 +12,156 @@ class DataController {
     
     def index = { }
 
+    /** make sure that uid params point to an existing entity and json is parsable **/
+    def beforeInterceptor = this.&check
+
+    def check() {
+        def uid = params.uid
+        if (uid) {
+            // it must exist
+            def pg = ProviderGroup._get(uid)
+            if (pg) {
+                params.pg = pg
+            } else {
+                // doesn't exist
+                notFound "no entity with uid = ${uid}"
+                return false
+            }
+        }
+        if (request.method == 'POST' || request.method == "PUT") {
+            if (request.getContentLength() == 0) {
+                // no payload so return OK as entity exists (if specified)
+                success "no post body"
+                return false
+            }
+            try {
+                params.json = request.JSON
+            } catch (Exception e) {
+                println "exception caught ${e}"
+                // allow empty body
+                if (request.getContentLength() > 0) {
+                    badRequest 'cannot parse request body as JSON'
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
     /***** CRUD RESTful services ********/
 
+    def addLocation(uid) {
+        response.addHeader 'location', ConfigurationHolder.config.grails.serverURL + "/data/co/${uid}"
+    }
+
+    def created = {uid ->
+        addLocation uid
+        render(status:201, text:'inserted entity')
+    }
+
+    def badRequest = {text ->
+        render(status:400, text: text)
+    }
+
+    def success = { text ->
+        render(status:200, text: text)
+    }
+
+    def notFound = { text ->
+        render(status:404, text: text)
+    }
+    /**
+     * Update database from post/put data.
+     *
+     * If uid specified, it must exist -> update entity
+     * Else -> insert entity
+     */
+    def saveEntity(clazz) {
+        def pg = params.pg
+        def obj = params.json
+
+        if (pg) {
+            // check type
+            if (pg.getClass().getSimpleName() == clazz) {
+                // update
+                crudService."update${clazz}"(pg, obj)
+                if (pg.hasErrors()) {
+                    badRequest pg.errors
+                } else {
+                    addLocation params.uid
+                    success "updated ${clazz}"
+                }
+            } else {
+                badRequest "entity with uid = ${params.uid} is not ${clazz == 'Institution'? 'an' : 'a'} ${clazz}"
+            }
+        } else {
+            // doesn't exist insert
+            pg = crudService."insert${clazz}"(obj)
+            if (pg.hasErrors()) {
+                badRequest pg.errors
+            } else {
+                created pg.uid
+            }
+        }
+    }
+
     /**
      * Return JSON representation of specified entity
      * or list of entities if no uid specified.
      */
+    def getEntity(clazz) {
+        if (params.pg) {
+            render params.pg as JSON
+        } else {
+            def summaries = "${clazz}".list().collect {
+                it.buildSummary()
+            }
+            render summaries as JSON
+        }
+    }
+
     def getCollection = {
-        if (params.uid) {
-            def pg = Collection._get(params.uid)
-            if (pg) {
-                render pg as JSON
-            } else {
-                def error = ['error': "cannot find collection with uid = ${params.uid}"]
-                render error as JSON
-            }
-        } else {
-            def summaries = Collection.list().collect {
-
-                it.buildSummary()
-            }
-            render summaries as JSON
-        }
+        getEntity('Collection')
     }
-
-    /**
-     * Update database from post data.
-     *
-     * If uid specified and exists -> update entity
-     * Else -> insert entity (checking uid if it is specified)
-     */
     def saveCollection = {
-        def obj = request.JSON
-        def uid = obj.uid
-        def pg = (uid) ? ProviderGroup._get(uid) : null
-        try {
-            if (pg) {
-                // exists - check type
-                if (pg instanceof Collection) {
-                    // update
-                    crudService.updateCollection(pg, obj)
-                    def message
-                    if (pg.hasErrors()) {
-                        message = pg.errors
-                    } else {
-                        message = ['message':'updated collection', 'dp': pg]
-                    }
-                    render message as JSON
-                } else {
-                    def error = ['error': "entity with uid = ${uid} is not a collection"]
-                    render error as JSON
-                }
-            } else {
-                // doesn't exist insert
-                try {
-                    pg = crudService.insertCollection(obj)
-                    def message
-                    if (pg.hasErrors()) {
-                        message = pg.errors
-                    } else {
-                        message = ['message':'inserted collection', 'dp': pg]
-                    }
-                    render message as JSON
-                } catch (InvalidUidException e) {
-                    def error = ['error': "${e.getMessage()} (${uid}) - uids must be obtained from the collectory"]
-                    render error as JSON
-                }
-            }
-        } catch (Exception e) {
-            def error = ['error': e.getMessage()]
-            render error as JSON
-        }
+        saveEntity('Collection')
     }
-
-    /**
-     * Return JSON representation of specified entity
-     * or list of entities if no uid specified.
-     */
     def getInstitution = {
-        if (params.uid) {
-            def pg = Institution._get(params.uid)
-            if (pg) {
-                render pg as JSON
-            } else {
-                def error = ['error': "cannot find institution with uid = ${params.uid}"]
-                render error as JSON
-            }
-        } else {
-            def summaries = Institution.list().collect {
-                it.buildSummary()
-            }
-            render summaries as JSON
-        }
+        getEntity('Institution')
     }
-
-    /**
-     * Update database from post data.
-     *
-     * If uid specified and exists -> update entity
-     * Else -> insert entity (checking uid if it is specified)
-     */
     def saveInstitution = {
-        def obj = request.JSON
-        def uid = obj.uid
-        def pg = (uid) ? ProviderGroup._get(uid) : null
-        if (pg) {
-            // exists - check type
-            if (pg instanceof Institution) {
-                // update
-                crudService.updateInstitution(pg, obj)
-                def message
-                if (pg.hasErrors()) {
-                    message = pg.errors
-                } else {
-                    message = ['message':'updated institution', 'dp': pg]
-                }
-                render message as JSON
-            } else {
-                def error = ['error': "entity with uid = ${uid} is not an institution"]
-                render error as JSON
-            }
-        } else {
-            // doesn't exist insert
-            try {
-                pg = crudService.insertInstitution(obj)
-                def message
-                if (pg.hasErrors()) {
-                    message = pg.errors
-                } else {
-                    message = ['message':'inserted institution', 'dp': pg]
-                }
-                render message as JSON
-            } catch (InvalidUidException e) {
-                def error = ['error': "${e.getMessage()} (${uid}) - uids must be obtained from the collectory"]
-                render error as JSON
-            }
-        }
+        saveEntity('Institution')
     }
-
-    /**
-     * Return JSON representation of specified entity
-     * or list of entities if no uid specified.
-     */
     def getDataProvider = {
-        if (params.uid) {
-            def dp = DataProvider._get(params.uid)
-            if (dp) {
-                render dp as JSON
-            } else {
-                def error = ['error': "cannot find data provider with uid = ${params.uid}"]
-                render error as JSON
-            }
-        } else {
-            def summaries = DataProvider.list().collect {
-                it.buildSummary()
-            }
-            render summaries as JSON
-        }
+        getEntity('DataProvider')
     }
-
-    /**
-     * Update database from post data.
-     *
-     * If uid specified and exists -> update entity
-     * Else -> insert entity (checking uid if it is specified)
-     */
     def saveDataProvider = {
-        def obj = request.JSON
-        def uid = obj.uid
-        def dp = (uid) ? ProviderGroup._get(uid) : null
-        if (dp) {
-            // exists - check type
-            if (dp instanceof DataProvider) {
-                // update
-                crudService.updateDataProvider(dp, obj)
-                def message
-                if (dp.hasErrors()) {
-                    message = dp.errors
-                } else {
-                    message = ['message':'updated data provider', 'dp': dp]
-                }
-                render message as JSON
-            } else {
-                def error = ['error': "entity with uid = ${uid} is not a data provider"]
-                render error as JSON
-            }
-        } else {
-            // doesn't exist insert
-            try {
-                dp = crudService.insertDataProvider(obj)
-                def message
-                if (dp.hasErrors()) {
-                    message = dp.errors
-                } else {
-                    message = ['message':'inserted data provider', 'dp': dp]
-                }
-                render message as JSON
-            } catch (InvalidUidException e) {
-                def error = ['error': "${e.getMessage()} (${uid}) - uids must be obtained from the collectory"]
-                render error as JSON
-            }
-        }
+        saveEntity('DataProvider')
     }
-
-    /**
-     * Return JSON representation of specified entity
-     * or list of entities if no uid specified.
-     */
     def getDataHub = {
-        if (params.uid) {
-            def pg = DataHub._get(params.uid)
-            if (pg) {
-                render pg as JSON
-            } else {
-                def error = ['error': "cannot find data hub with uid = ${params.uid}"]
-                render error as JSON
-            }
-        } else {
-            def summaries = DataHub.list().collect {
-                it.buildSummary()
-            }
-            render summaries as JSON
-        }
+        getEntity('DataHub')
     }
-
-    /**
-     * Update database from post data.
-     *
-     * If uid specified and exists -> update entity
-     * Else -> insert entity (checking uid if it is specified)
-     */
     def saveDataHub = {
-        def obj = JSON.parse(request.reader.text)
-        def uid = obj.uid
-        def pg = (uid) ? ProviderGroup._get(uid) : null
-        if (pg) {
-            // exists - check type
-            if (pg instanceof DataHub) {
-                // update
-                crudService.updateDataHub(pg, obj)
-                def message
-                if (pg.hasErrors()) {
-                    message = pg.errors
-                } else {
-                    message = ['message':'updated data hub', 'dp': pg]
-                }
-                render message as JSON
-            } else {
-                def error = ['error': "entity with uid = ${uid} is not a data hub"]
-                render error as JSON
-            }
-        } else {
-            // doesn't exist insert
-            try {
-                pg = crudService.insertDataHub(obj)
-                def message
-                if (pg.hasErrors()) {
-                    message = pg.errors
-                } else {
-                    message = ['message':'inserted data hub', 'dp': pg]
-                }
-                render message as JSON
-            } catch (InvalidUidException e) {
-                def error = ['error': "${e.getMessage()} (${uid}) - uids must be obtained from the collectory"]
-                render error as JSON
-            }
-        }
+        saveEntity('DataHub')
     }
-
-    /**
-     * Return JSON representation of specified entity
-     * or list of entities if no uid specified.
-     */
     def getDataResource = {
-        if (params.uid) {
-            def dr = DataResource._get(params.uid)
-            if (dr) {
-                render dr as JSON
-            } else {
-                def error = ['error': "cannot find data resource with uid = ${params.uid}"]
-                render error as JSON
-            }
-        } else {
-            def summaries = DataResource.list().collect {
-                it.buildSummary()
-            }
-            render summaries as JSON
-        }
+        getEntity('DataResource')
     }
-
-    /**
-     * Update database from post data.
-     *
-     * If uid specified and exists -> update entity
-     * Else -> insert entity (checking uid if it is specified)
-     */
     def saveDataResource = {
-        def obj = request.JSON
-        def uid = obj.uid
-        def pg = (uid) ? ProviderGroup._get(uid) : null
-        if (pg) {
-            // exists - check type
-            if (pg instanceof DataResource) {
-                // update
-                crudService.updateDataResource(pg, obj)
-                def message
-                if (pg.hasErrors()) {
-                    message = pg.errors
-                } else {
-                    message = ['message':'updated data resource', 'dp': pg]
-                }
-                render message as JSON
-            } else {
-                def error = ['error': "entity with uid = ${uid} is not a data resource"]
-                render error as JSON
-            }
-        } else {
-            // doesn't exist insert
-            try {
-                pg = crudService.insertDataResource(obj)
-                def message
-                if (pg.hasErrors()) {
-                    message = pg.errors
-                } else {
-                    message = ['message':'inserted data resource', 'dp': pg]
-                }
-                render message as JSON
-            } catch (InvalidUidException e) {
-                def error = ['error': "${e.getMessage()} (${uid}) - uids must be obtained from the collectory"]
-                render error as JSON
-            }
-        }
+        saveEntity('DataResource')
     }
 
+
+    /********* delete **************************/
+    /*
+     * Disabled until we can more easily restore deleted entities.
+     *
+     */
     def delete = {
+        if (true) {
+            render(status:405, text:'delete is currently unavailable')
+            return
+        }
         // check role
         if (authService.isAdmin()) {
             if (params.uid) {
@@ -374,14 +191,110 @@ class DataController {
                 response.contentType = 'text/xml'
                 render emlRenderService.emlForResource(dr)
             } else {
-                def error = 'no such resource ' + params.id
-                response.status = 400
-                render error
+                notFound 'no such resource ' + params.id
             }
         } else {
-            def error = 'you must specify a resource'
-            response.status = 400
-            render error
+            badRequest 'you must specify a resource'
         }
     }
+
+    /************* Contact services **********/
+    def contactsForCollections = {
+        def model = buildContactsModel(request.format, Collection.list([sort:'name']))
+        withFormat {
+            csv {
+                response.addHeader "contentType", "text/csv"
+                render buildCsv(model)}
+            xml {render model as XML}
+            json {render model as JSON}
+        }
+    }
+
+    def contactsForInstitutions = {
+        def model = buildContactsModel(request.format, Institution.list([sort:'name']))
+        withFormat {
+            csv {
+                response.addHeader "contentType", "text/csv"
+                render buildCsv(model)}
+            xml {render model as XML}
+            json {render model as JSON}
+        }
+    }
+
+    def contactsForDataProviders = {
+        def model = buildContactsModel(request.format, DataProvider.list([sort:'name']))
+        withFormat {
+            csv {
+                response.addHeader "contentType", "text/csv"
+                render buildCsv(model)}
+            xml {render model as XML}
+            json {render model as JSON}
+        }
+    }
+
+    def contactsForDataResources = {
+        def model = buildContactsModel(request.format, DataResource.list([sort:'name']))
+        withFormat {
+            csv {
+                response.addHeader "contentType", "text/csv"
+                render buildCsv(model)}
+            xml {render model as XML}
+            json {render model as JSON}
+        }
+    }
+
+    def contactsForDataHubs = {
+        def model = buildContactsModel(request.format, DataHub.list([sort:'name']))
+        withFormat {
+            csv {
+                response.addHeader "contentType", "text/csv"
+                render buildCsv(model)}
+            xml {render model as XML}
+            json {render model as JSON}
+        }
+    }
+
+    def static buildContactsModel(format, list) {
+        if (format == 'xml') {
+            return list.collect {
+                def obj = new ContactForCollection()
+                obj.entityName = it.name
+                obj.entityUid = it.uid
+                obj.entityAcronym = it.acronym ?: ""
+                obj.contactName = it.primaryContact?.contact?.buildName() ?: ""
+                obj.contactEmail = it.primaryContact?.contact?.email ?: ""
+                obj.contactPhone = it.primaryContact?.contact?.phone ?: ""
+                return obj
+            }
+        } else {
+            return list.collect {
+                def map = [:]
+                map.entityName = it.name
+                map.entityUid = it.uid
+                map.entityAcronym = it.acronym ?: ""
+                map.contactName = it.primaryContact?.contact?.buildName() ?: ""
+                map.contactEmail = it.primaryContact?.contact?.email ?: ""
+                map.contactPhone = it.primaryContact?.contact?.phone ?: ""
+                return map
+            }
+        }
+    }
+
+    private def buildCsv(model) {
+        def out = new StringWriter()
+        out << "entity name, entity UID, entity acronym, contact name, contact email, contact phone\n"
+        model.each {
+            out << "\"${it.entityName}\",${it.entityUid},${it.entityAcronym ?:""},${it.contactName?:""},${it.contactEmail?:""},${it.contactPhone?:""}\n"
+        }
+        return out.toString()
+    }
+}
+
+class ContactForCollection {
+    String entityName
+    String entityUid
+    String entityAcronym
+    String contactName
+    String contactEmail
+    String contactPhone
 }

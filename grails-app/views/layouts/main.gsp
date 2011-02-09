@@ -4,7 +4,8 @@
  
 <head profile="http://gmpg.org/xfn/11">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
- 
+<meta name='robots' content='noindex,nofollow' />
+
 <title><g:layoutTitle default="Atlas of Living Australia %naquo; Collectory" /></title>
  
 <link rel="stylesheet" href="${resource(dir:'css',file:'style.css')}" type="text/css" media="screen"/>

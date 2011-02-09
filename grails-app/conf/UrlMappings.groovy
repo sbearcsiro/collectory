@@ -7,22 +7,27 @@ class UrlMappings {
 	  }
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
-      "/co/$uid?" (controller:'data') {
+      "/ws/collection/$uid?" (controller:'data') {
           action = [GET:'getCollection', PUT:'saveCollection', DELETE:'delete', POST:'saveCollection']
        }
-      "/in/$uid?" (controller:'data') {
+      "/ws/institution/$uid?" (controller:'data') {
           action = [GET:'getInstitution', PUT:'saveInstitution', DELETE:'delete', POST:'saveInstitution']
        }
-      "/dp/$uid?" (controller:'data') {
+      "/ws/dataProvider/$uid?" (controller:'data') {
           action = [GET:'getDataProvider', PUT:'saveDataProvider', DELETE:'delete', POST:'saveDataProvider']
        }
-      "/dr/$uid?" (controller:'data') {
+      "/ws/dataResource/$uid?" (controller:'data') {
           action = [GET:'getDataResource', PUT:'saveDataResource', DELETE:'delete', POST:'saveDataResource']
        }
-      "/dh/$uid?" (controller:'data') {
+      "/ws/dataHub/$uid?" (controller:'data') {
           action = [GET:'getDataHub', PUT:'saveDataHub', DELETE:'delete', POST:'saveDataHub']
        }
-      "/eml/$id" (controller:'data',action:'eml')
+      "/eml/$id?" (controller:'data',action:'eml')
+      "/ws/collection/contacts/$uid?" (controller:'data',action:'contactsForCollections')
+      "/ws/institution/contacts/$uid?" (controller:'data',action:'contactsForInstitutions')
+      "/ws/dataProvider/contacts/$uid?" (controller:'data',action:'contactsForDataProviders')
+      "/ws/dataResource/contacts/$uid?" (controller:'data',action:'contactsForDataResources')
+      "/ws/dataHub/contacts/$uid?" (controller:'data',action:'contactsForDataHubs')
       "/showConsumers/$id" (controller:'entity',action:'showConsumers')
       "/showProviders/$id" (controller:'entity',action:'showProviders')
       "/"(controller:'public', action:'map')

@@ -134,6 +134,19 @@ class Institution extends ProviderGroup {
         return list
     }
 
+
+    /**
+     * List of institutions that 'belong' to this institution.
+     * @return List of Institution
+     */
+    def listChildren() {
+        def list = []
+        childInstitutions?.tokenize(' ').each {
+            list << Institution._get(it)
+        }
+        return list
+    }
+
     /**
      * List the uids that identify this institution and all its descendant institutions.
      *

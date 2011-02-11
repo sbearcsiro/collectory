@@ -322,7 +322,7 @@ class CollectoryTagLib {
             target = ""
         }
         if (lsid =~ 'lsid') {  // contains
-            out << "<a${target} class='external_icon' href='http://biocol.org/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
+            out << "<a${target} rel='nofollow' class='external_icon' href='http://biocol.org/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
         } else {
             out << lsid.encodeAsHTML()
         }
@@ -752,7 +752,7 @@ class CollectoryTagLib {
                     if (s2.indexOf('ala.org.au') > 0)
                         "<a href='${s2}'>${s2}</a>"
                     else
-                        "<a class='external' target='_blank' href='${s2}'>${s2}</a>"
+                        "<a rel='nofollow' class='external' target='_blank' href='${s2}'>${s2}</a>"
                 }
             }
 
@@ -763,7 +763,7 @@ class CollectoryTagLib {
                     if (s2.indexOf('ala.org.au') > 0)
                         "<a href='${s2}'>${s3}</a>"
                     else
-                        "<a class='external' target='_blank' href='${s2}'>${s3}</a>"
+                        "<a rel='nofollow' class='external' target='_blank' href='${s2}'>${s3}</a>"
                 }
             }
 
@@ -1306,9 +1306,9 @@ class CollectoryTagLib {
         def text = body().toString()
         if (text.size() > linkLengthLimit) {
             def chunks = splitText(text)
-            out << "<a href='${attrs.href}' target='_blank'>${chunks[0]}</a><br/><a href='${attrs.href}' class='external' target='_blank'>${chunks[1]}</a>"
+            out << "<a href='${attrs.href}' rel='nofollow' target='_blank'>${chunks[0]}</a><br/><a href='${attrs.href}' class='external' target='_blank'>${chunks[1]}</a>"
         } else {
-            out << "<a href='${attrs.href}' class='external' target='_blank'>${text}</a>"
+            out << "<a href='${attrs.href}' rel='nofollow' class='external' target='_blank'>${text}</a>"
         }
     }
 

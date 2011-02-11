@@ -2,6 +2,11 @@ package au.org.ala.collectory
 
 import au.org.ala.collectory.exception.InvalidUidException
 import org.codehaus.groovy.grails.web.json.JSONArray
+import grails.converters.JSON
+
+import grails.web.JSONBuilder
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 
 class CrudService {
 
@@ -36,7 +41,73 @@ class CrudService {
         return map.keySet().contains(key)
     }
 
+    //TODO: contacts
+    
     /* data provider */
+
+    def readDataProvider(DataProvider p) {
+        def builder = new JSONBuilder()
+
+        def result = builder.build {
+            name = p.name
+            acronym = p.acronym
+            uid = p.uid
+            guid = p.guid
+            if (p.address) {
+                address {
+                    street = p.address?.street
+                    city = p.address?.city
+                    state = p.address?.state
+                    postcode = p.address?.postcode
+                    country = p.address?.country
+                    postBox = p.address?.postBox
+                }
+            } else {
+                address = null
+            }
+            phone = p.phone
+            email = p.email
+            pubDescription = p.pubDescription
+            techDescription = p.techDescription
+            focus = p.focus
+            if (p.latitude != -1) latitude = p.latitude
+            if (p.longitude != -1) longitude = p.longitude
+            state = p.state
+            websiteUrl = p.websiteUrl
+            if (p.imageRef?.file) {
+                imageRef {
+                    filename = p.imageRef?.file
+                    caption = p.imageRef?.caption
+                    copyright = p.imageRef?.copyright
+                    attribution = p.imageRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                }
+            }
+            if (p.logoRef?.file) {
+                logoRef {
+                    filename = p.logoRef?.file
+                    caption = p.logoRef?.caption
+                    copyright = p.logoRef?.copyright
+                    attribution = p.logoRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                }
+            }
+            use (OutputFormat) {
+                networkMembership = p.networkMembership?.formatNetworkMembership()
+                attributions = p.attributionList.formatAttributions()
+                dateCreated = p.dateCreated
+                lastUpdated = p.lastUpdated
+                userLastModified = p.userLastModified
+
+                // provider specific
+                resources = p.resources.briefEntity()
+                if (p.listConsumers()) {
+                    linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
+                }
+            }
+        }
+        return result
+    }
 
     def insertDataProvider(obj) {
         def uid
@@ -68,6 +139,64 @@ class CrudService {
 
     /* data hub */
 
+    def readDataHub(DataHub p) {
+        def builder = new JSONBuilder()
+
+        def result = builder.build {
+            name = p.name
+            acronym = p.acronym
+            uid = p.uid
+            guid = p.guid
+            if (p.address) {
+                address {
+                    street = p.address?.street
+                    city = p.address?.city
+                    state = p.address?.state
+                    postcode = p.address?.postcode
+                    country = p.address?.country
+                    postBox = p.address?.postBox
+                }
+            } else {
+                address = null
+            }
+            phone = p.phone
+            email = p.email
+            pubDescription = p.pubDescription
+            techDescription = p.techDescription
+            focus = p.focus
+            if (p.latitude != -1) latitude = p.latitude
+            if (p.longitude != -1) longitude = p.longitude
+            state = p.state
+            websiteUrl = p.websiteUrl
+            if (p.imageRef?.file) {
+                imageRef {
+                    filename = p.imageRef?.file
+                    caption = p.imageRef?.caption
+                    copyright = p.imageRef?.copyright
+                    attribution = p.imageRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                }
+            }
+            if (p.logoRef?.file) {
+                logoRef {
+                    filename = p.logoRef?.file
+                    caption = p.logoRef?.caption
+                    copyright = p.logoRef?.copyright
+                    attribution = p.logoRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                }
+            }
+            use (OutputFormat) {
+                networkMembership = p.networkMembership?.formatNetworkMembership()
+                attributions = p.attributionList.formatAttributions()
+                dateCreated = p.dateCreated
+                lastUpdated = p.lastUpdated
+                userLastModified = p.userLastModified
+            }
+        }
+        return result
+    }
+
     def insertDataHub(obj) {
         def uid
         if (obj.has('uid')) {
@@ -97,6 +226,74 @@ class CrudService {
     }
 
     /* data resource */
+
+    def readDataResource(DataResource p) {
+        def builder = new JSONBuilder()
+
+        def result = builder.build {
+            name = p.name
+            acronym = p.acronym
+            uid = p.uid
+            guid = p.guid
+            if (p.address) {
+                address {
+                    street = p.address?.street
+                    city = p.address?.city
+                    state = p.address?.state
+                    postcode = p.address?.postcode
+                    country = p.address?.country
+                    postBox = p.address?.postBox
+                }
+            } else {
+                address = null
+            }
+            phone = p.phone
+            email = p.email
+            pubDescription = p.pubDescription
+            techDescription = p.techDescription
+            focus = p.focus
+            if (p.latitude != -1) latitude = p.latitude
+            if (p.longitude != -1) longitude = p.longitude
+            state = p.state
+            websiteUrl = p.websiteUrl
+            if (p.imageRef?.file) {
+                imageRef {
+                    filename = p.imageRef?.file
+                    caption = p.imageRef?.caption
+                    copyright = p.imageRef?.copyright
+                    attribution = p.imageRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                }
+            }
+            if (p.logoRef?.file) {
+                logoRef {
+                    filename = p.logoRef?.file
+                    caption = p.logoRef?.caption
+                    copyright = p.logoRef?.copyright
+                    attribution = p.logoRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                }
+            }
+            use (OutputFormat) {
+                networkMembership = p.networkMembership?.formatNetworkMembership()
+                attributions = p.attributionList.formatAttributions()
+                dateCreated = p.dateCreated
+                lastUpdated = p.lastUpdated
+                userLastModified = p.userLastModified
+
+                // resource specific
+                provider { name = p.dataProvider.name; uri = p.dataProvider.buildUri() }
+                displayName = p.displayName
+                rights = p.rights
+                citation = p.citation
+                citableAgent = p.citableAgent
+                if (p.listConsumers()) {
+                    linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
+                }
+            }
+        }
+        return result
+    }
 
     def insertDataResource(obj) {
         def uid
@@ -141,6 +338,73 @@ class CrudService {
 
     /* institution */
 
+    def readInstitution(Institution p) {
+        def builder = new JSONBuilder()
+
+        def result = builder.build {
+            name = p.name
+            acronym = p.acronym
+            uid = p.uid
+            guid = p.guid
+            if (p.address) {
+                address {
+                    street = p.address?.street
+                    city = p.address?.city
+                    state = p.address?.state
+                    postcode = p.address?.postcode
+                    country = p.address?.country
+                    postBox = p.address?.postBox
+                }
+            } else {
+                address = null
+            }
+            phone = p.phone
+            email = p.email
+            pubDescription = p.pubDescription
+            techDescription = p.techDescription
+            focus = p.focus
+            if (p.latitude != -1) latitude = p.latitude
+            if (p.longitude != -1) longitude = p.longitude
+            state = p.state
+            websiteUrl = p.websiteUrl
+            if (p.imageRef?.file) {
+                imageRef {
+                    filename = p.imageRef?.file
+                    caption = p.imageRef?.caption
+                    copyright = p.imageRef?.copyright
+                    attribution = p.imageRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                }
+            }
+            if (p.logoRef?.file) {
+                logoRef {
+                    filename = p.logoRef?.file
+                    caption = p.logoRef?.caption
+                    copyright = p.logoRef?.copyright
+                    attribution = p.logoRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                }
+            }
+            use (OutputFormat) {
+                networkMembership = p.networkMembership?.formatNetworkMembership()
+                attributions = p.attributionList.formatAttributions()
+                dateCreated = p.dateCreated
+                lastUpdated = p.lastUpdated
+                userLastModified = p.userLastModified
+
+                // institution specific
+                institutionType = p.institutionType
+                collections = p.collections.briefEntity()
+                parentInstitutions = p.listParents().briefEntity()
+                childInstitutions = p.listChildren().briefEntity()
+                if (p.listProviders()) {
+                    linkedRecordProviders = p.listProviders().formatEntitiesFromUids()
+                }
+            }
+        }
+        return result
+    }
+
     def insertInstitution(obj) {
         def uid
         if (obj.has('uid')) {
@@ -176,6 +440,108 @@ class CrudService {
     }
 
     /* collection */
+
+    /*def basics = { c ->
+        { it ->
+            name = c.name
+            acronym = c.acronym
+            uid = c.uid
+            guid = c.guid
+        }
+    }*/
+
+    def readCollection(Collection p) {
+        def builder = new JSONBuilder()
+
+        def result = builder.build {
+            name = p.name
+            acronym = p.acronym
+            uid = p.uid
+            guid = p.guid
+            if (p.address) {
+                address {
+                    street = p.address?.street
+                    city = p.address?.city
+                    state = p.address?.state
+                    postcode = p.address?.postcode
+                    country = p.address?.country
+                    postBox = p.address?.postBox
+                }
+            } else {
+                address = null
+            }
+            phone = p.phone
+            email = p.email
+            pubDescription = p.pubDescription
+            techDescription = p.techDescription
+            focus = p.focus
+            if (p.latitude != -1) latitude = p.latitude
+            if (p.longitude != -1) longitude = p.longitude
+            state = p.state
+            websiteUrl = p.websiteUrl
+            if (p.imageRef?.file) {
+                imageRef {
+                    filename = p.imageRef?.file
+                    caption = p.imageRef?.caption
+                    copyright = p.imageRef?.copyright
+                    attribution = p.imageRef?.attribution
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/collection/" + p.imageRef.file
+                }
+            }
+            use (OutputFormat) {
+                networkMembership = p.networkMembership?.formatNetworkMembership()
+                attributions = p.attributionList.formatAttributions()
+
+                dateCreated = p.dateCreated
+                lastUpdated = p.lastUpdated
+                userLastModified = p.userLastModified
+
+                // collection specific
+                collectionType = p.collectionType?.formatJSONList()
+                keywords = p.keywords?.formatJSONList()
+
+                active = p.active
+                numRecords = p.numRecords == -1 ? 'not known' : p.numRecords
+                numRecordsDigitised = p.numRecordsDigitised == -1 ? 'not known' : p.numRecordsDigitised
+                states = p.states
+                geographicDescription = p.geographicDescription
+                if (p.eastCoordinate + p.westCoordinate + p.northCoordinate + p.southCoordinate != -4) {
+                    geographicRange {
+                        eastCoordinate = p.eastCoordinate == -1 ? 'not known' : p.eastCoordinate
+                        westCoordinate = p.westCoordinate == -1 ? 'not known' : p.westCoordinate
+                        northCoordinate = p.northCoordinate == -1 ? 'not known' : p.northCoordinate
+                        southCoordinate = p.southCoordinate == -1 ? 'not known' : p.southCoordinate
+                    }
+                }
+                startDate = p.startDate
+                endDate = p.endDate
+                kingdomCoverage = p.kingdomCoverage.formatSpaceSeparatedList()
+                scientificNames = p.scientificNames?.formatJSONList()
+                subCollections = p.listSubCollections()
+                if (p.institution) {
+                    institution {
+                        name = p.institution.name
+                        uri = p.institution.buildUri()
+                    }
+                }
+                if (p.providerMap) {
+                    recordsProviderMapping {
+                        collectionCodes = p.getListOfCollectionCodesForLookup()
+                        institutionCodes = p.getListOfInstitutionCodesForLookup()
+                        matchAnyCollectionCode = p.providerMap.matchAnyCollectionCode
+                        exact = p.providerMap.exact
+                        warning = p.providerMap.warning
+                        dateCreated = p.providerMap.dateCreated
+                        lastUpdated = p.providerMap.lastUpdated
+                    }
+                }
+                if (p.listProviders()) {
+                    linkedRecordProviders = p.listProviders().formatEntitiesFromUids()
+                }
+            }
+        }
+        return result
+    }
 
     def insertCollection(obj) {
         def uid
@@ -328,6 +694,7 @@ class CrudService {
         }
         // null objects are copies of JSONObject.NULL - set them to Java null
         [baseStringProperties,dataResourceStringProperties].flatten().each {
+            //println "checking base string property ${it} " + obj.has(it) ? "exists - " + obj."${it}" : "absent"
             if (obj.has(it) && obj."${it}".toString() == 'null') {
                 obj."${it}" = null
             }
@@ -344,4 +711,81 @@ class CrudService {
         }
     }
 
+}
+
+class OutputFormat {
+
+    static def formatEntitiesFromUids(listOfUid) {
+        if (!listOfUid) return null
+        def result = []
+        listOfUid.each {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                result << [name: pg.name, uri: pg.buildUri()]
+            }
+        }
+        return result
+    }
+
+    static def formatJSONList(jsonListStr) {
+        if (!jsonListStr) return null
+        try {
+            return JSON.parse(jsonListStr)
+        } catch (ConverterException e) {
+            return "error"
+        }
+    }
+
+    static def formatAttributions(List list) {
+        def result = []
+        list.each {
+            //println "attribution ${it.name} - ${it.url}"
+            // lookup attribution
+            result << [name: it.name, url: it.url]
+        }
+        return result
+    }
+
+    static def formatSpaceSeparatedList(str) {
+        str.tokenize(" ")
+    }
+
+    static def briefEntity(list) {
+        return list.collect {[name: it.name, uri: it.buildUri()]}
+    }
+
+    static def formatNetworkMembership(jsonListStr) {
+        if (!jsonListStr) return null
+        def list
+        try {
+            list = JSON.parse(jsonListStr)
+        } catch (ConverterException e) {
+            return "error"
+        }
+        def result = []
+        list.each {
+            switch (it) {
+                case 'CHAFC':
+                    result << [name: 'Council of Heads of Australian Faunal Collections', acronym: it,
+                            logo: ConfigurationHolder.config.grails.serverURL + "/data/network/CHAFC_sm.jpg"]
+                    break
+                case 'CHAEC':
+                    result << [name: 'Council of Heads of Australian Entomological Collections', acronym: it,
+                            logo: ConfigurationHolder.config.grails.serverURL + "/data/network/chaec-logo.png"]
+                    break
+                case 'CHAH':
+                    result << [name: 'Council of Heads of Australasian Herbaria', acronym: it,
+                            logo: ConfigurationHolder.config.grails.serverURL + "/data/network/CHAH_logo_col_70px_white.gif"]
+                    break
+                case 'CHACM':
+                    result << [name: 'Council of Heads of Australian Collections of Microorganisms', acronym: it,
+                            logo: ConfigurationHolder.config.grails.serverURL + "/data/network/chacm.png"]
+                    break
+                default:
+                    result << "did not match"
+                    break
+            }
+        }
+        return result
+    }
 }

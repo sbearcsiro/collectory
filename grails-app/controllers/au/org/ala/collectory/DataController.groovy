@@ -111,7 +111,7 @@ class DataController {
      */
     def getEntity(clazz) {
         if (params.pg) {
-            render params.pg as JSON
+            render crudService."read${clazz}"(params.pg)
         } else {
             def summaries = "${clazz}".list().collect {
                 it.buildSummary()

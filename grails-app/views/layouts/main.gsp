@@ -5,6 +5,8 @@
 <head profile="http://gmpg.org/xfn/11">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name='robots' content='noindex,nofollow' />
+<meta name="app.version" content="${g.meta(name:'app.version')}"/>
+<meta name="app.build" content="${g.meta(name:'app.build')}"/>
 
 <title><g:layoutTitle default="Atlas of Living Australia %naquo; Collectory" /></title>
  

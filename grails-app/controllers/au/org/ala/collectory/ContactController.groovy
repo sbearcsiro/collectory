@@ -55,7 +55,6 @@ class ContactController {
     def save = {
         def contactInstance = new Contact(params)
         contactInstance.userLastModified = authService.username()?:'not available'
-        params.each{println it}
         contactInstance.validate()
         contactInstance.errors.each{println it}
         if (contactInstance.save(flush: true)) {

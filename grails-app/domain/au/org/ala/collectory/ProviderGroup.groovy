@@ -15,6 +15,8 @@
 
 package au.org.ala.collectory
 
+import org.codehaus.groovy.grails.commons.ConfigurationHolder
+
 /**
  *  Base class for an organisational group in the collectory, such as an
  *  institution or collection.
@@ -335,6 +337,7 @@ abstract class ProviderGroup implements Serializable {
     protected ProviderGroupSummary init(ProviderGroupSummary pgs) {
         pgs.id = dbId()
         pgs.uid = uid
+        pgs.uri = buildUri()
         pgs.name = name
         pgs.acronym = acronym
         pgs.shortDescription = makeAbstract()
@@ -449,8 +452,20 @@ abstract class ProviderGroup implements Serializable {
 
     abstract String entityType()
 
+    /**
+     * Returns type with lower first char suitable for urls, eg institution, dataProvider
+     * @return
+     */
     String urlForm() {
         return ProviderGroup.urlFormOfEntityType(entityType())
+    }
+
+    /**
+     * Returns the uri to the data respresentation of this entity.
+     * @return
+     */
+    String buildUri() {
+        return ConfigurationHolder.config.grails.serverURL + "/ws/" + urlForm() + "/" + uid + ".json"
     }
 
     /**

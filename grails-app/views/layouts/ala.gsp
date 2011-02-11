@@ -5,6 +5,15 @@
 <head profile="http://gmpg.org/xfn/11">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8; IE=EmulateIE9">
+  <meta name="robots" content="index,follow"/>
+  <meta name="app.version" content="${g.meta(name:'app.version')}"/>
+  <meta name="app.build" content="${g.meta(name:'app.build')}"/>
+  <g:if test="${instance}">
+    <meta name="description" content="The Atlas of Living Australia's description of the ${instance?.name}. ${instance?.makeAbstract(200)}"/>
+  </g:if>
+  <g:else>
+    <meta name="description" content="Explore Australia's Natural History Collections."/>
+  </g:else>
   
   <title><g:layoutTitle/></title>
 

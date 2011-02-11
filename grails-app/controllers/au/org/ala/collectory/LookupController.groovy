@@ -62,6 +62,7 @@ class LookupController {
      * 3. acronym if it matches a collection
      */
     def summary = {
+        log.info "debugging summary: request from ${request.remoteAddr} for ${params.id}"
         ProviderGroup instance = ProviderGroup._get(params.id)
         if (!instance) {
             instance = findCollection(params.id)

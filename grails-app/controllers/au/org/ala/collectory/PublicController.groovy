@@ -53,7 +53,7 @@ class PublicController {
                 redirect(controller: "public", action: "map")
             } else {
                 ActivityLog.log authService.username(), authService.isAdmin(), collectionInstance.uid, Action.VIEW
-                [collectionInstance: collectionInstance, contacts: collectionInstance.getContacts(),
+                [instance: collectionInstance, contacts: collectionInstance.getContacts(),
                         biocacheRecordsAvailable: collectionInstance.providerMap]
             }
         }

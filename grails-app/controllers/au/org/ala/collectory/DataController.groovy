@@ -1,10 +1,12 @@
 package au.org.ala.collectory
 
 import grails.converters.JSON
-import au.org.ala.collectory.exception.InvalidUidException
+
 import grails.converters.XML
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import org.codehaus.groovy.grails.web.json.JSONException
+import org.codehaus.groovy.grails.web.servlet.HttpHeaders
+import java.text.DateFormat
+import java.text.SimpleDateFormat
 
 class DataController {
 
@@ -48,14 +50,35 @@ class DataController {
         return true
     }
 
+    /******* Web Services Catalogue *******/
+
+    def catalogue = { }
+
     /***** CRUD RESTful services ********/
 
-    def addLocation(uid) {
-        response.addHeader 'location', ConfigurationHolder.config.grails.serverURL + "/data/co/${uid}"
+    /**
+     * format for RFC 1123 date string -- "Sun, 06 Nov 1994 08:49:37 GMT"
+     */
+    final static String RFC1123_PATTERN = "EEE, dd MMM yyyy HH:mm:ss z";
+
+    /**
+      * DateFormat to be used to format dates
+      */
+    final static DateFormat rfc1123Format = new SimpleDateFormat(RFC1123_PATTERN)
+    static {
+        rfc1123Format.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+    
+    def addLocation(relativeUri) {
+        response.addHeader 'location', ConfigurationHolder.config.grails.serverURL + relativeUri
     }
 
-    def created = {uid ->
-        addLocation uid
+    def addContentLocation(relativeUri) {
+        response.addHeader 'content-location', ConfigurationHolder.config.grails.serverURL + relativeUri
+    }
+
+    def created = {clazz, uid ->
+        addLocation "/ws/${clazz}/${uid}"
         render(status:201, text:'inserted entity')
     }
 
@@ -70,15 +93,44 @@ class DataController {
     def notFound = { text ->
         render(status:404, text: text)
     }
+
+    /**
+     * Should be added for any uri that returns multiple formats based on content negotiation.
+     * (So the content can be correctly cached by proxies.)
+     */
+    def addVaryAcceptHeader = {
+        response.addHeader HttpHeaders.VARY, HttpHeaders.ACCEPT
+    }
+
+    def addLastModifiedHeader = { when ->
+        response.addHeader HttpHeaders.LAST_MODIFIED, rfc1123Format.format(when)
+    }
+
+    private capitalise(word) {
+        switch (word?.size()) {
+            case 0: return ""
+            case 1: return word[0].toUpperCase()
+            default: return word[0].toUpperCase() + word [1..-1]
+        }
+    }
+
     /**
      * Update database from post/put data.
      *
      * If uid specified, it must exist -> update entity
      * Else -> insert entity
+     *
+     * @param entity - controller form of domain class, eg dataProvider
+     * @param uid - optional uid of an instance of entity
+     * @param pg - optional instance specified by uid (added in beforeInterceptor)
+     * @param json - the body of the request
      */
-    def saveEntity(clazz) {
+    def saveEntity = {
+        println "saving data hub"
         def pg = params.pg
         def obj = params.json
+        def urlForm = params.entity
+        def clazz = capitalise(urlForm)
 
         if (pg) {
             // check type
@@ -88,7 +140,7 @@ class DataController {
                 if (pg.hasErrors()) {
                     badRequest pg.errors
                 } else {
-                    addLocation params.uid
+                    addContentLocation "/ws/${pg.urlForm()}/${params.uid}"
                     success "updated ${clazz}"
                 }
             } else {
@@ -100,7 +152,7 @@ class DataController {
             if (pg.hasErrors()) {
                 badRequest pg.errors
             } else {
-                created pg.uid
+                created pg.urlForm(), pg.uid
             }
         }
     }
@@ -108,52 +160,45 @@ class DataController {
     /**
      * Return JSON representation of specified entity
      * or list of entities if no uid specified.
+     *
+     * @param entity - controller form of domain class, eg dataProvider
+     * @param uid - optional uid of an instance of entity
+     * @param pg - optional instance specified by uid (added in beforeInterceptor)
      */
-    def getEntity(clazz) {
+    def getEntity = {
+        def urlForm = params.entity
+        def clazz = capitalise(urlForm)
         if (params.pg) {
+            addContentLocation "/ws/${urlForm}/${params.pg.uid}"
+            addLastModifiedHeader params.pg.lastUpdated
             render crudService."read${clazz}"(params.pg)
         } else {
-            def summaries = "${clazz}".list().collect {
-                it.buildSummary()
+            addContentLocation "/ws/${urlForm}"
+            def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
+            def summaries = domain.list([sort:'name']).collect {
+                [name: it.name, uri: it.buildUri(), uid: it.uid]
             }
             render summaries as JSON
         }
     }
 
-    def getCollection = {
-        getEntity('Collection')
-    }
-    def saveCollection = {
-        saveEntity('Collection')
-    }
-    def getInstitution = {
-        getEntity('Institution')
-    }
-    def saveInstitution = {
-        saveEntity('Institution')
-    }
-    def getDataProvider = {
-        getEntity('DataProvider')
-    }
-    def saveDataProvider = {
-        saveEntity('DataProvider')
-    }
-    def getDataHub = {
-        getEntity('DataHub')
-    }
-    def saveDataHub = {
-        saveEntity('DataHub')
-    }
-    def getDataResource = {
-        getEntity('DataResource')
-    }
-    def saveDataResource = {
-        saveEntity('DataResource')
+    /**
+     * Return headers as if GET had been called - but with no payload.
+     *
+     * @param entity - controller form of domain class, eg dataProvider
+     * @param uid - optional uid of an instance of entity
+     * @param pg - optional instance specified by uid (added in beforeInterceptor)
+     */
+    def head = {
+        if (params.entity && params.pg) {
+            addContentLocation "/ws/${params.pg.urlForm()}/${params.pg.uid}"
+            addLastModifiedHeader params.pg.lastUpdated
+            render ""
+        }
     }
 
-
-    /********* delete **************************/
-    /*
+    /********* delete **************************
+     *
      * Disabled until we can more easily restore deleted entities.
      *
      */
@@ -198,53 +243,99 @@ class DataController {
         }
     }
 
+    /************* Data Hub services *********/
+    def institutionsForDataHub = {
+        def ozcamConsumers = []
+        DataProvider._get('dp20').resources.each { dr ->
+            dr.listConsumers().each { inst ->
+                if (inst[0..1] == 'in') {
+                    def pg = ProviderGroup._get(inst)
+                    if (pg) {
+                        ozcamConsumers << [name: pg.name, uri: pg.buildUri()]
+                    }
+                }
+            }
+        }
+        ozcamConsumers.sort {it.name}
+        render ozcamConsumers as JSON
+    }
+
+    def collectionsForDataHub = {
+        def ozcamConsumers = []
+        DataProvider._get('dp20').resources.each { dr ->
+            dr.listConsumers().each { con ->
+                if (con[0..1] == 'in') {
+                    def pg = ProviderGroup._get(con)
+                    if (pg) {
+                        pg.collections.each { co ->
+                            if (co.providerMap) {
+                                ozcamConsumers << [name: co.name, uri: co.buildUri()]
+                            }
+                        }
+                    }
+                } else {
+                    // must be a collection
+                    def pg = ProviderGroup._get(con)
+                    if (pg) {
+                        ozcamConsumers << [name: pg.name, uri: pg.buildUri()]
+                    }
+                }
+            }
+        }
+        ozcamConsumers.sort {it.name}
+        render ozcamConsumers as JSON
+    }
+
+
     /************* Contact services **********/
-    def contactsForCollections = {
-        def model = buildContactsModel(request.format, Collection.list([sort:'name']))
+    def contactsForEntity = {
+        def contacts = params.pg.getContacts().collect {
+            [name: it.contact.buildName(), role: it.role, primaryContact: it.primaryContact, email: it.contact.email,
+                    phone: it.contact.phone, uri: "${ConfigurationHolder.config.grails.serverURL}/ws/${params.pg.urlForm()}/${params.pg.uid}/contact/${it.id}"]
+        }
+        addContentLocation "/ws/${params.entity}/${params.pg.uid}/contact"
+        addVaryAcceptHeader()
         withFormat {
             csv {
+                def out = new StringWriter()
+                out << "name, role, primary contact, email, phone\n"
+                contacts.each {
+                    out << "\"${it.name}\",\"${it.role}\",${it.primaryContact},${it.email?:""},${it.phone?:""}\n"
+                }
                 response.addHeader "contentType", "text/csv"
-                render buildCsv(model)}
-            xml {render model as XML}
-            json {render model as JSON}
+                render out.toString()
+            }
+            xml {render contacts as XML}
+            json {render contacts as JSON}
         }
     }
 
-    def contactsForInstitutions = {
-        def model = buildContactsModel(request.format, Institution.list([sort:'name']))
-        withFormat {
-            csv {
-                response.addHeader "contentType", "text/csv"
-                render buildCsv(model)}
-            xml {render model as XML}
-            json {render model as JSON}
+    def contactForEntity = {
+        if (params.id) {
+            def cf = ContactFor.get(params.id)
+            def contact = [title: cf.contact.title, firstName: cf.contact.firstName, lastName: cf.contact.lastName, role: cf.role, primaryContact: cf.primaryContact, email: cf.contact.email, phone: cf.contact.phone, fax: cf.contact.fax, mobile: cf.contact.mobile]
+            addContentLocation "/ws/${params.entity}/${params.pg.uid}/contact/${params.id}"
+            addVaryAcceptHeader()
+            withFormat {
+                csv {
+                    def out = new StringWriter()
+                    out << "title, first name, last name, role, primary contact, email, phone, fax, mobile\n"
+                    out << "\"${contact.title?:""}\",\"${contact.firstName?:""}\",\"${contact.lastName?:""}\",\"${contact.role}\",${contact.primaryContact},${contact.email?:""},${contact.phone?:""},${contact.fax?:""},${contact.mobile?:""}\n"
+                    response.addHeader "contentType", "text/csv"
+                    render out.toString()
+                }
+                xml {render contact as XML}
+                json {render contact as JSON}
+            }
+        } else {
+            forward(action:'contactsForEntity')
         }
     }
 
-    def contactsForDataProviders = {
-        def model = buildContactsModel(request.format, DataProvider.list([sort:'name']))
-        withFormat {
-            csv {
-                response.addHeader "contentType", "text/csv"
-                render buildCsv(model)}
-            xml {render model as XML}
-            json {render model as JSON}
-        }
-    }
-
-    def contactsForDataResources = {
-        def model = buildContactsModel(request.format, DataResource.list([sort:'name']))
-        withFormat {
-            csv {
-                response.addHeader "contentType", "text/csv"
-                render buildCsv(model)}
-            xml {render model as XML}
-            json {render model as JSON}
-        }
-    }
-
-    def contactsForDataHubs = {
-        def model = buildContactsModel(request.format, DataHub.list([sort:'name']))
+    def contactsForEntities = {
+        def domain = grailsApplication.getClassForName("au.org.ala.collectory.${capitalise(params.entity)}")
+        def model = buildContactsModel(request.format, domain.list([sort:'name']))
+        addVaryAcceptHeader()
         withFormat {
             csv {
                 response.addHeader "contentType", "text/csv"
@@ -257,7 +348,7 @@ class DataController {
     def static buildContactsModel(format, list) {
         if (format == 'xml') {
             return list.collect {
-                def obj = new ContactForCollection()
+                def obj = new ContactForEntity()
                 obj.entityName = it.name
                 obj.entityUid = it.uid
                 obj.entityAcronym = it.acronym ?: ""
@@ -290,7 +381,7 @@ class DataController {
     }
 }
 
-class ContactForCollection {
+class ContactForEntity {
     String entityName
     String entityUid
     String entityAcronym

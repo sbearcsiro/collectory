@@ -110,16 +110,7 @@ class CrudService {
     }
 
     def insertDataProvider(obj) {
-        def uid
-        if (obj.has('uid')) {
-            uid = obj.uid
-            if (!idGeneratorService.checkValidId(uid)) {
-                throw new InvalidUidException("invalid uid")
-            }
-        } else {
-            uid = idGeneratorService.getNextDataProviderId()
-        }
-        DataProvider dp = new DataProvider(uid: uid)
+        DataProvider dp = new DataProvider(uid: idGeneratorService.getNextDataProviderId())
         updateBaseProperties(dp, obj)
         dp.userLastModified = 'Data services'
         if (!dp.hasErrors()) {
@@ -198,16 +189,7 @@ class CrudService {
     }
 
     def insertDataHub(obj) {
-        def uid
-        if (obj.has('uid')) {
-            uid = obj.uid
-            if (!idGeneratorService.checkValidId(uid)) {
-                throw new InvalidUidException("invalid uid")
-            }
-        } else {
-            uid = idGeneratorService.getNextDataHubId()
-        }
-        DataHub dp = new DataHub(uid: uid)
+        DataHub dp = new DataHub(uid: idGeneratorService.getNextDataHubId())
         updateBaseProperties(dp, obj)
         dp.userLastModified = 'Data services'
         if (!dp.hasErrors()) {
@@ -282,7 +264,7 @@ class CrudService {
                 userLastModified = p.userLastModified
 
                 // resource specific
-                provider { name = p.dataProvider.name; uri = p.dataProvider.buildUri() }
+                provider { name = p.dataProvider.name; uri = p.dataProvider.buildUri(); uid = p.dataProvider.uid }
                 displayName = p.displayName
                 rights = p.rights
                 citation = p.citation
@@ -296,16 +278,7 @@ class CrudService {
     }
 
     def insertDataResource(obj) {
-        def uid
-        if (obj.has('uid')) {
-            uid = obj.uid
-            if (!idGeneratorService.checkValidId(uid)) {
-                throw new InvalidUidException("invalid uid")
-            }
-        } else {
-            uid = idGeneratorService.getNextDataResourceId()
-        }
-        DataResource dr = new DataResource(uid: uid)
+        DataResource dr = new DataResource(uid: idGeneratorService.getNextDataResourceId())
         updateBaseProperties(dr, obj)
         updateDataResourceProperties(dr, obj)
         dr.userLastModified = 'Data services'
@@ -406,16 +379,7 @@ class CrudService {
     }
 
     def insertInstitution(obj) {
-        def uid
-        if (obj.has('uid')) {
-            uid = obj.uid
-            if (!idGeneratorService.checkValidId(uid)) {
-                throw new InvalidUidException("invalid uid")
-            }
-        } else {
-            uid = idGeneratorService.getNextInstitutionId()
-        }
-        Institution inst = new Institution(uid: uid)
+        Institution inst = new Institution(uid: idGeneratorService.getNextInstitutionId())
         updateBaseProperties(inst, obj)
         updateInstitutionProperties(inst, obj)
         inst.userLastModified = 'Data services'
@@ -515,13 +479,14 @@ class CrudService {
                 }
                 startDate = p.startDate
                 endDate = p.endDate
-                kingdomCoverage = p.kingdomCoverage.formatSpaceSeparatedList()
+                kingdomCoverage = p.kingdomCoverage?.formatSpaceSeparatedList()
                 scientificNames = p.scientificNames?.formatJSONList()
                 subCollections = p.listSubCollections()
                 if (p.institution) {
                     institution {
                         name = p.institution.name
                         uri = p.institution.buildUri()
+                        uid = p.institution.uid
                     }
                 }
                 if (p.providerMap) {
@@ -544,16 +509,7 @@ class CrudService {
     }
 
     def insertCollection(obj) {
-        def uid
-        if (obj.has('uid')) {
-            uid = obj.uid
-            if (!idGeneratorService.checkValidId(uid)) {
-                throw new InvalidUidException("invalid uid")
-            }
-        } else {
-            uid = idGeneratorService.getNextCollectionId()
-        }
-        Collection inst = new Collection(uid: uid)
+        Collection inst = new Collection(uid: idGeneratorService.getNextCollectionId())
         updateBaseProperties(inst, obj)
         updateCollectionProperties(inst, obj)
         inst.userLastModified = 'Data services'
@@ -721,7 +677,7 @@ class OutputFormat {
         listOfUid.each {
             def pg = ProviderGroup._get(it)
             if (pg) {
-                result << [name: pg.name, uri: pg.buildUri()]
+                result << [name: pg.name, uri: pg.buildUri(), uid: pg.uid]
             }
         }
         return result
@@ -751,7 +707,7 @@ class OutputFormat {
     }
 
     static def briefEntity(list) {
-        return list.collect {[name: it.name, uri: it.buildUri()]}
+        return list.collect {[name: it.name, uri: it.buildUri(), uid: it.uid]}
     }
 
     static def formatNetworkMembership(jsonListStr) {

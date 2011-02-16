@@ -16,23 +16,26 @@
   </g:else>
   
   <title><g:layoutTitle/></title>
+  <link rel="stylesheet" href="${resource(dir:'css',file:'temp-style.css')}"/>
+  <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
 
-    <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/style.css" type="text/css" media="screen" />
-    <!--link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"-->
-    <link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
-    <link rel="shortcut icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
+  <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/style.css" type="text/css" media="screen" />
+  <!--link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"-->
+  <link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
+  <link rel="shortcut icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/sf.css" />
 	<link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/highlights.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/jquery.autocomplete.css" />
-    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/iframe.js"></script>
+  <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/jquery.autocomplete.css" />
+
+  <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/iframe.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/form.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/ui.core.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/ui.tabs.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/hoverintent-min.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/superfish/superfish.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/uservoice.js"></script>
+  <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery.autocomplete.js"></script>
+  <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/uservoice.js"></script>
 	<script type="text/javascript">
 
 		// initialise plugins
@@ -79,8 +82,6 @@
   <link rel='prev' title='My Profile' href='${ConfigurationHolder.config.ala.baseURL}/my-profile/' />
   <link rel='next' title='Search' href='${ConfigurationHolder.config.ala.baseURL}/tools-services/search-tools/' />
 
-  <link rel="stylesheet" href="${resource(dir:'css',file:'temp-style.css')}"/>
-  <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
   <g:javascript library="application" />
   <g:javascript library="collectory" />
   <g:javascript src="OpenLayers/OpenLayers.js" />
@@ -121,7 +122,7 @@
       <li id="menu-item-1052" class="last menu-item menu-item-type-custom menu-item-1052"><a href="http://www.ala.org.au/wp-login.php">Log in</a></li>
       </ul>		<ul id="menu-footer-legal"><li id="menu-item-1045" class="menu-item menu-item-type-post_type menu-item-1045"><a href="http://www.ala.org.au/about/terms-of-use/">Terms of Use</a></li>
       <li id="menu-item-1042" class="menu-item menu-item-type-post_type menu-item-1042"><a href="http://www.ala.org.au/about/terms-of-use/citing-the-atlas/">Citing the Atlas</a></li>
-      <li id="menu-item-12256" class="menu-item menu-item-type-custom menu-item-12256"><a href="/about/privacy-policy">Privacy Policy</a></li>
+      <li id="menu-item-12256" class="menu-item menu-item-type-custom menu-item-12256"><a href="http://www.ala.org.au/about/privacy-policy">Privacy Policy</a></li>
       <li id="menu-item-3090" class="last menu-item menu-item-type-post_type menu-item-3090"><a href="http://www.ala.org.au/site-map/">Site Map</a></li>
       </ul>		</div>
       <div class="copyright"><p><a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="left no-pipe"><img src="http://www.ala.org.au/wp-content/themes/ala/images/creativecommons.png" width="88" height="31" alt="" /></a>This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons">Creative Commons Attribution 3.0 Australia License</a></p><p>Provider content may be covered by other <span class="asterisk-container"><a href="http://www.ala.org.au/about/terms-of-use/" title="Terms of Use">Terms of Use</a>.</span></div>

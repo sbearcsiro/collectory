@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVWriter
 
 import groovy.xml.StreamingMarkupBuilder
+import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 
 class LookupController {
 
@@ -118,9 +119,15 @@ class LookupController {
         }
     }
 
+    def citations = {
+        params.uids = "[${params.include}]"
+        forward(action: 'citation')
+    }
+
     def citation = {
         // input is a json object of the form ['co123','in23','dp45']
         def uids = null
+        response.addHeader HttpHeaders.VARY, HttpHeaders.ACCEPT
         switch (request.method) {
             case "POST":
                 if (request.JSON) { uids = request.JSON }
@@ -148,6 +155,7 @@ class LookupController {
                     render sw.toString()
                 }
                 csv {  // same as text - handles text/csv
+                    response.addHeader HttpHeaders.CONTENT_TYPE, 'text/csv'
                     StringWriter sw = new StringWriter()
                     CSVWriter writer = new CSVWriter(sw)
                     writer.writeNext(["Resource name","Citation","Rights","More information"] as String[])
@@ -161,6 +169,7 @@ class LookupController {
                     render sw.toString()
                 }
                 tsv {  // old
+                    response.addHeader HttpHeaders.CONTENT_TYPE, 'text/tsv'
                     String result = "Resource name\tCitation\tRights\tMore information"
                     uids.each {
                         // get each pg

@@ -355,3 +355,33 @@ img.percentImage4 {
  margin: 5px 0 0 0;
  background-position: 1px 0;
 }
+
+/* for info pages - eg web services catalogue */
+div.infoPage span.entity {
+    color: #718804;
+}
+
+div.infoPage ul {
+    margin-top: -10px;
+}
+
+div.infoPage p {
+    padding-bottom: 1.3em !important;
+}
+
+div.infoColumn {
+    padding-left: 20px;
+}
+
+div.infoColumn h1 {
+    font-size: 1.4em;
+    line-height: 1.4em;
+    color: #666 !important;
+    padding-bottom: 5px !important;
+}
+
+span.code {
+    color: #555;
+    font-family: Helvetica, Arial, sans-serif;
+}
+

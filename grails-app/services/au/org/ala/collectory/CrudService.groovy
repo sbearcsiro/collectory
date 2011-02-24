@@ -100,7 +100,7 @@ class CrudService {
                 userLastModified = p.userLastModified
 
                 // provider specific
-                resources = p.resources.briefEntity()
+                dataResources = p.resources.briefEntity()
                 if (p.listConsumers()) {
                     linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
                 }
@@ -184,6 +184,8 @@ class CrudService {
                 lastUpdated = p.lastUpdated
                 userLastModified = p.userLastModified
             }
+            // hub specific
+            members = p.listMembers()
         }
         return result
     }

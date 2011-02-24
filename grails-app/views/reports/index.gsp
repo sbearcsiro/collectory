@@ -73,6 +73,8 @@
           <span class="linkText">- shows how collections are classified according to their keywords into the filter groups used on the collections map page.</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="collectionTypes">Show material types</g:link>
           <span class="linkText">- shows the type keywords associated with each collection, eg preserved, living, tissue.</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="taxonomicHints">Show taxonomic hints</g:link>
+          <span class="linkText">- shows the hints for each collection. These are used to help match names when processing occurrence records.</span></p>
         </div>
       </div>
 

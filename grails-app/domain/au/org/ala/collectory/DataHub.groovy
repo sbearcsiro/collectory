@@ -1,5 +1,7 @@
 package au.org.ala.collectory
 
+import grails.converters.JSON
+
 class DataHub extends ProviderGroup implements Serializable {
 
     static final String ENTITY_TYPE = 'DataHub'
@@ -7,7 +9,15 @@ class DataHub extends ProviderGroup implements Serializable {
 
     static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
 
+    String memberInstitutions       // json list of uids of member institutions
+    String memberCollections        // json list of uids of member collections
+    String members                  // non-overlapping json list of uids of member institutions and collections
+                                    //  (suitable for identifying a unique list of occurrence records)
+
     static constraints = {
+        memberCollections(nullable:true)
+        memberInstitutions(nullable:true)
+        members(nullable:true)
     }
 
     boolean canBeMapped() {
@@ -30,6 +40,10 @@ class DataHub extends ProviderGroup implements Serializable {
         //cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         //cs.derivedCollCodes = getListOfCollectionCodesForLookup()
         return dps
+    }
+
+    def listMembers() {
+        return members ? JSON.parse(members).collect {it} : []
     }
 
     long dbId() {

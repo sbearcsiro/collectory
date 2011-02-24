@@ -135,11 +135,11 @@ environments {
         security.cas.contextPath = grails.context
     }
     development {
-        grails.serverURL = "http://localhost:8080/Collectory"    //"http://drover-fr.nexus.csiro.au:8080/Collectory"
+        grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://drover-fr.nexus.csiro.au:8080"
+        security.cas.serverName = "http://woodfired.ala.org.au:8080"
         security.cas.contextPath = grails.context
-        security.cas.bypass = true
+        security.cas.bypass = false
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

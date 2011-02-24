@@ -32,6 +32,15 @@ class UrlMappings {
       "/ws/dataResource/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
       "/ws/dataHub/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
 
+      // html fragment representation
+      "/ws/fragment/$entity/$uid" {
+          controller = 'data'
+          action = [HEAD: 'head', GET:'getFragment']
+          constraints {
+            entity(inList:['collection','institution'])
+          }
+      }
+        
       // entities in a data hub
       "/ws/dataHub/$uid/institutions" (controller: 'data', action: 'institutionsForDataHub')
       "/ws/dataHub/$uid/collections" (controller: 'data', action: 'collectionsForDataHub')
@@ -52,6 +61,9 @@ class UrlMappings {
       "/ws" (controller:'data',action:'catalogue')
       "/showConsumers/$id" (controller:'entity',action:'showConsumers')
       "/showProviders/$id" (controller:'entity',action:'showProviders')
+
+      "/ws/codeMapDump" (controller:'data', action:'codeMapDump')
+        
       "/"(controller:'public', action:'map')
 	  "500"(view:'/error')
 	}

@@ -228,6 +228,9 @@
     <!-- Attributions -->
     <g:render template="/shared/attributions" model="[instance: instance]"/>
 
+    <!-- taxonomy hints -->
+    <g:render template="/shared/taxonomyHints" model="[instance: instance]"/>
+
     <!-- change history -->
     <g:render template="/shared/changes" model="[changes: changes, instance: instance]"/>
 

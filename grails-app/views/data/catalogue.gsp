@@ -5,9 +5,6 @@
         <meta name="layout" content="ala" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Web Services | Natural History Collections | Atlas of Living Australia</title>
-        <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>
-        <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
-        <script type="text/javascript" src="${resource(dir:'js', file:'map.js')}"></script>
 
         <script type="text/javascript">
           var altMap = true;
@@ -28,6 +25,7 @@
             <div class="message">${flash.message}</div>
           </g:if>
           <div class="hrgroup">
+            <img src="${resource(dir:"images/ala",file:"webservices.png")}" style="float: right;padding-right:50px;"/>
             <h1>Web services for the Atlas Registry</h1>
             <p>More information can be found at the project's <a href="http://code.google.com/p/ala-collectory/w/list">wiki</a>,
             and in particular in the documentation of <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices">Collectory services</a>.</p>
@@ -126,10 +124,10 @@
           <h1>Common services</h1>
           <p>
             <a href="http://collections.ala.org.au/ws/collection.json">List all collections</a><br/>
-            <a href="http://collections.ala.org.au/ws/collection.json">List all institutions</a><br/>
-            <a href="http://collections.ala.org.au/ws/collection.json">List all data providers</a><br/>
-            <a href="http://collections.ala.org.au/ws/collection.json">List all data resources</a><br/>
-            <a href="http://collections.ala.org.au/ws/collection.json">List all hubs</a><br/>
+            <a href="http://collections.ala.org.au/ws/institution.json">List all institutions</a><br/>
+            <a href="http://collections.ala.org.au/ws/dataProvider.json">List all data providers</a><br/>
+            <a href="http://collections.ala.org.au/ws/dataResource.json">List all data resources</a><br/>
+            <a href="http://collections.ala.org.au/ws/dataHub.json">List all hubs</a><br/>
           </p>
           <p>
             <a href="http://collections.ala.org.au/ws/collection/contact.json">List main contact for each collection</a><br/>

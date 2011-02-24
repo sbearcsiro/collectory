@@ -24,6 +24,12 @@ class DataController {
             def pg = ProviderGroup._get(uid)
             if (pg) {
                 params.pg = pg
+                // if entity is specified, the instance must be of type entity
+                if (params.entity && pg.urlForm() != params.entity) {
+                    // exists but wrong type (eg /dataHub/dp20)
+                    notFound "entity with uid = ${uid} is not a ${params.entity}"
+                    return false
+                }
             } else {
                 // doesn't exist
                 notFound "no entity with uid = ${uid}"
@@ -378,6 +384,47 @@ class DataController {
             out << "\"${it.entityName}\",${it.entityUid},${it.entityAcronym ?:""},${it.contactName?:""},${it.contactEmail?:""},${it.contactPhone?:""}\n"
         }
         return out.toString()
+    }
+
+
+    /**** html fragment services ****/
+    def getFragment = {
+        def pg = ProviderGroup._get(params.uid)
+        if (!pg) {
+            def message = "${message(code: 'default.not.found.message', args: [message(code: 'entity.label', default: 'Entity'), params.uid])}"
+            render message
+        } else {
+            render(view: "${params.entity}Fragment", model: [instance: pg])
+        }
+    }
+
+    /** temporary dump of map of coll code/inst code pairs with mapped collection and institution data **/
+    def codeMapDump = {
+        def csv = "collectionCode,institutionCode,collectionUid,collectionName,institutionUid,institutionName,taxonomicHints\n"
+        ProviderMap.list().each {
+            def collectionCodes = it.collectionCodes
+            def institutionCodes = it.institutionCodes
+            // write record for each combo
+            collectionCodes.each { coll ->
+                institutionCodes.each { inst ->
+                    csv += coll.code + "," +
+                            inst.code + "," +
+                            it.collection.uid + "," +
+                            it.collection.name + "," +
+                            it.collection.institution?.uid + "," +
+                            it.collection.institution?.name + "," +
+                            encodeHints(it.collection.listTaxonomyHints()) + "\n"
+                }
+            }
+        }
+        render csv
+    }
+
+    private String encodeHints(hints) {
+        def result = hints.collect {
+            it.rank + ":" + it.name
+        }
+        return result.join(';')
     }
 }
 

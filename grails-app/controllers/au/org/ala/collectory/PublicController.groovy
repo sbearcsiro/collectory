@@ -150,6 +150,9 @@ class PublicController {
      *
      * Makes request to biocache service for breakdown data.
      * Chooses the taxon rank based on the spread of records and the threshold value supplied in the request.
+     *
+     * @param id a single uid or a comma-separated list of uids
+     * @param threshold a guide to the selection of an appropriate rank for the breakdown
      */
     def taxonBreakdown = {
         response.setHeader("Pragma","no-cache")
@@ -197,50 +200,45 @@ class PublicController {
      * Returns JSON in Google charts DataTable format showing breakdown of records for the specified taxonomic group.
      *
      * Makes request to biocache service for namerank breakdown data.
-     *
+     * @param id a single uid or a comma-separated list of uids
+     * @param rank the rank of the taxon
+     * @param name the name of the taxon
      */
     def rankBreakdown = {
         response.setHeader("Pragma","no-cache")
         response.setDateHeader("Expires",1L)
         response.setHeader("Cache-Control","no-cache")
         response.addHeader("Cache-Control","no-store")
-        def instance = ProviderGroup._get(params.id)
-        if (!instance) {
-            log.error "Unable to find entity for id = ${params.id}"
-            def error = ["error":"unable to find entity for id = " + params.id]
-            render error as JSON
-        } else {
-            /* get rank breakdown */
-            def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${instance.uid}.json?name=${params.name}&rank=${params.rank}"
-            def conn = new URL(rankUrl).openConnection()
-            def dataTable = null
-            def json
-            try {
-                conn.setConnectTimeout 10000
-                conn.setReadTimeout 50000
-                json = conn.content.text
-                //println "Response = " + json
-                def breakdown = JSON.parse(json)?.breakdown
-                if (breakdown && breakdown.toString() != "null") {
-                    dataTable = buildPieChartDataTable(breakdown,params.rank,params.name)
-                    if (dataTable) {
-                        //sleep delay
-                        render dataTable
-                    } else {
-                        log.warn "unable to build data table from taxa json = " + json
-                        def error = ["error":"Unable to build data table from taxa json"]
-                        render error as JSON
-                    }
+        /* get rank breakdown */
+        def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${params.id}.json?name=${params.name}&rank=${params.rank}"
+        def conn = new URL(rankUrl).openConnection()
+        def dataTable = null
+        def json
+        try {
+            conn.setConnectTimeout 10000
+            conn.setReadTimeout 50000
+            json = conn.content.text
+            //println "Response = " + json
+            def breakdown = JSON.parse(json)?.breakdown
+            if (breakdown && breakdown.toString() != "null") {
+                dataTable = buildPieChartDataTable(breakdown,params.rank,params.name)
+                if (dataTable) {
+                    //sleep delay
+                    render dataTable
+                } else {
+                    log.warn "unable to build data table from taxa json = " + json
+                    def error = ["error":"Unable to build data table from taxa json"]
+                    render error as JSON
                 }
-            } catch (SocketTimeoutException e) {
-                log.warn "Timed out getting rank breakdown."
-                def error = [error:"Timed out getting rank breakdown.", dataTable: null]
-                render error as JSON
-            } catch (Exception e) {
-                log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${rankUrl}."
-                def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${taxonUrl}.", dataTable: null]
-                render error as JSON
             }
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out getting rank breakdown."
+            def error = [error:"Timed out getting rank breakdown.", dataTable: null]
+            render error as JSON
+        } catch (Exception e) {
+            log.error "Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${rankUrl}."
+            def error = [error:"Failed to lookup taxa breakdown. ${e.getMessage()} URL= ${rankUrl}.", dataTable: null]
+            render error as JSON
         }
     }
 

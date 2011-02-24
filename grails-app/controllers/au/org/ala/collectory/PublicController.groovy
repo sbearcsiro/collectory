@@ -45,6 +45,8 @@ class PublicController {
             forward(action: 'showDataProvider', params: params)
         } else if (params.id instanceof String && params.id.startsWith('dr')) {
             forward(action: 'showDataResource', params: params)
+        } else if (params.id instanceof String && params.id.startsWith('dh')) {
+            forward(action: 'showDataHub', params: params)
         } else {
             // assume it's a collection
             def collectionInstance = findCollection(params.id)
@@ -62,7 +64,7 @@ class PublicController {
     /**
      * json call to retrieve a summary of biocache records
      *
-     * @return total number + decade breakdown as Google data table
+     * @return total number + decade breakdow n as Google data table
      */
     def biocacheRecords = {
         // lookup number of biocache records
@@ -361,6 +363,20 @@ class PublicController {
         def instance = ProviderGroup._get(params.id)
         if (!instance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataResource.label', default: 'Data resource'), params.code ? params.code : params.id])}"
+            redirect(controller: "public", action: "map")
+        } else {
+            ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
+            [instance: instance]
+        }
+    }
+
+    /**
+     * Shows the public page for a data hub.
+     */
+    def showDataHub = {
+        def instance = ProviderGroup._get(params.id)
+        if (!instance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataHub.label', default: 'Data hub'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
         } else {
             ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW

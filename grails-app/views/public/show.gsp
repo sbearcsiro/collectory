@@ -207,7 +207,7 @@
                   </g:if>
                   <g:if test="${instance.isMemberOf('CHAFC')}">
                     <p>Council of Heads of Australian Faunal Collections</p>
-                    <img src="${resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg")}"/>
+                    <img src="${resource(absolute:"true", dir:"data/network/",file:"chafc.png")}"/>
                   </g:if>
                   <g:if test="${instance.isMemberOf('CHACM')}">
                     <p>Council of Heads of Australian Collections of Microorganisms</p>

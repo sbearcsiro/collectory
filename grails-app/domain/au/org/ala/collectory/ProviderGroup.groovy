@@ -16,6 +16,7 @@
 package au.org.ala.collectory
 
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.converters.JSON
 
 /**
  *  Base class for an organisational group in the collectory, such as an
@@ -441,6 +442,22 @@ abstract class ProviderGroup implements Serializable {
      */
     def List<String> listConsumers() {
         DataLink.findAllByProvider(this.uid).collect {it.consumer}
+    }
+
+    /**
+     * Returns taxonomy hints as a list of maps where each contains a rank and a name.
+     *
+     * @return List<Map>
+     */
+    def listTaxonomyHints() {
+        def result = []
+        if (taxonomyHints) {
+            JSON.parse(taxonomyHints).coverage.each {
+                def key = it.keySet().iterator().next()
+                result << [rank: key, name: it[key]]
+            }
+        }
+        return result
     }
 
     /*

@@ -279,6 +279,48 @@ abstract class ProviderGroupController {
         }
     }
 
+    def updateTaxonomyHints = {
+        def pg = get(params.id)
+        if (pg) {
+            if (params.version) {
+                def version = params.version.toLong()
+                if (pg.version > version) {
+                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
+                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
+                            "Another user has updated this ${pg.entityType()} while you were editing")
+                    render(view: "/shared/editTaxonomyHints", model: [command: pg])
+                    return
+                }
+            }
+
+            // handle taxonomy hints
+            def ranks = params.findAll { key, value ->
+                key.startsWith('rank_') && value
+            }
+            def hints = ranks.sort().collect { key, value ->
+                def idx = key.substring(5)
+                def name = params."name_${idx}"
+                return ["${value}": name]
+            }
+            def coverage = [coverage: hints]
+            pg.taxonomyHints = coverage as JSON
+        
+            pg.userLastModified = authService.username()
+            if (!pg.hasErrors() && pg.save(flush: true)) {
+                flash.message =
+                  "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                redirect(action: "show", id: pg.id)
+            }
+            else {
+                render(view: "description", model: [command: pg])
+            }
+        } else {
+            flash.message =
+                "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "show", id: params.id)
+        }
+    }
+
     def updateContactRole = {
         params.each {println it}
         def contactFor = ContactFor.get(params.contactForId)

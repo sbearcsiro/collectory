@@ -93,6 +93,61 @@ class PublicController {
         }
     }
 
+    def getRecordsSummary(uid) {
+        // lookup number of biocache records
+        //def baseUrl = ConfigurationHolder.config.biocache.baseURL
+        //def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + uid
+        def url = "http://ala-bie1.vm.csiro.au:8080/biocache-service/occurrences/institution/${uid}.json?pageSize=0"
+
+        def conn = new URL(url).openConnection()
+        try {
+            conn.setConnectTimeout(10000)
+            conn.setReadTimeout(50000)
+            //conn.setRequestProperty('Connection','close')
+            def json = conn.content.text
+            return JSON.parse(json)
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out looking up record count. URL= ${url}."
+            def error = [error:"Timed out looking up record count.", totalRecords: 0, decades: null]
+            return error as JSON
+        } catch (Exception e) {
+            log.warn "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
+            def error = ["error":"Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
+            return error as JSON
+        }
+    }
+
+    def recordsByDecadeByInstitution = {
+        def result = [:]
+        def institutions = [
+                [uid:'in4',name:'Australian Museum',acronym:'AM'],
+                [uid:'in16',name:'Museum Victoria',acronym:'NMV'],
+                [uid:'in34',name:'Western Australian Museum',acronym:'WAM'],
+                [uid:'in22',name:'South Australian Museum',acronym:'SAM'],
+                [uid:'in17',name:'Northern Territory Museum and Art Galley',acronym:'MAGNT'],
+                [uid:'in13',name:'Queen Victoria Museum and Art Galley',acronym:'QVMAG'],
+                [uid:'in15',name:'Queenslamd Museum',acronym:'QM'],
+                [uid:'in25',name:'Tasmanian Museum and Art Galley',acronym:'TMAG'],
+                [uid:'co16',name:'Australian National Wildlife Collection',acronym:'ANWC']
+        ]
+        institutions.each {
+            def facets = getRecordsSummary(it.uid).facetResults
+            def decadeBreakdown = facets.find {it.fieldName == 'occurrence_date'}
+            def decades = [:]
+            decades.put('name', it.name)
+            decades.put('acronym', it.acronym)
+            def total = 0
+            decadeBreakdown.fieldResult.each {
+                if (it.label != 'before') {
+                    total += it.count
+                    decades.put('d' + it.label[0..3], total)
+                }
+            }
+            result.put(it.uid, decades)
+        }
+        render result as JSON
+    }
+
     /**
      * Returns JSON in Google charts DataTable format showing breakdown of records by decade.
      *

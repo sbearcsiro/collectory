@@ -323,6 +323,90 @@
             }
           </script>
 
+          <!-- STANDALONE SPECIMEN ACCUMULATION CHART -->
+          <div id='recordsAccumChart'>
+            <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
+          </div>
+          <div id='recordsAccumChartCaption' style='visibility:hidden;'>
+            <span class='taxonChartCaption'>Click a slice or legend to learn more about the institution.</span><br/>
+          </div>
+          <script type="text/javascript">
+            function loadRecordsAccumulation() {
+              var url = "http://localhost:8080/Collectory/public/recordsByDecadeByInstitution.json";  //!!!!!!!
+              $.get(url, {}, drawRecordsAccumulation);
+            }
+            function drawRecordsAccumulation(data) {
+              var drs = data.fieldResult;
+              // build data table
+              var table = new google.visualization.DataTable();
+              table.addColumn('string', 'Decade');
+              table.addColumn('number', 'Aust Museum');
+              table.addColumn('number', 'Museum Victoria');
+              table.addColumn('number', 'QV MAG');
+              table.addColumn('number', 'QLD Museum');
+              table.addColumn('number', 'ANWC');
+              table.addColumn('number', 'TMAG');
+              table.addColumn('number', 'SA Museum');
+              table.addRows(17);
+              for (var i = 0; i < 17; i++) {
+                table.setValue(i, 0, (i * 10 + 1850) + 's');
+              }
+              loadRecords(data.in4, table, 1);
+              loadRecords(data.in16, table, 2);
+              loadRecords(data.in13, table, 3);
+              loadRecords(data.in15, table, 4);
+              loadRecords(data.co16, table, 5);
+              loadRecords(data.in25, table, 6);
+              loadRecords(data.in22, table, 7);
+
+              // chart options
+              var options = {
+                  width: 650,
+                  height: 340,
+                  vAxis: {logScale: true},
+                  chartArea: {left: 80, width:"55%"},
+                  title: 'Accumulated records by decade',
+                  titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
+                  sliceVisibilityThreshold: 0,
+                  legend: "right"
+              };
+
+              // create chart
+              var chart = new google.visualization.LineChart(document.getElementById('recordsAccumChart'));
+
+              // selection actions
+              /*google.visualization.events.addListener(chart, 'select', function() {
+                var name = table.getValue(chart.getSelection()[0].row,0);
+                // reverse any presentation transforms
+                if (name == 'unknown type') {name = 'type';}
+                window.location.href = "http://ala-bie1.vm.csiro.au:8080/hubs-webapp/occurrences/search?q=*:*&fq=type_status:" + name;
+              });*/
+
+              // draw
+              chart.draw(table, options);
+            }
+
+            function loadRecords(inst, table, col) {
+              table.setValue(0, col , inst.d1850);
+              table.setValue(1, col , inst.d1860);
+              table.setValue(2, col , inst.d1870);
+              table.setValue(3, col , inst.d1880);
+              table.setValue(4, col , inst.d1890);
+              table.setValue(5, col , inst.d1900);
+              table.setValue(6, col , inst.d1910);
+              table.setValue(7, col , inst.d1920);
+              table.setValue(8, col , inst.d1930);
+              table.setValue(9, col , inst.d1940);
+              table.setValue(10, col , inst.d1950);
+              table.setValue(11, col , inst.d1960);
+              table.setValue(12, col , inst.d1970);
+              table.setValue(13, col , inst.d1980);
+              table.setValue(14, col , inst.d1990);
+              table.setValue(15, col , inst.d2000);
+              table.setValue(16, col , inst.d2010);
+            }
+          </script>
+
         </div>
         
         <cl:lastUpdated date="${instance.lastUpdated}"/>
@@ -494,6 +578,8 @@ function onLoadCallback() {
 
   // taxon chart
   loadTaxonChart("dp20",null,"phylum");  // start with all phyla
+
+  loadRecordsAccumulation();
 }
 /************************************************************\
 * Fire chart loading

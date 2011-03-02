@@ -225,7 +225,14 @@ span.taxonChartCaption {
     color: #555;
 }
 
-span#resetTaxonChart {
+span#resetTaxonChart {  /* deprecated: use span.resetChart  */
+    color: #01716E;
+    text-decoration:underline;
+    cursor:pointer;
+    margin-bottom: 14px;
+}
+
+span.resetChart {
     color: #01716E;
     text-decoration:underline;
     cursor:pointer;

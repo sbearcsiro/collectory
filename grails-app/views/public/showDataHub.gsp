@@ -84,26 +84,29 @@
           </div>
           <div id='taxonChartCaption' style='visibility:hidden;'>
             <span class='taxonChartCaption'>Click a slice or legend to drill into a group.</span><br/>
-            <span id='resetTaxonChart' onclick='resetTaxonChart()'></span>
+            <span id='resetTaxonChart' class="resetChart" onclick='resetTaxonChart()'></span>
           </div>
           <script type="text/javascript">
-            var taxaBreakdownUrl = "http://ala-bie1.vm.csiro.au:8080/biocache-service/breakdown/uid/namerank/";
+            //var taxaBreakdownUrl = "http://ala-bie1.vm.csiro.au:8080/biocache-service/breakdown/uid/namerank/";
+            //var taxaBreakdownUrl = "http://biocache.ala.org.au/breakdown/uid/namerank/";
+            var taxaBreakdownUrl = "${ConfigurationHolder.config.grails.serverURL}/public/serviceRedirect";
             var summaryUrl = "http://biocache.ala.org.au/occurrences/searchForUID.json?pageSize=0&q=";
             /************************************************************\
             *
             \************************************************************/
             function loadTaxonChart(uid, name, rank) {
-              var url = taxaBreakdownUrl + instanceUid + ".json?rank=" + rank;
+              var url = taxaBreakdownUrl /*+ uid*/ + ".json?rank=" + rank;
               if (name != undefined) {
                 url = url + "&name=" + name;
               }
               $.ajax({
                 url: url,
-                dataType: 'jsonp',
+                dataType: 'json',
                 error: function(jqXHR, textStatus, errorThrown) {
-                  alert(textStatus);
+                  alert(textStatus + ": " + errorThrown);
                 },
                 success: function(data) {
+//                  alert(data);
                   var dataTable = buildDataTable(data, name, rank);
                   drawTaxonChart(dataTable)
                 }
@@ -114,16 +117,16 @@
             \************************************************************/
             function buildDataTable(data, name, rank) {
               var table = new google.visualization.DataTable();
-              table.addColumn('string', data.breakdown.rank);
+              table.addColumn('string', data.rank);
               table.addColumn('number', 'count');
 
-              if (data.breakdown.taxa == undefined) {
+              if (data.taxa == undefined) {
                 alert("no data");
               }
-              for (var i = 0; i < data.breakdown.taxa.length; i++) {
-                table.addRow([data.breakdown.taxa[i].label,data.breakdown.taxa[i].count]);
+              for (var i = 0; i < data.taxa.length; i++) {
+                table.addRow([data.taxa[i].label,data.taxa[i].count]);
               }
-              table.setTableProperty('rank', data.breakdown.rank);
+              table.setTableProperty('rank', data.rank);
               if (name == undefined) {
                 table.setTableProperty('scope', 'all');
               } else {
@@ -184,23 +187,53 @@
             }
           </script>
 
-          <!-- STANDALONE DATA RESOURCE BREAKDOWN CHART -->
-          <div id='drChart'>
-            <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
+          <!--
+          *******                                        *****
+          ******* STANDALONE INSTITUTION BREAKDOWN CHART *****
+          *******                                        *****
+          -->
+          <div id='instChart'>
+            <img style="margin-left: 230px;margin-top: 100px;margin-bottom: 118px;" alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
           </div>
-          <div id='drChartCaption' style='visibility:hidden;'>
-            <span class='taxonChartCaption'>Click a slice or legend to learn more about the institution.</span><br/>
+          <div id='instChartCaptionBlock' style='visibility:hidden;'>
+            <span id="instChartCaption" class='taxonChartCaption'>Click a slice or legend to show the institution's collections.</span><br/>
+            <span id='resetInstChart' style="margin-left:90px;" class="resetChart" onclick='resetInstChart()'></span>
           </div>
           <script type="text/javascript">
+            var chart;
+            var instBreakdownJson = {empty: true};
+            var topLevel = true;
+            function loadInstChart() {
+              //var url = biocacheServicesUrl + "occurrences/data-provider/" + instanceUid + ".json?pageSize=0";
+              //var oldUrl = biocacheUrl + "occurrences/searchForUID.json?pageSize=0&q=" + instanceUid;
+              if (instBreakdownJson.empty) {
+                // load json one time only
+                var url = "${ConfigurationHolder.config.grails.serverURL}/public/recordsByCollectionByInstitution.json";
+                $.ajax({
+                    url: url,
+                    dataType: 'json',
+                    success: function(data) {
+                      instBreakdownJson = data.breakdown;
+                      drawInstitutionBreakdown();
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                      alert(textStatus);//$('div#instChart').html(textStatus);
+                    }
+                });
+              } else {
+                // json already loaded
+                drawInstitutionBreakdown();
+              }
+            }
             function drawInstitutionBreakdown(data) {
-              var drs = data.fieldResult;
+              topLevel = true;
+              var data = instBreakdownJson;
               // build data table
               var table = new google.visualization.DataTable();
               table.addColumn('string', 'Institution');
               table.addColumn('number', 'Number of records');
-              for (var i = 0; i < drs.length; i++) {
-                var inst = getResourceByResourceName(drs[i].label);
-                table.addRow([inst.name,drs[i].count]);
+              for (var i = 0; i < data.length; i++) {
+                table.addRow([data[i].label,data[i].total]);
               }
 
               // chart options
@@ -215,16 +248,77 @@
               };
 
               // create chart
-              var chart = new google.visualization.PieChart(document.getElementById('drChart'));
+              chart = new google.visualization.PieChart(document.getElementById('instChart'));
 
               // selection actions
               google.visualization.events.addListener(chart, 'select', function() {
-                var name = table.getValue(chart.getSelection()[0].row,0);
-                window.location.href = "http://collections.ala.org.au/public/show/" + getResourceByName(name).uid;
+                // only take an action if we are at the institution level
+                var label = table.getValue(chart.getSelection()[0].row,0);
+                if (topLevel) {
+                  drawCollectionBreakdownChart(label);
+                  topLevel = false;
+                  // show reset link
+                  $('span#resetInstChart').html("Return to institution view");
+                  $('span#instChartCaption').html("Click a slice or legend to show records for the collection.");
+                }
               });
 
               // draw
               chart.draw(table, options);
+
+              // show caption
+              $('div#instChartCaptionBlock').css('visibility', 'visible');
+
+            }
+
+            function drawCollectionBreakdownChart(label) {
+              // extract data section for name
+              var collData;
+              var name;
+              for (var i = 0; i < instBreakdownJson.length; i++) {
+                if(instBreakdownJson[i].label == label) {
+                  collData = instBreakdownJson[i].collections;
+                  name = instBreakdownJson[i].name;
+                }
+              }
+              var nameLabel;
+              if (name == "Museum Victoria") {
+                nameLabel = name;
+              } else {
+                nameLabel = 'the ' + name;
+              }
+              // build data table
+              var table = new google.visualization.DataTable();
+              table.addColumn('string', 'Collection');
+              table.addColumn('number', 'Number of records');
+              for (var i = 0; i < collData.length; i++) {
+                table.addRow([collData[i].name,collData[i].count]);
+              }
+              // chart options
+              var options = {
+                  width: 510,
+                  height: 280,
+                  chartArea: {left:0, top:60, width:"100%", height: "90%"},
+                  title: 'Records by collections for ' + nameLabel,
+                  titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
+                  sliceVisibilityThreshold: 0,
+                  legend: "right"
+              };
+
+              // draw chart
+              chart.draw(table, options);
+
+              // set caption
+              $('div#instChartCaption').html("");
+
+            }
+
+            function resetInstChart() {
+              $('div#instChart').html('<img style="margin-left: 230px;margin-top: 140px;margin-bottom: 110px;" alt="loading..." src="http://collections.ala.org.au/images/ala/ajax-loader.gif"/>');
+              topLevel = true;
+              loadInstChart();
+              $('span#instChartCaption').html("Click a slice or legend to show the institution's collections.");
+              $('span#resetInstChart').html("");
             }
           </script>
 
@@ -232,21 +326,23 @@
           <div id='typesChart'>
             <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
           </div>
-          <div id='typesChartCaption' style='visibility:hidden;'>
-            <span class='taxonChartCaption'>Click a slice or legend to learn more about the institution.</span><br/>
+          <div id='typesChartCaption'>
+            <span class='taxonChartCaption'>Click a slice or legend to show records of that type.</span><br/>
           </div>
           <script type="text/javascript">
+            var priorityOfTypes = ['holotype','lectotype','neotype','syntype','paratype','allotype','topotype','paralectotype','cotype','hapantotype','allolectotype','paraneotype'];
             function drawTypesBreakdown(data) {
-              var drs = data.fieldResult;
+              var types = data.fieldResult;
+              types.sort(typeSorter);
               // build data table
               var table = new google.visualization.DataTable();
               table.addColumn('string', 'Type');
               table.addColumn('number', 'Number of records');
-              for (var i = 0; i < drs.length; i++) {
-                var label = drs[i].label;
+              for (var i = 0; i < types.length; i++) {
+                var label = types[i].label;
                 if (label == 'type') {label = 'unknown type';}
                 if (label != 'notatype') {
-                  table.addRow([label,drs[i].count]);
+                  table.addRow([label,types[i].count]);
                 }
               }
 
@@ -274,6 +370,17 @@
 
               // draw
               chart.draw(table, options);
+            }
+
+            function typeSorter(a,b) {
+              // assign a rank to each
+              var aRank = 100;
+              var bRank = 100;
+              for (var i = 0; i < priorityOfTypes.length; i++) {
+                if (priorityOfTypes[i] == a.label) { aRank = i;}
+                if (priorityOfTypes[i] == b.label) { bRank = i;}
+              }
+              return aRank - bRank;
             }
           </script>
 
@@ -327,53 +434,47 @@
           <div id='recordsAccumChart'>
             <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
           </div>
-          <div id='recordsAccumChartCaption' style='visibility:hidden;'>
-            <span class='taxonChartCaption'>Click a slice or legend to learn more about the institution.</span><br/>
+          <div id='recordsAccumChartCaption'>
+            <span id='toggleAccumChart' class="resetChart" style="margin-left:200px;" onclick='toggleLogScale()'>Use linear scale</span>
           </div>
           <div id="raJson"></div>
           <script type="text/javascript">
-            var useStaticData = true;
+            var useStaticData = false;
+            var accumChart;
+            var accumTable;
+            var accumOptions;
+            var rawData;
             function loadRecordsAccumulation() {
-              var url = "http://localhost:8080/Collectory/public/recordsByDecadeByInstitution.json";  //!!!!!!!
+              var url = "http://woodfired.ala.org.au:8080/Collectory/public/recordsByDecadeByInstitution.json";  //!!!!!!!
               if (useStaticData) { url = url + "?static=true";}
               $.get(url, {}, drawRecordsAccumulation);
             }
             function drawRecordsAccumulation(data) {
+              rawData = data;
               // build data table
-              var table;
               if (useStaticData) {
-                table = new google.visualization.DataTable(data);
+                accumTable = new google.visualization.DataTable(data);
               } else {
-                table = new google.visualization.DataTable();
-                var drs = data.fieldResult;
-                table.addColumn('string', 'Decade');
-                table.addColumn('number', 'Aust Museum');
-                table.addColumn('number', 'Museum Victoria');
-                table.addColumn('number', 'QV MAG');
-                table.addColumn('number', 'QLD Museum');
-                table.addColumn('number', 'ANWC');
-                table.addColumn('number', 'TMAG');
-                table.addColumn('number', 'SA Museum');
-                table.addRows(17);
+                accumTable = new google.visualization.DataTable();
+                accumTable.addRows(17);
+                accumTable.addColumn('string', 'Decade');
                 for (var i = 0; i < 17; i++) {
-                  table.setValue(i, 0, (i * 10 + 1850) + 's');
+                  accumTable.setValue(i, 0, (i * 10 + 1850) + 's');
                 }
-                loadRecords(data.in4, table, 1);
-                loadRecords(data.in16, table, 2);
-                loadRecords(data.in13, table, 3);
-                loadRecords(data.in15, table, 4);
-                loadRecords(data.co16, table, 5);
-                loadRecords(data.in25, table, 6);
-                loadRecords(data.in22, table, 7);
+                for (var i = 0; i < data.length; i++) {
+                  accumTable.addColumn('number', data[i].label);
+                  loadRecords(data[i], accumTable, i + 1);
+                }
 
                 //$('div#raJson').html(table.toJSON());
               }
 
               // chart options
-              var options = {
+              accumOptions = {
                   width: 650,
                   height: 340,
                   vAxis: {logScale: true, title: "num records (log scale)", format: "#,###,###"},
+                  //vAxis: {logScale: false, title: "number of records", format: "#,###,###"},
                   chartArea: {left: 80, width:"55%"},
                   title: 'Accumulated records by decade',
                   titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
@@ -382,18 +483,24 @@
               };
 
               // create chart
-              var chart = new google.visualization.LineChart(document.getElementById('recordsAccumChart'));
+              accumChart = new google.visualization.LineChart(document.getElementById('recordsAccumChart'));
 
               // selection actions
-              /*google.visualization.events.addListener(chart, 'select', function() {
-                var name = table.getValue(chart.getSelection()[0].row,0);
-                // reverse any presentation transforms
-                if (name == 'unknown type') {name = 'type';}
-                window.location.href = "http://ala-bie1.vm.csiro.au:8080/hubs-webapp/occurrences/search?q=*:*&fq=type_status:" + name;
-              });*/
+              google.visualization.events.addListener(accumChart, 'select', function() {
+                var selection = accumChart.getSelection()[0];
+                var instData = rawData[selection.column - 1];
+                var name = instData.name;
+                var searchUrl = "http://ozcam-demo.ala.org.au:8080/occurrences/search?q=" + name;
+                if (selection.row != undefined) {
+                  var decadeStart = selection.row * 10 + 1850;
+                  var decadeEnd = selection.row * 10 + 1850 + 10;
+                  searchUrl = searchUrl + "&fq=occurrence_date:[" + decadeStart + "-01-01T12:00:00Z%20TO%20" + decadeEnd + "-01-01T12:00:00Z]";
+                }
+                window.location.href = searchUrl;
+              });
 
               // draw
-              chart.draw(table, options);
+              accumChart.draw(accumTable, accumOptions);
             }
 
             function loadRecords(inst, table, col) {
@@ -414,6 +521,18 @@
               table.setValue(14, col , inst.d1990);
               table.setValue(15, col , inst.d2000);
               table.setValue(16, col , inst.d2010);
+            }
+
+            function toggleLogScale() {
+              if ($('span#toggleAccumChart').html() == "Use log scale") {
+                accumOptions.vAxis = {logScale: true, title: "num records (log scale)", format: "#,###,###"}
+                accumChart.draw(accumTable, accumOptions);
+                $('span#toggleAccumChart').html('Use linear scale');
+              } else {
+                accumOptions.vAxis = {logScale: false, title: "number of records", format: "#,###,###"}
+                accumChart.draw(accumTable, accumOptions);
+                $('span#toggleAccumChart').html('Use log scale');
+              }
             }
           </script>
 
@@ -530,35 +649,14 @@ function getResourceByName(name) {
 * Specify charts to load.
 \************************************************************/
 function onLoadCallback() {
-  // summary biocache data
-  //var url = biocacheServicesUrl + "occurrences/data-provider/" + instanceUid + ".json?pageSize=0";
-  var oldUrl = biocacheUrl + "occurrences/searchForUID.json?pageSize=0&q=" + instanceUid;
-  $.ajax({
-    url: oldUrl,
-    dataType: 'jsonp',
-    error: function(jqXHR, textStatus, errorThrown) {
-      alert(textStatus);
-    },
-    success: function(data) {
-      //var facets = data.facetResults; // services version
-      var facets = data.searchResult.facetResults;
-      var foundInstitutionData = false;
-      for (var i = 0; i < facets.length; i++) {
-        if (facets[i].fieldName == 'data_resource') {
-          drawInstitutionBreakdown(facets[i]);
-          foundInstitutionData = true;
-        }
-      }
-      if (!foundInstitutionData) {
-        $('div#drChart').css('display', 'none');
-      }
-    }
-  });
+  loadInstChart();
 
+  // summary biocache data
   var url = biocacheServicesUrl + "occurrences/search.json?q=*:*&pageSize=0";
   $.ajax({
-    url: url,
-    dataType: 'jsonp',
+    url: "${ConfigurationHolder.config.grails.serverURL}/public/newBiocacheBreakdown.json",
+    dataType: 'json',
+    cache: false,
     error: function(jqXHR, textStatus, errorThrown) {
       alert(textStatus);
     },

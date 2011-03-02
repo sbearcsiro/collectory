@@ -120,19 +120,19 @@ class PublicController {
     def recordsByDecadeByInstitution = {
         if (params.static) {
             render """
-{"cols":[{"id":"","label":"Decade","pattern":"","type":"string"},{"id":"","label":"Aust Museum","pattern":"","type":"number"},{"id":"","label":"Museum Victoria","pattern":"","type":"number"},{"id":"","label":"QV MAG","pattern":"","type":"number"},{"id":"","label":"QLD Museum","pattern":"","type":"number"},{"id":"","label":"ANWC","pattern":"","type":"number"},{"id":"","label":"TMAG","pattern":"","type":"number"},{"id":"","label":"SA Museum","pattern":"","type":"number"}],"rows":[{"c":[{"v":"1850s","f":null},{"v":3,"f":null},{"v":13,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1860s","f":null},{"v":169,"f":null},{"v":69,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1870s","f":null},{"v":659,"f":null},{"v":314,"f":null},{"v":0,"f":null},{"v":1,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1880s","f":null},{"v":1304,"f":null},{"v":685,"f":null},{"v":1,"f":null},{"v":6,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":48,"f":null}]},{"c":[{"v":"1890s","f":null},{"v":5753,"f":null},{"v":2440,"f":null},{"v":15,"f":null},{"v":29,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":1395,"f":null}]},{"c":[{"v":"1900s","f":null},{"v":17360,"f":null},{"v":6697,"f":null},{"v":46,"f":null},{"v":62,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":2960,"f":null}]},{"c":[{"v":"1910s","f":null},{"v":26609,"f":null},{"v":14843,"f":null},{"v":64,"f":null},{"v":360,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":4100,"f":null}]},{"c":[{"v":"1920s","f":null},{"v":34818,"f":null},{"v":19157,"f":null},{"v":98,"f":null},{"v":885,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":4438,"f":null}]},{"c":[{"v":"1930s","f":null},{"v":42299,"f":null},{"v":22218,"f":null},{"v":309,"f":null},{"v":1149,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":7198,"f":null}]},{"c":[{"v":"1940s","f":null},{"v":51477,"f":null},{"v":26749,"f":null},{"v":401,"f":null},{"v":1209,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":8380,"f":null}]},{"c":[{"v":"1950s","f":null},{"v":61710,"f":null},{"v":41599,"f":null},{"v":720,"f":null},{"v":1559,"f":null},{"v":2,"f":null},{"v":0,"f":null},{"v":10225,"f":null}]},{"c":[{"v":"1960s","f":null},{"v":102419,"f":null},{"v":78054,"f":null},{"v":3407,"f":null},{"v":2885,"f":null},{"v":385,"f":null},{"v":0,"f":null},{"v":28018,"f":null}]},{"c":[{"v":"1970s","f":null},{"v":233569,"f":null},{"v":133240,"f":null},{"v":8990,"f":null},{"v":5260,"f":null},{"v":3035,"f":null},{"v":0,"f":null},{"v":39602,"f":null}]},{"c":[{"v":"1980s","f":null},{"v":324768,"f":null},{"v":189985,"f":null},{"v":15684,"f":null},{"v":10299,"f":null},{"v":4780,"f":null},{"v":0,"f":null},{"v":63935,"f":null}]},{"c":[{"v":"1990s","f":null},{"v":415175,"f":null},{"v":229610,"f":null},{"v":22526,"f":null},{"v":13492,"f":null},{"v":5776,"f":null},{"v":0,"f":null},{"v":99959,"f":null}]},{"c":[{"v":"2000s","f":null},{"v":465751,"f":null},{"v":236293,"f":null},{"v":24274,"f":null},{"v":13598,"f":null},{"v":6223,"f":null},{"v":0,"f":null},{"v":112873,"f":null}]},{"c":[{"v":"2010s","f":null},{"v":466781,"f":null},{"v":236294,"f":null},{"v":24274,"f":null},{"v":13598,"f":null},{"v":6223,"f":null},{"v":0,"f":null},{"v":112873,"f":null}]}],"p":null}            """
+{"cols":[{"id":"","label":"Decade","pattern":"","type":"string"},{"id":"","label":"Aust Museum","pattern":"","type":"number"},{"id":"","label":"Museum Victoria","pattern":"","type":"number"},{"id":"","label":"QVMAG","pattern":"","type":"number"},{"id":"","label":"QLD Museum","pattern":"","type":"number"},{"id":"","label":"ANWC","pattern":"","type":"number"},{"id":"","label":"TMAG","pattern":"","type":"number"},{"id":"","label":"SA Museum","pattern":"","type":"number"}],"rows":[{"c":[{"v":"1850s","f":null},{"v":3,"f":null},{"v":13,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1860s","f":null},{"v":169,"f":null},{"v":69,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1870s","f":null},{"v":659,"f":null},{"v":314,"f":null},{"v":0,"f":null},{"v":1,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1880s","f":null},{"v":1304,"f":null},{"v":685,"f":null},{"v":1,"f":null},{"v":6,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":48,"f":null}]},{"c":[{"v":"1890s","f":null},{"v":5753,"f":null},{"v":2440,"f":null},{"v":15,"f":null},{"v":29,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":1395,"f":null}]},{"c":[{"v":"1900s","f":null},{"v":17360,"f":null},{"v":6697,"f":null},{"v":46,"f":null},{"v":62,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":2960,"f":null}]},{"c":[{"v":"1910s","f":null},{"v":26609,"f":null},{"v":14843,"f":null},{"v":64,"f":null},{"v":360,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":4100,"f":null}]},{"c":[{"v":"1920s","f":null},{"v":34818,"f":null},{"v":19157,"f":null},{"v":98,"f":null},{"v":885,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":4438,"f":null}]},{"c":[{"v":"1930s","f":null},{"v":42299,"f":null},{"v":22218,"f":null},{"v":309,"f":null},{"v":1149,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":7198,"f":null}]},{"c":[{"v":"1940s","f":null},{"v":51477,"f":null},{"v":26749,"f":null},{"v":401,"f":null},{"v":1209,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":8380,"f":null}]},{"c":[{"v":"1950s","f":null},{"v":61710,"f":null},{"v":41599,"f":null},{"v":720,"f":null},{"v":1559,"f":null},{"v":2,"f":null},{"v":0,"f":null},{"v":10225,"f":null}]},{"c":[{"v":"1960s","f":null},{"v":102419,"f":null},{"v":78054,"f":null},{"v":3407,"f":null},{"v":2885,"f":null},{"v":385,"f":null},{"v":0,"f":null},{"v":28018,"f":null}]},{"c":[{"v":"1970s","f":null},{"v":233569,"f":null},{"v":133240,"f":null},{"v":8990,"f":null},{"v":5260,"f":null},{"v":3035,"f":null},{"v":0,"f":null},{"v":39602,"f":null}]},{"c":[{"v":"1980s","f":null},{"v":324768,"f":null},{"v":189985,"f":null},{"v":15684,"f":null},{"v":10299,"f":null},{"v":4780,"f":null},{"v":0,"f":null},{"v":63935,"f":null}]},{"c":[{"v":"1990s","f":null},{"v":415175,"f":null},{"v":229610,"f":null},{"v":22526,"f":null},{"v":13492,"f":null},{"v":5776,"f":null},{"v":0,"f":null},{"v":99959,"f":null}]},{"c":[{"v":"2000s","f":null},{"v":465751,"f":null},{"v":236293,"f":null},{"v":24274,"f":null},{"v":13598,"f":null},{"v":6223,"f":null},{"v":0,"f":null},{"v":112873,"f":null}]},{"c":[{"v":"2010s","f":null},{"v":466781,"f":null},{"v":236294,"f":null},{"v":24274,"f":null},{"v":13598,"f":null},{"v":6223,"f":null},{"v":0,"f":null},{"v":112873,"f":null}]}],"p":null}            """
         } else {
-            def result = [:]
+            def result = []
             def institutions = [
-                    [uid:'in4',name:'Australian Museum',acronym:'AM'],
-                    [uid:'in16',name:'Museum Victoria',acronym:'NMV'],
-                    [uid:'in34',name:'Western Australian Museum',acronym:'WAM'],
-                    [uid:'in22',name:'South Australian Museum',acronym:'SAM'],
-                    [uid:'in17',name:'Northern Territory Museum and Art Galley',acronym:'MAGNT'],
-                    [uid:'in13',name:'Queen Victoria Museum and Art Galley',acronym:'QVMAG'],
-                    [uid:'in15',name:'Queenslamd Museum',acronym:'QM'],
-                    [uid:'in25',name:'Tasmanian Museum and Art Galley',acronym:'TMAG'],
-                    [uid:'co16',name:'Australian National Wildlife Collection',acronym:'ANWC']
+                    [uid:'in4',name:'Australian Museum',acronym:'AM',label:"Aust Museum"],
+                    [uid:'in16',name:'Museum Victoria',acronym:'NMV',label:"Museum Victoria"],
+                    [uid:'in34',name:'Western Australian Museum',acronym:'WAM',label:"WA Museum"],
+                    [uid:'in22',name:'South Australian Museum',acronym:'SAM',label:"SA Museum"],
+                    [uid:'in17',name:'Northern Territory Museum and Art Gallery',acronym:'MAGNT',label:"MAGNT"],
+                    [uid:'in13',name:'Queen Victoria Museum Art Gallery',acronym:'QVMAG',label:"QVMAG"],
+                    [uid:'in15',name:'Queensland Museum',acronym:'QM',label:"Qld Museum"],
+                    [uid:'in25',name:'Tasmanian Museum and Art Gallery',acronym:'TMAG',label:"TMAG"],
+                    [uid:'co16',name:'Australian National Wildlife Collection',acronym:'ANWC',label:"ANWC"]
             ]
             institutions.each {
                 def facets = getRecordsSummary(it.uid).facetResults
@@ -140,6 +140,8 @@ class PublicController {
                 def decades = [:]
                 decades.put('name', it.name)
                 decades.put('acronym', it.acronym)
+                decades.put('label', it.label)
+                decades.put('uid', it.uid)
                 def total = 0
                 decadeBreakdown.fieldResult.each {
                     if (it.label != 'before') {
@@ -147,9 +149,66 @@ class PublicController {
                         decades.put('d' + it.label[0..3], total)
                     }
                 }
-                result.put(it.uid, decades)
+                result << decades
             }
             render result as JSON
+        }
+    }
+
+    def recordsByCollectionByInstitution = {
+        response.setHeader("Pragma","no-cache")
+        response.setDateHeader("Expires",1L)
+        response.setHeader("Cache-Control","no-cache")
+        response.addHeader("Cache-Control","no-store")
+        String json = new File("/data/collectory/data/dataHub/count-by-collection-dh1.json").getText()
+        def obj = JSON.parse(json)
+        render obj as JSON
+    }
+
+    def newBiocacheBreakdown = {
+        def url = "http://ala-bie1.vm.csiro.au:8080/biocache-service/occurrences/search.json?q=*:*&pageSize=0";
+        def conn = new URL(url).openConnection()
+        conn.setConnectTimeout 1500
+        def dataTable = null
+        def json
+        try {
+            json = conn.content.text
+            //println "Response = " + json
+            def jsonObj = JSON.parse(json)
+            render jsonObj as JSON
+            //println "dataTable = " + dataTable
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out getting decade breakdown. URL= ${url}."
+            def result = [error:"Timed out getting decade breakdown.", dataTable: null]
+            render result as JSON
+        } catch (Exception e) {
+            log.error "Failed to lookup decade breakdown. ${e.getMessage()} URL= ${decadeUrl}."
+            render e as JSON
+        }
+    }
+
+    def serviceRedirect = {
+        def url = "http://ala-bie1.vm.csiro.au:8080/biocache-service/breakdown/institutions/in4/rank/${params.rank}";
+        if (params.name) {
+            url += "/name/${params.name}"
+        }
+        def conn = new URL(url).openConnection()
+        conn.setConnectTimeout 1500
+        def dataTable = null
+        def json
+        try {
+            json = conn.content.text
+            //println "Response = " + json
+            def jsonObj = JSON.parse(json)
+            render jsonObj as JSON
+            //println "dataTable = " + dataTable
+        } catch (SocketTimeoutException e) {
+            log.warn "Timed out. URL= ${url}."
+            def result = [error:"Timed out.", dataTable: null]
+            render result as JSON
+        } catch (Exception e) {
+            log.error "Failed. ${e.getMessage()} URL= ${url}."
+            render e as JSON
         }
     }
 

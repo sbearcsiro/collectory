@@ -14,6 +14,30 @@ class CollectoryTagLib {
 
     static namespace = 'cl'
 
+    def loggedInName = {
+        if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            out << "logged in as ${AuthenticationCookieUtils.getUserName(request)}"
+        } else {
+            out << "no cookie found"
+        }
+    }
+
+    /**
+     * Generate the link the login link for the banner.
+     *
+     * Will be to log in or out based on current auth status.
+     */
+    def loginoutLink = {
+        def requestUri = request.forwardURI
+        if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            // currently logged in
+            out << "<li class='nav-logout nav-right'><a id='${AuthenticationCookieUtils.getUserName(request)}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
+        } else {
+            // currently logged out
+            out << "<li class='nav-login nav-right'><a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a></li>"
+        }
+    }
+
     /**
      * Decorates the role if present
      *
@@ -77,13 +101,13 @@ class CollectoryTagLib {
     }
 
     def isLoggedIn = { attrs, body ->
-        if (ConfigurationHolder.config.security.cas.bypass || request.getUserPrincipal()) {
+        if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
     }
 
     def isNotLoggedIn = {attrs, body ->
-        if (!(ConfigurationHolder.config.security.cas.bypass || request.getUserPrincipal())) {
+        if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
     }
@@ -563,7 +587,7 @@ class CollectoryTagLib {
                         out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png") + "'/>"
                     }
                     if (it == "CHAFC") {
-                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAFC_sm.jpg") + "'/>"
+                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chafc.png") + "'/>"
                     }
                     if (it == "CHACM") {
                         out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chacm.png") + "'/>"

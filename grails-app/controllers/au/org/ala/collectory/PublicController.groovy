@@ -27,6 +27,14 @@ class PublicController {
         }
     }
 
+    def renderJson = {json, params ->
+        if (params.callback) {
+            render(contentType:'application/json', text: "${params.callback}(${json})")
+        } else {
+            render json
+        }
+    }
+
     def index = { redirect(action: 'map')}
 
     /**
@@ -119,8 +127,8 @@ class PublicController {
 
     def recordsByDecadeByInstitution = {
         if (params.static) {
-            render """
-{"cols":[{"id":"","label":"Decade","pattern":"","type":"string"},{"id":"","label":"Aust Museum","pattern":"","type":"number"},{"id":"","label":"Museum Victoria","pattern":"","type":"number"},{"id":"","label":"QVMAG","pattern":"","type":"number"},{"id":"","label":"QLD Museum","pattern":"","type":"number"},{"id":"","label":"ANWC","pattern":"","type":"number"},{"id":"","label":"TMAG","pattern":"","type":"number"},{"id":"","label":"SA Museum","pattern":"","type":"number"}],"rows":[{"c":[{"v":"1850s","f":null},{"v":3,"f":null},{"v":13,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1860s","f":null},{"v":169,"f":null},{"v":69,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1870s","f":null},{"v":659,"f":null},{"v":314,"f":null},{"v":0,"f":null},{"v":1,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":0,"f":null}]},{"c":[{"v":"1880s","f":null},{"v":1304,"f":null},{"v":685,"f":null},{"v":1,"f":null},{"v":6,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":48,"f":null}]},{"c":[{"v":"1890s","f":null},{"v":5753,"f":null},{"v":2440,"f":null},{"v":15,"f":null},{"v":29,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":1395,"f":null}]},{"c":[{"v":"1900s","f":null},{"v":17360,"f":null},{"v":6697,"f":null},{"v":46,"f":null},{"v":62,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":2960,"f":null}]},{"c":[{"v":"1910s","f":null},{"v":26609,"f":null},{"v":14843,"f":null},{"v":64,"f":null},{"v":360,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":4100,"f":null}]},{"c":[{"v":"1920s","f":null},{"v":34818,"f":null},{"v":19157,"f":null},{"v":98,"f":null},{"v":885,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":4438,"f":null}]},{"c":[{"v":"1930s","f":null},{"v":42299,"f":null},{"v":22218,"f":null},{"v":309,"f":null},{"v":1149,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":7198,"f":null}]},{"c":[{"v":"1940s","f":null},{"v":51477,"f":null},{"v":26749,"f":null},{"v":401,"f":null},{"v":1209,"f":null},{"v":0,"f":null},{"v":0,"f":null},{"v":8380,"f":null}]},{"c":[{"v":"1950s","f":null},{"v":61710,"f":null},{"v":41599,"f":null},{"v":720,"f":null},{"v":1559,"f":null},{"v":2,"f":null},{"v":0,"f":null},{"v":10225,"f":null}]},{"c":[{"v":"1960s","f":null},{"v":102419,"f":null},{"v":78054,"f":null},{"v":3407,"f":null},{"v":2885,"f":null},{"v":385,"f":null},{"v":0,"f":null},{"v":28018,"f":null}]},{"c":[{"v":"1970s","f":null},{"v":233569,"f":null},{"v":133240,"f":null},{"v":8990,"f":null},{"v":5260,"f":null},{"v":3035,"f":null},{"v":0,"f":null},{"v":39602,"f":null}]},{"c":[{"v":"1980s","f":null},{"v":324768,"f":null},{"v":189985,"f":null},{"v":15684,"f":null},{"v":10299,"f":null},{"v":4780,"f":null},{"v":0,"f":null},{"v":63935,"f":null}]},{"c":[{"v":"1990s","f":null},{"v":415175,"f":null},{"v":229610,"f":null},{"v":22526,"f":null},{"v":13492,"f":null},{"v":5776,"f":null},{"v":0,"f":null},{"v":99959,"f":null}]},{"c":[{"v":"2000s","f":null},{"v":465751,"f":null},{"v":236293,"f":null},{"v":24274,"f":null},{"v":13598,"f":null},{"v":6223,"f":null},{"v":0,"f":null},{"v":112873,"f":null}]},{"c":[{"v":"2010s","f":null},{"v":466781,"f":null},{"v":236294,"f":null},{"v":24274,"f":null},{"v":13598,"f":null},{"v":6223,"f":null},{"v":0,"f":null},{"v":112873,"f":null}]}],"p":null}            """
+            String json = new File("/data/collectory/data/dataHub/records-by-decade-by-institution-dh1.json").getText()
+            renderJson json, params
         } else {
             def result = []
             def institutions = [
@@ -151,18 +159,19 @@ class PublicController {
                 }
                 result << decades
             }
-            render result as JSON
+            if (params.save) {
+                new File("/data/collectory/data/dataHub/records-by-decade-by-institution-dh1.json").setText((result as JSON) as String)
+            }
+            renderJson((result as JSON), params)
         }
     }
 
     def recordsByCollectionByInstitution = {
-        response.setHeader("Pragma","no-cache")
-        response.setDateHeader("Expires",1L)
-        response.setHeader("Cache-Control","no-cache")
-        response.addHeader("Cache-Control","no-store")
+        response.addHeader('Content-Type','application/json')
         String json = new File("/data/collectory/data/dataHub/count-by-collection-dh1.json").getText()
+        // need to parse first as source file is formatted with white-space
         def obj = JSON.parse(json)
-        render obj as JSON
+        renderJson((obj as JSON), params)
     }
 
     def newBiocacheBreakdown = {
@@ -172,11 +181,7 @@ class PublicController {
         def dataTable = null
         def json
         try {
-            json = conn.content.text
-            //println "Response = " + json
-            def jsonObj = JSON.parse(json)
-            render jsonObj as JSON
-            //println "dataTable = " + dataTable
+            renderJson(conn.content.text, params)
         } catch (SocketTimeoutException e) {
             log.warn "Timed out getting decade breakdown. URL= ${url}."
             def result = [error:"Timed out getting decade breakdown.", dataTable: null]
@@ -197,18 +202,14 @@ class PublicController {
         def dataTable = null
         def json
         try {
-            json = conn.content.text
-            //println "Response = " + json
-            def jsonObj = JSON.parse(json)
-            render jsonObj as JSON
-            //println "dataTable = " + dataTable
+            renderJson(conn.content.text, params)
         } catch (SocketTimeoutException e) {
             log.warn "Timed out. URL= ${url}."
             def result = [error:"Timed out.", dataTable: null]
-            render result as JSON
+            renderJson((result as JSON), params)
         } catch (Exception e) {
             log.error "Failed. ${e.getMessage()} URL= ${url}."
-            render e as JSON
+            renderJson((e as JSON), params)
         }
     }
 

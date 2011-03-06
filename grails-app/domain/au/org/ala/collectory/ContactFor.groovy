@@ -12,6 +12,7 @@ class ContactFor implements Serializable {
     String role
     boolean administrator = false
     boolean primaryContact = false
+    boolean notify = false
 
     Date dateCreated = new Date()
     Date dateLastModified = new Date()
@@ -49,7 +50,8 @@ class ContactFor implements Serializable {
          "Entity uid: " + entityUid,
          "Role: " + role,
          "isAdmin: " + administrator,
-         "isPrimary: " + primaryContact]
+         "isPrimary: " + primaryContact,
+         "notify: " + notify]
     }
 
     void setPrimaryContact(boolean value) {

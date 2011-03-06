@@ -40,6 +40,11 @@
                             <td>Determines whether the contact can edit properties of this ${entityNameLower}.</td>
                           </tr>
                           <tr class="checkbox">
+                            <td style="vertical-align:middle;">Notification</td>
+                            <td><g:checkBox style="margin-left:7px;" name="notify" value="${cf?.notify}"/></td>
+                            <td>If set, the contact will be notified when annotations are made to records in this ${entityNameLower}.</td>
+                          </tr>
+                          <tr class="checkbox">
                             <td style="vertical-align:middle;">Primary contact:</td>
                             <td valign="top" class="value"><g:checkBox style="margin-left:7px;" name="primaryContact" value="${cf?.primaryContact}"/></td>
                             <td>The primary contact is the one displayed on the public page for this ${entityNameLower}.</td>

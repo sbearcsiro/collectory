@@ -322,13 +322,12 @@ abstract class ProviderGroupController {
     }
 
     def updateContactRole = {
-        params.each {println it}
         def contactFor = ContactFor.get(params.contactForId)
         if (contactFor) {
             contactFor.properties = params
             contactFor.userLastModified = authService.username()
             if (!contactFor.hasErrors() && contactFor.save(flush: true)) {
-                flash.message = "${message(code: 'contactRole.updated.message', args: [params.id])}"
+                flash.message = "${message(code: 'contactRole.updated.message')}"
                 redirect(action: "edit", id: params.id, params: [page: '/shared/showContacts'])
             } else {
                 render(view: '/shared/contactRole', model: [command: ProviderGroup._get(params.id), cf: contactFor])

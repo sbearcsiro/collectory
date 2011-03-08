@@ -47,6 +47,7 @@
                 <ul class="detailList">
                   <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined">Role is ${cf.role}</cl:valueOrOtherwise></li>
                   <li><cl:valueOrOtherwise value="${cf.administrator}" otherwise="Not allowed to edit"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Editor</cl:valueOrOtherwise></li>
+                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise=""><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Notify</cl:valueOrOtherwise></li>
                   <cl:valueOrOtherwise value="${cf.primaryContact}"><li><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Primary contact</li></cl:valueOrOtherwise>
                 </ul>
             </td>

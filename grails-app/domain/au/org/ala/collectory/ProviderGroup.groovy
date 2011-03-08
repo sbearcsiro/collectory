@@ -375,7 +375,11 @@ abstract class ProviderGroup implements Serializable {
      * @return
      */
     static String urlFormOfEntityType(String entityType) {
-        return entityType[0..0].toLowerCase() + entityType[1..entityType.size()-1]
+        return entityType[0..0].toLowerCase() + entityType[1..-1]
+    }
+
+    static String urlFormFromUid(String uid) {
+        return urlFormOfEntityType(entityTypeFromUid(uid))
     }
 
     /**

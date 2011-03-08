@@ -392,3 +392,18 @@ span.code {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+/* override the default thick grey line under all tables */
+table.clean {
+    border: none;
+}
+
+/* table with no td left padding so that the first column of text aligns with non-table text */
+table.no-left-pad td:first-child {
+    padding-left: 0;
+    text-align: left;
+}
+
+/*
+table.no-left-pad td {
+    text-align: right;
+}*/

@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import groovy.xml.MarkupBuilder
 
 class DataController {
 
@@ -294,96 +295,153 @@ class DataController {
 
 
     /************* Contact services **********/
-    def contactsForEntity = {
-        def contacts = params.pg.getContacts().collect {
-            [name: it.contact.buildName(), role: it.role, primaryContact: it.primaryContact, email: it.contact.email,
-                    phone: it.contact.phone, uri: "${ConfigurationHolder.config.grails.serverURL}/ws/${params.pg.urlForm()}/${params.pg.uid}/contact/${it.id}"]
+
+    static final String CONTACT_HEADER = "title, first name, last name, email, phone, fax, mobile, publish, dateCreated, lastUpdated\n"
+
+    /**
+     * Returns a single contact (independent of any entity).
+     * URI form: /contacts/{id}
+     * @param id the database id of the contact
+     */
+    def contacts = {
+        if (params.id) {
+            addContentLocation "/ws/contacts/${params.id}"
+            addVaryAcceptHeader()
+            def cm = buildContactModel(Contact.get(params.id))
+            withFormat {
+                csv {render (contentType: 'text/csv', text: CONTACT_HEADER + mapToCsv(cm))}
+                xml {render (contentType: 'text/xml', text: objToXml(cm, 'contact'))}
+                json {render cm as JSON}
+            }
+        } else {
+            addContentLocation "/ws/contacts"
+            addVaryAcceptHeader()
+            withFormat {
+                csv {render (contentType: 'text/csv',
+                        text: CONTACT_HEADER + Contact.list().collect { mapToCsv(buildContactModel(it)) }.join(''))}
+                xml {render (contentType: 'text/xml', text: objToXml(Contact.list().collect { buildContactModel(it) }, 'contacts'))}
+                json {render Contact.list().collect { buildContactModel(it) } as JSON}
+            }
         }
-        addContentLocation "/ws/${params.entity}/${params.pg.uid}/contact"
+    }
+
+    def buildContactModel(contact) {
+        return new LinkedHashMap(
+            [title: contact.title, firstName: contact.firstName, lastName: contact.lastName, email: contact.email, phone: contact.phone,
+             fax: contact.fax, mobile: contact.mobile, publish: contact.publish, dateCreated: contact.dateCreated, lastUpdated: contact.lastUpdated])
+    }
+
+    def buildContactForModel(cf, urlContext) {
+        return new LinkedHashMap(
+            [contact: buildContactModel(cf.contact), role: cf.role, primaryContact: cf.primaryContact,
+                    editor: cf.administrator, notify: cf.notify, dateCreated: cf.dateCreated, lastUpdated: cf.dateLastModified,
+                    uri: "${ConfigurationHolder.config.grails.serverURL}/ws/${urlContext}/${cf.entityUid}/contacts/${cf.id}"])
+    }
+
+    /**
+     * Returns all contacts for a single entity.
+     * URI form: /{entity}/{uid}/contacts
+     * @param entity an entity type in url form ie one of collection, institution, dataProvider, dataResource, dataHub
+     * @param uid the entity instance
+     */
+    def contactsForEntity = {
+        def contactList = params.pg.getContacts().collect { buildContactForModel(it, params.pg.urlForm()) }
+        addContentLocation "/ws/${params.entity}/${params.pg.uid}/contacts"
         addVaryAcceptHeader()
         withFormat {
             csv {
                 def out = new StringWriter()
-                out << "name, role, primary contact, email, phone\n"
-                contacts.each {
-                    out << "\"${it.name}\",\"${it.role}\",${it.primaryContact},${it.email?:""},${it.phone?:""}\n"
+                out << "name, role, primary contact, editor, notify, email, phone\n"
+                contactList.each {
+                    out << "\"${it.name}\",\"${it.role}\",${it.primaryContact},${it.editor},${it.notify},${it.email?:""},${it.phone?:""}\n"
                 }
-                response.addHeader "contentType", "text/csv"
+                response.addHeader "Content-Type", "text/csv"
                 render out.toString()
             }
-            xml {render contacts as XML}
-            json {render contacts as JSON}
+            xml {render (contentType: 'text/xml', text: objToXml(contactList, 'contactFors'))}
+            json {render contactList as JSON}
         }
     }
 
+    /**
+     * Returns a single contact for a single entity.
+     * URI form: /{entity}/{uid}/contacts/{id}
+     * @param entity an entity type in url form ie one of collection, institution, dataProvider, dataResource, dataHub
+     * @param uid the entity instance
+     * @param id the database id of the contact relationship (contactFor)
+     */
     def contactForEntity = {
         if (params.id) {
-            def cf = ContactFor.get(params.id)
-            def contact = [title: cf.contact.title, firstName: cf.contact.firstName, lastName: cf.contact.lastName, role: cf.role, primaryContact: cf.primaryContact, email: cf.contact.email, phone: cf.contact.phone, fax: cf.contact.fax, mobile: cf.contact.mobile]
-            addContentLocation "/ws/${params.entity}/${params.pg.uid}/contact/${params.id}"
+            def cm = buildContactForModel(ContactFor.get(params.id), params.pg.urlForm())
+            addContentLocation "/ws/${params.entity}/${params.pg.uid}/contacts/${params.id}"
             addVaryAcceptHeader()
             withFormat {
                 csv {
                     def out = new StringWriter()
-                    out << "title, first name, last name, role, primary contact, email, phone, fax, mobile\n"
-                    out << "\"${contact.title?:""}\",\"${contact.firstName?:""}\",\"${contact.lastName?:""}\",\"${contact.role}\",${contact.primaryContact},${contact.email?:""},${contact.phone?:""},${contact.fax?:""},${contact.mobile?:""}\n"
-                    response.addHeader "contentType", "text/csv"
-                    render out.toString()
+                    out << "title, first name, last name, role, primary contact, editor, notify, email, phone, fax, mobile\n"
+                    out << "\"${cm.contact.title?:""}\",\"${cm.contact.firstName?:""}\",\"${cm.contact.lastName?:""}\",\"${cm.role}\",${cm.primaryContact},${cm.editor},${cm.notify},${cm.contact.email?:""},${cm.contact.phone?:""},${cm.contact.fax?:""},${cm.contact.mobile?:""}\n"
+                    render (contentType: 'text/csv', text: out.toString())
                 }
-                xml {render contact as XML}
-                json {render contact as JSON}
+                xml {render (contentType: 'text/xml', text: objToXml(cm, 'contactFor'))}
+                json {render cm as JSON}
             }
         } else {
             forward(action:'contactsForEntity')
         }
     }
 
+    static final String SHORT_CONTACTS_HEADER = "entity name, entity UID, entity acronym, contact name, contact email, contact phone\n"
+
+    /**
+     * Returns all contacts for all entities of the specified type.
+     * URI form: /{entity}/contacts
+     * @param entity an entity type in url form ie one of collection, institution, dataProvider, dataResource, dataHub
+     */
     def contactsForEntities = {
         def domain = grailsApplication.getClassForName("au.org.ala.collectory.${capitalise(params.entity)}")
-        def model = buildContactsModel(request.format, domain.list([sort:'name']))
+        def model = buildContactsModel(domain.list([sort:'name']))
+        addContentLocation "/ws/${params.entity}/contacts"
         addVaryAcceptHeader()
         withFormat {
             csv {
-                response.addHeader "contentType", "text/csv"
-                render buildCsv(model)}
-            xml {render model as XML}
-            json {render model as JSON}
+                render (contentType: 'text/csv',
+                        text: SHORT_CONTACTS_HEADER + listToCsv(model))
+            }
+            xml {render (contentType: 'text/xml', text: objToXml(model, 'contacts'))}
+            json {
+                render model as JSON
+            }
         }
     }
 
-    def static buildContactsModel(format, list) {
-        if (format == 'xml') {
-            return list.collect {
-                def obj = new ContactForEntity()
-                obj.entityName = it.name
-                obj.entityUid = it.uid
-                obj.entityAcronym = it.acronym ?: ""
-                obj.contactName = it.primaryContact?.contact?.buildName() ?: ""
-                obj.contactEmail = it.primaryContact?.contact?.email ?: ""
-                obj.contactPhone = it.primaryContact?.contact?.phone ?: ""
-                return obj
+    def static buildContactsModel(list) {
+        return list.collect {
+            def map = [:]
+            map.entityName = it.name
+            map.entityUid = it.uid
+            map.entityAcronym = it.acronym ?: ""
+            map.contactName = it.primaryContact?.contact?.buildName() ?: ""
+            map.contactEmail = it.primaryContact?.contact?.email ?: ""
+            map.contactPhone = it.primaryContact?.contact?.phone ?: ""
+            map.uri = it.primaryContact ? "${ConfigurationHolder.config.grails.serverURL}/ws/${ProviderGroup.urlFormFromUid(it.uid)}/${it.uid}/contacts/${it.primaryContact?.id}" : ''
+
+            return map
+        }
+    }
+
+    /**
+     * Returns a json list of contacts to be notified on significant entity events.
+     * @param uid of the entity
+     */
+    def notifyList = {
+        if (params.uid) {
+            def contactFors = ContactFor.findAllByEntityUidAndNotify(params.uid, true).collect {
+                buildContactForModel(it, ProviderGroup.urlFormFromUid(params.uid))
             }
+            render contactFors as JSON
         } else {
-            return list.collect {
-                def map = [:]
-                map.entityName = it.name
-                map.entityUid = it.uid
-                map.entityAcronym = it.acronym ?: ""
-                map.contactName = it.primaryContact?.contact?.buildName() ?: ""
-                map.contactEmail = it.primaryContact?.contact?.email ?: ""
-                map.contactPhone = it.primaryContact?.contact?.phone ?: ""
-                return map
-            }
+            badRequest "must specify a uid"
         }
-    }
-
-    private def buildCsv(model) {
-        def out = new StringWriter()
-        out << "entity name, entity UID, entity acronym, contact name, contact email, contact phone\n"
-        model.each {
-            out << "\"${it.entityName}\",${it.entityUid},${it.entityAcronym ?:""},${it.contactName?:""},${it.contactEmail?:""},${it.contactPhone?:""}\n"
-        }
-        return out.toString()
     }
 
 
@@ -426,6 +484,72 @@ class DataController {
         }
         return result.join(';')
     }
+
+    /**
+     * Converts a map or list to 'tight' xml string, ie keys become element names <keyName> rather than <entry key='keyName'>..
+     * @param obj the map or list to represent
+     * @param root the container element
+     * @return XML string
+     */
+    def objToXml(obj, root) {
+        def writer = new StringWriter()
+        MarkupBuilder xml = new MarkupBuilder(writer)
+        xml."${root}" {
+            toXml(obj,xml, (root[-1] == 's') ? root[0..-2] : 'item')
+        }
+        return writer.toString()
+    }
+
+    /* called recursively to build xml */
+    def toXml(obj, xml, listElement) {
+        println "map=${obj}"
+        if (obj instanceof List) {
+            obj.each { item ->
+                xml."${listElement}" { toXml(item, xml, listElement) }
+            }
+        } else {
+            obj.each { key, value ->
+                if (value && value instanceof Map) {
+                    xml."${key}" {toXml(value, xml, listElement)}
+                } else {
+                    xml."${key}"(value)
+                }
+            }
+        }
+    }
+
+    def listToCsv(list) {
+        def out = new StringWriter()
+        list.each {
+            out << mapToCsv(it)
+        }
+        return out.toString()
+    }
+
+    /**
+     * Converts a map to a csv row
+     * @param map the map to represent
+     * @return csv string
+     */
+    def mapToCsv(map) {
+        def out = new StringWriter()
+        def list = map.collect {key, value -> value}
+        list.eachWithIndex {it, idx ->
+            out << toCsvItem(it)
+            if (idx == list.size() - 1) {
+                out << '\n'
+            } else {
+                out << ','
+            }
+        }
+        return out.toString()
+    }
+
+    String toCsvItem(item) {
+        if (!item) return ""
+        return '"' + item + '"'
+    }
+
 }
 
 class ContactForEntity {
@@ -435,4 +559,5 @@ class ContactForEntity {
     String contactName
     String contactEmail
     String contactPhone
+    String uri
 }

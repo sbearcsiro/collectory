@@ -16,21 +16,35 @@ class UrlMappings {
           }
         }
 
+      // raw contact data
+      "/ws/contacts/$id?" (controller: 'data', action: 'contacts')  
+
       // entity contacts
-      "/ws/$entity/$uid/contact/$id?" {
+      "/ws/$entity/$uid/contacts/$id?" {
           controller = 'data'
           action = 'contactForEntity'
           constraints {
               entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
           }
       }
+
+      // all contacts for an entity type
       // the next 5 rules should be able to be expressed as one rule in the same format as above
       // BUT /ws/$entity/contact does not work for some reason
-      "/ws/collection/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'collection'}
-      "/ws/institution/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
-      "/ws/dataProvider/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
-      "/ws/dataResource/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
-      "/ws/dataHub/contact" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
+      "/ws/collection/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'collection'}
+      "/ws/institution/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
+      "/ws/dataProvider/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
+      "/ws/dataResource/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
+      "/ws/dataHub/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
+
+      // contacts to be notified on entity instance event
+      "/ws/$entity/$uid/contacts/notifiable" {
+            controller = 'data'
+            action = 'notifyList'
+            constraints {
+                entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+            }
+      }
 
       // html fragment representation
       "/ws/fragment/$entity/$uid" {

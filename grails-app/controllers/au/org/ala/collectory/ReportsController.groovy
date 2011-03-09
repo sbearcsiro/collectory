@@ -81,6 +81,10 @@ class ReportsController {
         [changes: AuditLogEvent.list([sort:'lastUpdated',order:'desc',max:100])]
     }
 
+    def notifications = {
+        [notices: ActivityLog.findAllByUser('notify-service', [sort:'timestamp',order:'desc',max:100])]
+    }
+
     def classification = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'classifications'
         [collections: Collection.list([sort:'name'])]

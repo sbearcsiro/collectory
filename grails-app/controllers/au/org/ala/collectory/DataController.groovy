@@ -101,6 +101,11 @@ class DataController {
         render(status:404, text: text)
     }
 
+    def notAllowed = {
+        response.addHeader 'allow','POST'
+        render(status:405, text: 'Only POST supported')
+    }
+
     /**
      * Should be added for any uri that returns multiple formats based on content negotiation.
      * (So the content can be correctly cached by proxies.)
@@ -133,7 +138,6 @@ class DataController {
      * @param json - the body of the request
      */
     def saveEntity = {
-        println "saving data hub"
         def pg = params.pg
         def obj = params.json
         def urlForm = params.entity
@@ -444,6 +448,34 @@ class DataController {
         }
     }
 
+    /**
+     * Write-only service that accepts notification payloads.
+     *
+     * Example payload:
+     * { event: 'user annotation', id: 'ann03468', uid: 'co13' }
+     */
+    def notify = {
+        println "notify"
+        if (request.method != 'POST') {
+            println "not allowed"
+            notAllowed()
+        } else {
+            println params.json
+            def payload = params.json
+            def uid = payload.uid
+            def event = payload.event
+            def id = payload.id
+            if (!(uid && event && id)) {
+                println "bad request"
+                badRequest 'must specify a uid, an event and an event id'
+            } else {
+                println "OK"
+                // register the event
+                ActivityLog.log('notify-service', false, Action.NOTIFY, "${event} ${id} for ${uid}")
+                success "notification accepted"
+            }
+        }
+    }
 
     /**** html fragment services ****/
     def getFragment = {
@@ -502,7 +534,6 @@ class DataController {
 
     /* called recursively to build xml */
     def toXml(obj, xml, listElement) {
-        println "map=${obj}"
         if (obj instanceof List) {
             obj.each { item ->
                 xml."${listElement}" { toXml(item, xml, listElement) }

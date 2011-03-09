@@ -22,7 +22,8 @@ enum Action {
     CREATE_INSTITUTION ('created an institution'),
     CREATE_CONTACT ('created a contact'),
     UPLOAD_IMAGE ('uploaded file'),
-    REPORT ('viewed reports')
+    REPORT ('viewed reports'),
+    NOTIFY ('notifiable event')
 
     String display
 

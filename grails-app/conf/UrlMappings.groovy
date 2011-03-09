@@ -5,6 +5,11 @@ class UrlMappings {
 			 // apply constraints here
 		  }
 	  }
+
+        // temporary mock notification service
+        "/ws/notify" (controller:'data', action:'notify')
+
+      
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
 
@@ -77,8 +82,8 @@ class UrlMappings {
       "/showProviders/$id" (controller:'entity',action:'showProviders')
 
       "/ws/codeMapDump" (controller:'data', action:'codeMapDump')
-        
+
       "/"(controller:'public', action:'map')
-	  "500"(view:'/error')
+      "500"(view:'/error')
 	}
 }

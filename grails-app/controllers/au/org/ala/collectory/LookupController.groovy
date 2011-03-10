@@ -144,7 +144,7 @@ class LookupController {
                 text {  // handles text/plain and text/html
                     StringWriter sw = new StringWriter()
                     CSVWriter writer = new CSVWriter(sw)
-                    writer.writeNext(["Resource name","Citation","Rights","More information"] as String[])
+                    writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld"] as String[])
                     uids.each {
                         // get each pg
                         def pg = ProviderGroup._get(it)
@@ -158,7 +158,7 @@ class LookupController {
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/csv'
                     StringWriter sw = new StringWriter()
                     CSVWriter writer = new CSVWriter(sw)
-                    writer.writeNext(["Resource name","Citation","Rights","More information"] as String[])
+                    writer.writeNext(["Resource name","Citation","Rights","More information","Data generalizations","Information withheld"] as String[])
                     uids.each {
                         // get each pg
                         def pg = ProviderGroup._get(it)
@@ -170,7 +170,7 @@ class LookupController {
                 }
                 tsv {  // old
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/tsv'
-                    String result = "Resource name\tCitation\tRights\tMore information"
+                    String result = "Resource name\tCitation\tRights\tMore information\tData generalizations\tInformation withheld"
                     uids.each {
                         // get each pg
                         def pg = ProviderGroup._get(it)
@@ -221,11 +221,17 @@ class LookupController {
         def citation = ConfigurationHolder.config.citation.template
         def rights = ConfigurationHolder.config.citation.rights.template
         def name = pg.name
+        def dataGen = ''
+        def infoWithheld = ''
         if (pg instanceof DataResource) {
             def cit = (pg as DataResource).getCitation()
             citation = cit ? cit : citation
             def rit = (pg as DataResource).getRights()
             rights = rit ? rit : rights
+            def dg = (pg as DataResource).getDataGeneralizations()
+            dataGen = dg ?: dataGen
+            def ih = (pg as DataResource).getInformationWithheld()
+            infoWithheld = ih ?: infoWithheld
             def nam = (pg as DataResource).getDisplayName()
             name = nam ? name : name
         }
@@ -233,9 +239,10 @@ class LookupController {
         link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))
         citation =  citation.replaceAll("@entityName@",name)
         switch (format) {
-            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}"
-            case "map": return ['name': name, 'citation': citation, 'rights': rights, 'link': link]
-            case "array": return [name, citation, rights, link]
+            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}\t${dataGen}\t${infoWithheld}"
+            case "map": return ['name': name, 'citation': citation, 'rights': rights, 'link': link,
+                'dataGeneralizations': dataGen, 'informationWithheld': infoWithheld]
+            case "array": return [name, citation, rights, link, dataGen, infoWithheld]
         }
     }
 

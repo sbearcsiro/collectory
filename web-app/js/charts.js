@@ -410,7 +410,7 @@ function resetInstChart() {
     google.visualization.events.addListener(accumChart, 'select', function() {
       var selection = accumChart.getSelection()[0];
       var instData = rawData[selection.column - 1];
-      var search = (instData.uid.startsWith("in") ? "&fq=institution_code_uid:" : "&fq=collection_code_uid:") + instData.uid;
+      var search = (instData.uid.substr(0,2)=="in" ? "&fq=institution_code_uid:" : "&fq=collection_code_uid:") + instData.uid;
       var searchUrl = "http://ozcam-demo.ala.org.au:8080/occurrences/search?q=*:*" + search;
       if (selection.row != undefined) {
         var decadeStart = selection.row * 10 + 1850;

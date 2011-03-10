@@ -101,6 +101,12 @@
                 <!-- rights -->
                 <p><span class="category">Rights</span>: ${fieldValue(bean: instance, field: "rights")}</p>
 
+                <!-- generalisations -->
+                <p><span class="category">Data generalisations</span>: ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
+
+                <!-- info withheld -->
+                <p><span class="category">Information withheld</span>: ${fieldValue(bean: instance, field: "informationWithheld")}</p>
+
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 

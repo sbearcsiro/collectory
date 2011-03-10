@@ -26,6 +26,11 @@
       </cl:isNotLoggedIn>
 
       <div class="homeCell">
+        <g:link class="mainLink" controller="contact" action="showProfile">Edit my profile</g:link>
+        <p class="mainText">View and edit your contact details, roles, notifications, etc.</p>
+      </div>
+
+      <div class="homeCell">
         <g:link class="mainLink" controller="collection" action="list">View all collections</g:link>
         <p class="mainText">Browse all current collections and update collection descriptions.</p>
       </div>

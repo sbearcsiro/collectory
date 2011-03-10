@@ -839,3 +839,28 @@ div.emulate-public > h2 {
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
 }
+
+/* custom edit pages */
+
+.custom-edit h2 {
+    color: #7D8804;
+}
+
+.custom-edit div.repeats h2 {
+    margin-top: 30px;
+    padding-bottom: 10px;
+}
+
+.custom-edit div.repeats input {
+    width: auto;
+    margin-left: 10px;
+}
+
+.custom-edit input, select {
+    font-size: 13px !important;
+    vertical-align: middle;
+}
+
+.custom-edit td {
+    vertical-align: middle;
+}

@@ -157,4 +157,31 @@ class ContactController {
         }
     }
 
+    /**
+     * Show contact info in the form of a 'My Profile' page.
+     *
+     * @param userEmail - optional email, defaults to the logged in user
+     */
+    def showProfile = {
+        def user = params.userEmail ?: authService.username()
+        def contact = Contact.findByEmail(user)
+        if (contact) {
+            def crList = ContactFor.findAllByContact(contact).collect {
+                new ContactRelationship(cf: it, entityName: ProviderGroup._get(it.entityUid).name)
+            }
+            [contact: contact, contactRels: crList]
+        } else {
+            flash.message = "No user ${user}"
+            redirect(action: 'list')
+        }
+    }
+
+    def updateProfile = {
+        
+    }
+}
+
+class ContactRelationship {
+    ContactFor cf
+    String entityName
 }

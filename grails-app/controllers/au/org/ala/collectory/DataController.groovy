@@ -465,13 +465,14 @@ class DataController {
             def uid = payload.uid
             def event = payload.event
             def id = payload.id
-            if (!(uid && event && id)) {
+            def action = payload.action
+            if (!(uid && event && id && action)) {
                 println "bad request"
                 badRequest 'must specify a uid, an event and an event id'
             } else {
                 println "OK"
                 // register the event
-                ActivityLog.log('notify-service', false, Action.NOTIFY, "${event} ${id} for ${uid}")
+                ActivityLog.log([user: 'notify-service', isAdmin: false, action: "${action}d ${id}", entityUid: uid])
                 success "notification accepted"
             }
         }

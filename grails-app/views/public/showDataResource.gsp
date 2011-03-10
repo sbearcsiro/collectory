@@ -90,6 +90,16 @@
               <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
             </g:if>
             
+            <g:if test="${instance.dataGeneralizations}">
+              <h2>Data generalisations</h2>
+              <cl:formattedText>${fieldValue(bean: instance, field: "dataGeneralizations")}</cl:formattedText>
+            </g:if>
+
+            <g:if test="${instance.informationWithheld}">
+              <h2>Information withheld</h2>
+              <cl:formattedText>${fieldValue(bean: instance, field: "informationWithheld")}</cl:formattedText>
+            </g:if>
+
             <h2>Digitised records</h2>
             <div>
               <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>

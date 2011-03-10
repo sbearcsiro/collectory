@@ -1496,9 +1496,17 @@ class CollectoryTagLib {
     }
 
     def jsonDataLink = { attrs, body ->
-        def action = controllerFromUid(uid: attrs.uid)
-        action = "get${action[0].toUpperCase()}${action[1..action.size()-1]}"
+        def uri = "${ConfigurationHolder.config.grails.serverURL}/ws/${ProviderGroup.urlFormFromUid(attrs.uid)}/${attrs.uid}.json"
         // have to use this method rather than 'link' so we can specify the accept format as json
-        out << "<a class='json' href='${resource(dir:"data",file:"${action}.json?uid=${attrs.uid}")}'><img class='json' alt='json' src='${resource(dir:"images", file:"json.png")}'/>View raw data</a>"
+        out << "<a class='json' href='${uri}'><img class='json' alt='json' src='${resource(dir:"images", file:"json.png")}'/>View raw data</a>"
     }
+
+    def viewLink = {attrs, body ->
+        out << link(class:"preview", controller:"public", action:'show', id:attrs.uid) { body() }
+    }
+
+    def editLink = {attrs, body ->
+        out << link(class:"preview", controller:ProviderGroup.urlFormFromUid(attrs.uid), action:'show', id:attrs.uid) { body() }
+    }
+
 }

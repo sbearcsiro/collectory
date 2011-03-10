@@ -20,7 +20,7 @@ class CrudService {
     static baseObjectProperties = ['address', 'imageRef','logoRef']
     static baseJSONArrays = ['networkMembership']
 
-    static dataResourceStringProperties = ['displayName','rights','citation','citableAgent']
+    static dataResourceStringProperties = ['displayName','rights','citation','citableAgent','dataGeneralizations','informationWithheld']
     //static dataResourceObjectProperties = ['dataProvider']
 
     static institutionStringProperties = ['institutionType']
@@ -271,6 +271,8 @@ class CrudService {
                 rights = p.rights
                 citation = p.citation
                 citableAgent = p.citableAgent
+                dataGeneralizations = p.dataGeneralizations
+                informationWithheld = p.informationWithheld
                 if (p.listConsumers()) {
                     linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
                 }

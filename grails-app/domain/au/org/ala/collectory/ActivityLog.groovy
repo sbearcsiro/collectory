@@ -26,6 +26,13 @@ class ActivityLog implements Serializable {
         action(blank:false)
     }
 
+    static void log(params) {
+        def al = new ActivityLog(params)
+        al.timestamp = new Date()
+        al.errors.each {println it}
+        al.save(flush:true)
+    }
+
     /**
      * Logs a simple action by a user, eg login, logout.
      * @param user

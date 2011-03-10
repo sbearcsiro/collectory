@@ -15,7 +15,8 @@ class DataResource extends ProviderGroup implements Serializable {
     String rights
     String citation
     String citableAgent
-
+    String informationWithheld
+    String dataGeneralizations
     DataProvider dataProvider
     Institution institution         // optional link to the institution whose records are served by this resource
 
@@ -26,6 +27,8 @@ class DataResource extends ProviderGroup implements Serializable {
         citableAgent(nullable:true, maxSize:2048)
         dataProvider(nullable:true)
         institution(nullable:true)
+        dataGeneralizations(nullable:true, maxSize:2048)
+        informationWithheld(nullable:true, maxSize:2048)
     }
 
     boolean canBeMapped() {

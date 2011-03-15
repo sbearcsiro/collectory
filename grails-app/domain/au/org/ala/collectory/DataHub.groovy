@@ -15,9 +15,9 @@ class DataHub extends ProviderGroup implements Serializable {
                                     //  (suitable for identifying a unique list of occurrence records)
 
     static constraints = {
-        memberCollections(nullable:true)
-        memberInstitutions(nullable:true)
-        members(nullable:true)
+        memberCollections(nullable:true, maxSize:4096)
+        memberInstitutions(nullable:true, maxSize:4096)
+        members(nullable:true, maxSize:4096)
     }
 
     boolean canBeMapped() {
@@ -44,6 +44,28 @@ class DataHub extends ProviderGroup implements Serializable {
 
     def listMembers() {
         return members ? JSON.parse(members).collect {it} : []
+    }
+
+    def listMemberInstitutions() {
+        if (!memberInstitutions) { return []}
+        JSON.parse(memberInstitutions).collect {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                [uid: it, name: pg?.name, uri: pg.buildUri()]
+            }
+        }.sort { it.name }
+    }
+
+    def listMemberCollections() {
+        if (!memberCollections) { return []}
+        JSON.parse(memberCollections).collect {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                [uid: it, name: pg?.name, uri: pg.buildUri()]
+            } else {
+                [uid: it, name: 'collection missing']
+            }
+        }.sort { it.name }
     }
 
     long dbId() {

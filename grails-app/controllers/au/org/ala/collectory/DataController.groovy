@@ -491,7 +491,8 @@ class DataController {
 
     /** temporary dump of map of coll code/inst code pairs with mapped collection and institution data **/
     def codeMapDump = {
-        def csv = "collectionCode,institutionCode,collectionUid,collectionName,institutionUid,institutionName,taxonomicHints\n"
+        def csv = "collectionCode,institutionCode,collectionUid,collectionName,institutionUid,institutionName," +
+                "dataProviderUid,dataProviderName,dataHubUid,dataHubName,taxonomicHints\n"
         ProviderMap.list().each {
             def collectionCodes = it.collectionCodes
             def institutionCodes = it.institutionCodes
@@ -501,14 +502,16 @@ class DataController {
                     csv += coll.code + "," +
                             inst.code + "," +
                             it.collection.uid + "," +
-                            it.collection.name + "," +
+                            "\"" + it.collection.name + "\"," +
                             it.collection.institution?.uid + "," +
-                            it.collection.institution?.name + "," +
+                            "\"" + it.collection.institution?.name + "\"," +
+                            "dp20,OZCAM (Online Zoological Collections of Australian Museums) Provider," +
+                            "dh1,Online Zoological Collections of Australian Museums," +
                             encodeHints(it.collection.listTaxonomyHints()) + "\n"
                 }
             }
         }
-        render csv
+        render(contentType: 'text/csv', text:csv)
     }
 
     private String encodeHints(hints) {

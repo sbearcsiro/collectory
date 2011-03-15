@@ -41,8 +41,6 @@ class CrudService {
         return map.keySet().contains(key)
     }
 
-    //TODO: contacts
-    
     /* data provider */
 
     def readDataProvider(DataProvider p) {
@@ -186,6 +184,8 @@ class CrudService {
             }
             // hub specific
             members = p.listMembers()
+            memberInstitutions = p.listMemberInstitutions()
+            memberCollections = p.listMemberCollections()
         }
         return result
     }

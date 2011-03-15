@@ -13,7 +13,7 @@ class ProviderCode {
     }
 
     static constraints = {
-        code(maxSize: 200, blank:false, unique:true)
+        code(maxSize: 200, blank:false)  // should be unique:true but there seems to be a bug in case sensitivity
     }
 
     String toString() {

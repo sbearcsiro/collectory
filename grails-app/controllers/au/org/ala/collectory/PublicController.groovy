@@ -27,12 +27,17 @@ class PublicController {
         }
     }
 
-    def renderJson = {json, params ->
+    def renderJson = {json ->
         if (params.callback) {
-            render(contentType:'application/json', text: "${params.callback}(${json})")
+            //render(contentType:'application/json', text: "${params.callback}(${json})")
+            render(contentType:'text/javascript', text: "${params.callback}(${json})", encoding: "UTF-8")
         } else {
             render json
         }
+    }
+
+    def renderAsJson = {json ->
+        renderJson(json as JSON)
     }
 
     def index = { redirect(action: 'map')}
@@ -89,15 +94,15 @@ class PublicController {
             // sleep delay
             //println buildDecadeDataTableFromFacetResults(searchResult?.facetResults)
             def result = [totalRecords: searchResult?.totalRecords, decades: buildDecadeDataTableFromFacetResults(searchResult?.facetResults)]
-            render result as JSON
+            renderAsJson result
         } catch (SocketTimeoutException e) {
             log.warn "Timed out looking up record count. URL= ${url}."
             def error = [error:"Timed out looking up record count.", totalRecords: 0, decades: null]
-            render error as JSON
+            renderAsJson error
         } catch (Exception e) {
             log.warn "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
             def error = ["error":"Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."]
-            render error as JSON
+            renderAsJson error
         }
     }
 
@@ -105,7 +110,7 @@ class PublicController {
         // lookup number of biocache records
         //def baseUrl = ConfigurationHolder.config.biocache.baseURL
         //def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + uid
-        def url = "http://ala-bie1.vm.csiro.au:8080/biocache-service/occurrences/institution/${uid}.json?pageSize=0"
+        def url = "http://ala-bie1.vm.csiro.au:8080/biocache-service/occurrences/institutions/${uid}.json?pageSize=0"
 
         def conn = new URL(url).openConnection()
         try {
@@ -128,7 +133,7 @@ class PublicController {
     def recordsByDecadeByInstitution = {
         if (params.static) {
             String json = new File("/data/collectory/data/dataHub/records-by-decade-by-institution-dh1.json").getText()
-            renderJson json, params
+            renderJson json
         } else {
             def result = []
             def institutions = [
@@ -162,7 +167,7 @@ class PublicController {
             if (params.save) {
                 new File("/data/collectory/data/dataHub/records-by-decade-by-institution-dh1.json").setText((result as JSON) as String)
             }
-            renderJson((result as JSON), params)
+            renderAsJson result
         }
     }
 
@@ -171,7 +176,7 @@ class PublicController {
         String json = new File("/data/collectory/data/dataHub/count-by-collection-dh1.json").getText()
         // need to parse first as source file is formatted with white-space
         def obj = JSON.parse(json)
-        renderJson((obj as JSON), params)
+        renderAsJson obj
     }
 
     def newBiocacheBreakdown = {
@@ -181,7 +186,7 @@ class PublicController {
         def dataTable = null
         def json
         try {
-            renderJson(conn.content.text, params)
+            renderJson(conn.content.text)
         } catch (SocketTimeoutException e) {
             log.warn "Timed out getting decade breakdown. URL= ${url}."
             def result = [error:"Timed out getting decade breakdown.", dataTable: null]
@@ -202,14 +207,14 @@ class PublicController {
         def dataTable = null
         def json
         try {
-            renderJson(conn.content.text, params)
+            renderJson(conn.content.text)
         } catch (SocketTimeoutException e) {
             log.warn "Timed out. URL= ${url}."
             def result = [error:"Timed out.", dataTable: null]
-            renderJson((result as JSON), params)
+            renderAsJson result
         } catch (Exception e) {
             log.error "Failed. ${e.getMessage()} URL= ${url}."
-            renderJson((e as JSON), params)
+            renderAsJson e
         }
     }
 
@@ -395,15 +400,15 @@ class PublicController {
             def result = [mapUrl: mapUrl, legendUrl: legendUrl, type: mapType]
             //println "mapType=${mapType}, mapUrl=${mapUrl}, legendUrl=${legendUrl}"
       //sleep delay
-            render result as JSON
+            renderAsJson result
         } catch (SocketTimeoutException e) {
             log.warn "Timed out getting records map urls. ${e.getMessage()}"
             def result = [error:"Timed out getting records map urls.", dataTable: null]
-            render result as JSON
+            renderAsJson result
         } catch (Exception e) {
             log.warn "failed to get records map urls - json = ${json} ${e.getMessage()}"
             def error = ["error":"failed to get records map urls"]
-            render error as JSON
+            renderAsJson error
         }
     }
 

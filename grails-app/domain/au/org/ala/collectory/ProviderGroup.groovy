@@ -464,6 +464,19 @@ abstract class ProviderGroup implements Serializable {
         return result
     }
 
+    /**
+     * Returns the rank at which to initially display taxonomic breakdowns.
+     *
+     * @return hint or null if no hint declared
+     */
+    def startingRankHint() {
+        if (taxonomyHints) {
+            def hint = JSON.parse(taxonomyHints).startRank
+            return hint ?: null
+        }
+        return null
+    }
+
     /*
      * The database id is not injected into this class but the subclass that is actually mapped to
      * the database. Therefore all references to the id from this base class must use this method

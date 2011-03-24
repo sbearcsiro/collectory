@@ -256,45 +256,11 @@ class DataController {
 
     /************* Data Hub services *********/
     def institutionsForDataHub = {
-        def ozcamConsumers = []
-        DataProvider._get('dp20').resources.each { dr ->
-            dr.listConsumers().each { inst ->
-                if (inst[0..1] == 'in') {
-                    def pg = ProviderGroup._get(inst)
-                    if (pg) {
-                        ozcamConsumers << [name: pg.name, uri: pg.buildUri()]
-                    }
-                }
-            }
-        }
-        ozcamConsumers.sort {it.name}
-        render ozcamConsumers as JSON
+        render params.pg.listMemberInstitutions() as JSON
     }
 
     def collectionsForDataHub = {
-        def ozcamConsumers = []
-        DataProvider._get('dp20').resources.each { dr ->
-            dr.listConsumers().each { con ->
-                if (con[0..1] == 'in') {
-                    def pg = ProviderGroup._get(con)
-                    if (pg) {
-                        pg.collections.each { co ->
-                            if (co.providerMap) {
-                                ozcamConsumers << [name: co.name, uri: co.buildUri()]
-                            }
-                        }
-                    }
-                } else {
-                    // must be a collection
-                    def pg = ProviderGroup._get(con)
-                    if (pg) {
-                        ozcamConsumers << [name: pg.name, uri: pg.buildUri()]
-                    }
-                }
-            }
-        }
-        ozcamConsumers.sort {it.name}
-        render ozcamConsumers as JSON
+        render params.pg.listMemberCollections() as JSON
     }
 
 

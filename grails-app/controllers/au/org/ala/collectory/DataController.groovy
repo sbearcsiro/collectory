@@ -242,15 +242,15 @@ class DataController {
 
     def eml = {
         if (params.id) {
-            def dr = DataResource.findByUid(params.id)
-            if (dr) {
+            def pg = ProviderGroup._get(params.id)
+            if (pg) {
                 response.contentType = 'text/xml'
-                render emlRenderService.emlForResource(dr)
+                render emlRenderService.emlForEntity(pg)
             } else {
-                notFound 'no such resource ' + params.id
+                notFound 'no such entity ' + params.id
             }
         } else {
-            badRequest 'you must specify a resource'
+            badRequest 'you must specify an entity identifier (uid)'
         }
     }
 

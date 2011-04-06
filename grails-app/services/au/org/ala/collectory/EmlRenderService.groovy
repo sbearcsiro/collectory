@@ -7,35 +7,150 @@ class EmlRenderService {
 
     static transactional = true
 
+    def ns = [eml:"eml://ecoinformatics.org/eml-2.1.1",
+            xsi:"http://www.w3.org/2001/XMLSchema-instance",
+            dc:"http://purl.org/dc/terms/"]
+
+    def emlNs = ['xsi:schemaLocation':"eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/dev/eml.xsd",
+            'packageId':"619a4b95-1a82-4006-be6a-7dbe3c9b33c5/v7",
+            'system':"http://gbif.org",
+            'scope':"system",
+            'xml:lang':"en"]
+
     /**
-     * This service generates eml by directly replacing tokens in a template file.
-     * @param dr the resource to describe
-     * @return xml string
+     * General entry point for any entity.
+     *
+     * @param entity
+     * @return eml for the entity
      */
-    def generateEmlForDataResource(DataResource dr) {
-        //def template = new XmlSlurper().parse(new File("/data/collectory/templates/dataResourceTemplate.xml"))
-        def template = new File("/data/collectory/templates/dataResourceTemplate.xml").getText()
-        template = template.replaceAll(/\$[\.\w]*/) {
-            def field = it[1..it.size()-1]
-            def parts = field.tokenize('.')
-            def value
-            switch (parts.size()) {
-                case 1:
-                    value = dr."${field}"
-                    break
-                case 2:
-                    value = dr."${parts[0]}"?."${parts[1]}"
-                    break
-                case 3:
-                    value = dr."${parts[0]}"?."${parts[1]}"?."${parts[2]}"
-                    break
-            }
-            value ?: ""
+    String emlForEntity(entity) {
+        if (entity instanceof DataResource) {
+            return emlForResource(entity)
         }
-        return template
+        if (entity instanceof Institution) {
+            return emlForInstitution(entity)
+        }
+        return null
     }
 
-    def emlForResource(DataResource dr) {
+    /**
+     * Binds the elements that are common to all entities
+     *
+     * <alternateIdentifier/>
+     * <title/>
+     * <creator/>
+     * <metadataProvider/>
+     * <associatedParty/>  (ALA)
+     * <pubDate/>
+     * <language/>
+     * <abstract/>
+     *
+     * @param builder
+     * @param pg the entity
+     */
+    def commonElements(builder, ProviderGroup pg) {
+        /* alt identifier */
+        builder.alternateIdentifier('ala.org.au:' + pg.uid)
+
+        /* title */
+        builder.title('xmlns:lang':'en', pg.name)
+
+        /* creator */
+        builder.creator() {
+            builder.organizationName(pg.name)
+            if (pg.address) {
+                out << addAddress(pg.address)
+            }
+            out << addIf(pg.phone, 'phone' )
+            out << addIf(pg.email, 'electronicMailAddress')
+            out << addIf(pg.websiteUrl, 'onlineUrl')
+        }
+
+        /* metadata provider */
+        builder.metadataProvider() {
+            builder.organizationName(pg)
+            if (pg.address) {
+                out << addAddress(pg.address)
+            }
+            out << addIf(pg.phone, 'phone' )
+            out << addIf(pg.email, 'electronicMailAddress')
+            out << addIf(pg.websiteUrl, 'onlineUrl')
+        }
+
+        /* associated parties */
+        builder.associatedParty(ala(true))
+
+        /* pub date */
+        def lastPub = pg.lastUpdated
+        if (lastPub) {
+          lastPub = lastPub.toString()[0..9]
+        }
+        builder.pubDate lastPub
+
+        /* language */
+        builder.language "English"
+
+        /* abstract */
+        builder.'abstract'() {
+            mkp.comment "TODO: convert ALA format markup to the DocBook markup used in eml."
+            builder.para pg.pubDescription
+            pg.techDescription ? builder.para(pg.techDescription) : ""
+        }
+    }
+
+    /**
+     * Binds a list of contacts.
+     *
+     * @param builder
+     * @param pg the entity
+     */
+    def contacts(builder, pg) {
+        pg.getContactsPrimaryFirst().each { cnt ->
+            builder.contact {
+                if (cnt.contact.firstName || cnt.contact.lastName) {
+                    builder.individualName {
+                        cnt.contact.title ? builder.salutation(cnt.contact.title) : ""
+                        cnt.contact.firstName ? builder.givenName(cnt.contact.firstName) : ""
+                        cnt.contact.lastName ? builder.surName(cnt.contact.lastName) : ""
+                    }
+                }
+                cnt.contact.phone ? builder.phone(cnt.contact.phone) : ""
+                cnt.contact.email ? builder.electronicMailAddress(cnt.contact.email) : ""
+            }
+        }
+    }
+
+    String emlForInstitution(Institution pg) {
+        def markupBuilder = new StreamingMarkupBuilder()
+        markupBuilder.encoding = 'UTF-8'
+        markupBuilder.useDoubleQuotes = true
+
+        def eml = markupBuilder.bind { builder ->
+            mkp.xmlDeclaration()
+            namespaces << ns
+
+            'eml:eml'(emlNs) {
+                dataset() {
+                    commonElements builder, pg
+
+                    /* distribution */
+                    distribution {
+                        online {
+                          url('function':'information',"http://collections.ala.org.au/public/show/" + pg.uid)
+                        }
+                    }
+
+                    contacts builder, pg
+
+                }
+            }
+        }
+
+        //return eml.toString()  // for production usage
+        return XmlUtil.serialize(eml) // pretty-printed for development
+    }
+
+    String emlForResource(DataResource dr) {
 
         def builder = new StreamingMarkupBuilder()
         builder.encoding = 'UTF-8'
@@ -44,15 +159,9 @@ class EmlRenderService {
 
         def eml = builder.bind {
             mkp.xmlDeclaration()
-            namespaces << [eml:"eml://ecoinformatics.org/eml-2.1.1",
-            xsi:"http://www.w3.org/2001/XMLSchema-instance",
-            dc:"http://purl.org/dc/terms/"]
+            namespaces << ns
 
-            'eml:eml'('xsi:schemaLocation':"eml://ecoinformatics.org/eml-2.1.1 http://rs.gbif.org/schema/eml-gbif-profile/dev/eml.xsd",
-            'packageId':"619a4b95-1a82-4006-be6a-7dbe3c9b33c5/v7",
-            'system':"http://gbif.org",
-            'scope':"system",
-            'xml:lang':"en") {
+            'eml:eml'(emlNs) {
 
                 mkp.comment "The IPT is concerned with descriptions of datasets only."
                 dataset() {
@@ -232,4 +341,34 @@ class EmlRenderService {
         return writer.toString()
     }
 */
+
+    /**
+     * This service generates eml by directly replacing tokens in a template file.
+     * @param dr the resource to describe
+     * @return xml string
+     * @deprecated use emlFor...
+     */
+    def generateEmlForDataResource(DataResource dr) {
+        //def template = new XmlSlurper().parse(new File("/data/collectory/templates/dataResourceTemplate.xml"))
+        def template = new File("/data/collectory/templates/dataResourceTemplate.xml").getText()
+        template = template.replaceAll(/\$[\.\w]*/) {
+            def field = it[1..it.size()-1]
+            def parts = field.tokenize('.')
+            def value
+            switch (parts.size()) {
+                case 1:
+                    value = dr."${field}"
+                    break
+                case 2:
+                    value = dr."${parts[0]}"?."${parts[1]}"
+                    break
+                case 3:
+                    value = dr."${parts[0]}"?."${parts[1]}"?."${parts[2]}"
+                    break
+            }
+            value ?: ""
+        }
+        return template
+    }
+
 }

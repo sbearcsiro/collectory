@@ -20,6 +20,7 @@ class ContactController {
             render "You are not authorised to access this page."
             return false
         }
+        return true
     }
 /*
  End access control

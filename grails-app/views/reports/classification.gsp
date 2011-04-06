@@ -38,6 +38,9 @@
                     <td style="text-align:center;"><cl:reportClassification keywords="${c.keywords}" filter="microbes"/></td>
                   </tr>
                 </g:each>
+                <tr>
+                  <td>Totals</td><td></td><td>${plants}</td><td>${fauna}</td><td>${entomology}</td><td>${microbes}</td>
+                </tr>
 
               </table>
             </div>

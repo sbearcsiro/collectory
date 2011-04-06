@@ -87,7 +87,15 @@ class ReportsController {
 
     def classification = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'classifications'
-        [collections: Collection.list([sort:'name'])]
+        def list = Collection.list([sort:'name'])
+        def plants = 0; def fauna = 0; def entomology = 0; def microbes = 0
+        list.each {
+            if (Classification.matchKeywords(it.keywords, 'plants')) { plants++ }
+            if (Classification.matchKeywords(it.keywords, 'fauna')) { fauna++ }
+            if (Classification.matchKeywords(it.keywords, 'entomology')) { entomology++ }
+            if (Classification.matchKeywords(it.keywords, 'microbes')) { microbes++ }
+        }
+        [collections: list, plants: plants, fauna: fauna, entomology: entomology, microbes: microbes]
     }
 
     def taxonomicHints = {

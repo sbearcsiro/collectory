@@ -616,7 +616,7 @@ class CollectoryTagLib {
         def count = 0
         if (attrs.with) {
             count = attrs.with
-        } else {
+        } else if (attrs.without) {
             count = attrs.total - attrs.without
         }
         out << """<td>${attrs.label}</td><td>${count}</td>\n

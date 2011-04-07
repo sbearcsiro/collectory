@@ -30,6 +30,9 @@ class EmlRenderService {
         if (entity instanceof Institution) {
             return emlForInstitution(entity)
         }
+        if (entity instanceof Collection) {
+            return emlForCollection(entity)
+        }
         return null
     }
 
@@ -114,10 +117,89 @@ class EmlRenderService {
                         cnt.contact.lastName ? builder.surName(cnt.contact.lastName) : ""
                     }
                 }
+                cnt.role ? builder.positionName(cnt.role) : ""
                 cnt.contact.phone ? builder.phone(cnt.contact.phone) : ""
                 cnt.contact.email ? builder.electronicMailAddress(cnt.contact.email) : ""
             }
         }
+    }
+
+    String emlForCollection(Collection pg) {
+        def markupBuilder = new StreamingMarkupBuilder()
+        markupBuilder.encoding = 'UTF-8'
+        markupBuilder.useDoubleQuotes = true
+
+        def eml = markupBuilder.bind { builder ->
+            mkp.xmlDeclaration()
+            namespaces << ns
+
+            'eml:eml'(emlNs) {
+                dataset() {
+                    commonElements builder, pg
+
+                    /* keywords */
+                    keywordSet() {
+                        pg.listKeywords().each {
+                            keyword it
+                        }
+                    }
+
+                    /* distribution */
+                    distribution {
+                        online {
+                          url('function':'information',"http://collections.ala.org.au/public/show/" + pg.uid)
+                        }
+                    }
+
+                    /* coverage */
+                    coverage() {
+
+                        /* geographic */
+                        if (pg.geographicDescription) {
+                            geographicCoverage() {
+                                geographicDescription pg.geographicDescription
+                            }
+                        }
+                        // must have all bounds
+                        if (pg.eastCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
+                            pg.westCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
+                            pg.northCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
+                            pg.southCoordinate != ProviderGroup.NO_INFO_AVAILABLE) {
+                            geographicCoverage() {
+                                boundingCoordinates() {
+                                    westBoundingCoordinate pg.westCoordinate
+                                    eastBoundingCoordinate pg.eastCoordinate
+                                    northBoundingCoordinate pg.northCoordinate
+                                    southBoundingCoordinate pg.southCoordinate
+                                }
+                            }
+                        }
+
+                        /* temporal */
+                        // no relevant data (start/end dates apply to the collection not the span of specimens
+
+                        /* taxonomic */
+                        // use taxonomic hints for now
+                        if (pg.taxonomyHints) {
+                            taxonomicCoverage() {
+                                pg.listTaxonomyHints().each { taxon ->
+                                    taxonomicClassification() {
+                                        taxonomicRankName taxon.rank
+                                        taxonomicRankValue taxon.name
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    contacts builder, pg
+
+                }
+            }
+        }
+
+        //return eml.toString()  // for production usage
+        return XmlUtil.serialize(eml) // pretty-printed for development
     }
 
     String emlForInstitution(Institution pg) {
@@ -232,8 +314,6 @@ class EmlRenderService {
                     }
 
                     /* contact */
-                    mkp.comment "At least one human contact is required. This is sourced from the resource, provider, institution contacts in that order of precedence"
-                    mkp.comment "We should try to load metadata to support this for all resources."
                     def cnt = dr.primaryContact
                     if (!cnt) {cnt = dp.primaryContact}
                     if (cnt) {
@@ -243,8 +323,20 @@ class EmlRenderService {
                     }
 
                 }
+
+                additionalMetadata() {
+                    println dr.dataGeneralizations
+                    if (dr.dataGeneralizations) {
+                        mkp.comment "Actions taken to make the shared data less specific or complete than in its original form."
+                        dataGeneralizations dr.dataGeneralizations
+                    }
+                    if (dr.informationWithheld) {
+                        mkp.comment "Additional information that exists, but that has not been shared in the given record."
+                        informationWithheld dr.informationWithheld
+                    }
+                }
             }
-        }
+         }
         
         //return eml.toString()  // for production usage
         return XmlUtil.serialize(eml) // pretty-printed for development

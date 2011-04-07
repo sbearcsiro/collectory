@@ -12,7 +12,7 @@ class Collection extends ProviderGroup implements Serializable {
     static auditable = [ignore: ['version','dateCreated','lastUpdated','userLastModified']]
     
     String collectionType       // list of type of collection as JSON e.g ['live', 'preserved', 'tissue', 'DNA']
-    String keywords
+    String keywords             // json list of terms
     String active               // see active vocab
     int numRecords = ProviderGroup.NO_INFO_AVAILABLE
                                 // total number of records held that are able to be digitised

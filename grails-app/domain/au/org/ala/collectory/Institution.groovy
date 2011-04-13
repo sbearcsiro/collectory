@@ -17,6 +17,7 @@ class Institution extends ProviderGroup {
     static hasMany = [collections: Collection]
 
     static constraints = {
+        // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/InstitutionType.rdf
         institutionType(nullable:true, maxSize:45,
                 inList:['aquarium', 'archive', 'botanicGarden', 'conservation', 'fieldStation', 'government',
                         'governmentDepartment', 'herbarium', 'historicalSociety', 'horticulturalInstitution',

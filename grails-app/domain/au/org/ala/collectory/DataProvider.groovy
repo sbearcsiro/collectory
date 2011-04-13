@@ -60,6 +60,28 @@ class DataProvider extends ProviderGroup implements Serializable {
         return dps
     }
 
+    /**
+     * Return the first related institution address if the provider does not have one.
+     * @return
+     */
+    @Override def resolveAddress() {
+        if (super.resolveAddress()) {
+            return super.resolveAddress()
+        }
+        else {
+            def pg = listConsumers().find {
+                def related = _get(it)
+                return related && related.resolveAddress()
+            }
+            if (pg) {
+                return _get(pg).resolveAddress()
+            }
+            else {
+                return null
+            }
+        }
+    }
+
     long dbId() {
         return id;
     }

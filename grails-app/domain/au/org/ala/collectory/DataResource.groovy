@@ -72,6 +72,45 @@ class DataResource extends ProviderGroup implements Serializable {
         return drs
     }
 
+    /**
+     * Return the provider's address if the resource does not have one. If dp has no address try related entities.
+     * @return
+     */
+    @Override def resolveAddress() {
+        def addr = super.resolveAddress() ?: dataProvider?.resolveAddress()
+        if (!addr) {
+            def pg = listConsumers().find {
+                def related = _get(it)
+                return related && related.resolveAddress()
+            }
+            if (pg) {
+                addr = _get(pg).resolveAddress()
+            }
+        }
+        return addr
+    }
+
+    /**
+     * Returns the entity that is responsible for creating this resource - the data provider if there is one.
+     * @return
+     */
+    @Override def createdBy() {
+        return dataProvider ? dataProvider.createdBy() : super.createdBy()
+    }
+
+    /**
+     * Return the provider's logo if the resource does not have one.
+     * @return
+     */
+    @Override def buildLogoUrl() {
+        if (logoRef) {
+            return super.buildLogoUrl()
+        }
+        else {
+            return dataProvider?.buildLogoUrl()
+        }
+    }
+
     long dbId() {
         return id;
     }

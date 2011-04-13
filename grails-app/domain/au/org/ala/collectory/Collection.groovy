@@ -1,3 +1,18 @@
+/* *************************************************************************
+ *  Copyright (C) 2011 Atlas of Living Australia
+ *  All Rights Reserved.
+ *
+ *  The contents of this file are subject to the Mozilla Public
+ *  License Version 1.1 (the "License"); you may not use this file
+ *  except in compliance with the License. You may obtain a copy of
+ *  the License at http://www.mozilla.org/MPL/
+ *
+ *  Software distributed under the License is distributed on an "AS
+ *  IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+ *  implied. See the License for the specific language governing
+ *  rights and limitations under the License.
+ ***************************************************************************/
+
 package au.org.ala.collectory
 
 import grails.converters.JSON
@@ -13,7 +28,7 @@ class Collection extends ProviderGroup implements Serializable {
     
     String collectionType       // list of type of collection as JSON e.g ['live', 'preserved', 'tissue', 'DNA']
     String keywords             // json list of terms
-    String active               // see active vocab
+    String active               // tdwg developmentStatus
     int numRecords = ProviderGroup.NO_INFO_AVAILABLE
                                 // total number of records held that are able to be digitised
     int numRecordsDigitised = ProviderGroup.NO_INFO_AVAILABLE
@@ -45,6 +60,8 @@ class Collection extends ProviderGroup implements Serializable {
 
     String subCollections       // list of sub-collections as JSON
 
+    //TODO: add curatorialUnit - one of specimens, lots, cultures, samples, batches
+
     // the owning institution
     Institution institution
     static belongsTo = Institution
@@ -59,10 +76,15 @@ class Collection extends ProviderGroup implements Serializable {
         sort: 'name'
     }
 
+    // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/CollectionType.rdf
     static collectionTypes = ["archival","art","audio","cellcultures","electronic","facsimiles","fossils","genetic",
                         "living","observations","preserved","products","taxonomic","texts","tissue","visual"]
 
+    // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/Collection.rdf
     static kingdoms = ['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista']
+
+    // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/Collection.rdf
+    static developmentStatuses = ['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static']
 
     static constraints = {
         collectionType(nullable: true, maxSize: 256,
@@ -74,7 +96,7 @@ class Collection extends ProviderGroup implements Serializable {
                 return true
         })
         keywords(nullable:true, maxSize:1024)
-        active(nullable:true, inList:['Active growth', 'Closed', 'Consumable', 'Decreasing', 'Lost', 'Missing', 'Passive growth', 'Static'])
+        active(nullable:true, inList:developmentStatuses)
         numRecords()
         numRecordsDigitised()
         states(nullable:true)
@@ -147,13 +169,26 @@ class Collection extends ProviderGroup implements Serializable {
     /**
      * Returns scientific names as a list of string.
      *
-     * @return List<Map>
+     * @return List<String>
      */
     def listScientificNames() {
         if (!scientificNames) {
             return []
         }
         return JSON.parse(scientificNames).collect { it.toString() }
+    }
+
+    /**
+     * Returns kingdoms as a list of String.
+     *
+     * @return List<String>
+     */
+    def listKingdoms() {
+        if (kingdomCoverage) {
+            return kingdomCoverage.tokenize(' ')
+        } else {
+            return []
+        }
     }
 
     /*
@@ -284,6 +319,35 @@ class Collection extends ProviderGroup implements Serializable {
             list << new Attribution(name: institution.name, url: institution.websiteUrl, uid: institution.uid)
         }
         return list
+    }
+
+    /**
+     * Return the institution's address if the collection does not have one.
+     * @return
+     */
+    @Override def resolveAddress() {
+        return super.resolveAddress() ?: institution?.resolveAddress()
+    }
+
+    /**
+     * Returns the entity that is responsible for creating this resource - the institution if there is one.
+     * @return
+     */
+    @Override def createdBy() {
+        return institution ? institution.createdBy() : super.createdBy()
+    }
+
+    /**
+     * Return the institution's logo if the collection does not have one.
+     * @return
+     */
+    @Override def buildLogoUrl() {
+        if (logoRef) {
+            return super.buildLogoUrl()
+        }
+        else {
+            return institution?.buildLogoUrl()
+        }
     }
 
     long dbId() { return id }

@@ -371,13 +371,19 @@ abstract class ProviderGroup implements Serializable {
      * Returns the form that can be used in url path, ie as a controller name, one of:
      * collection, institution, dataProvider, dataResource, dataHub
      *
-     * @param uid
+     * @param entityType short class name of entity
      * @return
      */
     static String urlFormOfEntityType(String entityType) {
         return entityType[0..0].toLowerCase() + entityType[1..-1]
     }
 
+    /**
+     * Returns the form that can be used in url path, eg as a controller name, one of:
+     * collection, institution, dataProvider, dataResource, dataHub - based on the uid.
+     *
+     * @param uid
+     */
     static String urlFormFromUid(String uid) {
         return urlFormOfEntityType(entityTypeFromUid(uid))
     }
@@ -495,11 +501,41 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
-     * Returns the uri to the data respresentation of this entity.
+     * Returns the uri to the data representation of this entity.
      * @return
      */
     String buildUri() {
-        return ConfigurationHolder.config.grails.serverURL + "/ws/" + urlForm() + "/" + uid + ".json"
+        return ConfigurationHolder.config.grails.serverURL + "/ws/" + urlForm() + "/" + uid
+    }
+
+    /**
+     * Returns the url to the logo image for this entity.
+     * @return
+     */
+    def buildLogoUrl() {
+        return logoRef?.file ?
+            ConfigurationHolder.config.grails.serverURL + "/data/" + urlForm() + "/" + logoRef.file :
+            ""
+    }
+
+    /**
+     * Returns the entity's address or the address of a parent or related entity.
+     *
+     * This method should be overridden by subclasses for their specific relationships.
+     * @return the best available address
+     */
+    def resolveAddress() {
+        return address
+    }
+
+    /**
+     * Returns the entity responsible for publishing this resource.
+     *
+     * This method should be overridden by subclasses for their specific relationships.
+     * @return the best available creator
+     */
+    def createdBy() {
+        return this
     }
 
     /**

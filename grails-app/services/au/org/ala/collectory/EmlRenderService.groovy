@@ -19,7 +19,6 @@ import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.XmlUtil
 import java.text.SimpleDateFormat
 import java.text.DateFormat
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
 class EmlRenderService {
 
@@ -35,10 +34,8 @@ class EmlRenderService {
             'scope':"system",
             'xml:lang':"en"]
 
-    /**
-     * format for date string -- "2010-10-19T04.05.46.000GMT"
-     */
-    final static String DATE_PATTERN = "yyyy-MM-dd'T'HH.mm.ss.SSSz";
+    final static String DATE_PATTERN = "yyyy-MM-dd";
+    final static String DATE_TIME_PATTERN = "yyyy-MM-dd'T'hh:mm:ss";
 
     /**
       * DateFormat to be used to format dates
@@ -46,6 +43,10 @@ class EmlRenderService {
     final static DateFormat dateFormat = new SimpleDateFormat(DATE_PATTERN)
     static {
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+    final static DateFormat dateTimeFormat = new SimpleDateFormat(DATE_TIME_PATTERN)
+    static {
+        dateTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     /**
@@ -90,10 +91,8 @@ class EmlRenderService {
         organisation(builder, 'creator', crt, null)
 
         /* metadata provider */
-        builder.metadataProvider() {
-            // always the same as creator so just reference it
-            references crt.uid
-        }
+        // always the same as creator
+        organisation(builder, 'metadataProvider', crt, null)
 
         /* associated parties */
         builder.associatedParty(ala(true))
@@ -116,10 +115,7 @@ class EmlRenderService {
 
         /* abstract */
         builder.'abstract'() {
-            toDocBook(builder, pg.pubDescription)
-            if (pg.techDescription) {
-                toDocBook(builder, pg.techDescription)
-            }
+            builder.para stripFormatting([pg.pubDescription, pg.techDescription])
         }
     }
 
@@ -137,10 +133,7 @@ class EmlRenderService {
     def commonElements2(builder, ProviderGroup pg) {
 
         /* dateStamp */
-        builder.dateStamp dateFormat.format(pg.lastUpdated)
-
-        /* metadataLanguage */
-        builder.metadataLanguage 'en_AU'
+        builder.dateStamp dateTimeFormat.format(pg.lastUpdated)
 
         /* hierarchyLevel */
         builder.hierarchyLevel 'dataset'
@@ -153,11 +146,8 @@ class EmlRenderService {
     }
 
     def organisation(builder, tag, ProviderGroup pg, role) {
-        builder."${tag}"('id':pg.uid) {
+        builder."${tag}"() {
             builder.organizationName(pg.name)
-            if (role) {
-                builder.role role
-            }
             def address = pg.resolveAddress()
             if (address && !address.isEmpty()) {
                 out << addAddress(address)
@@ -165,43 +155,32 @@ class EmlRenderService {
             out << addIf(pg.phone, 'phone' )
             out << addIf(pg.email, 'electronicMailAddress')
             out << addIf(pg.websiteUrl, 'onlineUrl')
+            if (role) {
+                builder.role role
+            }
         }
     }
 
     /**
-     * Binds a list of contacts.
+     * Binds the primary contact.
      *
      * @param builder
      * @param pg the entity
      */
     def contacts(builder, pg) {
-        def contacts = pg.getContactsPrimaryFirst()
-        // try parents and cross-links if there are no contacts
-        if (!contacts) {
-            if (pg instanceof Collection) {
-                contacts = pg.institution?.getContactsPrimaryFirst()
-            } else if (pg instanceof DataProvider) {
-                //TODO: this wont work - need to use listConsumers()
-                contacts = pg.institution?.getContactsPrimaryFirst()
-                if (!contacts && pg.institution) {
-                    contacts = pg.institution.getContactsPrimaryFirst()
-                }
-            } //TODO: use DP if DR has no contacts
-        }
-        if (contacts) {
-            contacts.each { cnt ->
-                builder.contact {
-                    if (cnt.contact.firstName || cnt.contact.lastName) {
-                        builder.individualName {
-                            cnt.contact.title ? builder.salutation(cnt.contact.title) : ""
-                            cnt.contact.firstName ? builder.givenName(cnt.contact.firstName) : ""
-                            cnt.contact.lastName ? builder.surName(cnt.contact.lastName) : ""
-                        }
+        def cnt = pg.inheritPrimaryContact()
+        if (cnt) {
+            builder.contact {
+                if (cnt.contact.firstName || cnt.contact.lastName) {
+                    builder.individualName {
+                        //cnt.contact.title ? builder.salutation(cnt.contact.title) : ""
+                        cnt.contact.firstName ? builder.givenName(cnt.contact.firstName) : ""
+                        cnt.contact.lastName ? builder.surName(cnt.contact.lastName) : ""
                     }
-                    cnt.role ? builder.positionName(cnt.role) : ""
-                    cnt.contact.phone ? builder.phone(cnt.contact.phone) : ""
-                    cnt.contact.email ? builder.electronicMailAddress(cnt.contact.email) : ""
                 }
+                cnt.role ? builder.positionName(cnt.role) : ""
+                cnt.contact.phone ? builder.phone(cnt.contact.phone) : ""
+                cnt.contact.email ? builder.electronicMailAddress(cnt.contact.email) : ""
             }
         } else {
             // last resort
@@ -266,6 +245,7 @@ class EmlRenderService {
                         pg.listKeywords().each {
                             keyword it
                         }
+                        keywordThesaurus 'free text'
                     }
 
                     /* distribution */
@@ -279,22 +259,24 @@ class EmlRenderService {
                     coverage() {
 
                         /* geographic */
-                        if (pg.geographicDescription) {
-                            geographicCoverage() {
-                                geographicDescription pg.geographicDescription
-                            }
-                        }
-                        // must have all bounds
-                        if (pg.eastCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
+                        def hasBoundingBox = pg.eastCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
                             pg.westCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
                             pg.northCoordinate != ProviderGroup.NO_INFO_AVAILABLE &&
-                            pg.southCoordinate != ProviderGroup.NO_INFO_AVAILABLE) {
+                            pg.southCoordinate != ProviderGroup.NO_INFO_AVAILABLE
+
+                        if (pg.geographicDescription || hasBoundingBox) {
                             geographicCoverage() {
-                                boundingCoordinates() {
-                                    westBoundingCoordinate pg.westCoordinate
-                                    eastBoundingCoordinate pg.eastCoordinate
-                                    northBoundingCoordinate pg.northCoordinate
-                                    southBoundingCoordinate pg.southCoordinate
+                                if (pg.geographicDescription) {
+                                    geographicDescription pg.geographicDescription
+                                }
+                                // must have all bounds
+                                if (hasBoundingBox) {
+                                    boundingCoordinates() {
+                                        westBoundingCoordinate pg.westCoordinate
+                                        eastBoundingCoordinate pg.eastCoordinate
+                                        northBoundingCoordinate pg.northCoordinate
+                                        southBoundingCoordinate pg.southCoordinate
+                                    }
                                 }
                             }
                         }
@@ -305,6 +287,9 @@ class EmlRenderService {
                         /* taxonomic */
                         // use taxonomic hints for now
                         taxonomicCoverage() {
+                            if (pg.focus) {
+                                generalTaxonomicCoverage pg.focus
+                            }
                             def ranks = []
                             if (pg.kingdomCoverage) {
                                 pg.listKingdoms().each { kingdom ->
@@ -326,10 +311,10 @@ class EmlRenderService {
                                 }
                             }
                             if (ranks) {
-                                taxonomicClassification() {
-                                    ranks.each { rank ->
-                                        taxonomicRankName rank.rank.toLowerCase()
-                                        taxonomicRankValue rank.name.toLowerCase()
+                                ranks.each { rank ->
+                                    taxonomicClassification() {
+                                        taxonRankName rank.rank.toLowerCase()
+                                        taxonRankValue rank.name.toLowerCase()
                                     }
                                 }
                             }
@@ -341,45 +326,35 @@ class EmlRenderService {
                 }
 
                 additionalMetadata() {
+                    metadata() {
+                        gbif() {
 
-                    /* dateStamp, metadataLanguage, hierarchyLevel, resourceLogoUrl */
-                    commonElements2 builder, pg
+                            /* dateStamp, metadataLanguage, hierarchyLevel, resourceLogoUrl */
+                            commonElements2 builder, pg
 
-                    /* collection */
-                    collection() {
-                        collectionName pg.name
-    
-                        if (ids.id.startsWith('urn:lsid')) {
-                            collectionId ids.id
-                        }
-                        else {
-                            collectionIdentifier pg.buildUri()
-                        }
+                            /* collection */
+                            collection() {
 
-                        pg.listCollectionTypes().each {
-                            collectionType it
-                        }
+                                parentCollectionIdentifier pg.institution ? identifiers(pg).id : 'no parent'
 
-                        if (pg.startDate) {
-                            formationPeriod pg.startDate
-                        }
+                                if (ids.id.startsWith('urn:lsid')) {
+                                    collectionIdentifier ids.id
+                                }
+                                else {
+                                    collectionIdentifier pg.buildUri()
+                                }
 
-                        if (pg.numRecords != -1) {
-                            mkp.comment "The estimated number of specimens/cultures/lots held in the collection."
-                            estimatedNumberOfItems pg.numRecords
-                        }
-                        if (pg.numRecordsDigitised != -1) {
-                            mkp.comment "The estimated number of items held in the collection that have been databased."
-                            estimatedNumberOfItemsDatabased pg.numRecordsDigitised
-                        }
-                        if (pg.subCollections) {
-                            mkp.comment "Significant sub-collections within the collection."
-                            subcollections() {
-                                pg.listSubCollections().each { sub ->
-                                    subcollection() {
-                                        name sub.name
-                                        description sub.description
-                                    }
+                                collectionName pg.name
+                            }
+
+                            if (pg.startDate) {
+                                formationPeriod pg.startDate
+                            }
+
+                            if (pg.numRecords != -1) {
+                                jgtiCuratorialUnit() {
+                                    jgtiUnitType getCuratorialUnit(pg)
+                                    jgtiUnits(uncertaintyMeasure:1, pg.numRecords)
                                 }
                             }
                         }
@@ -435,8 +410,12 @@ class EmlRenderService {
                 }
 
                 additionalMetadata() {
-                    /* dateStamp, metadataLanguage, hierarchyLevel, resourceLogoUrl */
-                    commonElements2 builder, pg
+                    metadata() {
+                        gbif() {
+                            /* dateStamp, metadataLanguage, hierarchyLevel, resourceLogoUrl */
+                            commonElements2 builder, pg
+                        }
+                    }
                 }
             }
         }
@@ -505,18 +484,13 @@ class EmlRenderService {
                 }
 
                 additionalMetadata() {
+                    metadata() {
+                        gbif() {
 
-                    /* dateStamp, metadataLanguage, hierarchyLevel, resourceLogoUrl */
-                    commonElements2 builder, pg
+                            /* dateStamp, metadataLanguage, hierarchyLevel, resourceLogoUrl */
+                            commonElements2 builder, pg
 
-                    if (pg.dataGeneralizations) {
-                        mkp.comment "Actions taken to make the shared data less specific or complete than in its original form."
-                        dataGeneralizations pg.dataGeneralizations
-                    }
-
-                    if (pg.informationWithheld) {
-                        mkp.comment "Additional information that exists, but that has not been shared in the given record."
-                        informationWithheld pg.informationWithheld
+                        }
                     }
                 }
             }
@@ -550,7 +524,7 @@ class EmlRenderService {
             contact {
                 if (cnt.contact.firstName || cnt.contact.lastName) {
                     individualName {
-                        out << addIf(cnt.contact.title, 'salutation')
+                        //out << addIf(cnt.contact.title, 'salutation')
                         out << addIf(cnt.contact.firstName, 'givenName')
                         out << addIf(cnt.contact.lastName, 'surName')
                     }
@@ -609,6 +583,26 @@ class EmlRenderService {
             value ?: ""
         }
         return template
+    }
+
+    def stripFormatting(List items) {
+        items.collect {
+            if (it) {
+                removeMarkup(handleLinks(it))
+            } else {
+                ''
+            }
+        }.join('\n').trim()
+    }
+
+    def removeMarkup(str) {
+        if (str) {
+            def italicMarkup = /_([^\r\n_]*)_/
+            str = str.replaceAll(italicMarkup) {match, group -> group}
+            def boldMarkup = /\+([^\r\n+]*)\+/
+            str = str.replaceAll(boldMarkup) {match, group -> group}
+        }
+        return str
     }
 
     /**
@@ -691,14 +685,30 @@ class EmlRenderService {
      * @param str
      * @return
      */
-    def handleLinks(String str) {
+    def handleLinks(str) {
         if (str) {
             def urlMatch = /\[(http:\S*)\b ([^\]]*)\]/   // [http: + text to next word boundary + space + all text until next ]
             str = str.replaceAll(urlMatch) {s1, s2, s3 ->
-                "${s3} (${s2})"
+                "${s2} (${s3})"
             }
         }
         return str
+    }
+
+    def getCuratorialUnit(Collection pg) {
+        def types = pg.collectionType
+        if (types =~ "preserved") {
+            return "specimens"
+        }
+        else if (types =~ "cellcultures") {
+            return "cultures"
+        }
+        else if (types =~ "genetic") {
+            return "samples"
+        }
+        else {
+            return "specimens"  // default
+        }
     }
 
 }

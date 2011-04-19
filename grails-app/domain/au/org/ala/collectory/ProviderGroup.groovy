@@ -177,6 +177,16 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
+     * Returns the best available primary contact by using inheritance and related entities.
+     *
+     * Sub-classes override for their particular relationships.
+     * @return
+     */
+    ContactFor inheritPrimaryContact() {
+        return getPrimaryContact()
+    }
+
+    /**
      * Return all contacts for this group with the primary contact listed first.
      *
      * @return list of ContactFor (contains the contact and the role for this collection)

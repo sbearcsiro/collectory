@@ -111,6 +111,15 @@ class DataResource extends ProviderGroup implements Serializable {
         }
     }
 
+    /**
+     * Returns the best available primary contact.
+     * @return
+     */
+    @Override
+    ContactFor inheritPrimaryContact() {
+        return getPrimaryContact() ?: dataProvider?.inheritPrimaryContact()
+    }
+
     long dbId() {
         return id;
     }

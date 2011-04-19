@@ -8,6 +8,10 @@ import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import groovy.xml.MarkupBuilder
+import javax.xml.XMLConstants
+import javax.xml.validation.SchemaFactory
+import org.xml.sax.SAXException
+import javax.xml.transform.stream.StreamSource
 
 class DataController {
 
@@ -245,12 +249,76 @@ class DataController {
             def pg = ProviderGroup._get(params.id)
             if (pg) {
                 response.contentType = 'text/xml'
-                render emlRenderService.emlForEntity(pg)
+                def xml = emlRenderService.emlForEntity(pg)
+                def error = ''
+                if (params.validate) {
+                    error = validate(xml)
+                }
+                if (error) {
+                    render error
+                } else {
+                    render xml
+                }
             } else {
                 notFound 'no such entity ' + params.id
             }
         } else {
             badRequest 'you must specify an entity identifier (uid)'
+        }
+    }
+
+    def validate(xml) {
+        try {
+            def factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+            def schema = factory.newSchema()
+            //def schema = factory.newSchema(new URL("http://rs.gbif.org/schema/eml-gbif-profile/dev/eml.xsd"))
+            def validator = schema.newValidator()
+            validator.validate(new StreamSource(new StringReader(xml)))
+        } catch (SAXException e) {
+            return e.getLocalizedMessage()
+        }
+        return null
+    }
+
+    def validate = {
+        if (params.id) {
+            def pg = ProviderGroup._get(params.id)
+            if (pg) {
+                def xml = emlRenderService.emlForEntity(pg)
+                def error = ''
+                if (params.validate) {
+                    error = validate(xml)
+                }
+                if (error) {
+                    render error
+                } else {
+                    render 'valid'
+                }
+            } else {
+                notFound 'no such entity ' + params.id
+            }
+        } else {
+            // just do hubs to start
+            int validCount = 0
+            def invalid = []
+            //DataHub.list().each {
+            Collection.list().each {
+                def xml = emlRenderService.emlForEntity(it)
+                def error = ''
+                if (params.validate) {
+                    error = validate(xml)
+                }
+                if (error) {
+                    invalid << [uid: it.uid, reason: error]
+                } else {
+                    validCount++
+                }
+            }
+            def result = "${validCount} are valid\n"
+            invalid.each {
+                result << "${it.uid} is not valid: ${it.reason}\n"
+            }
+            render result
         }
     }
 

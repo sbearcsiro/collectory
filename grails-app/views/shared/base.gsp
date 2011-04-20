@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.DataProvider; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Institution" %>
+<%@ page import="au.org.ala.collectory.DataResource; au.org.ala.collectory.DataProvider; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -67,6 +67,21 @@
                             <cl:helpTD/>
                           </tr>
 
+                        <g:if test="${command.ENTITY_TYPE == 'DataResource'}">
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                  <label for="resourceType"><g:message code="collection.resourceType.label" default="Resource type" /></label>
+                                </td>
+                                <td valign="top" class="value ${hasErrors(bean: command, field: 'resourceType', 'errors')}">
+                                    <g:select name="resourceType"
+                                            from="${DataResource.resourseTypeList}"
+                                            value="${command.resourceType}"/>
+                                    <cl:helpText code="providerGroup.resourceType"/>
+                                    <cl:helpTD/>
+                                </td>
+                            </tr>
+                        </g:if>
+
                         <g:if test="${command.ENTITY_TYPE == 'Collection'}">
                           <!-- institution -->
                           <tr class="prop">
@@ -76,7 +91,6 @@
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'institution', 'errors')}">
                               <g:select name="institution.id"
                                       from="${Institution.list([sort:'name'])}" 
-                                      optionKey="id"
                                       noSelection="${['null':'Select an institution']}"
                                       value="${command.institution?.id}"/>
                               <cl:helpText code="collection.institution"/>
@@ -94,7 +108,6 @@
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'dataProvider', 'errors')}">
                               <g:select name="dataProvider.id"
                                       from="${DataProvider.list([sort:'name'])}"
-                                      optionKey="id"
                                       noSelection="${['null':'Select a data provider']}"
                                       value="${command.dataProvider?.id}"/>
                               <cl:helpText code="dataResource.dataProvider"/>
@@ -110,7 +123,6 @@
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'institution', 'errors')}">
                               <g:select name="institution.id"
                                       from="${Institution.list([sort:'name'])}"
-                                      optionKey="id"
                                       noSelection="${['null':'Select an institution']}"
                                       value="${command.institution?.id}"/>
                               <cl:helpText code="dataResource.institution"/>

@@ -16,7 +16,7 @@ class DataProviderController extends ProviderGroupController {
     def list = {
         if (params.message)
             flash.message = params.message
-        params.max = Math.min(params.max ? params.int('max') : 10, 100)
+        params.max = Math.min(params.max ? params.int('max') : 50, 100)
         params.sort = params.sort ?: "name"
         ActivityLog.log username(), isAdmin(), Action.LIST
         [instanceList: DataProvider.list(params), entityType: 'DataProvider', instanceTotal: DataProvider.count()]

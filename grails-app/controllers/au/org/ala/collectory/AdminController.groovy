@@ -2,6 +2,7 @@ package au.org.ala.collectory
 
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import au.com.bytecode.opencsv.CSVReader
 
 class AdminController {
 
@@ -250,6 +251,25 @@ class AdminController {
         ${result.inserts} records inserted<br/>
         ${result.failures} lines of data could not be processed<br/>
         ${afterCount} resources after"""
+    }
+
+    def importBriefDataResources = {
+        CSVReader reader = new CSVReader(new FileReader("/data/collectory/bootstrap/infosource.csv"),',' as char)
+        String [] nextLine;
+        int count = 0
+
+		while ((nextLine = reader.readNext()) != null) {
+            def DataResource dr = new DataResource(uid: idGeneratorService.getNextDataResourceId(), resourceType: 'website',
+                    name: nextLine[1], websiteUrl: nextLine[2], userLastModified: 'bulk load from BIE')
+            if (dr.save(flush:true)) {
+                count++
+            }
+            else {
+                println "failed to import ${nextLine}"
+                dr.errors.each { println it }
+            }
+        }
+        render "${count} data resources created"
     }
 
     private def extractSearchResults(json) {

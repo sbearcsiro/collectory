@@ -190,11 +190,34 @@ class DataController {
         } else {
             addContentLocation "/ws/${urlForm}"
             def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
-            def summaries = domain.list([sort:'name']).collect {
+            def list = domain.list([sort:'name'])
+            list = filter(list)
+            def summaries = list.collect {
                 [name: it.name, uri: it.buildUri(), uid: it.uid]
             }
             render summaries as JSON
         }
+    }
+
+    /**
+     * Filters a list based on query parameters.
+     *
+     * For each query param that is a property of the first member of the list,
+     * the list is reduced to members who have the specified value for the property.
+     *
+     * @param list of entities
+     * @return
+     */
+    def filter(list) {
+        if (!list) return list
+        params.each { key, value ->
+            if (list[0].hasProperty(key)) {  // assumes a list of a single type
+                list = list.findAll {
+                    it."${key}" == value
+                }
+            }
+        }
+        return list
     }
 
     /**

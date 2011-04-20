@@ -266,11 +266,14 @@ class CrudService {
                 userLastModified = p.userLastModified
 
                 // resource specific
-                provider { name = p.dataProvider.name; uri = p.dataProvider.buildUri(); uid = p.dataProvider.uid }
+                if (p.dataProvider) {
+                    provider { name = p.dataProvider.name; uri = p.dataProvider.buildUri(); uid = p.dataProvider.uid }
+                }
                 displayName = p.displayName
                 rights = p.rights
                 citation = p.citation
                 citableAgent = p.citableAgent
+                resourceType = p.resourceType
                 dataGeneralizations = p.dataGeneralizations
                 informationWithheld = p.informationWithheld
                 if (p.listConsumers()) {

@@ -133,7 +133,7 @@ class DataLoaderService {
     def dataResourcecolumns = ["uid","dataProvider","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl","logoUrl"]
 
     /**
-     * Idempotent update of data resources from a tab-separated CSV file.
+     * Idempotent update of data resources from a CSV file.
      *
      * @param filename the CSV file
      * @return an object that summaries the changes that result

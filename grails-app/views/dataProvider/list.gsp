@@ -26,7 +26,7 @@
   
                             <g:sortableColumn property="uid" title="${message(code: 'providerGroup.uid.label', default: 'UID')}" />
 
-                            <g:sortableColumn property="isALAPartner" title="${message(code: 'dataProvider.isALAPartner.label', default: 'Partner')}" />
+                            <th>${message(code: 'dataProvider.resources.label', default: 'No. resources')}</th>
   
                         </tr>
                     </thead>
@@ -38,7 +38,7 @@
   
                         <td>${fieldValue(bean: instance, field: "uid")}</td>
 
-                        <td><cl:partner test="${instance.isALAPartner}"/></td>
+                        <td style="text-align:center;">${instance.resources.size()}</td>
   
                       </tr>
                     </g:each>

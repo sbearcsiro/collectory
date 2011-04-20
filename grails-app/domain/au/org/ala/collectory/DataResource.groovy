@@ -15,6 +15,7 @@ class DataResource extends ProviderGroup implements Serializable {
     String rights
     String citation
     String citableAgent
+    String resourceType = "records"
     String informationWithheld
     String dataGeneralizations
     DataProvider dataProvider
@@ -25,11 +26,16 @@ class DataResource extends ProviderGroup implements Serializable {
         rights(nullable:true, maxSize:4096)
         citation(nullable:true, maxSize:4096)
         citableAgent(nullable:true, maxSize:2048)
+        resourceType(maxSize:255, validator: {
+            return it in resourseTypeList
+        })
         dataProvider(nullable:true)
         institution(nullable:true)
         dataGeneralizations(nullable:true, maxSize:2048)
         informationWithheld(nullable:true, maxSize:2048)
     }
+
+    static resourseTypeList = ["records", "website", "document", "uploads"]
 
     boolean canBeMapped() {
         return false;

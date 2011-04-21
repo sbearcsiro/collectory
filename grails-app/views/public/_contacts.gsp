@@ -1,4 +1,4 @@
-<g:if test="${it.size() > 0}">
+<g:if test="${it?.size() > 0}">
   <div class="section">
     <h3>Contact</h3>
     <g:each in="${it}" var="cf">

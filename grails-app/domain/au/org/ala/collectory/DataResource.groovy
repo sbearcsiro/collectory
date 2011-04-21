@@ -15,6 +15,8 @@ class DataResource extends ProviderGroup implements Serializable {
     String rights
     String citation
     String citableAgent
+    String licenseType
+    String licenseVersion
     String resourceType = "records"
     String informationWithheld
     String dataGeneralizations
@@ -26,8 +28,10 @@ class DataResource extends ProviderGroup implements Serializable {
         rights(nullable:true, maxSize:4096)
         citation(nullable:true, maxSize:4096)
         citableAgent(nullable:true, maxSize:2048)
+        licenseType(nullable:true, maxSize:45, inList:licenseTypeList)
+        licenseVersion(nullable:true, maxSize:45)
         resourceType(maxSize:255, validator: {
-            return it in resourseTypeList
+            return it in resourceTypeList
         })
         dataProvider(nullable:true)
         institution(nullable:true)
@@ -35,7 +39,17 @@ class DataResource extends ProviderGroup implements Serializable {
         informationWithheld(nullable:true, maxSize:2048)
     }
 
-    static resourseTypeList = ["records", "website", "document", "uploads"]
+    static transients = ProviderGroup.transients + ['creativeCommons']
+
+    static resourceTypeList = ["records", "website", "document", "uploads"]
+    static creativeCommonsLicenses = ["CC BY", "CC BY-NC", "CC BY-SA", "CC BY-NC-SA"]
+    static ccDisplayList = [
+        [type:'CC BY',display:'Creative Commons Attribution'],
+        [type:'CC BY-NC',display:'Creative Commons Attribution-NonCommercial'],
+        [type:'CC BY-SA',display:'Creative Commons Attribution-ShareAlike'],
+        [type:'CC BY-NC-SA',display:'Creative Commons Attribution-NonCommercial-ShareAlike'],
+        [type:'other',display:'Some other or no license']]
+    static licenseTypeList = creativeCommonsLicenses + ["other"]
 
     boolean canBeMapped() {
         return false;
@@ -76,6 +90,14 @@ class DataResource extends ProviderGroup implements Serializable {
             drs.institutionUid = drs.relatedInstitutions[0].uid
         }
         return drs
+    }
+
+    /**
+     * True if this resource uses a CC license.
+     * @return
+     */
+    boolean isCreativeCommons() {
+        return licenseType in creativeCommonsLicenses
     }
 
     /**

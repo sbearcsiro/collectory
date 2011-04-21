@@ -1514,17 +1514,35 @@ class CollectoryTagLib {
         if (license) {
             def display = DataResource.ccDisplayList.find { it.type == license }
             def image
+            def link
+            def version = attrs.version ?: '3.0'
             switch (license) {
-                case "CC BY": image = "http://i.creativecommons.org/l/by/3.0/88x31.png"; break
-                case "CC BY-NC": image = "http://i.creativecommons.org/l/by-nc/3.0/88x31.png"; break
-                case "CC BY-SA": image = "http://i.creativecommons.org/l/by-sa/3.0/88x31.png"; break
-                case "CC BY-NC-SA": image = "http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"; break
+                case "CC BY":
+                    image = "http://i.creativecommons.org/l/by/${version}/88x31.png";
+                    link = "http://creativecommons.org/licenses/by/${version}/au/"
+                    break
+                case "CC BY-NC":
+                    image = "http://i.creativecommons.org/l/by-nc/${version}/88x31.png";
+                    link = "http://creativecommons.org/licenses/by-nc/${version}/au/"
+                    break
+                case "CC BY-SA":
+                    image = "http://i.creativecommons.org/l/by-sa/${version}/88x31.png";
+                    link = "http://creativecommons.org/licenses/by-sa/${version}/au/"
+                    break
+                case "CC BY-NC-SA":
+                    image = "http://i.creativecommons.org/l/by-nc-sa/${version}/88x31.png";
+                    link = "http://creativecommons.org/licenses/by-nc-sa/${version}/au/"
+                    break
+                default:
+                    image = null
+                    link = null
             }
+            def imageHtml = "<a rel='license' target='_blank' href='${link}'><img class='ccimage no-radius' src='${image}' alt='Creative Commons License' style='border:none;' height='31' width='88'></a>"
             if (attrs.imageOnly) {
-                out << "<img class='ccimage' src='${image}'/>"
+                out << imageHtml
             }
             else {
-                out << "${license} - ${display.display} <img class='ccimage' src='${image}'/>"
+                out << "${license} - ${display.display} ${imageHtml}"
             }
         }
     }

@@ -1509,4 +1509,23 @@ class CollectoryTagLib {
         out << link(class:"preview", controller:ProviderGroup.urlFormFromUid(attrs.uid), action:'show', id:attrs.uid) { body() }
     }
 
+    def displayLicenseType = {attrs ->
+        def license = attrs.type
+        if (license) {
+            def display = DataResource.ccDisplayList.find { it.type == license }
+            def image
+            switch (license) {
+                case "CC BY": image = "http://i.creativecommons.org/l/by/3.0/88x31.png"; break
+                case "CC BY-NC": image = "http://i.creativecommons.org/l/by-nc/3.0/88x31.png"; break
+                case "CC BY-SA": image = "http://i.creativecommons.org/l/by-sa/3.0/88x31.png"; break
+                case "CC BY-NC-SA": image = "http://i.creativecommons.org/l/by-nc-sa/3.0/88x31.png"; break
+            }
+            if (attrs.imageOnly) {
+                out << "<img class='ccimage' src='${image}'/>"
+            }
+            else {
+                out << "${license} - ${display.display} <img class='ccimage' src='${image}'/>"
+            }
+        }
+    }
 }

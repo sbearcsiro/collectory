@@ -403,7 +403,8 @@ table.no-left-pad td:first-child {
     text-align: left;
 }
 
-/*
-table.no-left-pad td {
-    text-align: right;
-}*/
+/* ---- */
+img.ccimage {
+    padding-left: 20px;
+    vertical-align: middle;
+}

@@ -864,3 +864,9 @@ div.emulate-public > h2 {
 .custom-edit td {
     vertical-align: middle;
 }
+
+/* ---- */
+img.ccimage {
+    padding-left: 20px;
+    vertical-align: middle;
+}

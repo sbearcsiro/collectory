@@ -19,7 +19,7 @@
 
             <div class="list">
                 <table>
-                  <colgroup><col width="43%"/><col width="7%"/><col width="10%"/><col width="40%"/></colgroup>
+                  <colgroup><col width="45%"/><col width="7%"/><col width="10%"/><col width="3%"/><col width="35%"/></colgroup>
                     <thead>
                         <tr>
                             <g:sortableColumn property="name" title="${message(code: 'dataResource.name.label', default: 'Name')}" />
@@ -28,7 +28,9 @@
 
                             <g:sortableColumn property="resourceType" title="${message(code: 'dataResource.resourceType.label', default: 'Type')}" />
 
-                            <g:sortableColumn property="isALAPartner" title="${message(code: 'dataResource.dataProvider.label', default: 'Provider')}" />
+                            <th></th>
+
+                            <g:sortableColumn property="dataProvider" title="${message(code: 'dataResource.dataProvider.label', default: 'Provider')}" />
 
                         </tr>
                     </thead>
@@ -41,6 +43,10 @@
                         <td>${fieldValue(bean: instance, field: "uid")}</td>
 
                         <td>${fieldValue(bean: instance, field: "resourceType")}</td>
+
+                        <td>
+                            <g:if test="${instance.isCreativeCommons()}">CC</g:if>
+                        </td>
 
                         <td>${fieldValue(bean: instance.dataProvider, field: "name")}</td>
 

@@ -74,7 +74,7 @@
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: command, field: 'resourceType', 'errors')}">
                                     <g:select name="resourceType"
-                                            from="${DataResource.resourseTypeList}"
+                                            from="${DataResource.resourceTypeList}"
                                             value="${command.resourceType}"/>
                                     <cl:helpText code="providerGroup.resourceType"/>
                                     <cl:helpTD/>

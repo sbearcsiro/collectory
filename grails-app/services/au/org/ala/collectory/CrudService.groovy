@@ -271,6 +271,8 @@ class CrudService {
                 }
                 displayName = p.displayName
                 rights = p.rights
+                licenseType = p.licenseType
+                licenseVersion = p.licenseVersion
                 citation = p.citation
                 citableAgent = p.citableAgent
                 resourceType = p.resourceType

@@ -213,7 +213,12 @@ class DataController {
         params.each { key, value ->
             if (list[0].hasProperty(key)) {  // assumes a list of a single type
                 list = list.findAll {
-                    it."${key}" == value
+                    def propertyValue = it."${key}"
+                    def paramValue = value
+                    if (propertyValue instanceof Boolean) {
+                        paramValue = (paramValue.toLowerCase() == 'true')
+                    }
+                    propertyValue == paramValue
                 }
             }
         }

@@ -75,6 +75,12 @@
             <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
+            <g:if test="${instance.resourceType == 'website'}">
+                <p>This website provides content for Atlas species pages.</p>
+            </g:if>
+            <g:if test="${instance.resourceType == 'document'}">
+                <p>Documents from this source provide content for Atlas species pages.</p>
+            </g:if>
 
             <h2>Citation</h2>
             <g:if test="${instance.citation || instance.citableAgent}">
@@ -87,7 +93,12 @@
 
             <g:if test="${instance.rights}">
               <h2>Rights</h2>
-              <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
+              <g:if test="${instance.creativeCommons}">
+                <p>${fieldValue(bean: instance, field: "rights")}<cl:displayLicenseType type="${instance.licenseType}" version="${instance.licenseVersion}" imageOnly="true"/></p>
+              </g:if>
+              <g:else>
+                <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
+              </g:else>
             </g:if>
             
             <g:if test="${instance.dataGeneralizations}">
@@ -100,20 +111,24 @@
               <cl:formattedText>${fieldValue(bean: instance, field: "informationWithheld")}</cl:formattedText>
             </g:if>
 
-            <h2>Digitised records</h2>
-            <div>
-              <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
-              <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
-            </div>
+            <g:if test="${instance.resourceType == 'records'}">
+                <h2>Digitised records</h2>
+                <div>
+                  <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
+                  <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
+                </div>
+            </g:if>
           </div>
-          <div class="section vertical-charts">
-            <h3>Map of records</h3>
-            <cl:recordsMap/>
-            <h3>Records by taxonomic group</h3>
-            <cl:taxonChart uid="${instance.uid}"/>
-            <h3>Records by collection date</h3>
-            <cl:decadeChart/>
-          </div>
+          <g:if test="${instance.resourceType == 'records'}">
+              <div class="section vertical-charts">
+                <h3>Map of records</h3>
+                <cl:recordsMap/>
+                <h3>Records by taxonomic group</h3>
+                <cl:taxonChart uid="${instance.uid}"/>
+                <h3>Records by collection date</h3>
+                <cl:decadeChart/>
+              </div>
+          </g:if>
           <cl:lastUpdated date="${instance.lastUpdated}"/>
         </div><!--close column-one-->
 

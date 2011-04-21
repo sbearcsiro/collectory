@@ -104,6 +104,12 @@
                 <!-- rights -->
                 <p><span class="category">Rights</span>: ${fieldValue(bean: instance, field: "rights")}</p>
 
+                <!-- license -->
+                <p><span class="category">License type</span>: <cl:displayLicenseType type="${instance.licenseType}"/></p>
+
+                <!-- license version -->
+                <p><span class="category">License version</span>: ${fieldValue(bean: instance, field: "licenseVersion")}</p>
+
                 <!-- generalisations -->
                 <p><span class="category">Data generalisations</span>: ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
 

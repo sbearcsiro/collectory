@@ -246,6 +246,21 @@ class LookupController {
         }
     }
 
+    def listResources = {
+        response.addHeader HttpHeaders.CONTENT_TYPE, 'text/csv'
+        Writer w = response.getWriter()
+        CSVWriter wr = new CSVWriter(w)
+        String[] header = ['uid','name']
+        wr.writeNext(header)
+        def list = params.id ? DataResource.findAllByResourceType(params.id, [sort:'name']) : DataResource.list([sort:'name'])
+        list.each {
+            String[] values = [it.uid, it.name]
+            wr.writeNext values
+        }
+        wr.close()
+        render ""
+    }
+
     String makeLink(uid) {
         return "${ConfigurationHolder.config.grails.serverURL}/public/show/${uid}"
     }

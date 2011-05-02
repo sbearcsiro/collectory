@@ -49,7 +49,7 @@
     <cl:isNotLoggedIn>
         <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}/${ConfigurationHolder.config.security.cas.context}/admin">Logout</a>
     </cl:isNotLoggedIn>
-</div><browser:isMsie><div style="clear:both"></div></browser:isMsie><!-- fix IE float bug-->
+</div>
   
 <div id="content" class="clearfix">
  

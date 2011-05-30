@@ -37,7 +37,7 @@ class ReportsController {
     }
 
     def contactsForCollections = {
-        def model = DataController.buildContactsModel('html', Collection.list([sort:'name']))
+        def model = DataController.buildContactsModel(Collection.list([sort:'name']))
         [contacts:model]
     }
 
@@ -57,12 +57,15 @@ class ReportsController {
     }
 
     def collections = {
+        def simple = params.simple ?: 'false'
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'collections'
-        [reports: new ReportCommand('collections')]
+        [collections: Collection.list([sort:'name']), simple: simple]
     }
 
     def institutions = {
+        def simple = params.simple ?: 'false'
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'institutions'
+        [institutions: Institution.list([sort:'name']), simple: simple]
     }
 
     def providers = {

@@ -90,9 +90,10 @@
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'institution', 'errors')}">
                               <g:select name="institution.id"
-                                      from="${Institution.list([sort:'name'])}" 
-                                      noSelection="${['null':'Select an institution']}"
-                                      value="${command.institution?.id}"/>
+                                    from="${Institution.list([sort:'name'])}"
+                                    optionKey="id"
+                                    noSelection="${['null':'Select an institution']}"
+                                    value="${command.institution?.id}"/>
                               <cl:helpText code="collection.institution"/>
                               <cl:helpTD/>
                             </td>
@@ -108,6 +109,7 @@
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'dataProvider', 'errors')}">
                               <g:select name="dataProvider.id"
                                       from="${DataProvider.list([sort:'name'])}"
+                                      optionKey="id"
                                       noSelection="${['null':'Select a data provider']}"
                                       value="${command.dataProvider?.id}"/>
                               <cl:helpText code="dataResource.dataProvider"/>
@@ -123,6 +125,7 @@
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'institution', 'errors')}">
                               <g:select name="institution.id"
                                       from="${Institution.list([sort:'name'])}"
+                                      optionKey="id"
                                       noSelection="${['null':'Select an institution']}"
                                       value="${command.institution?.id}"/>
                               <cl:helpText code="dataResource.institution"/>

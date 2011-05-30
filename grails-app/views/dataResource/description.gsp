@@ -27,10 +27,10 @@
                         <!-- display name -->
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="name"><g:message code="dataResource.displayName.label" default="Display name" /></label>
+                              <label for="displayName"><g:message code="dataResource.displayName.label" default="Display name" /></label>
                             </td>
                             <td id="previous" valign="top" class="value ${hasErrors(bean: command, field: 'displayName', 'errors')}">
-                              <g:textField name="name" maxlength="128" value="${command?.displayName}" />
+                              <g:textField name="displayName" maxlength="128" value="${command?.displayName}" />
                               <cl:helpText code="dataResource.displayName"/>
                             </td>
                           <cl:helpTD/>

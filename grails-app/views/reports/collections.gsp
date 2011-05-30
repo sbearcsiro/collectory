@@ -16,58 +16,37 @@
             <div class="message">${flash.message}</div>
             </g:if>
 
-            <gui:tabView>
-              <gui:tab label="Names only">
-              <div id="names-only">
-                <table>
-                  <colgroup><col width="80%"/><col width="10%"/><col width="10%"/></colgroup>
-                  <tr><td colspan="3">Simple name list (for copy and paste)</td></tr>
-                  <tr class="reportGroupTitle"><td colspan="3">All collections</td></tr>
-                  <g:each var='c' in="${Collection.list([sort: 'name'])}">
-                    <tr>
-                      <td>${fieldValue(bean: c, field: "name")}</td>
-                      <td></td>
-                      <td></td>
-                    </tr>
-                  </g:each>
-                </table>
-              </div>
-              </gui:tab>
+            <div class="dialog">
+                <g:if test="${simple != 'true'}">
+                    <p><strong>View</strong> column links to the public page for the collection. You can copy this link to use as the permanent URL to the collection page.</p>
+                    <p><strong>Edit</strong> column links to the admin page where this collection's metadata can be edited.</p>
+                </g:if>
+                <p>Showing ${collections.size()} collections.
+                <g:if test="${simple == 'true'}">
+                    <g:link controller="reports" action="collections" params="[simple:'false']">Show links.</g:link></p>
+                </g:if>
+                <g:else>
+                    <g:link controller="reports" action="collections" params="[simple:'true']">Show collection names only.</g:link></p>
+                </g:else>
 
-              <gui:tab label="Attributes" active="true">
-                <div class="dialog">
-                  <table>
-                    <colgroup><col width="70%"/><col width="10%"/><col width="10%"/><col width="10%"/></colgroup>
-                    <tr><td colspan="4">Columns show whether the collection has an institution, has a primary contact and is an ALA partner.</td></tr>
-                    <tr class="reportGroupTitle"><td>All collections (${Collection.count()})</td><td>Inst</td><td>Cont</td><td>ALA</td></tr>
-                    <g:each var='c' in="${Collection.list([sort: 'name'])}">
-                      <tr>
-                        <td><g:link controller="collection" action="show" id="${c.id}">${fieldValue(bean: c, field: "name")}</g:link></td>
-                        <td>${c.getInstitution()?'Y':' '}</td>
-                        <td>${c.getPrimaryContact()?'Y':' '}</td>
-                        <td>${c.isALAPartner()?'Y':' '}</td>
-                      </tr>
-                    </g:each>
-                  </table>
-                </div>
-              </gui:tab>
+              <table>
+                <g:if test="${simple != 'true'}">
+                    <colgroup><col width="60%"/><col width="20%"/><col width="10%"/><col width="10%"/></colgroup>
+                </g:if>
 
-              <gui:tab label="Permalinks">
-                <div id="permalinks">
-                  <table>
-                    <colgroup><col width="70%"/><col width="30%"/></colgroup>
-                    <tr><td colspan="2">Optimal permanent links for the public collection pages.</td></tr>
-                    <tr class="reportGroupTitle"><td colspan="3">All collections</td></tr>
-                    <g:each var='c' in="${Collection.list([sort: 'name'])}">
-                      <tr>
-                        <td>${fieldValue(bean: c, field: "name")}</td>
-                        <td><cl:permalink type="collection" id="${c.generatePermalink()}"/></td>
-                      </tr>
-                    </g:each>
-                  </table>
-                </div>
-              </gui:tab>
-           </gui:tabView>
+                <g:each var='c' in="${collections}" status="i">
+                  <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                    <td>${c.name}</td>
+                    <g:if test="${simple != 'true'}">
+                        <td>${c.acronym}</td>
+                        <td><g:link controller="public" action="show" id="${c.uid}">View</g:link></td>
+                        <td><g:link controller="collection" action="show" id="${c.uid}">Edit</g:link></td>
+                    </g:if>
+                  </tr>
+                </g:each>
+
+              </table>
+            </div>
         </div>
     </body>
 </html>

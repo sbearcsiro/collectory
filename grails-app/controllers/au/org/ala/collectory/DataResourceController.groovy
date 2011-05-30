@@ -70,6 +70,16 @@ class DataResourceController extends ProviderGroupController {
     }
 
     /**
+     * Update descriptive attributes that are specific to resources.
+     *
+     * Called by the base class method for updating descriptions.
+     */
+    @Override def entitySpecificDescriptionProcessing(Object pg, Object params) {
+        pg.displayName = params.displayName
+        params.remove('displayName')
+    }
+
+    /**
      * Get the instance for this entity based on either uid or DB id.
      *
      * @param id UID or DB id

@@ -519,6 +519,14 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
+     * Returns the url to the public representation of this entity in the collectory.
+     * @return
+     */
+    String buildPublicUrl() {
+        return ConfigurationHolder.config.grails.serverURL + "/public/show/" + uid
+    }
+
+    /**
      * Returns the url to the logo image for this entity.
      * @return
      */

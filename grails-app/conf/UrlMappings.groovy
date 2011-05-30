@@ -21,6 +21,14 @@ class UrlMappings {
           }
         }
 
+        "/ws/$entity/summary" (controller:'data') {
+          action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
+          constraints {
+            entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+          summary = 'true'
+          }
+        }
+
       // raw contact data
       "/ws/contacts/$id?" (controller: 'data', action: 'contacts')  
 

@@ -79,7 +79,20 @@ class DataController {
     static {
         rfc1123Format.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
-    
+
+    def renderJson = {json ->
+        if (params.callback) {
+            //render(contentType:'application/json', text: "${params.callback}(${json})")
+            render(contentType:'text/javascript', text: "${params.callback}(${json})", encoding: "UTF-8")
+        } else {
+            render json
+        }
+    }
+
+    def renderAsJson = {json ->
+        renderJson(json as JSON)
+    }
+
     def addLocation(relativeUri) {
         response.addHeader 'location', ConfigurationHolder.config.grails.serverURL + relativeUri
     }
@@ -173,12 +186,20 @@ class DataController {
     }
 
     /**
+     * Define some variations on the level of detail returned for lists.
+     */
+    def brief = {[name: it.name, uri: it.buildUri(), uid: it.uid]}
+    def summary = {[name: it.name, uri: it.buildUri(), uid: it.uid, logo: it.buildLogoUrl()]}
+
+
+    /**
      * Return JSON representation of specified entity
      * or list of entities if no uid specified.
      *
      * @param entity - controller form of domain class, eg dataProvider
      * @param uid - optional uid of an instance of entity
      * @param pg - optional instance specified by uid (added in beforeInterceptor)
+     * @param summary - any non-null value will cause a richer summary to be returned for entity lists
      */
     def getEntity = {
         def urlForm = params.entity
@@ -192,10 +213,9 @@ class DataController {
             def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
             def list = domain.list([sort:'name'])
             list = filter(list)
-            def summaries = list.collect {
-                [name: it.name, uri: it.buildUri(), uid: it.uid]
-            }
-            render summaries as JSON
+            def detail = params.summary ? summary : brief
+            def summaries = list.collect(detail)
+            renderAsJson summaries
         }
     }
 

@@ -8,4 +8,5 @@ class InstitutionSummary extends ProviderGroupSummary {
     List collections
     List relatedDataProviders = []    // list of map with name: and uid:
     List relatedDataResources = []    // list of map with name: and uid:
+    List hubMembership = []
 }

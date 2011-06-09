@@ -20,6 +20,8 @@ class DataHub extends ProviderGroup implements Serializable {
         members(nullable:true, maxSize:4096)
     }
 
+    static transients = ProviderGroup.transients + ['collectionMember', 'institutionMember']
+    
     boolean canBeMapped() {
         return false;
     }
@@ -66,6 +68,14 @@ class DataHub extends ProviderGroup implements Serializable {
                 [uid: it, name: 'collection missing']
             }
         }.sort { it.name }
+    }
+
+    def isCollectionMember(String uid) {
+        return JSON.parse(memberCollections).contains(uid)
+    }
+
+    def isInstitutionMember(String uid) {
+        return JSON.parse(memberInstitutions).contains(uid)
     }
 
     long dbId() {

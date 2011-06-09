@@ -374,6 +374,7 @@ class CrudService {
             }
             use (OutputFormat) {
                 networkMembership = p.networkMembership?.formatNetworkMembership()
+                hubMembership = p.listHubMembership()?.formatHubMembership()
                 attributions = p.attributionList.formatAttributions()
                 dateCreated = p.dateCreated
                 lastUpdated = p.lastUpdated
@@ -469,6 +470,7 @@ class CrudService {
             }
             use (OutputFormat) {
                 networkMembership = p.networkMembership?.formatNetworkMembership()
+                hubMembership = p.listHubMembership()?.formatHubMembership()
                 taxonomyCoverageHints = JSONHelper.taxonomyHints(p.taxonomyHints)
                 attributions = p.attributionList.formatAttributions()
 
@@ -724,6 +726,10 @@ class OutputFormat {
 
     static def briefEntity(list) {
         return list.collect {[name: it.name, uri: it.buildUri(), uid: it.uid]}
+    }
+
+    static def formatHubMembership(hubs) {
+        return hubs.collect { [uid: it.uid, name: it.name, uri: it.buildUri()] }
     }
 
     static def formatNetworkMembership(jsonListStr) {

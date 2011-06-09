@@ -58,6 +58,7 @@ class Institution extends ProviderGroup {
                 }
             }
         }
+        is.hubMembership = listHubMembership().collect { [uid: it.uid, name: it.name] }
         return is
     }
 
@@ -112,6 +113,15 @@ class Institution extends ProviderGroup {
             }
         }
         return result
+    }
+
+    /**
+     * Returns a list of all hubs this collection belongs to.
+     *
+     * @return list of DataHub
+     */
+    List listHubMembership() {
+        DataHub.list().findAll {it.isInstitutionMember(uid)}
     }
 
     /**

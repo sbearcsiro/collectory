@@ -232,6 +232,15 @@ class Collection extends ProviderGroup implements Serializable {
     }
 
     /**
+     * Returns a list of all hubs this collection belongs to.
+     *
+     * @return list of DataHub
+     */
+    List listHubMembership() {
+        DataHub.list().findAll {it.isCollectionMember(uid)}
+    }
+
+    /**
      * Returns a summary of the collection including:
      * - id
      * - name
@@ -255,6 +264,7 @@ class Collection extends ProviderGroup implements Serializable {
         }
         cs.derivedInstCodes = getListOfInstitutionCodesForLookup()
         cs.derivedCollCodes = getListOfCollectionCodesForLookup()
+        cs.hubMembership = listHubMembership().collect { [uid: it.uid, name: it.name] }
         listProviders().each {
             def pg = ProviderGroup._get(it)
             if (pg) {

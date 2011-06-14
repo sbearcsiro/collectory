@@ -79,8 +79,31 @@
               <!-- members -->
               <div class="show-section">
                 <h2>Members</h2>
+                <g:if test="${instance.listMemberInstitutions()}">
+                    <h3>Institutions</h3>
+                    <ul class='simple'>
+                    <g:each in="${instance.listMemberInstitutions()}" var="i">
+                        <li><g:link controller="institution" action="show" id="${i.uid}">${i.name}</g:link></li>
+                    </g:each>
+                    </ul>
+                </g:if>
+                <g:if test="${instance.listMemberCollections()}">
+                    <h3>Collections</h3>
+                    <ul class='simple'>
+                    <g:each in="${instance.listMemberCollections()}" var="i">
+                        <li><g:link controller="collection" action="show" id="${i.uid}">${i.name}</g:link></li>
+                    </g:each>
+                    </ul>
+                </g:if>
+                <g:if test="${instance.listMemberDataResources()}">
+                    <h3>Resources</h3>
+                    <ul class='simple'>
+                    <g:each in="${instance.listMemberDataResources()}" var="i">
+                        <li><g:link controller="dataResource" action="show" id="${i.uid}">${i.name}</g:link></li>
+                    </g:each>
+                    </ul>
+                </g:if>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'members']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
               <!-- images -->

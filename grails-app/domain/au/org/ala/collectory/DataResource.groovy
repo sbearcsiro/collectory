@@ -73,6 +73,7 @@ class DataResource extends ProviderGroup implements Serializable {
         drs.dataProviderId = dataProvider?.id
         drs.dataProviderUid = dataProvider?.uid
 
+        drs.hubMembership = listHubMembership().collect { [uid: it.uid, name: it.name] }
         def consumers = listConsumers()
         consumers.each {
             def pg = ProviderGroup._get(it)
@@ -90,6 +91,15 @@ class DataResource extends ProviderGroup implements Serializable {
             drs.institutionUid = drs.relatedInstitutions[0].uid
         }
         return drs
+    }
+
+    /**
+     * Returns a list of all hubs this resource belongs to.
+     *
+     * @return list of DataHub
+     */
+    List listHubMembership() {
+        DataHub.list().findAll {it.isDataResourceMember(uid)}
     }
 
     /**

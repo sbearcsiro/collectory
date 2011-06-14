@@ -188,6 +188,7 @@ class CrudService {
             members = p.listMembers()
             memberInstitutions = p.listMemberInstitutions()
             memberCollections = p.listMemberCollections()
+            memberDataResources = p.listMemberDataResources()
         }
         return result
     }
@@ -263,6 +264,7 @@ class CrudService {
             }
             use (OutputFormat) {
                 networkMembership = p.networkMembership?.formatNetworkMembership()
+                hubMembership = p.listHubMembership()?.formatHubMembership()
                 taxonomyCoverageHints = JSONHelper.taxonomyHints(p.taxonomyHints)
                 attributions = p.attributionList.formatAttributions()
                 dateCreated = p.dateCreated

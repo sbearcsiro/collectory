@@ -9,4 +9,5 @@ class DataResourceSummary extends ProviderGroupSummary {
     String displayName
     List relatedCollections = []     // list of map with name: and uid:
     List relatedInstitutions = []    // list of map with name: and uid:
+    List hubMembership = []
 }

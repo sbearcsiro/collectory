@@ -111,6 +111,15 @@
               <cl:formattedText>${fieldValue(bean: instance, field: "informationWithheld")}</cl:formattedText>
             </g:if>
 
+            <g:if test="${instance.resourceType == 'website' || instance.resourceType == 'records' }">
+              <div id='usage-stats'>
+                  <h2>Usage statistics</h2>
+                  <div id='usage'>
+                    <p>Loading...</p>
+                  </div>
+              </div>
+            </g:if>
+
             <g:if test="${instance.resourceType == 'records'}">
                 <h2>Digitised records</h2>
                 <div>
@@ -137,7 +146,7 @@
             <g:if test="${fieldValue(bean: instance, field: 'imageRef') && fieldValue(bean: instance, field: 'imageRef.file')}">
               <div class="section">
                 <img alt="${fieldValue(bean: instance, field: "imageRef.file")}"
-                        src="${resource(absolute:"true", dir:"data/collection/", file:instance.imageRef.file)}" />
+                        src="${resource(absolute:"true", dir:"data/dataResource/", file:instance.imageRef.file)}" />
                 <cl:formattedText pClass="caption">${fieldValue(bean: instance, field: "imageRef.caption")}</cl:formattedText>
                 <cl:valueOrOtherwise value="${instance.imageRef?.attribution}"><p class="caption">${fieldValue(bean: instance, field: "imageRef.attribution")}</p></cl:valueOrOtherwise>
                 <cl:valueOrOtherwise value="${instance.imageRef?.copyright}"><p class="caption">${fieldValue(bean: instance, field: "imageRef.copyright")}</p></cl:valueOrOtherwise>
@@ -245,6 +254,13 @@
         *
         \************************************************************/
         function onLoadCallback() {
+          // stats
+          if (${instance.resourceType == 'website'}) {
+              loadDownloadStats("${instance.uid}","${instance.name}", "2000");
+          } else if (${instance.resourceType == 'records'}) {
+              loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+          }
+
           // summary biocache data
           var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
           $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
@@ -297,6 +313,7 @@
                            });
 
         }
+
         /************************************************************\
         *
         \************************************************************/

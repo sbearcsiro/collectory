@@ -287,6 +287,16 @@
                       <cl:decadeChart/>
                     </td>
                   </tr>
+                  <tr>
+                    <td>
+                      <div id='usage-stats'>
+                        <h2>Download statistics</h2>
+                        <div id='usage'>
+                          <p>Loading...</p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
                 </table>
               </g:if>
             </div>
@@ -316,6 +326,9 @@ $('img#mapLegend').each(function(i, n) {
 * initiate ajax calls
 \************************************************************/
 function onLoadCallback() {
+  // stats
+  loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+
   // summary biocache data
   var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
   $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);

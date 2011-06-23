@@ -400,3 +400,66 @@ function contactCurator(email, firstName, uid, instUid, name) {
     return false;
 }
 
+/*******                                   *****
+ *******        LOAD DOWNLOAD STATS        *****
+ *******                                   *****/
+
+function loadDownloadStats(uid, name, eventType) {
+    if (eventType == '') {
+        // nothing to show
+        return;
+    }
+    var loggerServicesUrl = "http://logger.ala.org.au/service/";
+    var url = loggerServicesUrl + uid + "/events/" + eventType + "/counts.json";
+    $.ajax({
+      url: url,
+      dataType: 'jsonp',
+      cache: false,
+      error: function(jqXHR, textStatus, errorThrown) {
+        clearStats();
+      },
+      success: function(data) {
+        if (data.all.numberOfEvents == '0') {
+            clearStats();
+        } else {
+            var stats;
+            if (eventType == '2000') { // images
+                stats = "<p class='short-bot'>Number of images viewed from the " + name + " through the Atlas of Living Australia.</p>";
+                stats += "<table class='counts'>";
+                stats += "<tr><td>This month:</td><td style='text-align: right;'><span class='number'>" +
+                        addCommas(data.thisMonth.numberOfEventItems) + "</span></td></tr>";
+                stats += "<tr><td>Last 3 months:</td><td style='text-align: right;'><span class='number'>" +
+                        addCommas(data.last3Months.numberOfEventItems) + "</span></td></tr>";
+                stats += "<tr><td>Last 12 months:</td><td style='text-align: right;'><span class='number'>" +
+                        addCommas(data.all.numberOfEventItems) + "</span></td></tr>";
+                stats += "</table>";
+            } else {  // eventType == '1000' - records
+                stats = "<p class='short-bot'>Number of occurrence records downloaded from the " + name + " through the Atlas of Living Australia.</p>";
+                stats += "<table class='counts'>";
+                stats += "<tr><td>This month:</td><td style='text-align: right;'><span class='number'>" +
+                        addCommas(data.thisMonth.numberOfEventItems) + "</span></td><td>from <span class='number'>" +
+                        addCommas(data.thisMonth.numberOfEvents) + "</span> " + pluralise('download',data.thisMonth.numberOfEvents) + ".</td></tr>";
+                stats += "<tr><td>Last 3 months:</td><td style='text-align: right;'><span class='number'>" +
+                        addCommas(data.last3Months.numberOfEventItems) + "</span></td><td>from <span class='number'>" +
+                        addCommas(data.last3Months.numberOfEvents) + "</span> " + pluralise('download',data.last3Months.numberOfEvents) + ".</td></tr>";
+                stats += "<tr><td>Last 12 months:</td><td style='text-align: right;'><span class='number'>" +
+                        addCommas(data.all.numberOfEventItems) + "</span></td><td>from <span class='number'>" +
+                        addCommas(data.all.numberOfEvents) + "</span> " + pluralise('download',data.all.numberOfEvents) + ".</td></tr>";
+                stats += "</table>";
+            }
+
+            $('div#usage').html(stats);
+        }
+      }
+    });
+}
+function clearStats() {
+    $('#usage-stats').css('display','none');
+}
+function pluralise(word, number) {
+    if (number == 1) {
+        return word;
+    } else {
+        return word + 's';
+    }
+}

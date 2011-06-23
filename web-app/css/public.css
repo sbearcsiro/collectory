@@ -408,3 +408,24 @@ img.ccimage {
     padding-left: 20px;
     vertical-align: middle;
 }
+
+table.counts {
+    border: none;
+    padding: 0;
+}
+
+table.counts tr td:nth-child(2) {
+    text-align: right;
+}
+
+table.counts tr td:first-child {
+    width: 100px;
+}
+
+p.short-bot {
+    padding-bottom: 7px ! important;
+}
+
+span.number {
+    font-weight: bold;
+}

@@ -63,7 +63,7 @@
                         <!-- focus -->
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="focus"><g:message code="providerGroup.focus.label" default="Contribution" /></label>
+                              <label for="focus"><g:message code="providerGroup.focus.label" default="Focus" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'focus', 'errors')}">
                                 <g:textArea name="focus" cols="40" rows="${cl.textAreaHeight(text:command.focus)}" value="${command?.focus}" />

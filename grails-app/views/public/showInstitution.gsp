@@ -84,6 +84,15 @@
           </g:each>
         </ol>
 
+        <g:if test="${false}">
+          <div id='usage-stats'>
+            <h2>Usage statistics</h2>
+            <div id='usage'>
+              <p>Loading...</p>
+            </div>
+          </div>
+        </g:if>
+
         <g:if test="${ConfigurationHolder.config.ui.showChartsForInstitutions != 'false'}">
           <h2>Digitised records</h2>
           <div>
@@ -178,6 +187,9 @@
 \************************************************************/
 function onLoadCallback() {
 
+  // stats
+  //loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+
   var showStats = true;
   if ("${ConfigurationHolder.config.ui.showChartsForInstitutions}" == "false") {
     showStats = false;
@@ -191,9 +203,6 @@ function onLoadCallback() {
     // taxon chart
     loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.descendantUids().join(',')}", 55);
 
-    // records map
-    //var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-    //$.get(mapServiceUrl, {}, mapRequestHandler);
   }
 }
 /************************************************************\

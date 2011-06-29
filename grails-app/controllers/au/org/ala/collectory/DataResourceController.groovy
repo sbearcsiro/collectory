@@ -2,6 +2,7 @@ package au.org.ala.collectory
 
 import grails.converters.JSON
 import au.org.ala.collectory.exception.InvalidUidException
+import au.org.ala.collectory.resources.Profile
 
 class DataResourceController extends ProviderGroupController {
 
@@ -38,35 +39,35 @@ class DataResourceController extends ProviderGroupController {
         }
     }
 
-    def updateRights = {
+    def updateContribution = {
         def pg = get(params.id)
-        if (pg) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
-                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
-                            "Another user has updated this ${pg.entityType()} while you were editing")
-                    render(view: "description", model: [command: pg])
-                    return
+
+        // process connection parameters
+        def protocol = params.remove('protocol')
+        def cp = [:]
+        if (protocol) {
+            cp.protocol = protocol
+        }
+        def profile = Profile.valueOf(protocol)
+        profile.parameters.each {key, value ->
+            if (params."${key}") {
+                if (key == 'termsForUniqueKey') {
+                    cp."${key}" = params."${key}".tokenize(', ')
+                }
+                else {
+                    cp."${key}" = params."${key}"
                 }
             }
-
-            pg.properties = params
-            pg.userLastModified = username()
-            if (!pg.hasErrors() && pg.save(flush: true)) {
-                flash.message =
-                  "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                redirect(action: "show", id: pg.id)
-            }
-            else {
-                render(view: "description", model: [command: pg])
-            }
-        } else {
-            flash.message =
-                "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
-            redirect(action: "show", id: params.id)
         }
+        params.connectionParameters = (cp as JSON).toString()
+
+        // update
+        genericUpdate pg, 'contribution'
+    }
+
+    def updateRights = {
+        def pg = get(params.id)
+        genericUpdate pg, 'rights'
     }
 
     /**

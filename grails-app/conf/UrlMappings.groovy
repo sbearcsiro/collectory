@@ -29,6 +29,9 @@ class UrlMappings {
           }
         }
 
+      // data resource harvesting parameters
+      "/ws/dataResource/$uid/connectionParameters" (controller:'data', action:'connectionParameters')
+
       // raw contact data
       "/ws/contacts/$id?" (controller: 'data', action: 'contacts')  
 

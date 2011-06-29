@@ -560,6 +560,15 @@ class DataController {
         }
     }
 
+    def connectionParameters = {
+        ProviderGroup pg = params.pg
+        if (pg.entityType() != DataResource.ENTITY_TYPE) {
+            badRequest "must be a data resource"
+        } else {
+            renderJson pg.connectionParameters
+        }
+    }
+
     /**** html fragment services ****/
     def getFragment = {
         def pg = ProviderGroup._get(params.uid)

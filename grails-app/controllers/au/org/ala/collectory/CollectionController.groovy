@@ -244,14 +244,7 @@ CSIRO
     def updateRange = {
         def collection = Collection.get(params.id)
         if (collection) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (collection.version > version) {
-                    collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                    render(view: "range", model: [command: collection])
-                    return
-                }
-            }
+            if (checkLocking(collection,'range')) { return }
 
             // special handling for numbers
             if (!params.eastCoordinate) { params.eastCoordinate = -1 }
@@ -289,13 +282,7 @@ CSIRO
     def addKeyword = {
         def collection = Collection.get(params.id)
         if (collection) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (collection.version > version) {
-                    collection.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'collection.label', default: 'Collection')] as Object[], "Another user has updated this collection while you were editing")
-                    redirect(action: "show", id: collection.id)
-                }
-            }
+            if (checkLocking(collection,'show')) { return }
             def keywords = collection.listKeywords()
             if (!(keywords.contains(params.keyword))) {
                 keywords.add params.keyword

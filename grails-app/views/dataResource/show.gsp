@@ -91,6 +91,31 @@
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
+              <!-- contribution -->
+              <div class="show-section">
+                <h2>Contribution</h2>
+
+                <!-- contributor -->
+                <p><span class="category">Contributor</span>:<cl:tickOrCross test="${instance.isContributor()}">yes|no</cl:tickOrCross></p>
+
+                <!-- status -->
+                <p><span class="category">Status</span>: ${fieldValue(bean: instance, field: "status")}</p>
+
+                <!-- last harvested -->
+                <p><span class="category">Last harvested</span>: ${fieldValue(bean: instance, field: "lastHarvested")}</p>
+
+                <!-- harvest frequency -->
+                <p><span class="category">Harvest frequency</span>: ${fieldValue(bean: instance, field: "harvestFrequency")}</p>
+
+                <!-- harvesting notes -->
+                <p><span class="category">Harvesting notes</span>: ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
+
+                <!-- connection parameters -->
+                <p><span class="category">Connection parameters</span>: <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
+
+                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'contribution']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+              </div>
+
               <!-- rights -->
               <div class="show-section">
                 <h2>Citation and rights</h2>

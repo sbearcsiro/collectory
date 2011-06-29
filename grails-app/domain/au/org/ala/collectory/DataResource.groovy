@@ -1,5 +1,7 @@
 package au.org.ala.collectory
 
+import java.sql.Timestamp
+
 class DataResource extends ProviderGroup implements Serializable {
 
     static final String ENTITY_TYPE = 'DataResource'
@@ -20,6 +22,12 @@ class DataResource extends ProviderGroup implements Serializable {
     String resourceType = "records"
     String informationWithheld
     String dataGeneralizations
+    boolean contributor = true
+    String status
+    String harvestingNotes
+    String harvestFrequency
+    Timestamp lastHarvested
+    String connectionParameters     // json string containing parameters based on a connection profile - DIGiR, TAPIR, etc
     DataProvider dataProvider
     Institution institution         // optional link to the institution whose records are served by this resource
 
@@ -37,6 +45,11 @@ class DataResource extends ProviderGroup implements Serializable {
         institution(nullable:true)
         dataGeneralizations(nullable:true, maxSize:2048)
         informationWithheld(nullable:true, maxSize:2048)
+        status(nullable:true)
+        harvestingNotes(nullable:true, maxSize:4096)
+        harvestFrequency(nullable:true)
+        lastHarvested(nullable:true)
+        connectionParameters(nullable:true, maxSize:4096)
     }
 
     static transients = ProviderGroup.transients + ['creativeCommons']

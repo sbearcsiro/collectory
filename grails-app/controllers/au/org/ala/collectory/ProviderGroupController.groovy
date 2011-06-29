@@ -58,6 +58,27 @@ abstract class ProviderGroupController {
     }
 
     /**
+     * Checks for optimistic lock failure
+     *
+     * @param pg the entity being updated
+     * @param view the view to return to if lock fails
+     */
+    def checkLocking = { pg, view ->
+        if (params.version) {
+            def version = params.version.toLong()
+            if (pg.version > version) {
+                println "db version = ${pg.version} submitted version = ${version}"
+                pg.errors.rejectValue("version", "default.optimistic.locking.failure",
+                        [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
+                        "Another user has updated this ${pg.entityType()} while you were editing. This page has been refreshed with the current values.")
+                println "error added - rendering ${view}"
+                render(view: view, model: [command: pg])
+            }
+            return pg.version > version
+        }
+    }
+
+    /**
      * Edit base attributes.
      * @param id
      */
@@ -129,10 +150,34 @@ abstract class ProviderGroupController {
     }
 
     def cancel = {
-        println "Cancel - returnTo = ${params.returnTo}"
+        //println "Cancel - returnTo = ${params.returnTo}"
         if (params.returnTo) {
             redirect(uri: params.returnTo)
         } else {
+            redirect(action: "show", id: params.id)
+        }
+    }
+
+    /**
+     * This does generic updating from a form. Works for all properties that can be bound by default.
+     */
+    def genericUpdate = { pg, view ->
+        if (pg) {
+            if (checkLocking(pg,view)) { return }
+
+            pg.properties = params
+            pg.userLastModified = username()
+            if (!pg.hasErrors() && pg.save(flush: true)) {
+                flash.message =
+                  "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                redirect(action: "show", id: pg.id)
+            }
+            else {
+                render(view: view, model: [command: pg])
+            }
+        } else {
+            flash.message =
+                "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
             redirect(action: "show", id: params.id)
         }
     }
@@ -149,16 +194,7 @@ abstract class ProviderGroupController {
         } else {
             def pg = get(params.id)
             if (pg) {
-                if (params.version) {
-                    def version = params.version.toLong()
-                    if (pg.version > version) {
-                        pg.errors.rejectValue("version", "default.optimistic.locking.failure",
-                                [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
-                                "Another user has updated this ${pg.entityType()} while you were editing")
-                        render(view: "/shared/base", model: [command: pg])
-                        return
-                    }
-                }
+                if (checkLocking(pg,'/shared/base')) { return }
 
                 // special handling for membership
                 pg.networkMembership = toJson(params.networkMembership)
@@ -188,16 +224,7 @@ abstract class ProviderGroupController {
     def updateDescription = {
         def pg = get(params.id)
         if (pg) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
-                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
-                            "Another user has updated this ${pg.entityType()} while you were editing")
-                    render(view: "description", model: [command: pg])
-                    return
-                }
-            }
+            if (checkLocking(pg,'description')) { return }
 
             // do any entity specific processing
             entitySpecificDescriptionProcessing(pg, params)
@@ -235,16 +262,7 @@ abstract class ProviderGroupController {
         } else {
             def pg = get(params.id)
             if (pg) {
-                if (params.version) {
-                    def version = params.version.toLong()
-                    if (pg.version > version) {
-                        pg.errors.rejectValue("version", "default.optimistic.locking.failure",
-                                [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
-                                "Another user has updated this ${pg.entityType()} while you were editing")
-                        render(view: "/shared/location", model: [command: pg])
-                        return
-                    }
-                }
+                if (checkLocking(pg,'/shared/location')) { return }
 
                 // special handling for lat & long
                 if (!params.latitude) { params.latitude = -1 }
@@ -282,16 +300,7 @@ abstract class ProviderGroupController {
     def updateTaxonomyHints = {
         def pg = get(params.id)
         if (pg) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
-                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
-                            "Another user has updated this ${pg.entityType()} while you were editing")
-                    render(view: "/shared/editTaxonomyHints", model: [command: pg])
-                    return
-                }
-            }
+            if (checkLocking(pg,'/shared/editTaxonomyHints')) { return }
 
             // handle taxonomy hints
             def ranks = params.findAll { key, value ->
@@ -436,14 +445,8 @@ abstract class ProviderGroupController {
         def pg = get(params.id)
         def target = params.target ?: "imageRef"
         if (pg) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.urlForm()} while you were editing")
-                    render(view: "/shared/images", model: [command: pg, target: target])
-                    return
-                }
-            }
+            if (checkLocking(pg,'/shared/images')) { return }
+
             // special handling for uploading image
             // we need to account for:
             //  a) upload of new image
@@ -495,14 +498,7 @@ abstract class ProviderGroupController {
         def pg = get(params.id)
         if (pg) {
             if (authService.isAuthorisedToEdit(pg.uid)) {
-                if (params.version) {
-                    def version = params.version.toLong()
-                    if (pg.version > version) {
-                        pg.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[], "Another user has updated this ${pg.entityType()} while you were editing")
-                        render(view: "/shared/images", model: [command: pg])
-                        return
-                    }
-                }
+                if (checkLocking(pg,'/shared/images')) { return }
 
                 if (params.target == 'logoRef') {
                     pg.logoRef = null
@@ -528,16 +524,7 @@ abstract class ProviderGroupController {
     def updateAttributions = {
         def pg = get(params.id)
         if (pg) {
-            if (params.version) {
-                def version = params.version.toLong()
-                if (pg.version > version) {
-                    pg.errors.rejectValue("version", "default.optimistic.locking.failure",
-                            [message(code: "${pg.urlForm()}.label", default: pg.entityType())] as Object[],
-                            "Another user has updated this ${pg.entityType()} while you were editing")
-                    render(view: "description", model: [command: pg])
-                    return
-                }
-            }
+            if (checkLocking(pg,'/shared/attributions')) { return }
 
             if (params.BCI && !pg.hasAttribution('at1')) {
                 pg.addAttribution 'at1'

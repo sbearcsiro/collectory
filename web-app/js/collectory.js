@@ -400,10 +400,9 @@ function contactCurator(email, firstName, uid, instUid, name) {
     return false;
 }
 
-/*******                                   *****
+/************************************************************\
  *******        LOAD DOWNLOAD STATS        *****
- *******                                   *****/
-
+\************************************************************/
 function loadDownloadStats(uid, name, eventType) {
     if (eventType == '') {
         // nothing to show
@@ -419,7 +418,7 @@ function loadDownloadStats(uid, name, eventType) {
         clearStats();
       },
       success: function(data) {
-        if (data.all.numberOfEvents == '0') {
+        if (data.all.numberOfDownloads == '0') {
             clearStats();
         } else {
             var stats;
@@ -433,7 +432,7 @@ function loadDownloadStats(uid, name, eventType) {
                 stats += "<tr><td>Last 12 months:</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.all.numberOfEventItems) + "</span></td></tr>";
                 stats += "</table>";
-            } else {  // eventType == '1000' - records
+            } else {  // eventType == '1002' - records
                 stats = "<p class='short-bot'>Number of occurrence records downloaded from the " + name + " through the Atlas of Living Australia.</p>";
                 stats += "<table class='counts'>";
                 stats += "<tr><td>This month:</td><td style='text-align: right;'><span class='number'>" +
@@ -449,6 +448,9 @@ function loadDownloadStats(uid, name, eventType) {
             }
 
             $('div#usage').html(stats);
+
+            drawVisualization(data, eventType);
+
         }
       }
     });
@@ -463,3 +465,52 @@ function pluralise(word, number) {
         return word + 's';
     }
 }
+
+/************************************************************\
+ *******        CHART DOWNLOAD STATS        *****
+\************************************************************/
+function drawVisualization(data, eventType) {
+    var container = document.getElementById('usage-visualization');
+    if (container != undefined) {
+        var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        // Create and populate the data table.
+        var dataTable = new google.visualization.DataTable();
+        dataTable.addColumn('string', 'Month');
+        if (eventType == '2000') {
+            dataTable.addColumn('number', 'Images');
+        } else {
+            dataTable.addColumn('number', 'Records');
+        }
+        if (eventType == '1002') {
+            dataTable.addColumn('number', 'Downloads');
+        }
+        dataTable.addRows(12);
+        var idx = 0;
+        for(key in data.lastYearByMonth) {
+            dataTable.setValue(idx, 0, key.substring(0,3));
+            dataTable.setValue(idx, 1, data.lastYearByMonth[key].numberOfEventItems);
+            if (eventType == '1002') {
+                dataTable.setValue(idx, 2, data.lastYearByMonth[key].numberOfEvents);
+            }
+            idx++;
+        }
+        var title, legend;
+        if (eventType == '1002') {
+            title = "Records downloaded through the Atlas for the last 12 months";
+            legend = "right";
+        } else {
+            title = "Images viewed through the Atlas for the last 12 months";
+            legend = "none";
+        }
+        // Create and draw the visualization.
+        new google.visualization.ColumnChart(container).
+                draw(dataTable,
+                {title: title,
+                    width:650, height:200,
+                    legend: legend,
+                    chartArea: {left:'10%',top:'auto',width:"70%",height:'auto'},
+                    hAxis: {title: "Month"}}
+        );
+    }
+}
+

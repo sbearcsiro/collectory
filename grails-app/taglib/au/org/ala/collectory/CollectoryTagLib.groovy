@@ -7,6 +7,8 @@ import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+import au.org.ala.collectory.resources.Profile
+import org.codehaus.groovy.grails.web.json.JSONArray
 
 class CollectoryTagLib {
 
@@ -1023,6 +1025,22 @@ class CollectoryTagLib {
         }
     }
 
+    def tickOrCross = { attrs, body ->
+        def trueText = body()
+        def falseText = body()
+        def split = body().toString().tokenize("|")
+        if (split.size() == 2) {
+            trueText = split[0]
+            falseText = split[1]
+        }
+        if (attrs.test) {
+            out << "<span class='tick'>${trueText}</span>"
+        }
+        else {
+            out << "<span class='cross'>${falseText}</span>"
+        }
+    }
+
     def institutionCodes = { attrs ->
         def instCodes = attrs.collection.getListOfInstitutionCodesForLookup()
         switch (instCodes.size()) {
@@ -1538,12 +1556,87 @@ class CollectoryTagLib {
                     link = null
             }
             def imageHtml = "<a rel='license' target='_blank' href='${link}'><img class='ccimage no-radius' src='${image}' alt='Creative Commons License' style='border:none;' height='31' width='88'></a>"
-            if (attrs.imageOnly) {
+            if (attrs.imageOnly && image) {
                 out << imageHtml
             }
-            else {
+            else if (image) {
                 out << "${license} - ${display.display} ${imageHtml}"
+            }
+            else {
+                out << "${license} - ${display.display}"
             }
         }
     }
+
+    def showConnectionParameters = { attrs ->
+        // see if we have a protocol
+        if (attrs.connectionParameters?.toString()) {
+            out << "<table class='valueTable'><colgroup><col width='30%'/><col width='70%'/></colgroup>"
+            def cp = JSON.parse(attrs.connectionParameters.toString())
+            assert cp
+            Profile protocol = Profile.valueOf(cp.protocol)
+            out << "<tr><td>Protocol:</td><td>${protocol}</td></tr>"
+            protocol.parameters.each {key, value ->
+                out << "<tr><td>${value}:</td><td>" + (cp."${key}" ?: '') + "</td></tr>"
+            }
+            out << "</table>"
+        }
+        else {
+            out << "none"
+        }
+    }
+
+    def connectionParameters = { attrs ->
+        // see if we have a protocol
+        def cp = null
+        def protocol = 'none'
+        if (attrs.connectionParameters.toString()) {
+            cp = JSON.parse(attrs.connectionParameters.toString())
+            protocol = cp.protocol
+        }
+
+        // show the protocol selector
+        out << """<tr class="prop">
+            <td valign="top" class="name">
+              <label for="protocol">Protocol</label>
+            </td>
+            <td valign="top" class="value">""" +
+                select(id:'protocolSelector',
+                       name:"protocol",
+                       from:Profile.values(),
+                       value:protocol,
+                       optionValue:'name',
+                       onchange:'changeProtocol()') +
+                """<cl:helpText code="dataResource.connectionParameters.protocol"/>
+              </td>
+              <cl:helpTD/>
+        </tr>"""
+
+        // create the widgets for each protocol (profile)
+        Profile.values().each {
+            // is this the selected protocol?
+            boolean selected = (it.toString() == cp?.protocol)
+            String hidden = selected ? '' : "display:none;"
+            String disabled = selected ? '' : 'disabled'
+            it.parameters.each {key, value ->
+                def displayedValue = cp?."${key}"?:""
+                // unravel any JSON lists
+                if (displayedValue instanceof JSONArray) {
+                    displayedValue = displayedValue.collect {it}.join(', ') as String
+                }
+                out << """<tr class="prop labile" style="${hidden}" id="${it}">
+                    <td valign="top" class="name"
+                      <label for="${key}">${value}</label>
+                    </td>
+                    <td valign="top" class="value">""" +
+                    (selected ?
+                        textField(name:key, value:displayedValue) :
+                        textField(name:key, value:displayedValue, disabled:true)) +
+                    """</td>
+                    </tr>"""
+            }
+        }
+
+    }
+
 }

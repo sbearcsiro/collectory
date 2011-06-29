@@ -26,6 +26,7 @@
         });
       });
     </script>
+    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
   </head>
   <body class="two-column-right">
     <div id="content">
@@ -73,11 +74,25 @@
           <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
         </g:if>
         <h2>Resources</h2>
+        <g:set var="hasRecords" value="false"/>
         <ol>
           <g:each var="c" in="${instance.getResources().sort{it.name}}">
             <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link><span style="color:#555;"> ${c?.makeAbstract(400)}</span></li>
+            <g:if test="${c.resourceType == 'records'}">
+                <g:set var="hasRecords" value="true"/>
+            </g:if>
           </g:each>
         </ol>
+
+        <g:if test="${hasRecords == 'true'}">
+          <div id='usage-stats'>
+              <h2>Usage statistics</h2>
+              <div id='usage'>
+                <p>Loading...</p>
+              </div>
+          </div>
+        </g:if>
+
         <cl:lastUpdated date="${instance.lastUpdated}"/>
 
       </div><!--close section-->
@@ -150,5 +165,22 @@
     </div><!--close column-two-->
 
   </div><!--close content-->
+
+  <script type="text/javascript">
+    /************************************************************\
+    *
+    \************************************************************/
+    function onLoadCallback() {
+      // stats
+      loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+   }
+
+    /************************************************************\
+    *
+    \************************************************************/
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(onLoadCallback);
+  </script>
+
   </body>
 </html>

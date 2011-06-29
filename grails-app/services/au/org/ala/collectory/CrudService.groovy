@@ -287,6 +287,9 @@ class CrudService {
                 if (p.listConsumers()) {
                     linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
                 }
+                if (p.connectionParameters) {
+                    connectionParameters = p.connectionParameters
+                }
             }
         }
         return result

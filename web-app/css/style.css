@@ -736,6 +736,18 @@ span.changeTo {
     color: #7D8804;
 }
 
+.tick {
+    padding-left: 20px;
+    background: url(../images/ala/icon-tick-small.png) no-repeat center left;
+    margin-left: 25px;
+}
+
+.cross {
+    padding-left: 20px;
+    background: url(../images/ala/icon-cross-small.png) no-repeat center left;
+    margin-left: 25px;
+}
+
 .emulate-public #mapCanvas {
     float: left;
     border: 1px solid #AAA;
@@ -869,4 +881,9 @@ div.emulate-public > h2 {
 img.ccimage {
     padding-left: 20px;
     vertical-align: middle;
+}
+
+/* table for show entity values with multiple components */
+table.valueTable td {
+    padding-right: 10px;
 }

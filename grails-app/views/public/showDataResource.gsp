@@ -120,6 +120,10 @@
               </div>
             </g:if>
 
+            <g:if test="${instance.resourceType == 'website'}">
+              <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
+            </g:if>
+
             <g:if test="${instance.resourceType == 'records'}">
                 <h2>Digitised records</h2>
                 <div>
@@ -261,17 +265,20 @@
               loadDownloadStats("${instance.uid}","${instance.name}", "1002");
           }
 
-          // summary biocache data
-          var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
-          $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
+          // records
+          if (${instance.resourceType == 'records'}) {
+              // summary biocache data
+              var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
+              $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
 
-          // taxon chart
-          loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 25);
+              // taxon chart
+              loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 25);
 
-          // records map
-          var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-          $.get(mapServiceUrl, {}, mapRequestHandler);
-        }
+              // records map
+              var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
+              $.get(mapServiceUrl, {}, mapRequestHandler);
+          }
+       }
         /************************************************************\
         *
         \************************************************************/

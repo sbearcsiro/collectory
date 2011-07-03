@@ -31,6 +31,8 @@ enum Profile {
             ['url':'Service URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
     CustomWebservice('Custom web service',
             ['url':'Service URL','params':'JSON map of parameters','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
+    DwC('DarwinCore csv file',
+            ['url':'Location URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
     DwCA('DarwinCore archive',
             ['url':'Location URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
     WebsiteWithSitemap('Website with sitemap',

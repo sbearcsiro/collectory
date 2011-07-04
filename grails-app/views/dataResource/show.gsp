@@ -73,9 +73,6 @@
               <div class="show-section">
                 <h2>Description</h2>
 
-                <!-- display name -->
-                <p><span class="category">Display name</span>: ${fieldValue(bean: instance, field: "displayName")}</p>
-
                 <!-- Pub Desc -->
                 <div class="source">[Public description]</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
@@ -84,9 +81,15 @@
                 <div class="source">[Technical description]</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
 
-                <!-- Contribution -->
-                <div class="source">[Contribution]</div><div style="clear:both;"></div>
+                <!-- Focus -->
+                <div class="source">[Focus]</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
+
+                <!-- generalisations -->
+                <p><span class="category">Data generalisations</span>: ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
+
+                <!-- info withheld -->
+                <p><span class="category">Information withheld</span>: ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
@@ -123,9 +126,6 @@
                 <!-- citation -->
                 <p><span class="category">Citation</span>: ${fieldValue(bean: instance, field: "citation")}</p>
 
-                <!-- citable agent -->
-                <p><span class="category">Citable agent</span>: ${fieldValue(bean: instance, field: "citableAgent")}</p>
-
                 <!-- rights -->
                 <p><span class="category">Rights</span>: ${fieldValue(bean: instance, field: "rights")}</p>
 
@@ -134,12 +134,6 @@
 
                 <!-- license version -->
                 <p><span class="category">License version</span>: ${fieldValue(bean: instance, field: "licenseVersion")}</p>
-
-                <!-- generalisations -->
-                <p><span class="category">Data generalisations</span>: ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
-
-                <!-- info withheld -->
-                <p><span class="category">Information withheld</span>: ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>

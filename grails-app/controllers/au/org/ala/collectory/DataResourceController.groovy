@@ -76,8 +76,6 @@ class DataResourceController extends ProviderGroupController {
      * Called by the base class method for updating descriptions.
      */
     @Override def entitySpecificDescriptionProcessing(Object pg, Object params) {
-        pg.displayName = params.displayName
-        params.remove('displayName')
     }
 
     /**

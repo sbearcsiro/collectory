@@ -71,7 +71,9 @@
         </div><!--close header-->
         <div id="column-one">
           <div class="section">
-            <h2>Description</h2>
+            <g:if test="${instance.pubDescription || instance.techDescription || instance.focus}">
+                <h2>Description</h2>
+            </g:if>
             <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
@@ -83,9 +85,8 @@
             </g:if>
 
             <h2>Citation</h2>
-            <g:if test="${instance.citation || instance.citableAgent}">
+            <g:if test="${instance.citation}">
               <cl:formattedText>${fieldValue(bean: instance, field: "citation")}</cl:formattedText>
-              <cl:formattedText>${fieldValue(bean: instance, field: "citableAgent")}</cl:formattedText>
             </g:if>
             <g:else>
               <p>No citation information available.</p>

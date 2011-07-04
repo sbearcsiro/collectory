@@ -232,8 +232,6 @@ class LookupController {
             dataGen = dg ?: dataGen
             def ih = (pg as DataResource).getInformationWithheld()
             infoWithheld = ih ?: infoWithheld
-            def nam = (pg as DataResource).getDisplayName()
-            name = nam ? name : name
         }
         def link = ConfigurationHolder.config.citation.link.template
         link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))

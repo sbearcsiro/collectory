@@ -6,7 +6,6 @@ class DataResourceSummary extends ProviderGroupSummary {
     String dataProviderUid
     String institution          // maintained for backward compatibility
     String institutionUid       // maintained for backward compatibility
-    String displayName
     List relatedCollections = []     // list of map with name: and uid:
     List relatedInstitutions = []    // list of map with name: and uid:
     List hubMembership = []

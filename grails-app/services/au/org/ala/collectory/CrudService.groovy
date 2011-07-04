@@ -20,7 +20,7 @@ class CrudService {
     static baseObjectProperties = ['address', 'imageRef','logoRef']
     static baseJSONArrays = ['networkMembership']
 
-    static dataResourceStringProperties = ['displayName','rights','citation','citableAgent','dataGeneralizations','informationWithheld']
+    static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld']
     //static dataResourceObjectProperties = ['dataProvider']
 
     static institutionStringProperties = ['institutionType']
@@ -275,12 +275,10 @@ class CrudService {
                 if (p.dataProvider) {
                     provider { name = p.dataProvider.name; uri = p.dataProvider.buildUri(); uid = p.dataProvider.uid }
                 }
-                displayName = p.displayName
                 rights = p.rights
                 licenseType = p.licenseType
                 licenseVersion = p.licenseVersion
                 citation = p.citation
-                citableAgent = p.citableAgent
                 resourceType = p.resourceType
                 dataGeneralizations = p.dataGeneralizations
                 informationWithheld = p.informationWithheld

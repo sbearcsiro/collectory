@@ -24,18 +24,6 @@
                     <table>
                         <tbody>
 
-                        <!-- display name -->
-                        <tr class="prop">
-                            <td valign="top" class="name">
-                              <label for="displayName"><g:message code="dataResource.displayName.label" default="Display name" /></label>
-                            </td>
-                            <td id="previous" valign="top" class="value ${hasErrors(bean: command, field: 'displayName', 'errors')}">
-                              <g:textField name="displayName" maxlength="128" value="${command?.displayName}" />
-                              <cl:helpText code="dataResource.displayName"/>
-                            </td>
-                          <cl:helpTD/>
-                        </tr>
-
                         <!-- public description -->
                         <tr class="prop">
                             <td valign="top" class="name">
@@ -70,6 +58,30 @@
                                 <cl:helpText code="providerGroup.focus"/>
                             </td>
                           <cl:helpTD/>
+                        </tr>
+
+                        <!-- data generalisations -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="dataGeneralizations"><g:message code="dataResource.dataGeneralizations.label" default="Data Generalisations" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'dataGeneralizations', 'errors')}">
+                                <g:textArea name="dataGeneralizations" cols="40" rows="${cl.textAreaHeight(text:command.dataGeneralizations)}" value="${command?.dataGeneralizations}" />
+                                <cl:helpText code="dataResource.dataGeneralizations"/>
+                              </td>
+                              <cl:helpTD/>
+                        </tr>
+
+                        <!-- information withheld -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="informationWithheld"><g:message code="dataResource.informationWithheld.label" default="Information withheld" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'informationWithheld', 'errors')}">
+                                <g:textArea name="informationWithheld" cols="40" rows="${cl.textAreaHeight(text:command.informationWithheld)}" value="${command?.informationWithheld}" />
+                                <cl:helpText code="dataResource.informationWithheld"/>
+                              </td>
+                              <cl:helpTD/>
                         </tr>
 
                       </tbody>

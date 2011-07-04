@@ -13,10 +13,8 @@ class DataResource extends ProviderGroup implements Serializable {
         sort: 'name'
     }
 
-    String displayName
     String rights
     String citation
-    String citableAgent
     String licenseType
     String licenseVersion
     String resourceType = "records"
@@ -32,10 +30,8 @@ class DataResource extends ProviderGroup implements Serializable {
     Institution institution         // optional link to the institution whose records are served by this resource
 
     static constraints = {
-        displayName(nullable:true, maxSize:1024)
         rights(nullable:true, maxSize:4096)
         citation(nullable:true, maxSize:4096)
-        citableAgent(nullable:true, maxSize:2048)
         licenseType(nullable:true, maxSize:45, inList:licenseTypeList)
         licenseVersion(nullable:true, maxSize:45)
         resourceType(maxSize:255, validator: {
@@ -81,7 +77,6 @@ class DataResource extends ProviderGroup implements Serializable {
      */
     DataResourceSummary buildSummary() {
         DataResourceSummary drs = init(new DataResourceSummary()) as DataResourceSummary
-        drs.displayName = displayName
         drs.dataProvider = dataProvider?.name
         drs.dataProviderId = dataProvider?.id
         drs.dataProviderUid = dataProvider?.uid

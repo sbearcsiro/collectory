@@ -130,7 +130,7 @@ class DataLoaderService {
      *****  Update resources from CSV file
      *****/
 
-    def dataResourcecolumns = ["uid","dataProvider","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl","logoUrl"]
+    def dataResourcecolumns = ["uid","dataProvider","name","pubDescription","rights","citation","websiteUrl","logoUrl"]
 
     /**
      * Idempotent update of data resources from a CSV file.
@@ -202,7 +202,7 @@ class DataLoaderService {
     }
 
     def updateResource = {dr, params ->
-        dr.properties["uid","name","displayName","pubDescription","rights","citation","citableAgent","websiteUrl"] = params
+        dr.properties["uid","name","pubDescription","rights","citation","websiteUrl"] = params
         dr.dataProvider = DataProvider.findByUid(params.dataProvider as String)
         dr.userLastModified = "DR loader"
     }

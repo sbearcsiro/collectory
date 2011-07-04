@@ -37,18 +37,6 @@
                               <cl:helpTD/>
                         </tr>
 
-                        <!-- citable agent -->
-                        <tr class="prop">
-                            <td valign="top" class="name">
-                              <label for="citableAgent"><g:message code="dataResource.citableAgent.label" default="Citable agent" /></label>
-                            </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'citableAgent', 'errors')}">
-                                <g:textArea name="citableAgent" cols="40" rows="${cl.textAreaHeight(text:command.citableAgent)}" value="${command?.citableAgent}" />
-                                <cl:helpText code="dataResource.citableAgent"/>
-                              </td>
-                              <cl:helpTD/>
-                        </tr>
-
                         <!-- rights -->
                         <tr class="prop">
                             <td valign="top" class="name">
@@ -89,30 +77,6 @@
                                 <cl:helpText code="dataResource.licenseVersion"/>
                             </td>
                           <cl:helpTD/>
-                        </tr>
-
-                        <!-- data generalisations -->
-                        <tr class="prop">
-                            <td valign="top" class="name">
-                              <label for="dataGeneralizations"><g:message code="dataResource.dataGeneralizations.label" default="Data Generalisations" /></label>
-                            </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'dataGeneralizations', 'errors')}">
-                                <g:textArea name="dataGeneralizations" cols="40" rows="${cl.textAreaHeight(text:command.dataGeneralizations)}" value="${command?.dataGeneralizations}" />
-                                <cl:helpText code="dataResource.dataGeneralizations"/>
-                              </td>
-                              <cl:helpTD/>
-                        </tr>
-
-                        <!-- information withheld -->
-                        <tr class="prop">
-                            <td valign="top" class="name">
-                              <label for="informationWithheld"><g:message code="dataResource.informationWithheld.label" default="Information withheld" /></label>
-                            </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'informationWithheld', 'errors')}">
-                                <g:textArea name="informationWithheld" cols="40" rows="${cl.textAreaHeight(text:command.informationWithheld)}" value="${command?.informationWithheld}" />
-                                <cl:helpText code="dataResource.informationWithheld"/>
-                              </td>
-                              <cl:helpTD/>
                         </tr>
 
                       </tbody>

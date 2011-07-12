@@ -51,7 +51,7 @@
                 <p><span class="category">Resource type</span>: ${fieldValue(bean: instance, field: "resourceType")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Collection website</span>: <a target="_blank" href="${fieldValue(bean: instance, field: 'websiteUrl')}">${fieldValue(bean: instance, field: "websiteUrl")}</a></p>
+                <p><span class="category">Collection website</span>: <a class="external_icon" target="_blank" href="${fieldValue(bean: instance, field: 'websiteUrl')}">${fieldValue(bean: instance, field: "websiteUrl")}</a></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -94,21 +94,31 @@
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
-              <!-- contribution -->
+              <!-- mobilisation -->
               <div class="show-section">
-                <h2>Contribution</h2>
+                <h2>Data mobilisation</h2>
 
                 <!-- contributor -->
-                <p><span class="category">Contributor</span>:<cl:tickOrCross test="${instance.isContributor()}">yes|no</cl:tickOrCross></p>
+                <p><span class="category">Atlas contributor</span>:<cl:tickOrCross test="${instance.status == 'dataAvailable'}">yes|no</cl:tickOrCross></p>
 
                 <!-- status -->
                 <p><span class="category">Status</span>: ${fieldValue(bean: instance, field: "status")}</p>
 
-                <!-- last harvested -->
-                <p><span class="category">Last harvested</span>: ${fieldValue(bean: instance, field: "lastHarvested")}</p>
+                <!-- last checked -->
+                <p><span class="category">Last checked</span>: ${fieldValue(bean: instance, field: "lastChecked")}</p>
+
+                <!-- data currency -->
+                <p><span class="category">Data currency</span>: ${fieldValue(bean: instance, field: "dataCurrency")}</p>
 
                 <!-- harvest frequency -->
-                <p><span class="category">Harvest frequency</span>: ${fieldValue(bean: instance, field: "harvestFrequency")}</p>
+                <p><span class="category">Harvest frequency</span>:
+                    <g:if test="${instance.harvestFrequency}">
+                        Every ${instance.harvestFrequency} days.</p>
+                    </g:if>
+                    <g:else>Manual</g:else>
+
+                <!-- mobilisation notes -->
+                <p><span class="category">Mobilisation notes</span>: ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
 
                 <!-- harvesting notes -->
                 <p><span class="category">Harvesting notes</span>: ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
@@ -116,7 +126,9 @@
                 <!-- connection parameters -->
                 <p><span class="category">Connection parameters</span>: <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'contribution']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
+                  <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'contribution']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                </cl:ifGranted>
               </div>
 
               <!-- rights -->
@@ -134,6 +146,16 @@
 
                 <!-- license version -->
                 <p><span class="category">License version</span>: ${fieldValue(bean: instance, field: "licenseVersion")}</p>
+
+                <!-- permissions document -->
+                <p><span class="category">Permissions document</span>:
+                    <g:if test="${instance.permissionsDocument?.startsWith('http://') || instance.permissionsDocument?.startsWith('https://')}">
+                        <g:link class="external_icon" target="_blank" url="${instance.permissionsDocument}">${fieldValue(bean: instance, field: "permissionsDocument")}</g:link>
+                    </g:if>
+                    <g:else>
+                        ${fieldValue(bean: instance, field: "permissionsDocument")}
+                    </g:else>
+                </p>
 
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>

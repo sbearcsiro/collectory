@@ -15,35 +15,63 @@
 
 package au.org.ala.collectory.resources
 
-import grails.converters.JSON
-
-/**
- * User: markew
- * Date: 23/06/11
- */
-enum Profile {
-    NONE('none',[:]),
-    DIGIR('DIGIR',
-            ['url':'Service URL','resource':'Resource','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
-    TAPIR('TAPIR',
-            ['url':'Service URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
-    BioCASe('BioCase',
-            ['url':'Service URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
-    CustomWebservice('Custom web service',
-            ['url':'Service URL','params':'JSON map of parameters','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
-    DwC('DarwinCore csv file',
-            ['url':'Location URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
-    DwCA('DarwinCore archive',
-            ['url':'Location URL','termsForUniqueKey':'DwC terms that uniquely<br/> identify a record']),
-    WebsiteWithSitemap('Website with sitemap',
-            ['url':'Website URL','documentMapper':'Document mapper'])
+class PP {
+    final static PP LOCATION_URL = new PP(name:'url',display:'Location URL', type:'text')
+    final static PP SERVICE_URL = new PP(name:'url',display:'Service URL', type:'text')
+    final static PP WEBSITE_URL = new PP(name:'url',display:'Website URL', type:'text')
+    final static PP BASE_URL = new PP(name:'url',display:'Base URL', type:'text')
+    final static PP RESOURCE = new PP(name:'resource',display:'Resource', type:'text')
+    final static PP TERMS = new PP(name:'termsForUniqueKey',
+            display:'DwC terms that uniquely<br/> identify a record', type:'text')
+    final static PP PARAMS = new PP(name:'params',display:'JSON map of parameters', type:'textArea')
+    final static PP DOCUMENT_MAPPER = new PP(name:'documentMapper',
+            display:'Document mapper', type:'text')
+    final static PP GROUP_ID = new PP(name:'group_id',display:'Group ID', type:'text')
+    final static PP API_KEY = new PP(name:'api_key',display:'API key', type:'text')
+    final static PP START_DATE = new PP(name:'start_date',display:'Start date', type:'text')
+    final static PP CONTENT_TYPE = new PP(name:'content_type',display:'Content type', type:'text')
+    final static PP PRIVACY_FILTER = new PP(name:'privacy_filter',display:'Privacy filter', type:'text')
+    final static PP PER_PAGE = new PP(name:'per_page',display:'# per page', type:'text')
+    final static PP KEYWORDS = new PP(name:'keywords',display:'Keywords', type:'textArea')
+    final static PP AUTO = new PP(name:'automation',display:'Automatically loaded', type:'boolean')
+    final static PP CSV_DELIMITER = new PP(name:'csv_delimiter',display:'Value delimiter', type:'text', defaultValue: ',')
+    final static PP CSV_END_OF_LINE = new PP(name:'csv_eol',display:'End of line', type:'text', defaultValue: '\n')
+    final static PP CSV_ESCAPE = new PP(name:'csv_escape_char',display:'Escape character', type:'text', defaultValue: '/')
+    final static PP CSV_QUOTE = new PP(name:'csv_text_enclosure',display:'Text enclosure', type:'text', defaultValue: '"')
 
     String name
-    Map parameters = [:]
+    String display
+    String type
+    String defaultValue = ""
+}
 
-    Profile(String name, Map parameters) {
+enum Profile {
+
+    NONE('none',[]),
+    DIGIR('DIGIR',
+            [PP.SERVICE_URL,PP.TERMS]),
+    TAPIR('TAPIR',
+            [PP.SERVICE_URL,PP.TERMS]),
+    BioCASe('BioCase',
+            [PP.SERVICE_URL,PP.TERMS]),
+    CustomWebservice('Custom web service',
+            [PP.SERVICE_URL,PP.PARAMS,PP.TERMS]),
+    DwC('DarwinCore csv file',
+            [PP.LOCATION_URL,PP.AUTO,PP.CSV_DELIMITER,PP.CSV_END_OF_LINE,PP.CSV_ESCAPE,PP.CSV_QUOTE,PP.TERMS]),
+    DwCA('DarwinCore archive',
+            [PP.LOCATION_URL,PP.AUTO,PP.TERMS]),
+    WebsiteWithSitemap('Website with sitemap',
+            [PP.WEBSITE_URL,PP.DOCUMENT_MAPPER]),
+    Flickr('Flickr API',
+            [PP.BASE_URL,PP.GROUP_ID,PP.API_KEY,PP.START_DATE,PP.CONTENT_TYPE,PP.PRIVACY_FILTER,
+             PP.PER_PAGE,PP.KEYWORDS,PP.TERMS])
+
+    String name
+    List<PP> parameters
+
+    Profile(String name, List params) {
         this.name = name
-        this.parameters = parameters
+        this.parameters = params
     }
 
     static List list() {

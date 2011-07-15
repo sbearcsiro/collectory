@@ -25,8 +25,8 @@ class ProfileTests extends GrailsUnitTestCase {
 
     void testList() {
         def list = Profile.list()
-        assert list.size() == 6
-        assert list[3] == 'Custom web service'
+        assert list.size() == 9
+        assert list[4] == 'Custom web service'
     }
 
 }

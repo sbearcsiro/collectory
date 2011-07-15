@@ -1,12 +1,13 @@
 package au.org.ala.collectory
 
-import au.org.ala.collectory.exception.InvalidUidException
 import org.codehaus.groovy.grails.web.json.JSONArray
 import grails.converters.JSON
 
 import grails.web.JSONBuilder
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
+import java.text.SimpleDateFormat
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class CrudService {
 
@@ -20,7 +21,12 @@ class CrudService {
     static baseObjectProperties = ['address', 'imageRef','logoRef']
     static baseJSONArrays = ['networkMembership']
 
-    static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld']
+    static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld',
+                'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes',
+                'harvestingNotes','connectionParameters','resourceType']
+    static dataResourceNumberProperties = ['harvestFrequency']
+    static dataResourceTimestampProperties = ['lastChecked','dataCurrency']
+    static dataResourceJSONArrays = ['connectionParameters']
     //static dataResourceObjectProperties = ['dataProvider']
 
     static institutionStringProperties = ['institutionType']
@@ -111,7 +117,7 @@ class CrudService {
     def insertDataProvider(obj) {
         DataProvider dp = new DataProvider(uid: idGeneratorService.getNextDataProviderId())
         updateBaseProperties(dp, obj)
-        dp.userLastModified = 'Data services'
+        dp.userLastModified = obj.user ?: 'Data services'
         if (!dp.hasErrors()) {
              dp.save(flush: true)
         }
@@ -120,7 +126,7 @@ class CrudService {
     
     def updateDataProvider(dp, obj) {
         updateBaseProperties(dp, obj)
-        dp.userLastModified = 'Data services'
+        dp.userLastModified = obj.user ?: 'Data services'
         if (!dp.hasErrors()) {
              dp.save(flush: true)
         }
@@ -196,7 +202,7 @@ class CrudService {
     def insertDataHub(obj) {
         DataHub dp = new DataHub(uid: idGeneratorService.getNextDataHubId())
         updateBaseProperties(dp, obj)
-        dp.userLastModified = 'Data services'
+        dp.userLastModified = obj.user ?: 'Data services'
         if (!dp.hasErrors()) {
              dp.save(flush: true)
         }
@@ -205,7 +211,7 @@ class CrudService {
 
     def updateDataHub(dp, obj) {
         updateBaseProperties(dp, obj)
-        dp.userLastModified = 'Data services'
+        dp.userLastModified = obj.user ?: 'Data services'
         if (!dp.hasErrors()) {
              dp.save(flush: true)
         }
@@ -282,12 +288,18 @@ class CrudService {
                 resourceType = p.resourceType
                 dataGeneralizations = p.dataGeneralizations
                 informationWithheld = p.informationWithheld
+                permissionsDocument = p.permissionsDocument
                 if (p.listConsumers()) {
                     linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
                 }
                 if (p.connectionParameters) {
-                    connectionParameters = p.connectionParameters
+                    connectionParameters = p.connectionParameters.formatJSON()
                 }
+                status = p.status
+                harvestFrequency = p.harvestFrequency
+                lastChecked = p.lastChecked
+                dataCurrency = p.dataCurrency
+                harvestingNotes = p.harvestingNotes
             }
         }
         return result
@@ -297,7 +309,7 @@ class CrudService {
         DataResource dr = new DataResource(uid: idGeneratorService.getNextDataResourceId())
         updateBaseProperties(dr, obj)
         updateDataResourceProperties(dr, obj)
-        dr.userLastModified = 'Data services'
+        dr.userLastModified = obj.user ?: 'Data services'
         if (!dr.hasErrors()) {
              dr.save(flush: true)
         }
@@ -307,7 +319,7 @@ class CrudService {
     def updateDataResource(dr, obj) {
         updateBaseProperties(dr, obj)
         updateDataResourceProperties(dr, obj)
-        dr.userLastModified = 'Data services'
+        dr.userLastModified = obj.user ?: 'Data services'
         if (!dr.hasErrors()) {
              dr.save(flush: true)
         }
@@ -315,7 +327,10 @@ class CrudService {
     }
 
     private void updateDataResourceProperties(DataResource dr, obj) {
+        convertJSONToString(obj, dataResourceJSONArrays)
         dr.properties[dataResourceStringProperties] = obj
+        dr.properties[dataResourceNumberProperties] = obj
+        updateTimestamps(dr,obj, dataResourceTimestampProperties)
         if (obj.has('dataProvider')) {
             // find it
             DataProvider dp = DataProvider._get(obj.dataProvider.uid) as DataProvider
@@ -400,7 +415,7 @@ class CrudService {
         Institution inst = new Institution(uid: idGeneratorService.getNextInstitutionId())
         updateBaseProperties(inst, obj)
         updateInstitutionProperties(inst, obj)
-        inst.userLastModified = 'Data services'
+        inst.userLastModified = obj.user ?: 'Data services'
         if (!inst.hasErrors()) {
              inst.save(flush: true)
         }
@@ -410,7 +425,7 @@ class CrudService {
     def updateInstitution(inst, obj) {
         updateBaseProperties(inst, obj)
         updateInstitutionProperties(inst, obj)
-        inst.userLastModified = 'Data services'
+        inst.userLastModified = obj.user ?: 'Data services'
         if (!inst.hasErrors()) {
              inst.save(flush: true)
         }
@@ -482,8 +497,8 @@ class CrudService {
                 userLastModified = p.userLastModified
 
                 // collection specific
-                collectionType = p.collectionType?.formatJSONList()
-                keywords = p.keywords?.formatJSONList()
+                collectionType = p.collectionType?.formatJSON()
+                keywords = p.keywords?.formatJSON()
 
                 active = p.active
                 numRecords = p.numRecords == -1 ? 'not known' : p.numRecords
@@ -501,7 +516,7 @@ class CrudService {
                 startDate = p.startDate
                 endDate = p.endDate
                 kingdomCoverage = p.kingdomCoverage?.formatSpaceSeparatedList()
-                scientificNames = p.scientificNames?.formatJSONList()
+                scientificNames = p.scientificNames?.formatJSON()
                 subCollections = p.listSubCollections()
                 if (p.institution) {
                     institution {
@@ -533,7 +548,7 @@ class CrudService {
         Collection inst = new Collection(uid: idGeneratorService.getNextCollectionId())
         updateBaseProperties(inst, obj)
         updateCollectionProperties(inst, obj)
-        inst.userLastModified = 'Data services'
+        inst.userLastModified = obj.user ?: 'Data services'
         if (!inst.hasErrors()) {
              inst.save(flush: true)
         }
@@ -543,7 +558,7 @@ class CrudService {
     def updateCollection(inst, obj) {
         updateBaseProperties(inst, obj)
         updateCollectionProperties(inst, obj)
-        inst.userLastModified = 'Data services'
+        inst.userLastModified = obj.user ?: 'Data services'
         if (!inst.hasErrors()) {
              inst.save(flush: true)
         }
@@ -552,12 +567,7 @@ class CrudService {
 
     private void updateCollectionProperties(Collection co, obj) {
         // handle values that might be passed as JSON arrays or string representations of JSON arrays
-        collectionJSONArrays.each {
-            if (obj.has(it) && obj."${it}" instanceof JSONArray) {
-                // convert to string representation
-                obj."${it}" = obj."${it}".toString()
-            }
-        }
+        convertJSONToString(obj, collectionJSONArrays)
         co.properties[collectionStringProperties] = obj
         co.properties[collectionNumberProperties] = obj
         if (obj.has('institution')) {
@@ -627,12 +637,7 @@ class CrudService {
     private void updateBaseProperties(ProviderGroup pg, obj) {
         adjustEmptyProperties obj
         // handle values that might be passed as JSON arrays or string representations of JSON arrays
-        baseJSONArrays.each {
-            if (obj.has(it) && obj."${it}" instanceof JSONArray) {
-                // convert to string representation
-                obj."${it}" = obj."${it}".toString()
-            }
-        }
+        convertJSONToString(obj, baseJSONArrays)
         // inject properties (this method does type conversions automatically)
         pg.properties[baseStringProperties] = obj
         pg.properties[baseNumberProperties] = obj
@@ -688,6 +693,34 @@ class CrudService {
         }
     }
 
+    def updateTimestamps(pg, obj, properties) {
+        properties.each {
+            def strDate = obj."${it}"
+            if (strDate) {
+                if (strDate == 'now') {
+                    pg."${it}" = new Date().toTimestamp()
+                }
+                else {
+                    pg."${it}" = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(strDate).toTimestamp()
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles values that might be passed as JSON arrays/objects or string representations of JSON arrays/objects
+     * @param obj
+     * @param properties
+     * @return
+     */
+    def convertJSONToString(obj, properties) {
+        properties.each {
+            if (obj.has(it) && (obj."${it}" instanceof JSONArray || obj."${it}" instanceof JSONObject)) {
+                // convert to string representation
+                obj."${it}" = obj."${it}".toString()
+            }
+        }
+    }
 }
 
 class OutputFormat {
@@ -704,7 +737,7 @@ class OutputFormat {
         return result
     }
 
-    static def formatJSONList(jsonListStr) {
+    static def formatJSON(jsonListStr) {
         if (!jsonListStr) return null
         try {
             return JSON.parse(jsonListStr)
@@ -769,4 +802,5 @@ class OutputFormat {
         }
         return result
     }
+
 }

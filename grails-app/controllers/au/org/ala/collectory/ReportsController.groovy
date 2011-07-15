@@ -111,6 +111,10 @@ class ReportsController {
         [collections: Collection.list([sort:'name'])]
     }
 
+    def harvesters = {
+        [resources: DataResource.list(sort:'name')]
+    }
+
     def attributions = {
         def collAttributions = []
         Collection.list([sort: 'name']).each {

@@ -9,6 +9,7 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import au.org.ala.collectory.resources.Profile
 import org.codehaus.groovy.grails.web.json.JSONArray
+import java.text.SimpleDateFormat
 
 class CollectoryTagLib {
 
@@ -1571,19 +1572,54 @@ class CollectoryTagLib {
     def showConnectionParameters = { attrs ->
         // see if we have a protocol
         if (attrs.connectionParameters?.toString()) {
+
+            // create a table to display them
             out << "<table class='valueTable'><colgroup><col width='30%'/><col width='70%'/></colgroup>"
+
+            // parse the storage string
             def cp = JSON.parse(attrs.connectionParameters.toString())
-            assert cp
+
+            // load the profile of the selected protocol
             Profile protocol = Profile.valueOf(cp.protocol)
+
+            // display the protocol
             out << "<tr><td>Protocol:</td><td>${protocol}</td></tr>"
-            protocol.parameters.each {key, value ->
-                out << "<tr><td>${value}:</td><td>" + (cp."${key}" ?: '') + "</td></tr>"
+
+            // display each of the protocol's parameters
+            protocol.parameters.each {pp ->
+                def value
+                if (pp.name == "termsForUniqueKey") {
+                    // show as comma separated list
+                    value = cp."${pp.name}".collect {it}.join(', ') as String
+                }
+                else {
+                    // encode any control characters
+                    value = encodeControlChars(cp."${pp.name}")
+                }
+                out << "<tr><td>${pp.display}:</td><td>" + (value ?: '') + "</td></tr>"
             }
             out << "</table>"
         }
         else {
             out << "none"
         }
+    }
+
+    /**
+     * Encodes a string as a url if it contains any control characters
+     * @param str string to encode
+     * @return
+     */
+    String encodeControlChars(str) {
+        // make sure it's a string and not something else like a JSONArray
+        if (!(str instanceof String)) {
+            return str
+        }
+        def hasControlChars = false
+        str.each {
+            hasControlChars |= Character.isISOControl(it as char)
+        }
+        return hasControlChars ? str.encodeAsURL() : str
     }
 
     def connectionParameters = { attrs ->
@@ -1617,26 +1653,75 @@ class CollectoryTagLib {
             // is this the selected protocol?
             boolean selected = (it.toString() == cp?.protocol)
             String hidden = selected ? '' : "display:none;"
-            String disabled = selected ? '' : 'disabled'
-            it.parameters.each {key, value ->
-                def displayedValue = cp?."${key}"?:""
+
+            it.parameters.each {pp ->
+
+                // get value from object
+                def displayedValue = cp?."${pp.name}"?:""
+
+                // inject default if no value
+                if (!displayedValue && pp.defaultValue) {
+                    displayedValue = pp.defaultValue
+                }
+
                 // unravel any JSON lists
                 if (displayedValue instanceof JSONArray) {
                     displayedValue = displayedValue.collect {it}.join(', ') as String
                 }
-                out << """<tr class="prop labile" style="${hidden}" id="${it}">
-                    <td valign="top" class="name"
-                      <label for="${key}">${value}</label>
-                    </td>
-                    <td valign="top" class="value">""" +
-                    (selected ?
-                        textField(name:key, value:displayedValue) :
-                        textField(name:key, value:displayedValue, disabled:true)) +
-                    """</td>
-                    </tr>"""
+
+                // handle unprintable chars
+                displayedValue = encodeControlChars(displayedValue)
+
+                def attributes = [name:pp.name, value:displayedValue]
+                if (!selected) {
+                    attributes << [disabled:true]
+                }
+                if (pp.name == "termsForUniqueKey") {
+                    // handle terms specially
+                    out << """<tr class='labile' id="${it}" style="${hidden}"><td class='be-careful' colspan='2'>
+                        Don't change the following terms unless you know what you are doing. Incorrect values can cause major devastation.</td></tr>
+                        <tr class="prop labile" style="${hidden}" id="${it}">
+                        <td valign="top" class="name"
+                          <label for="termsForUniqueKey">${pp.display}</label>
+                        </td>
+                        <td valign="top" class="value">""" +
+                            textField(attributes) +
+                            helpText(code:'dataResource.termsForUniqueKey') +
+                        "</td>" +  helpTD() + "</tr>"
+                }
+                else {
+                    // all others
+                    def widget
+                    switch (pp.type) {
+                        case 'textArea': widget = 'textArea'; break
+                        case 'boolean': widget = 'checkBox'; break
+                        default: widget = 'textField'; break
+                    }
+                    out << """<tr class="prop labile" style="${hidden}" id="${it}">
+                        <td valign="top" class="name"
+                          <label for="${pp.name}">${pp.display}</label>
+                        </td>
+                        <td valign="top" class="value">""" +
+                            "${widget}"(attributes) +
+                        """</td>
+                        </tr>"""
+                }
             }
         }
 
     }
 
+    def lastChecked = { attrs ->
+        if (attrs.date) {
+            out << """<span id="updated">This resource was last checked for updated data on
+                <b>${new SimpleDateFormat("dd MMM yyyy").format(attrs.date)}</b>.</span>"""
+        }
+    }
+
+    def dataCurrency = { attrs ->
+        if (attrs.date) {
+            out << """<span id="currency">The most recent data was published on
+                <b>${new SimpleDateFormat("dd MMM yyyy").format(attrs.date)}</b>.</span>"""
+        }
+    }
 }

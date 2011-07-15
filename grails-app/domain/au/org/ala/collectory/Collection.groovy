@@ -369,6 +369,15 @@ class Collection extends ProviderGroup implements Serializable {
         return getPrimaryContact() ?: institution?.inheritPrimaryContact()
     }
 
+    /**
+     * Returns the best available primary contact that can be published.
+     * @return
+     */
+    @Override
+    ContactFor inheritPrimaryPublicContact() {
+        return getPrimaryPublicContact() ?: institution?.inheritPrimaryPublicContact()
+    }
+
     long dbId() { return id }
 
     String entityType() {

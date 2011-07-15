@@ -47,7 +47,7 @@
             <li><span class='entity'>institutions</span> - institutions and organisations that manage collections;</li>
             <li><span class='entity'>dataProviders</span> - providers of biodiversity information in electronic form, eg occurrence records, websites;</li>
             <li><span class='entity'>dataResources</span> - specific resources made available by data providers; and</li>
-            <li><span class='entity'>hubs</span> - aggregators of biodiversity data.</li>
+            <li><span class='entity'>dataHubs</span> - aggregators of biodiversity data.</li>
             <li><span class='entity'>contacts</span> - for any of the above resources.</li>
           </ul>
           <p>Access to this metadata is provided by <em>resource-oriented web services</em> that adhere to <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> principles.
@@ -73,6 +73,25 @@
               <td><a href="http://collections.ala.org.au/ws/institution/in72/contacts.json">http://collections.ala.org.au/ws/institution/in72/contacts</a></td>
             </tr>
           </table>
+          <h3>Methods</h3>
+          <p>Data services support the GET, HEAD, POST, PUT, OPTIONS and DELETE methods.</p>
+          <p><span class='entity'>GET</span> will return the json representation of the specified resource or the list of all resources of the specified resource type.</p>
+          <p><span class='entity'>HEAD</span> will return no content but will confirm the existence of the specified resource.</p>
+          <p><span class='entity'>POST</span> will update the specified resource based on the information in the body of the request.
+          If no resource is specified, the information in the body will be used to create a new resource.
+          The body must be valid json and you must specify at least these properties:</p>
+          <ul>
+            <li>user - the name of the application that is requesting the update; and</li>
+            <li>api_key - a valid key to verify that you are authorised to modify the resource.</li>
+          </ul>
+          <p>If a new resource is being created you must also specify at least:</p>
+          <ul>
+            <li>name - the name of the resource</li>
+          </ul>
+          <p>Other properties are treated as the properties to be updated. Property names are the same as those used in the GET representation.</p>
+          <p><span class='entity'>PUT</span> behaves the same as POST.</p>
+          <p><span class='entity'>OPTIONS</span> returns a list of the allowed methods.</p>
+          <p><span class='entity'>DELETE</span> will remove the specified resource. This is currently disallowed.</p>
           <h3>Contacts</h3>
           <p>Contacts exist as resources in their own right. They can be addressed in the standard form.</p>
           <table class="clean no-left-pad">

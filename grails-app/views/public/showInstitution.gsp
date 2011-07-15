@@ -140,7 +140,7 @@
         </div>
 
       <!-- contacts -->
-      <g:render template="contacts" bean="${instance.getContactsPrimaryFirst()}"/>
+      <g:render template="contacts" bean="${instance.getPublicContactsPrimaryFirst()}"/>
 
         <!-- web site -->
         <g:if test="${instance.websiteUrl}">

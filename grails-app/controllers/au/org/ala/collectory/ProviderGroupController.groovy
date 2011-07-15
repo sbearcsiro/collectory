@@ -142,7 +142,7 @@ abstract class ProviderGroupController {
         }
         if (!pg.hasErrors() && pg.save(flush: true)) {
             flash.message = "${message(code: 'default.created.message', args: [message(code: "${pg.urlForm()}", default: pg.urlForm()), pg.uid])}"
-            redirect(action: "show", id: pg.id)
+            redirect(action: "show", id: pg.uid)
         } else {
             flash.message = "Failed to create new ${entityName}"
             redirect(controller: 'admin', action: 'index')
@@ -154,7 +154,7 @@ abstract class ProviderGroupController {
         if (params.returnTo) {
             redirect(uri: params.returnTo)
         } else {
-            redirect(action: "show", id: params.id)
+            redirect(action: "show", id: params.uid ?: params.id)
         }
     }
 
@@ -170,7 +170,7 @@ abstract class ProviderGroupController {
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message =
                   "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                redirect(action: "show", id: pg.id)
+                redirect(action: "show", id: pg.uid)
             }
             else {
                 render(view: view, model: [command: pg])
@@ -205,7 +205,7 @@ abstract class ProviderGroupController {
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message =
                         "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                    redirect(action: "show", id: pg.id)
+                    redirect(action: "show", id: pg.uid)
                 }
                 else {
                     render(view: "/shared/base", model: [command: pg])
@@ -234,7 +234,7 @@ abstract class ProviderGroupController {
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message =
                   "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                redirect(action: "show", id: pg.id)
+                redirect(action: "show", id: pg.uid)
             }
             else {
                 render(view: "description", model: [command: pg])
@@ -285,7 +285,7 @@ abstract class ProviderGroupController {
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message =
                       "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                    redirect(action: "show", id: pg.id)
+                    redirect(action: "show", id: pg.uid)
                 } else {
                     render(view: "/shared/location", model: [command: pg])
                 }
@@ -318,7 +318,7 @@ abstract class ProviderGroupController {
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message =
                   "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                redirect(action: "show", id: pg.id)
+                redirect(action: "show", id: pg.uid)
             }
             else {
                 render(view: "description", model: [command: pg])
@@ -372,7 +372,7 @@ abstract class ProviderGroupController {
         if (contact && pg) {
             // add the contact to the collection
             pg.addToContacts(contact, "editor", true, false, authService.username())
-            redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.id)
+            redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.uid)
         } else {
             if (!pg) {
                 flash.message = "Contact was created but ${entityNameLower} could not be found. Please edit ${entityNameLower} and add contact from existing."
@@ -381,7 +381,7 @@ abstract class ProviderGroupController {
                 if (authService.isAuthorisedToEdit(pg.uid)) {
                     // contact must be null
                     flash.message = "Contact was created but could not be added to the ${pg.urlForm()}. Please add contact from existing."
-                    redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.id)
+                    redirect(action: "edit", params: [page:"/shared/showContacts"], id: pg.uid)
                 } else {
                     render("You are not authorised to access this page.")
                 }
@@ -484,7 +484,7 @@ abstract class ProviderGroupController {
             pg.userLastModified = authService.username()
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                redirect(action: "show", id: pg.id)
+                redirect(action: "show", id: pg.uid)
             } else {
                 render(view: "/shared/images", model: [command: pg, target: target])
             }
@@ -508,7 +508,7 @@ abstract class ProviderGroupController {
                 pg.userLastModified = authService.username()
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message = "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                    redirect(action: "show", id: pg.id)
+                    redirect(action: "show", id: pg.uid)
                 } else {
                     render(view: "/shared/images", model: [command: pg])
                 }
@@ -550,13 +550,13 @@ abstract class ProviderGroupController {
                 if (!pg.hasErrors() && pg.save(flush: true)) {
                     flash.message =
                       "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
-                    redirect(action: "show", id: pg.id)
+                    redirect(action: "show", id: pg.uid)
                 }
                 else {
                     render(view: "description", model: [command: pg])
                 }
             } else {
-                redirect(action: "show", id: pg.id)
+                redirect(action: "show", id: pg.uid)
             }
         } else {
             flash.message =

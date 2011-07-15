@@ -146,6 +146,7 @@ environments {
         grails.context = ''
         security.cas.serverName = ''
         security.cas.contextPath = grails.context
+        security.cas.bypass = true
     }
 
 }
@@ -206,8 +207,8 @@ log4j = {
 //          'org.mortbay.log'
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-	       'org.codehaus.groovy.grails.web.pages', //  GSP
-	       'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+           'org.codehaus.groovy.grails.web.pages', //  GSP
+           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
 	       'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
 	       'org.codehaus.groovy.grails.web.mapping', // URL mapping
 	       'org.codehaus.groovy.grails.commons', // core / classloading
@@ -221,6 +222,8 @@ log4j = {
     warn   'org.mortbay.log', 'org.springframework.webflow'
 
     info   'grails.app.controller'
+
+    debug
 
 /* debug logging
     debug  'org.springframework.webflow',

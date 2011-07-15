@@ -679,7 +679,14 @@ div.dashboard {
 .dashboard span.linkText {
     margin-left: 10px;
 }
-/* --------*/
+
+table.reports th {
+    background-image: none;
+}
+
+td.center, th.center {
+    text-align: center;
+}/* --------*/
 
 .tooltip {
     position:relative;
@@ -1020,4 +1027,9 @@ div.list {
 span.resultsName {
     font-size: 15px;
     padding-right: 10px;
+}
+
+.be-careful {
+    border: 1px solid red;
+    color: red;
 }

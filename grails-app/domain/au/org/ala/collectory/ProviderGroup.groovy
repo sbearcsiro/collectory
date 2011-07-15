@@ -75,7 +75,8 @@ abstract class ProviderGroup implements Serializable {
 
     static embedded = ['address', 'logoRef', 'imageRef']
 
-    static transients = ['primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'mappable','ALAPartner']
+    static transients = ['primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'mappable','ALAPartner',
+        'primaryPublicContact','publicContactsPrimaryFirst','contactsPrimaryFirst']
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
@@ -123,8 +124,10 @@ abstract class ProviderGroup implements Serializable {
      * @param isAdministrator whether this contact is allowed to administer this group
      * @param isPrimaryContact whether this contact is the one that should be displayed as THE contact
      * @param modifiedBy the user that made the change
+     * @return the ContactFor created
+     *
      */
-    void addToContacts(Contact contact, String role, boolean isAdministrator, boolean isPrimaryContact, String modifiedBy) {
+    ContactFor addToContacts(Contact contact, String role, boolean isAdministrator, boolean isPrimaryContact, String modifiedBy) {
         // safety net - if there is no id we can't do this - will happen if the save fails without detection
         if (dbId() == null) {
             return
@@ -140,6 +143,7 @@ abstract class ProviderGroup implements Serializable {
         if (cf.hasErrors()) {
             cf.errors.each {println it.toString()}
         }
+        return cf
     }
 
     /**
@@ -177,6 +181,29 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
+     * Return the contact that should be displayed for this group filtered
+     * to only include those with the 'public' attribute.
+     *
+     * @return primary ContactFor (contains the contact and the role for this collection)
+     */
+    ContactFor getPrimaryPublicContact() {
+        List<ContactFor> list = getContacts()
+        switch (list.size()) {
+            case 0: return null
+            case 1: return list[0]
+            default:
+                ContactFor result = null
+                for (cf in list) {
+                    if (cf.primaryContact && cf.contact.publish)  // definitive (as long as there is only one primary)
+                        return cf
+                }
+                // filter for publish then take the first
+                if (!result) result = list.findAll({it.contact.publish})[0]  // just take one
+                return result
+        }
+    }
+
+    /**
      * Returns the best available primary contact by using inheritance and related entities.
      *
      * Sub-classes override for their particular relationships.
@@ -187,12 +214,43 @@ abstract class ProviderGroup implements Serializable {
     }
 
     /**
+     * Returns the best available primary contact by using inheritance and related entities
+     * filtered to only include those with the 'public' attribute.
+     *
+     * Sub-classes override for their particular relationships.
+     * @return
+     */
+    ContactFor inheritPrimaryPublicContact() {
+        return getPrimaryPublicContact()
+    }
+
+    /**
      * Return all contacts for this group with the primary contact listed first.
      *
      * @return list of ContactFor (contains the contact and the role for this collection)
      */
     List<ContactFor> getContactsPrimaryFirst() {
         List<ContactFor> list = getContacts()
+        if (list.size() > 1) {
+                for (cf in list) {
+                    if (cf.primaryContact) {
+                        // move it to the top
+                        Collections.swap(list, 0, list.indexOf(cf))
+                        break
+                    }
+                }
+        }
+        return list
+    }
+
+    /**
+     * Return all contacts for this group with the primary contact listed first filtered
+     * to only include those with the 'public' attribute.
+     *
+     * @return list of ContactFor (contains the contact and the role for this collection)
+     */
+    List<ContactFor> getPublicContactsPrimaryFirst() {
+        List<ContactFor> list = getContacts().findAll {it.contact.publish}
         if (list.size() > 1) {
                 for (cf in list) {
                     if (cf.primaryContact) {

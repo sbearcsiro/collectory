@@ -1,4 +1,4 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat" %>
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat; java.text.SimpleDateFormat" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -112,6 +112,12 @@
               <cl:formattedText>${fieldValue(bean: instance, field: "informationWithheld")}</cl:formattedText>
             </g:if>
 
+            <g:if test="${instance.resourceType == 'website' && (instance.lastChecked || instance.dataCurrency)}">
+              <h2>Data currency</h2>
+                <p><cl:lastChecked date="${instance.lastChecked}"/>
+                <cl:dataCurrency date="${instance.dataCurrency}"/></p>
+            </g:if>
+
             <g:if test="${instance.resourceType == 'website' || instance.resourceType == 'records' }">
               <div id='usage-stats'>
                   <h2>Usage statistics</h2>
@@ -122,13 +128,16 @@
             </g:if>
 
             <g:if test="${instance.resourceType == 'website'}">
-              <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
+                <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
             </g:if>
 
             <g:if test="${instance.resourceType == 'records'}">
                 <h2>Digitised records</h2>
                 <div>
-                  <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
+                  <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.
+                  <cl:lastChecked date="${instance.lastChecked}"/>
+                  <cl:dataCurrency date="${instance.dataCurrency}"/>
+                  </p>
                   <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
                 </div>
             </g:if>
@@ -183,7 +192,7 @@
             </div>
 
             <!-- contacts -->
-            <g:set var="contacts" value="${instance.getContactsPrimaryFirst()}"/>
+            <g:set var="contacts" value="${instance.getPublicContactsPrimaryFirst()}"/>
             <g:if test="${!contacts}">
               <g:set var="contacts" value="${instance.dataProvider?.getContactsPrimaryFirst()}"/>
             </g:if>

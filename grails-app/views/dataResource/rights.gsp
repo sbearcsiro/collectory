@@ -79,6 +79,18 @@
                           <cl:helpTD/>
                         </tr>
 
+                        <!-- permissions document -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="permissionsDocument"><g:message code="dataResource.permissionsDocument.label" default="Permissions document" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'permissionsDocument', 'errors')}">
+                                <g:textField name="permissionsDocument" value="${command?.permissionsDocument}" />
+                                <cl:helpText code="dataResource.permissionsDocument"/>
+                            </td>
+                          <cl:helpTD/>
+                        </tr>
+
                       </tbody>
                     </table>
                 </div>

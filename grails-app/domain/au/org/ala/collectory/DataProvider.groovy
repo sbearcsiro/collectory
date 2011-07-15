@@ -102,6 +102,26 @@ class DataProvider extends ProviderGroup implements Serializable {
         }
     }
 
+    /**
+     * Returns the best available primary contact that can be published.
+     * @return
+     */
+    @Override
+    ContactFor inheritPrimaryPublicContact() {
+        if (getPrimaryPublicContact()) {
+            return getPrimaryPublicContact()
+        }
+        else {
+            for (con in listConsumers()) {
+                def related = _get(con)
+                if (related.inheritPrimaryPublicContact()) {
+                    return related.inheritPrimaryPublicContact()
+                }
+            }
+            return null
+        }
+    }
+
     long dbId() {
         return id;
     }

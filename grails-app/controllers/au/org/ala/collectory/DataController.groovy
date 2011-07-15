@@ -123,6 +123,11 @@ class DataController {
         render(status:405, text: 'Only POST supported')
     }
 
+    def unauthorised = {
+        // using the 'forbidden' response code here as 401 causes the client to ask for a log in
+        render(status:403, text: 'You are not authorised to use this service')
+    }
+
     /**
      * Should be added for any uri that returns multiple formats based on content negotiation.
      * (So the content can be correctly cached by proxies.)
@@ -160,7 +165,10 @@ class DataController {
         def urlForm = params.entity
         def clazz = capitalise(urlForm)
 
-        if (pg) {
+        if (obj.api_key != ConfigurationHolder.config.api_key) {
+            unauthorised()
+        }
+        else if (pg) {
             // check type
             if (pg.getClass().getSimpleName() == clazz) {
                 // update

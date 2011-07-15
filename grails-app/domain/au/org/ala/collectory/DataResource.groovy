@@ -20,12 +20,15 @@ class DataResource extends ProviderGroup implements Serializable {
     String resourceType = "records"
     String informationWithheld
     String dataGeneralizations
-    boolean contributor = true
-    String status
-    String harvestingNotes
-    String harvestFrequency
-    Timestamp lastHarvested
+    String permissionsDocument      // location of the documentation of the right to use
+    String status                   // integration status (of the integration of the resource into the atlas)
+    String harvestingNotes          // may include which components (text, images, etc) can be harvested
+    String mobilisationNotes        //
+    int harvestFrequency = 0
+    Timestamp lastChecked           // when the last check was made for new data
+    Timestamp dataCurrency          // the date of production of the most recent data file
     String connectionParameters     // json string containing parameters based on a connection profile - DIGiR, TAPIR, etc
+
     DataProvider dataProvider
     Institution institution         // optional link to the institution whose records are served by this resource
 
@@ -41,10 +44,12 @@ class DataResource extends ProviderGroup implements Serializable {
         institution(nullable:true)
         dataGeneralizations(nullable:true, maxSize:2048)
         informationWithheld(nullable:true, maxSize:2048)
+        permissionsDocument(nullable:true, maxSize:2048)
         status(nullable:true)
         harvestingNotes(nullable:true, maxSize:4096)
-        harvestFrequency(nullable:true)
-        lastHarvested(nullable:true)
+        mobilisationNotes(nullable:true, maxSize:4096)
+        lastChecked(nullable:true)
+        dataCurrency(nullable:true)
         connectionParameters(nullable:true, maxSize:4096)
     }
 
@@ -59,6 +64,14 @@ class DataResource extends ProviderGroup implements Serializable {
         [type:'CC BY-NC-SA',display:'Creative Commons Attribution-NonCommercial-ShareAlike'],
         [type:'other',display:'Some other or no license']]
     static licenseTypeList = creativeCommonsLicenses + ["other"]
+    /**
+     * Integration status.
+     * identified - Resource has been found but no further contact
+     * inProgress - Resource has been contacted and discussions are underway about sharing
+     * dataAvailable - Data for the resource has been loaded
+     * declined - This resource is not to be harvested / will not be contributing at this time
+     */
+    static statusList = ['identified','inProgress','dataAvailable','declined']
 
     boolean canBeMapped() {
         return false;
@@ -164,6 +177,15 @@ class DataResource extends ProviderGroup implements Serializable {
     @Override
     ContactFor inheritPrimaryContact() {
         return getPrimaryContact() ?: dataProvider?.inheritPrimaryContact()
+    }
+
+    /**
+     * Returns the best available primary contact that can be published.
+     * @return
+     */
+    @Override
+    ContactFor inheritPrimaryPublicContact() {
+        return getPrimaryPublicContact() ?: dataProvider?.inheritPrimaryPublicContact()
     }
 
     long dbId() {

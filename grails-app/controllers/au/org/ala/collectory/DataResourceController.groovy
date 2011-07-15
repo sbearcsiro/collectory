@@ -3,6 +3,7 @@ package au.org.ala.collectory
 import grails.converters.JSON
 import au.org.ala.collectory.exception.InvalidUidException
 import au.org.ala.collectory.resources.Profile
+import java.text.SimpleDateFormat
 
 class DataResourceController extends ProviderGroupController {
 
@@ -49,17 +50,32 @@ class DataResourceController extends ProviderGroupController {
             cp.protocol = protocol
         }
         def profile = Profile.valueOf(protocol)
-        profile.parameters.each {key, value ->
-            if (params."${key}") {
-                if (key == 'termsForUniqueKey') {
-                    cp."${key}" = params."${key}".tokenize(', ')
+        profile.parameters.each {pp ->
+            if (pp.type == 'boolean') {
+                // the presence of the param indicates it is checked
+                cp."${pp.name}" = params.containsKey(pp.name)
+            }
+            else if (params."${pp.name}") {
+                if (pp.name == 'termsForUniqueKey') {
+                    cp."${pp.name}" = params."${pp.name}".tokenize(', ')
                 }
                 else {
-                    cp."${key}" = params."${key}"
+                    // decode the value in case there are control chars in it
+                    cp."${pp.name}" = params."${pp.name}".decodeURL()
                 }
             }
         }
         params.connectionParameters = (cp as JSON).toString()
+
+        // process dates
+        def lastChecked = params.remove('lastChecked')
+        if (lastChecked) {
+            pg.lastChecked = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(lastChecked).toTimestamp()
+        }
+        def dataCurrency = params.remove('dataCurrency')
+        if (dataCurrency) {
+            pg.dataCurrency = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(dataCurrency).toTimestamp()
+        }
 
         // update
         genericUpdate pg, 'contribution'

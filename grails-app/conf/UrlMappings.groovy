@@ -94,6 +94,8 @@ class UrlMappings {
 
       "/ws/codeMapDump" (controller:'data', action:'codeMapDump')
 
+      "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
+
       "/"(controller:'public', action:'map')
       "500"(view:'/error')
 	}

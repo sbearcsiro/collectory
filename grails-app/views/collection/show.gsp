@@ -5,7 +5,7 @@
   <meta name="layout" content="main"/>
   <g:set var="entityName" value="${message(code: 'collection.label', default: 'Collection')}"/>
   <title><g:message code="default.show.label" args="[entityName]"/></title>
-  <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 </head>
 <body onload="initializeLocationMap('${instance.canBeMapped()}',${instance.latitude},${instance.longitude});">
 <style>

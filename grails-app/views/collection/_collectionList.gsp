@@ -13,7 +13,7 @@
         <g:each in="${collectionInstanceList}" status="i" var="collectionInstance">
           <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
 
-            <td><g:link controller="collection" action="show" id="${collectionInstance.id}">${fieldValue(bean: collectionInstance, field: "name")}</g:link></td>
+            <td><g:link controller="collection" action="show" id="${collectionInstance.uid}">${fieldValue(bean: collectionInstance, field: "name")}</g:link></td>
 
             <td>${fieldValue(bean: collectionInstance, field: "acronym")}</td>
 

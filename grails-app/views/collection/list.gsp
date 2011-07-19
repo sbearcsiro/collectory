@@ -35,7 +35,7 @@
 
                         <td>
                           <a name="${instance.name[0]}"></a>
-                          <g:link controller="collection" action="show" id="${instance.id}">${fieldValue(bean: instance, field: "name")}</g:link>
+                          <g:link controller="collection" action="show" id="${instance.uid}">${fieldValue(bean: instance, field: "name")}</g:link>
                         </td>
 
                         <td>${fieldValue(bean: instance, field: "acronym")}</td>

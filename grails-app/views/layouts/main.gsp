@@ -23,7 +23,6 @@
 
 <g:javascript library="application" />
 <g:javascript library="collectory" />
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <g:layoutHead />
 </head>
  

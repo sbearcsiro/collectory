@@ -24,7 +24,7 @@ class CrudService {
     static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld',
                 'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes',
                 'harvestingNotes','connectionParameters','resourceType']
-    static dataResourceNumberProperties = ['harvestFrequency']
+    static dataResourceNumberProperties = ['harvestFrequency','downloadLimit']
     static dataResourceTimestampProperties = ['lastChecked','dataCurrency']
     static dataResourceJSONArrays = ['connectionParameters']
     //static dataResourceObjectProperties = ['dataProvider']
@@ -295,11 +295,13 @@ class CrudService {
                 if (p.connectionParameters) {
                     connectionParameters = p.connectionParameters.formatJSON()
                 }
+                hasMappedCollections = p.hasMappedCollections()
                 status = p.status
                 harvestFrequency = p.harvestFrequency
                 lastChecked = p.lastChecked
                 dataCurrency = p.dataCurrency
                 harvestingNotes = p.harvestingNotes
+                downloadLimit = p.downloadLimit
             }
         }
         return result

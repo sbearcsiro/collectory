@@ -91,6 +91,18 @@
                           <cl:helpTD/>
                         </tr>
 
+                        <!-- download limit -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="downloadLimit"><g:message code="dataResource.downloadLimit.label" default="Download limit" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'downloadLimit', 'errors')}">
+                                <g:textField name="downloadLimit" value="${fieldValue(bean:command,field:'downloadLimit')}" />
+                                <cl:helpText code="dataResource.downloadLimit"/>
+                            </td>
+                          <cl:helpTD/>
+                        </tr>
+
                       </tbody>
                     </table>
                 </div>

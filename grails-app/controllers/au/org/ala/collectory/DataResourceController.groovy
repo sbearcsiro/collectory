@@ -4,6 +4,7 @@ import grails.converters.JSON
 import au.org.ala.collectory.exception.InvalidUidException
 import au.org.ala.collectory.resources.Profile
 import java.text.SimpleDateFormat
+import au.org.ala.collectory.resources.PP
 
 class DataResourceController extends ProviderGroupController {
 
@@ -59,9 +60,17 @@ class DataResourceController extends ProviderGroupController {
                 if (pp.name == 'termsForUniqueKey') {
                     cp."${pp.name}" = params."${pp.name}".tokenize(', ')
                 }
+                else if (pp.type == 'delimiter') {
+                    def str = params."${pp.name}"
+                    str = str.replaceAll('HT', PP.HT)
+                    str = str.replaceAll('LF', PP.LF)
+                    str = str.replaceAll('VT', PP.VT)
+                    str = str.replaceAll('FF', PP.FF)
+                    str = str.replaceAll('CR', PP.CR)
+                    cp."${pp.name}" = str
+                }
                 else {
-                    // decode the value in case there are control chars in it
-                    cp."${pp.name}" = params."${pp.name}".decodeURL()
+                    cp."${pp.name}" = params."${pp.name}"
                 }
             }
         }

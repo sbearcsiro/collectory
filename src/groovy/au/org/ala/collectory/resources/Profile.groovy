@@ -34,10 +34,16 @@ class PP {
     final static PP PER_PAGE = new PP(name:'per_page',display:'# per page', type:'text')
     final static PP KEYWORDS = new PP(name:'keywords',display:'Keywords', type:'textArea')
     final static PP AUTO = new PP(name:'automation',display:'Automatically loaded', type:'boolean')
-    final static PP CSV_DELIMITER = new PP(name:'csv_delimiter',display:'Value delimiter', type:'text', defaultValue: ',')
-    final static PP CSV_END_OF_LINE = new PP(name:'csv_eol',display:'End of line', type:'text', defaultValue: '\n')
+    final static PP CSV_DELIMITER = new PP(name:'csv_delimiter',display:'Value delimiter', type:'delimiter', defaultValue: ',')
+    final static PP CSV_END_OF_LINE = new PP(name:'csv_eol',display:'Line delimiter', type:'delimiter', defaultValue: '\n')
     final static PP CSV_ESCAPE = new PP(name:'csv_escape_char',display:'Escape character', type:'text', defaultValue: '/')
     final static PP CSV_QUOTE = new PP(name:'csv_text_enclosure',display:'Text enclosure', type:'text', defaultValue: '"')
+
+    final static String HT = "\u0009"
+    final static String LF = "\u000A"
+    final static String VT = "\u000b"
+    final static String FF = "\u000C"
+    final static String CR = "\u000D"
 
     String name
     String display
@@ -49,7 +55,7 @@ enum Profile {
 
     NONE('none',[]),
     DIGIR('DIGIR',
-            [PP.SERVICE_URL,PP.TERMS]),
+            [PP.SERVICE_URL,PP.RESOURCE,PP.TERMS]),
     TAPIR('TAPIR',
             [PP.SERVICE_URL,PP.TERMS]),
     BioCASe('BioCase',

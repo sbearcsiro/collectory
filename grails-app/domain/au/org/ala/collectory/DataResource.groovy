@@ -28,6 +28,7 @@ class DataResource extends ProviderGroup implements Serializable {
     Timestamp lastChecked           // when the last check was made for new data
     Timestamp dataCurrency          // the date of production of the most recent data file
     String connectionParameters     // json string containing parameters based on a connection profile - DIGiR, TAPIR, etc
+    int downloadLimit = 0           // max number of records that can be included in a single download - 0 = no limit
 
     DataProvider dataProvider
     Institution institution         // optional link to the institution whose records are served by this resource
@@ -93,6 +94,7 @@ class DataResource extends ProviderGroup implements Serializable {
         drs.dataProvider = dataProvider?.name
         drs.dataProviderId = dataProvider?.id
         drs.dataProviderUid = dataProvider?.uid
+        drs.downloadLimit = downloadLimit
 
         drs.hubMembership = listHubMembership().collect { [uid: it.uid, name: it.name] }
         def consumers = listConsumers()
@@ -129,6 +131,14 @@ class DataResource extends ProviderGroup implements Serializable {
      */
     boolean isCreativeCommons() {
         return licenseType in creativeCommonsLicenses
+    }
+
+    /**
+     * True if this resource provides records for any number of collections.
+     * @return
+     */
+    boolean hasMappedCollections() {
+        return listConsumers().size() as boolean
     }
 
     /**

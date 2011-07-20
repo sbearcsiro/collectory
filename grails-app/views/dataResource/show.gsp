@@ -157,6 +157,9 @@
                     </g:else>
                 </p>
 
+                <!-- download limit -->
+                <p><span class="category">Download limit</span>: ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
+
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 

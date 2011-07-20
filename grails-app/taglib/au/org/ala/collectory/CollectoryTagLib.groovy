@@ -10,6 +10,7 @@ import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import au.org.ala.collectory.resources.Profile
 import org.codehaus.groovy.grails.web.json.JSONArray
 import java.text.SimpleDateFormat
+import au.org.ala.collectory.resources.PP
 
 class CollectoryTagLib {
 
@@ -1615,11 +1616,18 @@ class CollectoryTagLib {
         if (!(str instanceof String)) {
             return str
         }
-        def hasControlChars = false
+        def outStr = ""
         str.each {
-            hasControlChars |= Character.isISOControl(it as char)
+            switch (it) {
+                case PP.HT: outStr += 'HT'; break
+                case PP.LF: outStr += 'LF'; break
+                case PP.VT: outStr += 'VT'; break
+                case PP.FF: outStr += 'FF'; break
+                case PP.CR: outStr += 'CR'; break
+                default: outStr += it
+            }
         }
-        return hasControlChars ? str.encodeAsURL() : str
+        return outStr
     }
 
     def connectionParameters = { attrs ->
@@ -1670,7 +1678,9 @@ class CollectoryTagLib {
                 }
 
                 // handle unprintable chars
-                displayedValue = encodeControlChars(displayedValue)
+                if (pp.type == 'delimiter') {
+                    displayedValue = encodeControlChars(displayedValue)
+                }
 
                 def attributes = [name:pp.name, value:displayedValue]
                 if (!selected) {
@@ -1703,8 +1713,8 @@ class CollectoryTagLib {
                         </td>
                         <td valign="top" class="value">""" +
                             "${widget}"(attributes) +
-                        """</td>
-                        </tr>"""
+                            helpText(code:'dataResource.' + pp.name) +
+                        "</td>" +  helpTD() + "</tr>"
                 }
             }
         }

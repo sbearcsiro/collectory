@@ -1,7 +1,6 @@
 package au.org.ala.collectory
 
 import grails.converters.JSON
-import au.org.ala.collectory.exception.InvalidUidException
 import au.org.ala.collectory.resources.Profile
 import java.text.SimpleDateFormat
 import au.org.ala.collectory.resources.PP
@@ -38,6 +37,21 @@ class DataResourceController extends ProviderGroupController {
             ActivityLog.log username(), isAdmin(), instance.uid, Action.VIEW
 
             [instance: instance, contacts: instance.getContacts(), changes: getChanges(instance.uid)]
+        }
+    }
+
+    def editConsumers = {
+        def pg = get(params.id)
+        if (!pg) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "list")
+        } else {
+            // are they allowed to edit
+            if (authService.isAdmin()) {
+                render(view: 'consumers', model:[command: pg, source: params.source])
+            } else {
+                render("You are not authorised to edit these properties.")
+            }
         }
     }
 
@@ -93,6 +107,32 @@ class DataResourceController extends ProviderGroupController {
     def updateRights = {
         def pg = get(params.id)
         genericUpdate pg, 'rights'
+    }
+
+    def updateConsumers = {
+        def pg = get(params.id)
+        def newConsumers = params.consumers.tokenize(',')
+        def oldConsumers = pg.listConsumers()
+        // create new links
+        newConsumers.each {
+            if (!(it in oldConsumers)) {
+                def dl = new DataLink(consumer: it, provider: pg.uid).save()
+                auditLog(pg, 'INSERT', 'consumer', '', it, dl)
+                log.info "created link from ${pg.uid} to ${it}"
+            }
+        }
+        // remove old links - NOTE only for the variety (collection or institution) that has been returned
+        oldConsumers.each {
+            if (!(it in newConsumers) && it[0..1] == params.source) {
+                log.info "deleting link from ${pg.uid} to ${it}"
+                def dl = DataLink.findByConsumerAndProvider(it, pg.uid)
+                auditLog(pg, 'DELETE', 'consumer', it, '', dl)
+                dl.delete()
+            }
+        }
+        flash.message =
+          "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+        redirect(action: "show", id: pg.uid)
     }
 
     /**

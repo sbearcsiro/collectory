@@ -1033,3 +1033,56 @@ span.resultsName {
     border: 1px solid red;
     color: red;
 }
+
+div.container {
+    border: 1px solid #CCC;
+    margin: 10px;
+    padding: 0 5px 0 5px;
+    float: left;
+    width: 322px;
+    height: 400px;
+    background-color: #EEE;
+    overflow:  visible;
+    overflow-y: auto;
+    /*overflow-x: visible;*/
+}
+
+div#not-selected {
+    width: 340px;       /* allow for width of scrollbar */
+}
+
+#not-selected .draggable {
+    background: #F6F6F6 url(../images/skin/add-small.png) center right no-repeat;
+}
+
+#selected .draggable {
+    background: #F6F6F6 url(../images/skin/delete-small.png) center right no-repeat;
+}
+
+#selected p {
+    padding-left: 80px;
+    padding-top: 100px;
+}
+
+.draggable img {
+    float:right;
+    vertical-align: middle;
+}
+
+.draggable span {
+    float: left;
+    padding-right: 5px;
+}
+
+.draggable {
+    background-color: #f6f6f6;
+    float: left;
+    border: 1px solid #AAA;
+    padding: 0 23px 0 3px;;
+    margin: 2px;
+    cursor: move;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
+}

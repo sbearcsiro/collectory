@@ -4,6 +4,7 @@ import grails.converters.JSON
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
+import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogListener
 
 /**
  * This is a base class for all provider group entities types.
@@ -635,6 +636,25 @@ abstract class ProviderGroupController {
             return param
         }
         return param.join(' ')
+    }
+
+    def auditLog(ProviderGroup pg, String eventName, String property, String oldValue, String newValue, Object persistedObject) {
+        def audit = new AuditLogEvent(
+                  actor: username(),
+                  uri: pg.uid,   /* MEW repurposing of uri */
+                  className: pg.getClass().name,
+                  eventName: eventName,
+                  persistedObjectId: persistedObject.id?.toString(),
+                  persistedObjectVersion: persistedObject.version,
+                  propertyName: property,
+                  oldValue: truncate(oldValue),
+                  newValue: truncate(newValue)
+          )
+        audit.save()
+    }
+
+    private String truncate(str) {
+        return (str?.length() > AuditLogListener.TRUNCATE_LENGTH) ? str?.substring(0, AuditLogListener.TRUNCATE_LENGTH) : str
     }
 
 }

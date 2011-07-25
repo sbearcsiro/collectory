@@ -36,7 +36,7 @@
       <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
       <!-- Institution --><!-- ALA Partner -->
-      <h2 style="display:inline"><g:link controller="institution" action="show" id="${instance.institution?.id}">${instance.institution?.name}</g:link></h2>
+      <h2 style="display:inline"><g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></h2>
       <cl:partner test="${instance.institution?.isALAPartner}"/><br/>
 
       <!-- GUID    -->

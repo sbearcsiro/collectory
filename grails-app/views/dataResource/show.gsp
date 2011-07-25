@@ -160,7 +160,7 @@
                 <!-- download limit -->
                 <p><span class="category">Download limit</span>: ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
               <!-- images -->
@@ -171,7 +171,9 @@
               <g:render template="/shared/location" model="[instance: instance]"/>
 
               <!-- Record consumers -->
-              <g:render template="/shared/consumers" model="[instance: instance]"/>
+              <g:if test="${instance.resourceType == 'records'}">
+                  <g:render template="/shared/consumers" model="[instance: instance]"/>
+              </g:if>
 
               <!-- Contacts -->
               <g:render template="/shared/contacts" model="[contacts: contacts, instance: instance]"/>

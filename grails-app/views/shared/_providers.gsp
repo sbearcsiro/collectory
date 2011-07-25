@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <div class="show-section">
-  <h2>Record providers and resources</h2>
-  <p>These data providers and data resources contribute digitised records for specimens in this ${ProviderGroup.textFormOfEntityType(instance.uid)}.</p>
+  <h2>Record providers</h2>
+  <p>These data resources contribute digitised records for specimens in this ${ProviderGroup.textFormOfEntityType(instance.uid)}.</p>
   <ul class="fancy">
     <g:each in="${instance.listProviders()}" var="prov">
       <g:set var="pg" value="${ProviderGroup._get(prov)}"/>
@@ -31,5 +31,5 @@
     </g:if>
   </ul>
   <div style="clear:both;"></div>
-  <cl:editButton uid="${instance.uid}" controller="dataLink" action="list" consumer="${instance.uid}"/>
+  <div><p style="padding-top: 20px;">To change the relationship with record providers please go to the data resource and edit its record consumers.</p></div>
 </div>

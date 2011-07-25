@@ -726,6 +726,10 @@ span.changeTo {
     left: 670px;
 }
 
+.emulate-public .long {
+    left: 590px;
+}
+
 .emulate-public .follow {
     margin-left: 20px;    
 }

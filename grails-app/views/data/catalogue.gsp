@@ -39,8 +39,8 @@
             <p>Please be aware that these services are still being refined. The specifications should be treated as experimental.
             They may change.</p>
           </div>
-          
-          <h2>Data services</h2>
+
+          <h2 id="WS0024">Data services</h2>
           <p>The registry of the Atlas of Living Australia maintains metadata that describe:</p>
           <ul>
             <li><span class='entity'>collections</span> - natural history collections;</li>
@@ -92,7 +92,7 @@
           <p><span class='entity'>PUT</span> behaves the same as POST.</p>
           <p><span class='entity'>OPTIONS</span> returns a list of the allowed methods.</p>
           <p><span class='entity'>DELETE</span> will remove the specified resource. This is currently disallowed.</p>
-          <h3>Contacts</h3>
+          <h3 id="WS0025">Contacts</h3>
           <p>Contacts exist as resources in their own right. They can be addressed in the standard form.</p>
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
@@ -155,7 +155,7 @@
           <p>All contact services can return payload as CSV, XML or JSON via content negotiation.<br/>
             <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Data_services">More information.</a></p>
 
-          <h3>EML metadata interchange</h3>
+          <h3 id="WS0026">EML metadata interchange</h3>
           <p>The registry provides a service to extract resource metadata in EML format. The response complies with <a href="http://community.gbif.org/pg/pages/view/10913/the-gbif-eml-metadata-profile">GBIF's EML schema</a>.
           This document is suitable for inclusion in a Darwin Core Archive as the metadata description of the contained records.
           The form is:</p>
@@ -170,7 +170,7 @@
             </tr>
           </table>
 
-          <h2>Citation services</h2>
+          <h2 id="WS0032">Citation services</h2>
           <p>Citation services return attribution and licence information for digitised records that can be accessed through the Atlas.</p>
 
           <h3>Citations for a list of data providers</h3>
@@ -197,7 +197,7 @@
 
           <h2>Lookup services</h2>
           <p>These services explicitly support inter-operation with other components of the Atlas such as the bio-cache and the BIE. They do not all comply with RESTful principles but are being progressively refactored to do so.</p>
-          <h3>Map a bio-cache record to a collection</h3>
+          <h3 id="WS0027">Map a bio-cache record to a collection</h3>
           <p>This service takes a collection code and an institution code from a raw specimen record and maps the combination to a single collection.
           The form is:</p>
           <table class="clean no-left-pad">
@@ -214,7 +214,7 @@
             </tr>
           </table>
 
-          <h3>Get a summary for an entity</h3>
+          <h3 id="WS0028">Get a summary for an entity</h3>
           <p>This service just returns a subset of metadata for an entity. The form is:</p>
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
@@ -229,12 +229,12 @@
           <p>The summary services are less useful now that we have full RESTful metadata services but are retained for backward compatibility. They also provide a small efficiency
           when the service is called repeatedly such as during indexing operations. <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_summary_from_UID">More information.</a></p>
 
-          <h3>Lookup the name of an entity</h3>
+          <h3 id="WS0029">Lookup the name of an entity</h3>
           <p>This service is even more cut down than the summary. It returns only the name of an entity given its UID. The form is: </p>
           <p><span class="code">GET http://collections.ala.org.au/lookup/name/<strong>{uid}</strong></span></p>
           <p><a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_name_from_UID">More information.</a></p>
 
-          <h3>Get taxonomic coverage hints for an entity</h3>
+          <h3 id="WS0030">Get taxonomic coverage hints for an entity</h3>
           <p>This service plays a roll in taxonomic name matching during the processing of raw bio-cache records. When a record has been mapped to
           a collection, the collection metadata can be used to inform the matching process by adding weight to matches within particular taxonomic groups. The form is:</p>
           <table class="clean no-left-pad">

@@ -12,5 +12,6 @@
     </g:each>
   </ul>
   <div style="clear:both;"></div>
-  <cl:editButton uid="${instance.uid}" action="editConsumers" target="${target}"/>
+  <div><span class="buttons long"><g:link class="edit" action='editConsumers' params="[source:'co']" id="${instance.uid}">Add/remove collections&nbsp;</g:link></span></div>
+  <div><span class="buttons long"><g:link class="edit" action='editConsumers' params="[source:'in']" id="${instance.uid}">Add/remove institutions</g:link></span></div>
 </div>

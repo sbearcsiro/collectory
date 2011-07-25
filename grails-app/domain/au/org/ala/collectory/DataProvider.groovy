@@ -37,7 +37,6 @@ class DataProvider extends ProviderGroup implements Serializable {
         if (resources) {
             def list = []
             resources.each {
-                println "resource: " + it
                 if (it.hasProperty('uid')) {
                     list << [it.uid, it.name]
                 } else {

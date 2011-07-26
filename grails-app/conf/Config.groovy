@@ -165,9 +165,12 @@ auditLog {
       def cas = session?.getAttribute('_const_cas_assertion_')
       def actor = cas?.getPrincipal()?.getName()
       if (!actor) {
-          actor = request.getUserPrincipal()?.attributes?.email ?: "anonymous"
+          actor = request.getUserPrincipal()?.attributes?.email
       }
-      return actor
+      if (!actor) {
+          actor = session.username  // injected by data controller for web services
+      }
+      return actor ?: "anonymous"
   }
   TRUNCATE_LENGTH = 2048
 }

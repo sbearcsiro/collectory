@@ -80,8 +80,53 @@ class ReportsController {
         [codeSummaries: (ProviderMap.list().collect { it.collection.buildSummary() }).sort {it.name}]
     }
 
+    /**
+     * List records from the audit log in desc date order.
+     *
+     * @param offset for pagination control
+     * @param who search term for the actor field
+     * @param what search term for the propertyName and uri (uid) field
+     * @param next return the next page of logs
+     * @param reset resets the search criteria and pagination
+     */
     def changes = {
-        [changes: AuditLogEvent.list([sort:'lastUpdated',order:'desc',max:100])]
+        // set page size
+        def pageSize = 100
+
+        // offset controls where to start in the list
+        int offset = params.offset.toInteger() ?: 0
+        if (params.next) {
+            offset = offset + pageSize
+        }
+        else {
+            // reset to start if doing any action other than next
+            offset = 0
+        }
+
+        // build search criteria and retrieve next page
+        def who = params.who ?: ""
+        def what = params.what ?: ""
+        if (params.reset) {
+            // clear criteria
+            who = ""; what = ""; offset = 0
+        }
+        def c = AuditLogEvent.createCriteria()
+        def list = c {
+            if (who) {
+                like('actor','%' + who + '%')
+            }
+            if (what) {
+                or {
+                    like ('uri', '%' + what + '%')
+                    like ('propertyName', '%' + what + '%')
+                }
+            }
+            maxResults(pageSize)
+            order('lastUpdated','desc')
+            firstResult(offset)
+        }
+
+        [changes: list, offset:offset, who:who, what:what]
     }
 
     def notifications = {

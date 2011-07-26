@@ -40,7 +40,7 @@
 
                         <td>${fieldValue(bean: instance, field: "acronym")}</td>
 
-                        <td><g:link controller="institution" action="show" id="${instance.institution?.id}">${instance.institution?.name}</g:link></td>
+                        <td><g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></td>
 
                         <td><cl:reportClassification keywords="${instance.keywords}"/></td>
 

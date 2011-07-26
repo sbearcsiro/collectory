@@ -15,7 +15,20 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <p>Click a row to show full details of a change.</p>
+              <p>Click a row to show full details of a change. Click a UID or ID to view the affected entity.</p>
+              <div class="filters">
+                  <g:form action="changes">
+                    <fieldset>
+                        <legend class="box-label">Filters</legend>
+                        <g:hiddenField name="offset" value="${offset}"/>
+                        <label for="who">Who: <g:textField name="who" value="${who}"/></label>
+                        <label for="what">What: <g:textField name="what" value="${what}"/></label>
+                        <g:submitButton class="submit" name="filter" value="Search"/>
+                        <g:submitButton class="submit" name="reset" value="Reset"/>
+                        <g:submitButton name="next" value="Next 100»"/>
+                    </fieldset>
+                  </g:form>
+              </div>
               <table>
                 <colgroup><col width="23%"/><col width="25%"/><col width="12%"/><col width="40%"/></colgroup>
                 <tr class="reportHeaderRow"><td>When</td><td>Who</td><td>Did</td><td>What</td></tr>

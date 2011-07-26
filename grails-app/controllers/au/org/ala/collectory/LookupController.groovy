@@ -141,24 +141,11 @@ class LookupController {
                 uids = DataResource.list(sort: "uid").collect { it.uid }
             }
             withFormat {
-                text {  // handles text/plain and text/html
-                    StringWriter sw = new StringWriter()
-                    CSVWriter writer = new CSVWriter(sw)
-                    writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld"] as String[])
-                    uids.each {
-                        // get each pg
-                        def pg = ProviderGroup._get(it)
-                        if (pg) {
-                            writer.writeNext(buildCitation(pg,"array") as String[])
-                        }
-                    }
-                    render sw.toString()
-                }
                 csv {  // same as text - handles text/csv
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/csv'
                     StringWriter sw = new StringWriter()
                     CSVWriter writer = new CSVWriter(sw)
-                    writer.writeNext(["Resource name","Citation","Rights","More information","Data generalizations","Information withheld"] as String[])
+                    writer.writeNext(["Resource name","Citation","Rights","More information","Data generalizations","Information withheld","Download limit"] as String[])
                     uids.each {
                         // get each pg
                         def pg = ProviderGroup._get(it)
@@ -170,7 +157,7 @@ class LookupController {
                 }
                 tsv {  // old
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/tsv'
-                    String result = "Resource name\tCitation\tRights\tMore information\tData generalizations\tInformation withheld"
+                    String result = "Resource name\tCitation\tRights\tMore information\tData generalizations\tInformation withheld\tDownload limit"
                     uids.each {
                         // get each pg
                         def pg = ProviderGroup._get(it)
@@ -189,6 +176,19 @@ class LookupController {
                         }
                     }
                     render result as JSON
+                }
+                all {  // handles text/plain and text/html
+                    StringWriter sw = new StringWriter()
+                    CSVWriter writer = new CSVWriter(sw)
+                    writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld","Download limit"] as String[])
+                    uids.each {
+                        // get each pg
+                        def pg = ProviderGroup._get(it)
+                        if (pg) {
+                            writer.writeNext(buildCitation(pg,"array") as String[])
+                        }
+                    }
+                    render sw.toString()
                 }
             }
         } else {
@@ -223,6 +223,7 @@ class LookupController {
         def name = pg.name
         def dataGen = ''
         def infoWithheld = ''
+        def downloadLimit = ''
         if (pg instanceof DataResource) {
             def cit = (pg as DataResource).getCitation()
             citation = cit ? cit : citation
@@ -232,15 +233,16 @@ class LookupController {
             dataGen = dg ?: dataGen
             def ih = (pg as DataResource).getInformationWithheld()
             infoWithheld = ih ?: infoWithheld
+            downloadLimit = (pg as DataResource).downloadLimit
         }
         def link = ConfigurationHolder.config.citation.link.template
         link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))
         citation =  citation.replaceAll("@entityName@",name)
         switch (format) {
-            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}\t${dataGen}\t${infoWithheld}"
+            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}\t${dataGen}\t${infoWithheld}\t${downloadLimit}"
             case "map": return ['name': name, 'citation': citation, 'rights': rights, 'link': link,
-                'dataGeneralizations': dataGen, 'informationWithheld': infoWithheld]
-            case "array": return [name, citation, rights, link, dataGen, infoWithheld]
+                'dataGeneralizations': dataGen, 'informationWithheld': infoWithheld, 'downloadLimit': downloadLimit]
+            case "array": return [name, citation, rights, link, dataGen, infoWithheld, downloadLimit]
         }
     }
 

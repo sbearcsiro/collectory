@@ -233,7 +233,7 @@ class LookupController {
             dataGen = dg ?: dataGen
             def ih = (pg as DataResource).getInformationWithheld()
             infoWithheld = ih ?: infoWithheld
-            downloadLimit = (pg as DataResource).downloadLimit
+            downloadLimit = (pg as DataResource).downloadLimit ?: ""
         }
         def link = ConfigurationHolder.config.citation.link.template
         link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))

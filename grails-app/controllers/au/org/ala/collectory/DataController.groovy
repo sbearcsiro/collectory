@@ -165,6 +165,11 @@ class DataController {
         def urlForm = params.entity
         def clazz = capitalise(urlForm)
 
+        // inject the user name into the session so it can be used by audit logging if changes are made
+        if (obj.user) {
+            session.username = obj.user
+        }
+
         if (obj.api_key != ConfigurationHolder.config.api_key) {
             unauthorised()
         }

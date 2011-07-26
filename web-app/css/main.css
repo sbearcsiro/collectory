@@ -1086,3 +1086,48 @@ div#not-selected {
     -khtml-border-radius: 8px;
     border-radius: 8px;
 }
+
+div.filters fieldset {
+    border: 1px solid #ccc;
+    padding: 0 0 5px 100px;
+    margin-bottom: 10px;
+    background-color: transparent;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -khtml-border-radius: 6px;
+    border-radius: 6px;
+}
+
+div.filters legend {
+    margin-left: -95px;
+    color: #666;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+div.filters input {
+    width: 100px;
+    margin-right: 10px;
+}
+
+div.filters input.submit {
+    background-color: #f7f7f7;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -khtml-border-radius: 8px;
+    border-radius: 8px;
+}
+div.filters input#filter {
+    width: 50px;
+}
+
+div.filters input#reset {
+    width: 44px;
+}
+
+div.filters input#next {
+    width: 70px;
+    border:  none;
+    font-style: italic;
+    float: right;
+}

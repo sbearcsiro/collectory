@@ -112,6 +112,11 @@
               <cl:formattedText>${fieldValue(bean: instance, field: "informationWithheld")}</cl:formattedText>
             </g:if>
 
+            <g:if test="${instance.downloadLimit}">
+              <h2>Limited downloads</h2>
+              <p>Downloads from this data resource are limited to ${fieldValue(bean: instance, field: "downloadLimit")} records.</p>
+            </g:if>
+
             <g:if test="${instance.resourceType == 'website' && (instance.lastChecked || instance.dataCurrency)}">
               <h2>Data currency</h2>
                 <p><cl:lastChecked date="${instance.lastChecked}"/>

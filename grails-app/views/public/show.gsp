@@ -239,7 +239,7 @@
           <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
             <div class="section">
               <h2>Digitised records available through the Atlas</h2>
-              <div style="float:left;">
+              <div style="float:left;min-height: 60px;">
                 <g:if test="${instance.numRecords != -1}">
                   <p><cl:collectionName prefix="The " name="${instance.name}"/> has an estimated ${fieldValue(bean: instance, field: "numRecords")} ${nouns}.
                     <g:if test="${instance.numRecordsDigitised != -1}">

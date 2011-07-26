@@ -648,7 +648,8 @@ function getShortCollectionName(obj) {
     if (inst != null && inst.match("^The ") == "The ") {
         inst = inst.substr(4);
     }
-    if (inst != null && obj.attributes.name.match("^" + inst) == inst) { // startWith
+    if (inst != null && obj.attributes.name.match("^" + inst) == inst && // coll starts with the inst name
+            inst != shortName) { // but not if inst name is the whole of the coll name (ie they are the same)
         shortName = obj.attributes.name.substr(inst.length);
         // check for stupid collection names
         if (shortName.substr(0,2) == ", ") {

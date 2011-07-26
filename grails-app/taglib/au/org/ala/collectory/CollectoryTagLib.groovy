@@ -1237,7 +1237,7 @@ class CollectoryTagLib {
                 out << "<b>" + attrs.name[0..amp-1] + "</b>" + attrs.name[amp..attrs.name.size()-1]
             }
             else {
-                out << attrs.name
+                out << "<b>" + attrs.name + "</b>"
             }
         }
     }

@@ -120,7 +120,9 @@ class LookupController {
     }
 
     def citations = {
-        params.uids = "[${params.include}]"
+        if (params.include) {
+            params.uids = "[${params.include}]"
+        }
         forward(action: 'citation')
     }
 
@@ -141,19 +143,12 @@ class LookupController {
                 uids = DataResource.list(sort: "uid").collect { it.uid }
             }
             withFormat {
+                text {  // handles text/plain
+                    render csvCitations(uids)
+                }
                 csv {  // same as text - handles text/csv
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/csv'
-                    StringWriter sw = new StringWriter()
-                    CSVWriter writer = new CSVWriter(sw)
-                    writer.writeNext(["Resource name","Citation","Rights","More information","Data generalizations","Information withheld","Download limit"] as String[])
-                    uids.each {
-                        // get each pg
-                        def pg = ProviderGroup._get(it)
-                        if (pg) {
-                            writer.writeNext(buildCitation(pg,"array") as String[])
-                        }
-                    }
-                    render sw.toString()
+                    render csvCitations(uids)
                 }
                 tsv {  // old
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/tsv'
@@ -177,23 +172,27 @@ class LookupController {
                     }
                     render result as JSON
                 }
-                all {  // handles text/plain and text/html
-                    StringWriter sw = new StringWriter()
-                    CSVWriter writer = new CSVWriter(sw)
-                    writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld","Download limit"] as String[])
-                    uids.each {
-                        // get each pg
-                        def pg = ProviderGroup._get(it)
-                        if (pg) {
-                            writer.writeNext(buildCitation(pg,"array") as String[])
-                        }
-                    }
-                    render sw.toString()
+                all {  // handles text/html
+                    render csvCitations(uids)
                 }
             }
         } else {
             render ([error:"no uids posted"] as JSON)
         }
+    }
+
+    def csvCitations(uids) {
+        StringWriter sw = new StringWriter()
+        CSVWriter writer = new CSVWriter(sw)
+        writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld","Download limit"] as String[])
+        uids.each {
+            // get each pg
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                writer.writeNext(buildCitation(pg,"array") as String[])
+            }
+        }
+        return sw.toString()
     }
 
     def testCitation = {

@@ -76,7 +76,7 @@ class UrlMappings {
       "/ws/dataHub/$uid/collections" (controller: 'data', action: 'collectionsForDataHub')
 
       // citations
-      "/ws/citations/$include" (controller:'lookup', action:'citations')
+      "/ws/citations/$include?" (controller:'lookup', action:'citations')
 
       // eml
       "/eml/$id?" (controller:'data',action:'eml')

@@ -1734,4 +1734,83 @@ class CollectoryTagLib {
                 <b>${new SimpleDateFormat("dd MMM yyyy").format(attrs.date)}</b>.</span>"""
         }
     }
+
+    def shortPermissionsDocument = { attrs ->
+        if (attrs.url) {
+            String url = attrs.url
+            // only show document name
+            def name = url
+            if (url?.indexOf('/') > -1) {
+                name = url[(url.lastIndexOf('/')+1)..-1]
+            }
+            def limit = 17
+            if (name.size() > limit) {
+                /*def endChunckSize = (limit-3)/2 as int
+                name = name[0..endChunckSize] + "..." + name[-endChunckSize..-1]*/
+                def tail = (name.indexOf('.') > -1) ? name[name.lastIndexOf('.')+1..-1] : ""
+                name = name[0..8] + '...' + tail
+            }
+            out << name
+        }
+    }
+
+    /**
+     * Text to represent the permissions document type.
+     *
+     * @attr type the full type value
+     */
+    def shortPermissionsDocumentType = {attrs ->
+        if (attrs.type) {
+            switch (attrs.type) {
+                case 'Email': out << 'Email'; break
+                case 'Data Provider Agreement': out << 'DPA'; break
+                case 'Web Page': out << 'Web'; break
+                case 'Other': out << 'Other'; break
+                default: out << 'unknown'
+            }
+        }
+    }
+
+    /**
+     * Text to represent the flags for data provider agreements.
+     *
+     * @attr filed the filed flag
+     * @attr risk the riskAssessment flag
+     * @attr brief controls the representation
+     */
+    def dpaStatus = { attrs ->
+
+        def str = []
+        if (attrs.filed) {
+            str.add attrs.brief ? "F" : "Agreement filed"
+        }
+        if (attrs.risk) {
+            str.add attrs.brief ? "R" : "Risk assessment completed"
+        }
+        out << str.join(attrs.brief ? ' ' : ', ')
+    }
+
+    /**
+     * Text appropriate to the type of contribution.
+     *
+     * @attr resourceType the typeof resource
+     * @attr status the state of progress in integration the resource
+     * @attr tag the tag to enclose the text
+     */
+    def dataResourceContribution = { attrs ->
+        def startTag = attrs.tag ? "<${attrs.tag}>" : ""
+        def endTag = attrs.tag ? "</${attrs.tag}>" : ""
+        if (attrs.resourceType == 'website' && attrs.status == 'dataAvailable') {
+            out << startTag + "This website provides content for Atlas species pages." + endTag
+        }
+        else if (attrs.resourceType == 'website' && attrs.status == 'linksAvailable') {
+            out << startTag + "Links to this website appear on appropriate Atlas species pages." + endTag
+        }
+        else if (attrs.resourceType == 'document' && attrs.status == 'dataAvailable') {
+            out << startTag + "Documents from this source provide content for Atlas species pages." + endTag
+        }
+        else if (attrs.resourceType == 'document' && attrs.status == 'linksAvailable') {
+            out << startTag + "Links to this document appear on appropriate Atlas species pages." + endTag
+        }
+    }
 }

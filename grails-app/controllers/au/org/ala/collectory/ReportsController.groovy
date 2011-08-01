@@ -169,6 +169,20 @@ class ReportsController {
         [resources: DataResource.list(sort:'name')]
     }
 
+    def rights = {
+        withFormat {
+            json {
+                def list = DataResource.list(sort:'name').collect {[
+                        uid: it.uid, name: it.name, rights: it.rights, licenseType: it.licenseType,
+                        licenseVersion: it.licenseVersion, permissionsDocument: it.permissionsDocument,
+                        permissionsDocumentType: it.permissionsDocumentType, filed: it.filed,
+                        riskAssessment: it.riskAssessment]}
+                render list as JSON
+            }
+        }
+        [resources: DataResource.list(sort:'name')]
+    }
+
     def attributions = {
         def collAttributions = []
         Collection.list([sort: 'name']).each {

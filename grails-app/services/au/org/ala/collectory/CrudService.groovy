@@ -23,10 +23,10 @@ class CrudService {
 
     static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld',
                 'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes',
-                'harvestingNotes','connectionParameters','resourceType']
+                'harvestingNotes','connectionParameters','resourceType','permissionsDocumentType','riskAssessment','filed']
     static dataResourceNumberProperties = ['harvestFrequency','downloadLimit']
     static dataResourceTimestampProperties = ['lastChecked','dataCurrency']
-    static dataResourceJSONArrays = ['connectionParameters']
+    static dataResourceJSONArrays = ['connectionParameters', 'contentTypes']
     //static dataResourceObjectProperties = ['dataProvider']
 
     static institutionStringProperties = ['institutionType']
@@ -289,6 +289,12 @@ class CrudService {
                 dataGeneralizations = p.dataGeneralizations
                 informationWithheld = p.informationWithheld
                 permissionsDocument = p.permissionsDocument
+                permissionsDocumentType = p.permissionsDocumentType
+                if (p.permissionsDocumentType == 'Data Provider Agreement') {
+                    filed = p.filed
+                    riskAssessment = p.riskAssessment
+                }
+                contentTypes = p.contentTypes ? p.contentTypes.formatJSON() : []
                 if (p.listConsumers()) {
                     linkedRecordConsumers = p.listConsumers().formatEntitiesFromUids()
                 }

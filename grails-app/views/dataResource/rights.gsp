@@ -4,6 +4,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
         <title><g:message code="dataResource.base.label" default="Edit data resource metadata" /></title>
+        <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
+        <g:javascript library="jquery-1.5.1.min"/>
+        <g:javascript library="jquery-ui-1.8.14.custom.min"/>
+        <g:javascript library="debug"/>
     </head>
     <body>
         <div class="nav">
@@ -91,6 +95,42 @@
                           <cl:helpTD/>
                         </tr>
 
+                        <!-- permissions document type -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="permissionsDocumentType"><g:message code="dataResource.permissionsDocumentType.label" default="Permissions document type" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'permissionsDocumentType', 'errors')}">
+                                <g:select name="permissionsDocumentType"
+                                        from="${DataResource.permissionsDocumentTypes}"
+                                        value="${command.permissionsDocumentType}"/>
+                                <cl:helpText code="dataResource.permissionsDocumentType"/>
+                            </td>
+                          <cl:helpTD/>
+                        </tr>
+
+                        <!-- permissions document type flags -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="riskAssessment"><g:message code="dataResource.riskAssessment.label" default="Risk assessment completed" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'riskAssessment', 'errors')}">
+                                <g:checkBox name="riskAssessment" value="${command?.riskAssessment}" />
+                                <cl:helpText code="dataResource.riskAssessment"/>
+                            </td>
+                          <cl:helpTD/>
+                        </tr>
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="filed"><g:message code="dataResource.filed.label" default="Agreement filed" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'filed', 'errors')}">
+                                <g:checkBox name="filed" value="${command?.filed}" />
+                                <cl:helpText code="dataResource.filed"/>
+                            </td>
+                          <cl:helpTD/>
+                        </tr>
+
                         <!-- download limit -->
                         <tr class="prop">
                             <td valign="top" class="name">
@@ -113,5 +153,25 @@
                 </div>
             </g:form>
         </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            if ($('select#permissionsDocumentType').val() != "Data Provider Agreement") {
+                $('input#filed').parent().parent().css('display','none');
+                $('input#riskAssessment').parent().parent().css('display','none');
+            }
+            $('select#permissionsDocumentType').change(function(eventObject) {
+                //examine(eventObject);
+                if ($(eventObject.currentTarget).val() == "Data Provider Agreement") {
+                    $('input#filed').parent().parent().css('display','table-row');
+                    $('input#riskAssessment').parent().parent().css('display','table-row');
+                }
+                else {
+                    $('input#filed').parent().parent().css('display','none');
+                    $('input#riskAssessment').parent().parent().css('display','none');
+                }
+            });
+        });
+
+    </script>
     </body>
 </html>

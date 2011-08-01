@@ -108,6 +108,8 @@
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="providers">List all data providers and resources</g:link>
           <span class="linkText">- list of all data providers, data resources and data hubs</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="rights">Show data resource rights and permissions</g:link>
+          <span class="linkText">- list rights, license details and permissions details for data resources</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="harvesters">Show data mobilisation parameters</g:link>
           <span class="linkText">- list mobilisation, harvesting and connection parameters for data resources</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="dataLinks">Show data interactions</g:link>

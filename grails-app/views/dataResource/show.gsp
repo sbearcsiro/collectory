@@ -91,6 +91,9 @@
                 <!-- info withheld -->
                 <p><span class="category">Information withheld</span>: ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
+                <!-- content types -->
+                <p><span class="category">Content types</span>: ${fieldValue(bean: instance, field: "contentTypes")}</p>
+
                 <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
@@ -99,7 +102,7 @@
                 <h2>Data mobilisation</h2>
 
                 <!-- contributor -->
-                <p><span class="category">Atlas contributor</span>:<cl:tickOrCross test="${instance.status == 'dataAvailable'}">yes|no</cl:tickOrCross></p>
+                <p><span class="category">Atlas contributor</span>:<cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
 
                 <!-- status -->
                 <p><span class="category">Status</span>: ${fieldValue(bean: instance, field: "status")}</p>
@@ -156,6 +159,15 @@
                         ${fieldValue(bean: instance, field: "permissionsDocument")}
                     </g:else>
                 </p>
+
+                <!-- permissions document type -->
+                <p><span class="category">Permissions document type</span>: ${fieldValue(bean: instance, field: "permissionsDocumentType")}</p>
+
+                <!-- DPA flags -->
+                <g:if test="${instance.permissionsDocumentType == 'Data Provider Agreement'}">
+                    <p><span class="category">Risk assessment completed</span>:<cl:tickOrCross test="${instance.riskAssessment}">yes|no</cl:tickOrCross></p>
+                    <p><span class="category">Document filed</span>:<cl:tickOrCross test="${instance.filed}">yes|no</cl:tickOrCross></p>
+                </g:if>
 
                 <!-- download limit -->
                 <p><span class="category">Download limit</span>: ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>

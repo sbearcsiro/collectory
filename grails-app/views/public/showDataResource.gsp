@@ -77,12 +77,7 @@
             <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
-            <g:if test="${instance.resourceType == 'website'}">
-                <p>This website provides content for Atlas species pages.</p>
-            </g:if>
-            <g:if test="${instance.resourceType == 'document'}">
-                <p>Documents from this source provide content for Atlas species pages.</p>
-            </g:if>
+            <cl:dataResourceContribution resourceType="${instance.resourceType}" status="${instance.status}" tag="p"/>
 
             <h2>Citation</h2>
             <g:if test="${instance.citation}">

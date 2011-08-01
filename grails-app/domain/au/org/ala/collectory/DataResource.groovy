@@ -15,12 +15,15 @@ class DataResource extends ProviderGroup implements Serializable {
 
     String rights
     String citation
-    String licenseType
+    String licenseType = "other"
     String licenseVersion
     String resourceType = "records"
     String informationWithheld
     String dataGeneralizations
     String permissionsDocument      // location of the documentation of the right to use
+    String permissionsDocumentType = "Other"  // type of document
+    boolean riskAssessment = false  // has risk assessment been done (for Data Provider Agreements only)
+    boolean filed = false           // has the document been filed (for Data Provider Agreements only)
     String status                   // integration status (of the integration of the resource into the atlas)
     String harvestingNotes          // may include which components (text, images, etc) can be harvested
     String mobilisationNotes        //
@@ -29,6 +32,7 @@ class DataResource extends ProviderGroup implements Serializable {
     Timestamp dataCurrency          // the date of production of the most recent data file
     String connectionParameters     // json string containing parameters based on a connection profile - DIGiR, TAPIR, etc
     int downloadLimit = 0           // max number of records that can be included in a single download - 0 = no limit
+    String contentTypes             // json array of type of content provided by the resource
 
     DataProvider dataProvider
     Institution institution         // optional link to the institution whose records are served by this resource
@@ -46,12 +50,14 @@ class DataResource extends ProviderGroup implements Serializable {
         dataGeneralizations(nullable:true, maxSize:2048)
         informationWithheld(nullable:true, maxSize:2048)
         permissionsDocument(nullable:true, maxSize:2048)
+        permissionsDocumentType(nullable:true, inList: permissionsDocumentTypes)
         status(nullable:true)
         harvestingNotes(nullable:true, maxSize:4096)
         mobilisationNotes(nullable:true, maxSize:4096)
         lastChecked(nullable:true)
         dataCurrency(nullable:true)
         connectionParameters(nullable:true, maxSize:4096)
+        contentTypes(nullable:true, maxSize:2048)
     }
 
     static transients = ProviderGroup.transients + ['creativeCommons']
@@ -65,14 +71,21 @@ class DataResource extends ProviderGroup implements Serializable {
         [type:'CC BY-NC-SA',display:'Creative Commons Attribution-NonCommercial-ShareAlike'],
         [type:'other',display:'Some other or no license']]
     static licenseTypeList = creativeCommonsLicenses + ["other"]
+    static permissionsDocumentTypes = ['','Email','Data Provider Agreement','Web Page','Other']
+    static contentTypesList = ['behaviour','commercial uses','common names','conservation management',
+            'conservation status','description','distribution maps','distribution text','feeding and diet','habitat',
+            'human interaction','identification keys','images','lifecycle','movies','pest management','pest status',
+            'point occurrence data','population','references','reproduction','scientific names','similar species',
+            'sound','species interactions','species list','taxonomy','threats']
     /**
      * Integration status.
      * identified - Resource has been found but no further contact
      * inProgress - Resource has been contacted and discussions are underway about sharing
      * dataAvailable - Data for the resource has been loaded
+     * linksAvailable - Links to the resource are used on atlas pages
      * declined - This resource is not to be harvested / will not be contributing at this time
      */
-    static statusList = ['identified','inProgress','dataAvailable','declined']
+    static statusList = ['identified','inProgress','dataAvailable','linksAvailable','declined']
 
     boolean canBeMapped() {
         return false;

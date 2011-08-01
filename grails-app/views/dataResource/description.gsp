@@ -1,3 +1,4 @@
+<%@ page import="au.org.ala.collectory.DataResource" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -84,6 +85,33 @@
                               <cl:helpTD/>
                         </tr>
 
+                        <!-- content types -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <g:message code="dataResource.contentTypes.label" default="Content types" />
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'contentTypes', 'errors')}">
+                                <g:hiddenField name="contentTypes" value="${command.contentTypes}"/>
+                                <p>Click content types to add them to the selected set.</p>
+                                <div class="source-box">
+                                    <p>Available</p>
+                                    <ul>
+                                        <g:each var="ct" in="${DataResource.contentTypesList}">
+                                            <li class='free'>${ct}</li>
+                                        </g:each>
+                                    </ul>
+                                </div>
+                                <div class="sink-box">
+                                    <p>Selected</p>
+                                    <ul>
+                                        <li class="msg">Click items in the left list to add them as content types for this resource.</li>
+                                    </ul>
+                                </div>
+                                <cl:helpText code="dataResource.informationWithheld"/>
+                              </td>
+                              <cl:helpTD/>
+                        </tr>
+
                       </tbody>
                     </table>
                 </div>
@@ -94,5 +122,69 @@
                 </div>
             </g:form>
         </div>
+        <script type="text/javascript">
+            $(function() {
+                // bind click
+                $('li.free').click(function() {
+                    if ($(this).parent().parent().hasClass('source-box')) {
+                        add(this);
+                    }
+                    else {
+                        remove(this);
+                    }
+                });
+                // move selected types to sink
+                var selected = getSelectedList();
+                $('li.free').each(function(index, element) {
+                    $.each(selected, function(index, value) {
+                        if ($(element).html() == value) {
+                            add(element);
+                        }
+                    });
+                })
+            });
+            function add(obj) {
+                // clear instructions if present
+                $('.sink-box li.msg').remove();
+                $(obj).appendTo($('.sink-box ul'));
+                addToList($(obj).html());
+            }
+            function remove(obj) {
+                $(obj).appendTo($('.source-box ul'));
+                removeFromList($(obj).html());
+            }
+            function getSelectedList() {
+                var list = $.parseJSON($('input#contentTypes').val());
+                return list == undefined ? [] : list
+            }
+            function addToList(ct) {
+                var list = getSelectedList();
+                if ($.inArray(ct, list) < 0) {
+                    list.push(ct);
+                }
+                $('input#contentTypes').val(toJSON(list));
+            }
+            function removeFromList(ct) {
+                var list = getSelectedList();
+                var idx = $.inArray(ct, list);
+                list.splice(idx,1);
+                $('input#contentTypes').val(toJSON(list));
+            }
+            function toJSON(list) {
+                if (typeof(JSON) == 'object' && JSON.stringify) {
+                    return JSON.stringify(list);
+                }
+                else {
+                    // assume list of string
+                    if (list.length == 0) return "";
+                    var str = "[";
+                    $.each(list, function(index, value) {
+                        str += '"' + value + '",';
+                    })
+                    str = (str.length > 1 ? str.substr(0,str.length-1) : str) + "]";
+                    return str;
+                }
+            }
+        </script>
     </body>
 </html>

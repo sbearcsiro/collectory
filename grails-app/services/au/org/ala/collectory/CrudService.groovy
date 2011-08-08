@@ -26,7 +26,7 @@ class CrudService {
                 'harvestingNotes','connectionParameters','resourceType','permissionsDocumentType','riskAssessment','filed']
     static dataResourceNumberProperties = ['harvestFrequency','downloadLimit']
     static dataResourceTimestampProperties = ['lastChecked','dataCurrency']
-    static dataResourceJSONArrays = ['connectionParameters', 'contentTypes']
+    static dataResourceJSONArrays = ['connectionParameters', 'contentTypes', 'defaultDarwinCoreValues']
     //static dataResourceObjectProperties = ['dataProvider']
 
     static institutionStringProperties = ['institutionType']
@@ -300,6 +300,9 @@ class CrudService {
                 }
                 if (p.connectionParameters) {
                     connectionParameters = p.connectionParameters.formatJSON()
+                }
+                if (p.defaultDarwinCoreValues) {
+                    defaultDarwinCoreValues = p.defaultDarwinCoreValues.formatJSON()
                 }
                 hasMappedCollections = p.hasMappedCollections()
                 status = p.status

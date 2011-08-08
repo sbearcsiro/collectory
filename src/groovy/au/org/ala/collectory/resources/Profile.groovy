@@ -39,11 +39,19 @@ class PP {
     final static PP CSV_ESCAPE = new PP(name:'csv_escape_char',display:'Escape character', type:'text', defaultValue: '/')
     final static PP CSV_QUOTE = new PP(name:'csv_text_enclosure',display:'Text enclosure', type:'text', defaultValue: '"')
 
+/*
     final static String HT = "\u0009"
-    final static String LF = "\u000A"
     final static String VT = "\u000b"
     final static String FF = "\u000C"
     final static String CR = "\u000D"
+    final static String LF = "%0A".decodeURL() // using "\u000a" confuses the compiler
+*/
+
+    static String HT_CHAR = "\u0009"
+    static String VT_CHAR = "\u000b"
+    static String FF_CHAR = "\u000c"
+    static String CR_CHAR = "%0D".decodeURL()
+    static String LF_CHAR = "%0A".decodeURL()
 
     String name
     String display

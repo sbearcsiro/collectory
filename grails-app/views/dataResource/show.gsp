@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.DataProvider" %>
+<%@ page import="grails.converters.JSON; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.DataProvider" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -128,6 +128,18 @@
 
                 <!-- connection parameters -->
                 <p><span class="category">Connection parameters</span>: <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
+
+                <g:if test="${instance.resourceType == 'records'}">
+                    <!-- darwin core defaults -->
+                    <g:set var="dwc" value="${instance.defaultDarwinCoreValues ? JSON.parse(instance.defaultDarwinCoreValues) : [:]}"/>
+                    <p><span class="category">Default values for DwC fields</span>:
+                        <g:if test="${!dwc}">none</g:if></p>
+                        <table class="valueTable"><colgroup><col width="30%"><col width="70%"></colgroup><tbody>
+                        <g:each in="${dwc.entrySet()}" var="dwct">
+                            <tr><td>${dwct.key}:</td><td>${dwct.value}</td></tr>
+                        </g:each>
+                        </tbody></table>
+                </g:if>
 
                 <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
                   <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'contribution']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>

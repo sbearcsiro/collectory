@@ -1,4 +1,4 @@
-<%@ page import="au.org.ala.collectory.DataHub; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.DataResource; au.org.ala.collectory.resources.Profile" %>
+<%@ page import="grails.converters.JSON; au.org.ala.collectory.resources.DarwinCoreFields; au.org.ala.collectory.DataHub; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.DataResource; au.org.ala.collectory.resources.Profile" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -110,6 +110,58 @@
                         <tr><td colspan="3"><b>Connection parameters</b></td></tr>
                         <cl:connectionParameters bean="command" connectionParameters="${command.connectionParameters}"/>
 
+                        <g:if test="${command.resourceType == 'records'}">
+                            <!-- darwin core defaults -->
+                            <tr><td colspan="3"><b>Default values for DwC fields</b></td></tr>
+                            <tr><td colspan="3">Make sure you confirm all defaults with the data provider.</td></tr>
+                            <g:set var="dwc" value="${command.defaultDarwinCoreValues ? JSON.parse(command.defaultDarwinCoreValues) : [:]}"/>
+                            <!-- add fields for each of the important terms -->
+                            <g:each in="${DarwinCoreFields.getImportant()}" var="dwcf">
+                                <tr class="prop">
+                                    <td valign="top" class="name">
+                                      <label for="${dwcf.name}"><g:message code="dataResource.DwC.${dwcf.name}.label" default="${dwcf.name}" /></label>
+                                    </td>
+                                    <td valign="top" class="value">
+                                        <g:if test="${dwcf.values}">
+                                            <!-- pick list -->
+                                            <g:select name="${dwcf.name}" from="${dwcf.values}" value="${dwc[dwcf.name]}"/>
+                                        </g:if>
+                                        <g:else>
+                                            <!-- text field -->
+                                            <g:textField name="${dwcf.name}" value="${dwc[dwcf.name]}"/>
+                                        </g:else>
+                                        <cl:helpText code="dataResource.${dwcf.name}"/>
+                                    </td>
+                                  <!--cl:helpTD/-->
+                                </tr>
+                            </g:each>
+                            <!-- add fields for any other terms that have values -->
+                            <g:each var="dwcf" in="${dwc.entrySet()}">
+                                <g:if test="${dwcf.key in DarwinCoreFields.getLessImportant().collect({it.name})}">
+                                    <tr class="prop">
+                                        <td valign="top" class="name">
+                                          <label for="${dwcf.key}"><g:message code="dataResource.DwC.${dwcf.key}.label" default="${dwcf.key}" /></label>
+                                        </td>
+                                        <td valign="top" class="value">
+                                            <g:textField name="${dwcf.key}" value="${dwcf.value}"/>
+                                        </td>
+                                      <!--cl:helpTD/-->
+                                    </tr>
+                                </g:if>
+                            </g:each>
+                            <!-- add a blank field so other DwC terms can be added -->
+                            <tr id="add-another"><td colspan="3">Choose another DwC term and click button to add a new field.</td></tr>
+                            <tr class="prop">
+                                <td valign="top" class="name">
+                                    <g:select name="otherKey" from="${DarwinCoreFields.getLessImportant().collect({it.name})}"/>
+                                </td>
+                                <td valign="top" class="value">
+                                    <button id="more-terms" type="button">Add new term</button>
+                                </td>
+                            </tr>
+
+                        </g:if>
+                        
                       </tbody>
                     </table>
                 </div>
@@ -184,6 +236,21 @@
             }
             instrument();
             $('[name="start_date"]').datepicker({dateFormat: 'yy-mm-dd'});
+            
+            /* this binds the code to add a new term to the list */
+            $('#more-terms').click(function() {
+                var term = $('#otherKey').val();
+                // check that term doesn't already exist
+                if ($('#'+term).length > 0) {
+                    alert(term + " is already present");
+                }
+                else {
+                    var newField = "<tr class='prop'><td valign='top' class='name'><label for='" + term +
+                            "'>" + term + "</label></td>" +
+                            "<td valign='top' class='value'><input type='text' id='" + term + "' name='" + term + "'/></td></tr>";
+                    $('#add-another').parent().append(newField);
+                }
+            });
         </script>
     </body>
 </html>

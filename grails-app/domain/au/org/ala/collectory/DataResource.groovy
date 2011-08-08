@@ -31,6 +31,7 @@ class DataResource extends ProviderGroup implements Serializable {
     Timestamp lastChecked           // when the last check was made for new data
     Timestamp dataCurrency          // the date of production of the most recent data file
     String connectionParameters     // json string containing parameters based on a connection profile - DIGiR, TAPIR, etc
+    String defaultDarwinCoreValues  // json string containing default values to use for missing DwC fields
     int downloadLimit = 0           // max number of records that can be included in a single download - 0 = no limit
     String contentTypes             // json array of type of content provided by the resource
 
@@ -57,6 +58,7 @@ class DataResource extends ProviderGroup implements Serializable {
         lastChecked(nullable:true)
         dataCurrency(nullable:true)
         connectionParameters(nullable:true, maxSize:4096)
+        defaultDarwinCoreValues(nullable:true, maxSize:10000)
         contentTypes(nullable:true, maxSize:2048)
     }
 

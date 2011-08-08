@@ -58,11 +58,14 @@
                         <td class="center">${pList.protocol}</td>
                       </tr>
 
-                      <g:if test="${r.connectionParameters}">
+                      <g:if test="${r.connectionParameters || r.defaultDarwinCoreValues}">
                           <tr style="display:none;">
                               <td></td>
                               <td colspan="6">
                                   <table>
+                                      <g:if test="${r.connectionParameters}">
+                                          <tr><td colspan="2"><b>Connection parameters</b></td></tr>
+                                      </g:if>
                                       <g:each in="${pList}" var="p">
                                           <g:if test="${p.key != 'protocol'}">
                                               <tr>
@@ -81,10 +84,21 @@
                                               </tr>
                                           </g:if>
                                       </g:each>
+                                      <g:if test="${r.defaultDarwinCoreValues}">
+                                          <tr><td colspan="2"><b>Defaults for DwC terms</b></td></tr>
+                                      </g:if>
+                                      <g:set var="dwcList" value="${r.defaultDarwinCoreValues ? JSON.parse(r.defaultDarwinCoreValues) : [:]}"/>
+                                      <g:each in="${dwcList}" var="p">
+                                          <tr>
+                                              <td>${p.key} =</td>
+                                              <td>${p.value}</td>
+                                          </tr>
+                                      </g:each>
                                   </table>
                               </td>
                           </tr>
-                       </g:if>
+                      </g:if>
+
                     </g:each>
                   </tbody>
               </table>

@@ -178,9 +178,36 @@ class ContactController {
     }
 
     def updateProfile = {
-        
+        params.each {println it}
+        def contactInstance = Contact.get(params.id)
+        // only the user or admin can update
+        if (contactInstance.email == authService.username() || authService.isAdmin()) {
+            contactInstance.properties = params
+            contactInstance.userLastModified = authService.username()
+            if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
+                ActivityLog.log authService.username(), authService.isAdmin(), Action.EDIT_SAVE, "contact ${params.id}"
+                flash.message = "Your profile was updated."
+                redirect(uri: "/admin")
+            }
+            else {
+                render(view: "showProfile")
+            }
+
+        }
+        else {
+            // not allowed
+            flash.message = "You are not allowed to update this profile"
+            redirect(uri: "/admin")
+        }
     }
+
+    def cancelProfile = {
+        flash.message = "Your profile was not changed."
+        redirect(uri: "/admin")
+    }
+
 }
+
 
 class ContactRelationship {
     ContactFor cf

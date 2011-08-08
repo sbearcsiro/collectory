@@ -1619,11 +1619,11 @@ class CollectoryTagLib {
         def outStr = ""
         str.each {
             switch (it) {
-                case PP.HT: outStr += 'HT'; break
-                case PP.LF: outStr += 'LF'; break
-                case PP.VT: outStr += 'VT'; break
-                case PP.FF: outStr += 'FF'; break
-                case PP.CR: outStr += 'CR'; break
+                case PP.HT_CHAR: outStr += 'HT'; break
+                case PP.LF_CHAR: outStr += 'LF'; break
+                case PP.VT_CHAR: outStr += 'VT'; break
+                case PP.FF_CHAR: outStr += 'FF'; break
+                case PP.CR_CHAR: outStr += 'CR'; break
                 default: outStr += it
             }
         }

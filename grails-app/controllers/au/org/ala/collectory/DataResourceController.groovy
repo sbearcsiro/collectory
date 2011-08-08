@@ -4,6 +4,7 @@ import grails.converters.JSON
 import au.org.ala.collectory.resources.Profile
 import java.text.SimpleDateFormat
 import au.org.ala.collectory.resources.PP
+import au.org.ala.collectory.resources.DarwinCoreFields
 
 class DataResourceController extends ProviderGroupController {
 
@@ -76,11 +77,11 @@ class DataResourceController extends ProviderGroupController {
                 }
                 else if (pp.type == 'delimiter') {
                     def str = params."${pp.name}"
-                    str = str.replaceAll('HT', PP.HT)
-                    str = str.replaceAll('LF', PP.LF)
-                    str = str.replaceAll('VT', PP.VT)
-                    str = str.replaceAll('FF', PP.FF)
-                    str = str.replaceAll('CR', PP.CR)
+                    str = str.replaceAll('HT', PP.HT_CHAR)
+                    str = str.replaceAll('LF', PP.LF_CHAR)
+                    str = str.replaceAll('VT', PP.VT_CHAR)
+                    str = str.replaceAll('FF', PP.FF_CHAR)
+                    str = str.replaceAll('CR', PP.CR_CHAR)
                     cp."${pp.name}" = str
                 }
                 else {
@@ -99,6 +100,18 @@ class DataResourceController extends ProviderGroupController {
         if (dataCurrency) {
             pg.dataCurrency = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").parse(dataCurrency).toTimestamp()
         }
+
+        // process default DwC values
+        def ddv = [:]
+        DarwinCoreFields.fields.each {
+            if (params[it.name]) {
+                ddv[it.name] = params[it.name]
+            }
+            if (params.otherKey && params.otherValue) {
+                ddv[params.otherKey] = params.otherValue
+            }
+        }
+        params.defaultDarwinCoreValues = (ddv as JSON).toString()
 
         // update
         genericUpdate pg, 'contribution'

@@ -205,3 +205,82 @@ p.collectionsCount {
     -webkit-box-shadow: 4px 4px 0px #dd3102;
     box-shadow: 4px 4px 0px #dd3102;
 }
+
+#resultsReturned {
+    font-size: 13px !important;
+}
+
+p.rowA, p.rowB {
+    padding-bottom: 0 !important;
+}
+
+p.rowB {
+    border-bottom: none !important;
+}
+
+.rowC p {
+    overflow: hidden;
+    background-color: #f8f8f8;
+    padding-bottom: 5px !important;
+}
+
+div.result {
+    border-bottom: 1px solid silver;
+}
+
+#page-datasets #header h1 {
+    padding: 0 0 15px 0 !important;
+}
+
+.sidebar h3 {
+    font-size: 16px;
+    padding-top: 4px;
+}
+
+.facets h4 {
+    margin-top: 12px;
+}
+
+#page-datasets #header {
+    border-bottom: 1px solid #ccc;
+}
+
+#page-datasets li {
+    list-style-type: none !important;
+}
+
+.result-name {
+    text-decoration: underline;
+    color: #01716E;
+    cursor: pointer;
+}
+
+#navLinks ul {
+    margin-left: 0;
+    padding-right: 50px;
+}
+
+#prevPage, #nextPage {
+    color: #aaa;
+}
+
+#currentFilter h4 {
+    color: #718804 !important;
+    padding: 6px 0 2px 0;
+    margin-top: 0;
+}
+
+#currentFilter {
+    width: 232px;
+}
+
+#currentFilter li {
+    padding: 2px 3px;
+    margin: 3px 0 3px -3px;
+}
+
+.noscriptmsg {
+    padding: 10px;
+    color: red;
+}
+

@@ -24,8 +24,10 @@ class PP {
     final static PP TERMS = new PP(name:'termsForUniqueKey',
             display:'DwC terms that uniquely<br/> identify a record', type:'text')
     final static PP PARAMS = new PP(name:'params',display:'JSON map of parameters', type:'textArea')
-    final static PP DOCUMENT_MAPPER = new PP(name:'documentMapper',
-            display:'Document mapper', type:'text')
+    final static PP DOCUMENT_MAPPER = new PP(name:'documentMapper', display:'Document mapper', type:'text')
+    final static PP SITE_MAP = new PP(name:'siteMap', display:'Site map', type:'text')
+    final static PP HARVESTER = new PP(name:'harvester', display:'Harvester class', type:'text')
+    final static PP MIME_TYPE = new PP(name:'mime_type', display:'MIME type', type:'text')
     final static PP GROUP_ID = new PP(name:'group_id',display:'Group ID', type:'text')
     final static PP API_KEY = new PP(name:'api_key',display:'API key', type:'text')
     final static PP START_DATE = new PP(name:'start_date',display:'Start date', type:'text')
@@ -75,7 +77,7 @@ enum Profile {
     DwCA('DarwinCore archive',
             [PP.LOCATION_URL,PP.AUTO,PP.TERMS]),
     WebsiteWithSitemap('Website with sitemap',
-            [PP.WEBSITE_URL,PP.DOCUMENT_MAPPER]),
+            [PP.WEBSITE_URL,PP.DOCUMENT_MAPPER,PP.SITE_MAP,PP.HARVESTER,PP.MIME_TYPE]),
     Flickr('Flickr API',
             [PP.BASE_URL,PP.GROUP_ID,PP.API_KEY,PP.START_DATE,PP.CONTENT_TYPE,PP.PRIVACY_FILTER,
              PP.PER_PAGE,PP.KEYWORDS,PP.TERMS])

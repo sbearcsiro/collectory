@@ -178,6 +178,11 @@
     /************************************************************\
     *
     \************************************************************/
+    // define biocache server
+    biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+    biocacheRecordsUrl = "${ConfigurationHolder.config.biocache.records.url}";
+    useNewBiocache = ${ConfigurationHolder.config.useNewBiocache == 'true'};
+
     google.load("visualization", "1", {packages:["corechart"]});
     google.setOnLoadCallback(onLoadCallback);
   </script>

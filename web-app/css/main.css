@@ -511,7 +511,6 @@ input.addAction, input.cancelAction {
 #welcome {
     margin-left: 25px;
     margin-top: 25px;
-    width: 85%;
 }
 
 .homeCell {

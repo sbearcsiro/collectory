@@ -6,6 +6,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import grails.util.GrailsUtil
 import org.codehaus.groovy.grails.commons.GrailsApplication
+import au.com.bytecode.opencsv.CSVWriter
 
 /**
  * Handles all the public pages generated from the collectory.
@@ -77,12 +78,19 @@ class PublicController {
     /**
      * json call to retrieve a summary of biocache records
      *
-     * @return total number + decade breakdow n as Google data table
+     * @param uid the uid of an entity with records or a comma separated list of uids
+     * @return total number + decade breakdown + other facets as Google data table
      */
     def biocacheRecords = {
-        // lookup number of biocache records
+        def uid = params.uid
+
         def baseUrl = ConfigurationHolder.config.biocache.baseURL
-        def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + params.uid
+        def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + uid
+        if (ConfigurationHolder.config.useNewBiocache == 'true') {
+            url = baseUrl + ConfigurationHolder.config.biocache.occurrences.json + "?q=" +
+                    uid.tokenize(',').collect({ fieldNameForSearch(it) + ":" + it}).join(' OR '.encodeAsURL())
+        }
+        //println "biocache occurrences url = " + url
 
         def conn = new URL(url).openConnection()
         try {
@@ -90,10 +98,28 @@ class PublicController {
             conn.setReadTimeout(50000)
             //conn.setRequestProperty('Connection','close')
             def json = conn.content.text
-            def searchResult = JSON.parse(json)?.searchResult
-            // sleep delay
-            //println buildDecadeDataTableFromFacetResults(searchResult?.facetResults)
-            def result = [totalRecords: searchResult?.totalRecords, decades: buildDecadeDataTableFromFacetResults(searchResult?.facetResults)]
+            //println json
+            def searchResult = JSON.parse(json)?.searchResult ?: JSON.parse(json)
+
+            // build map of facets
+            def facets = [:]
+            searchResult?.facetResults?.each {
+                facets.put it.fieldName, it.fieldResult
+            }
+
+            // build response
+            def result = [
+                    totalRecords: searchResult?.totalRecords,
+                    decades: buildDecadeDataTableFromFacetResults(searchResult?.facetResults)
+            ]
+
+            // add additional facets
+            ['institution_uid','country','state','species_group','state_conservation','assertions'].each {
+                if (facets[it]) {
+                    result.put it, buildPieChartDataTable(facets[it], it, uid)
+                }
+            }
+
             renderAsJson result
         } catch (SocketTimeoutException e) {
             log.warn "Timed out looking up record count. URL= ${url}."
@@ -287,6 +313,13 @@ class PublicController {
         def threshold = params.threshold ?: 20
         /* get taxon breakdown */
         def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${params.id}.json";
+        if (ConfigurationHolder.config.useNewBiocache == 'true') {
+            taxonUrl = ConfigurationHolder.config.biocache.baseURL +
+                    ConfigurationHolder.config.biocache.breakdown.taxa + "?max=" + threshold
+            taxonUrl = taxonUrl.replaceFirst(/\{uid\}/, params.id ?: '')
+            taxonUrl = taxonUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
+        }
+        //println "taxonUrl: " + taxonUrl
         def conn = new URL(taxonUrl).openConnection()
         def jsonResponse = null
         def breakdown = null
@@ -296,7 +329,7 @@ class PublicController {
             jsonResponse = conn.content.text
             //println "Response = " + json
             //sleep delay
-            breakdown = JSON.parse(jsonResponse)?.breakdown
+            breakdown = JSON.parse(jsonResponse)?.breakdown ?: JSON.parse(jsonResponse)
         } catch (SocketTimeoutException e) {
             log.warn "Timed out getting taxa breakdown."
             def error = [error:"Timed out getting taxa breakdown.", dataTable: null]
@@ -307,7 +340,7 @@ class PublicController {
             render error as JSON
         }
         if (breakdown && breakdown.toString() != "null") {
-            def dataTable = buildPieChartDataTable(breakdown,"all","")
+            def dataTable = buildTaxonChartDataTable(breakdown,"all","")
             withFormat {
                 // seems weird but only way to include csv but default to json
                 html { render dataTable }
@@ -336,6 +369,13 @@ class PublicController {
         response.addHeader("Cache-Control","no-store")
         /* get rank breakdown */
         def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${params.id}.json?name=${params.name}&rank=${params.rank}"
+        if (ConfigurationHolder.config.useNewBiocache == 'true') {
+            rankUrl = ConfigurationHolder.config.biocache.baseURL +
+                    ConfigurationHolder.config.biocache.breakdown.taxa + "?rank=${params.rank}&name=${params.name}"
+            rankUrl = rankUrl.replaceFirst(/\{uid\}/, params.id ?: '')
+            rankUrl = rankUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
+        }
+        //println "rankUrl: " + rankUrl
         def conn = new URL(rankUrl).openConnection()
         def dataTable = null
         def json
@@ -344,9 +384,9 @@ class PublicController {
             conn.setReadTimeout 50000
             json = conn.content.text
             //println "Response = " + json
-            def breakdown = JSON.parse(json)?.breakdown
+            def breakdown = JSON.parse(json)?.breakdown ?: JSON.parse(json)
             if (breakdown && breakdown.toString() != "null") {
-                dataTable = buildPieChartDataTable(breakdown,params.rank,params.name)
+                dataTable = buildTaxonChartDataTable(breakdown,params.rank,params.name)
                 if (dataTable) {
                     //sleep delay
                     render dataTable
@@ -505,6 +545,55 @@ class PublicController {
             ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
             [instance: instance]
         }
+    }
+
+    def datasets = {
+        forward(action: 'dataSets')
+    }
+
+    def dataSets = {
+    }
+
+    def resources = {
+        def drs = DataResource.list([sort:'name']).collect {
+            def pdesc = it.pubDescription ? cl.formattedText(dummy:'1',it.pubDescription) : ""
+            def tdesc = it.techDescription ? cl.formattedText(dummy:'1',it.techDescription) : ""
+            [name: it.name, resourceType: it.resourceType, licenseType: it.licenseType,
+             licenseVersion: it.licenseVersion, pubDescription: pdesc, techDescription: tdesc,
+             uid: it.uid, status: it.status, websiteUrl: it.websiteUrl]
+        }
+        render drs as JSON
+    }
+
+    def downloadDataSets = {
+        def filters = params.filters ? JSON.parse(params.filters) : [];
+        def drs = DataResource.list([sort:'name'])
+        if (filters) {
+            drs = drs.findAll { dr ->
+                // check each filter
+                for (filter in filters) {
+                    if (filter.value == 'noValue') {
+                        if (dr[filter.facet]) {
+                            return false
+                        }
+                    }
+                    else if (dr[filter.facet] != filter.value) {
+                        return false
+                    }
+                }
+                return true
+            }
+        }
+        def out = new StringWriter()
+        def csvWriter = new CSVWriter(out)
+        csvWriter.writeNext(["name","resourceType","licenseType","licenseVersion","rights","uri","status","contact"] as String[])
+        drs.each {
+            csvWriter.writeNext([it.name,it.resourceType,it.licenseType,it.licenseVersion,it.rights,
+                    it.buildUri(),it.status,it.inheritPrimaryPublicContact()?.contact?.buildName()] as String[])
+        }
+        csvWriter.close()
+        response.addHeader("Content-Disposition", "attachment;filename=datasets.csv");
+        render(contentType: 'text/csv', text:out.toString())
     }
 
     /**
@@ -668,7 +757,7 @@ class PublicController {
 
     /**
      * // input of form:
-     * searchResult.facetResults.fieldResult[fieldName:'occurrence_date']
+     * facetResults.fieldResult[fieldName:'occurrence_date']
      *  [
      * {fieldValue: 1850-01-01T12:00:00Z,count: 0,label: 1850-01-01T12:00:00Z,prefix: null},
      * {fieldValue: 1860-01-01T12:00:00Z,count: 0,label: 1860-01-01T12:00:00Z,prefix: null},
@@ -690,6 +779,9 @@ class PublicController {
      */
     private String buildDecadeDataTableFromFacetResults(facetResults) {
         def decades = facetResults.find {it.fieldName == "occurrence_date"}
+        if (!decades) {
+            decades = facetResults.find {it.fieldName == "occurrence_year"}
+        }
         def input = decades?.fieldResult
         if (!input) {
             log.warn "Failed to find any decade breakdown. Response= ${facetResults}."
@@ -755,9 +847,9 @@ class PublicController {
     }
 
     /**
-     * // input of form: [count:1, fieldValue:null1870, prefix:null, label:1870],
-     *                   [count:16, fieldValue:null1880, prefix:null, label:1880],
-     *                   [count:44, fieldValue:null1890, prefix:null, label:1890]
+     * // input of form: {count:1, label:1870},
+     *                   {count:16, label:1880},
+     *                   {count:44, label:1890}
      *
      * // output: Two columns. The first column should be a string, and contain the slice label.
      *                         The second column should be a number, and contain the slice value.
@@ -779,7 +871,7 @@ class PublicController {
      * @param name of the group being displayed if this is a drill-down
      * @return
      */
-    private String buildPieChartDataTable(input,scope,name) {
+    private String buildTaxonChartDataTable(input,scope,name) {
         boolean stripGenus = input.rank == "species" && scope != "all"
         String result = """{"cols":[{"id":"","label":"${input.rank}","pattern":"","type":"string"},{"id":"","label":"No. specimens","pattern":"","type":"number"}],"rows":["""
         def list = input.taxa.collect {
@@ -798,6 +890,63 @@ class PublicController {
     }
 
     /**
+     * Generic conversion for all data in the following form.
+     * // input of form: {count:1, label:1870},
+     *                   {count:16, label:1880},
+     *                   {count:44, label:1890}
+     *
+     * // output: Two columns. The first column should be a string, and contain the slice label.
+     *                         The second column should be a number, and contain the slice value.
+     *
+     * e.g. {"cols":[
+     * {"id":"","label":"Class","pattern":"","type":"string"},{"id":"","label":"No. specimens","pattern":"","type":"number"}],
+     * "rows":[
+     *  {"c":[{"v":"Insecta","f":null},{"v":2129,"f":null}]},
+     *  {"c":[{"v":"Trebouxiophyceae","f":null},{"v":3407,"f":null}]},
+     *  {"c":[{"v":"Magnoliopsida","f":null},{"v":859,"f":null}]},
+     *  {"c":[{"v":"Diplopoda","f":null},{"v":134,"f":null}]},
+     *  {"c":[{"v":"Actinopterygii","f":null},{"v":88,"f":null}]},
+     *  {"c":[{"v":"Arachnida","f":null},{"v":54,"f":null}]},
+     *  {"c":[{"v":"Malacostraca","f":null},{"v":5,"f":null}]}]
+     * "p":null}
+     *
+     * @param input list of objects of the form described above
+     * @param label the type of facet
+     * @param parentUid the uid of the overall entity
+     * @return Google Viz API dataTable
+     */
+    private String buildPieChartDataTable(input, label, parentUid) {
+        def chartLabel = chartLabels[label] ?: label
+        String result = """{"cols":[{"id":"","label":"${chartLabel}","pattern":"","type":"string"},{"id":"","label":"No. specimens","pattern":"","type":"number"}],"rows":["""
+        def list = input.collect {
+            [label: it.label, count: it.count]
+        }
+        list.eachWithIndex {it, index ->
+            // discard null labels
+            if (it.label != 'null') {
+                Closure transform = labelTransforms[label]
+                def displayLabel = it.label
+                if (transform) {
+                    displayLabel = transform(it.label)
+                }
+                result += '{"c":[{"v":"' + it.label + '","f":"' + displayLabel + '"},{"v":' + it.count + ',"f":null}]}'
+                result += (index == list.size() - 1) ? "" : ","
+            }
+        }
+        result += '],"p":{"uid":"' + parentUid + '"}}'
+        return result
+    }
+
+    static labelTransforms = [
+        institution_uid: {uid ->  ProviderGroup._get(uid) }
+    ]
+
+    static chartLabels = [
+        institution_uid: 'institution',
+        assertions: 'data assertions'
+    ]
+
+    /**
      * Simple 2 column csv showing label and count.
      *
      * @param breakdown
@@ -809,5 +958,37 @@ class PublicController {
             out << "${it.label},${it.count}\n"
         }
         return out.toString()
+    }
+
+    // temp while ws resource nouns are changed
+    private String wsEntity(uid) {
+        switch (uid[0..1]) {
+            case 'co': return 'collections'
+            case 'in': return 'institutions'
+            case 'dr': return 'dataResources'
+            case 'dp': return 'dataProviders'
+            case 'dh': return 'dataHubs'
+            default: return ""
+        }
+    }
+    private String wsEntityForBreakdown(uid) {
+        switch (uid[0..1]) {
+            case 'co': return 'collections'
+            case 'in': return 'institutions'
+            case 'dr': return 'dataResources'
+            case 'dp': return 'dataProviders'
+            case 'dh': return 'dataHubs'
+            default: return ""
+        }
+    }
+    private String fieldNameForSearch(uid) {
+        switch (uid[0..1]) {
+            case 'co': return 'collection_uid'; break
+            case 'in': return 'institution_uid'; break
+            case 'dr': return 'data_resource_uid'; break
+            case 'dp': return 'data_provider_uid'; break
+            case 'dh': return 'data_hub_uid'; break
+            default: return ""
+        }
     }
 }

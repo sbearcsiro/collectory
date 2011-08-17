@@ -3,11 +3,16 @@ package au.org.ala.collectory
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVReader
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver
+import org.codehaus.groovy.grails.plugins.reloadableconfig.ConfigurationResourceListener
+import org.codehaus.groovy.grails.web.json.JSONObject
 
 class AdminController {
 
     def dataLoaderService, idGeneratorService, authService
 
+    //static defaultAction = "home"
+    
 /*
  * Access control
  *
@@ -26,6 +31,42 @@ class AdminController {
  */
 
     def index = { }
+
+    def home = { }
+
+    def reloadConfig = {
+        def resolver = new PathMatchingResourcePatternResolver()
+        def configurationResource = resolver.getResource(ConfigurationHolder.config.reloadable.cfgs[0])
+        new ConfigurationResourceListener().onResourceUpdate(configurationResource)
+        String res = "<ul>"
+        ConfigurationHolder.config.each { key, value ->
+            if (value instanceof Map) {
+                res += "<p>" + key + "</p>"
+                res += "<ul>"
+                value.each { k1, v1 ->
+                    res += "<li>" + k1 + " = " + v1 + "</li>"
+                }
+                res += "</ul>"
+            }
+            else {
+                res += "<li>${key} = ${value}</li>"
+            }
+        }
+        render res + "</ul>"
+        //response.addHeader('ContentType','application/json')
+        //render ConfigurationHolder.config.biocache as JSON
+    }
+
+    def showConfig = {
+        def target = params.scope ? ConfigurationHolder.config[params.scope] : ConfigurationHolder.config
+        if (target instanceof ConfigObject) {
+            def flat = target.flatten()
+            render flat as JSON
+        }
+        else {
+            render target
+        }
+    }
 
     def search = {
         // use bie search and filter results

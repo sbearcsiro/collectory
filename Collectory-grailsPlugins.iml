@@ -34,6 +34,14 @@
       <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/hibernate-1.3.7/target/test-classes" />
       <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/hibernate-1.3.7/web-app/plugins" />
     </content>
+    <content url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1">
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/src/java" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/src/groovy" isTestSource="false" />
+      <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/grails-app/services" isTestSource="false" />
+      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/target/classes" />
+      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/target/test-classes" />
+      <excludeFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/web-app/plugins" />
+    </content>
     <content url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/richui-0.8">
       <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/richui-0.8/src/groovy" isTestSource="false" />
       <sourceFolder url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/richui-0.8/grails-app/controllers" isTestSource="false" />
@@ -57,9 +65,11 @@
         <CLASSES>
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/richui-0.8/lib" />
           <root url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/tomcat-1.3.7.2/lib" />
+          <root url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/reloadable-config-0.1/lib" recursive="false" />
         <jarDirectory url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/richui-0.8/lib" recursive="false" />
         <jarDirectory url="file://$USER_HOME$/.grails/1.3.7/projects/Collectory/plugins/tomcat-1.3.7.2/lib" recursive="false" />
       </library>

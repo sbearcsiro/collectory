@@ -250,8 +250,9 @@
                 <g:if test="${biocacheRecordsAvailable}">
                   <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
                   <cl:warnIfInexactMapping collection="${instance}"/>
-                  <cl:recordsLink collection="${instance}">
+                  <cl:recordsLink entity="${instance}">
                     Click to view all records for the <cl:collectionName name="${instance.name}"/></cl:recordsLink>
+                  <!--cl:downloadRecordsLink uid="${instance.uid}"/-->
                 </g:if>
                 <g:else>
                   <p>No database records for this collection can be accessed through the Atlas of Living Australia.</p>
@@ -519,6 +520,10 @@ function setProgress(percentage)
 * Load charts
 \************************************************************/
 
+        // define biocache server
+        biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+        biocacheRecordsUrl = "${ConfigurationHolder.config.biocache.records.url}";
+        useNewBiocache = ${ConfigurationHolder.config.useNewBiocache == 'true'};
         google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(onLoadCallback);
 

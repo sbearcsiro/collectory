@@ -51,6 +51,21 @@ if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
 }
 /******************************************************************************\
+ *  BIOCACHE URLS
+\******************************************************************************/
+if (!biocache.occurrences.json) {
+    biocache.occurrences.json = "ws/occurrences/{entity}/{uid}.json?pageSize=0"
+}
+if (!biocache.breakdown.taxa) {
+    biocache.breakdown.taxa = "ws/breakdown/{entity}/{uid}"
+}
+/******************************************************************************\
+ *  RELOADABLE CONFIG
+\******************************************************************************/
+reloadable.cfgPollingFrequency = 1000 * 60 * 60 // 1 hour
+reloadable.cfgPollingRetryAttempts = 5
+reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
+/******************************************************************************\
  *  SECURITY
 \******************************************************************************/
 if (!security.cas.urlPattern) {

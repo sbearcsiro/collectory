@@ -17,6 +17,8 @@ class ReportsController {
         render(view: "index")
     }
 
+    def home = {}
+
     def contactsForCouncilMembers = {
         def chafc = []
         Collection.findAllByNetworkMembershipIlike("%CHAFC%",[sort:'name']).each {
@@ -94,7 +96,7 @@ class ReportsController {
         def pageSize = 100
 
         // offset controls where to start in the list
-        int offset = params.offset.toInteger() ?: 0
+        int offset = params.offset?.toInteger() ?: 0
         if (params.next) {
             offset = offset + pageSize
         }

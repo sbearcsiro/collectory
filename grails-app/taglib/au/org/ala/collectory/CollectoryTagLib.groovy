@@ -769,9 +769,11 @@ class CollectoryTagLib {
         def text = body().toString()
         if (text) {
 
-            // italic - first to avoid underscores in generated links (eg _blank)
-            def italicMarkup = /_([^\r\n_]*)_/
-            text = text.replaceAll(italicMarkup) {match, group -> '<em>' + group + '</em>'}
+            // italic
+            def italicMarkup = /(\b)_([^\r\n_]*)_(\b)/  // word boundary _ thing to be italised _ word boundary
+            text = text.replaceAll(italicMarkup) {match, s1, s2, s3 ->
+                s1 + '<em>' + s2 + '</em>' + s3         // word boundary <em> thing to be italised </em> word boundary
+            }
 
             // in-line links
             if (!attrs.noLink) {
@@ -864,13 +866,53 @@ class CollectoryTagLib {
                 out << body()
             }
             else {
-                def uidStr = pg instanceof Institution ? pg.descendantUids().join(",") : pg.uid
-                def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "occurrences/searchForUID?q=" + uidStr
                 out << "<a class='recordsLink' href='"
-                out << url
+                out << buildRecordsUrl(pg.uid)
                 out << "'>" << body() << "</a>"
             }
+        }
+    }
+
+    def downloadRecordsLink = {attrs, body ->
+        if (attrs.uid) {
+            def url = ConfigurationHolder.config.biocache.baseURL + "occurrences/download?q=*.*&fq=collection_uid=${attrs.uid}#download"
+            out << "<a href='${url}'>Download all records</a>"
+        }
+    }
+
+    private String buildRecordsUrl(uid) {
+        // handle descendant institutions
+        def uidStr = uid
+        if (uid.size() > 1 && uid[0..1] == 'in') {
+            uidStr = Institution._get(uid)?.descendantUids()?.join(",") ?: uid
+        }
+        def baseUrl = ConfigurationHolder.config.biocache.baseURL
+        def url = baseUrl + "occurrences/searchForUID?q=" + uidStr
+        if (ConfigurationHolder.config.useNewBiocache == 'true') {
+            def queryStr
+            // need to handle multiple uids differently
+            if (uidStr.indexOf(',')) {
+                def uids = uidStr.tokenize(',')
+                queryStr = uids.collect({ fieldNameForSearch(it) + ":" + it}).join(' OR ')
+            }
+            else {
+                queryStr = fieldNameForSearch(uidStr) + ":" + uidStr
+            }
+            url = ConfigurationHolder.config.biocache.records.url +
+                  ConfigurationHolder.config.biocache.search +
+                  "?q=" + queryStr
+        }
+        return url
+    }
+
+    private String fieldNameForSearch(uid) {
+        switch (uid[0..1]) {
+            case 'co': return 'collection_uid'; break
+            case 'in': return 'institution_uid'; break
+            case 'dr': return 'data_resource_uid'; break
+            case 'dp': return 'data_provider_uid'; break
+            case 'dh': return 'data_hub_uid'; break
+            default: return ""
         }
     }
 
@@ -972,9 +1014,11 @@ class CollectoryTagLib {
      * Draw elements for taxa breakdown chart
      */
     def taxonChart = { attrs ->
+        //println "taxonChart records link"
+        //println buildRecordsUrl(attrs.uid)
         out <<
             "<div id='taxonRecordsLink' style='visibility:hidden;'>" +
-            " <span id='viewRecordsLink' class='taxonChartCaption'><a class='recordsLink' href='${ConfigurationHolder.config.biocache.baseURL + "occurrences/searchForUID?q=" + attrs.uid}'>View all records</a></span><br/>" +
+            " <span id='viewRecordsLink' class='taxonChartCaption'><a class='recordsLink' href='${buildRecordsUrl(attrs.uid)}'>View all records</a></span><br/>" +
             "</div>" +
             "<div id='taxonChart'>" +
             " <img class='taxon-loading' alt='loading...' src='${resource(dir:'images/ala',file:'ajax-loader.gif')}'/>" +

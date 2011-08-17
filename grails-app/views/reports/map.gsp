@@ -5,7 +5,7 @@
         <meta name="layout" content="main" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Registry database reports</title>
-        <!--script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script-->
+        <!--script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.3&sensor=false"></script-->
     </head>
     <body onload="initialize()">
         <div class="nav">

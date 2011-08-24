@@ -674,7 +674,7 @@ class CollectoryTagLib {
         int index = email.indexOf('@')
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
-            out << "<a href='#' onclick=\"return sendEmail('${email}')\">${body()}</a>"
+            out << "<span class='link' onclick=\"return sendEmail('${email}')\">${body()}</span>"
         }
     }
 
@@ -688,7 +688,7 @@ class CollectoryTagLib {
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
         }
-        out << "<a href='#' onclick=\"return sendBugEmail('${email}','${attrs.message}')\">${body()}</a>"
+        out << "<span class='link' onclick=\"return sendBugEmail('${email}','${attrs.message}')\">${body()}</span>"
     }
 
     /**
@@ -1323,9 +1323,12 @@ class CollectoryTagLib {
     }
 
     def breadcrumbTrail = {attrs ->
+        def home = attrs.home ?: 'nhc'
+        def homeLink = home == 'dataSets' ?
+            link(controller:'public', action:'dataSets') {"Data sets"} :
+            link(controller:'public', action:'map') {"Natural History Collections"}
         out << "<a href='${ConfigurationHolder.config.ala.baseURL}'>Home</a> " +
-                "<a href='${ConfigurationHolder.config.ala.baseURL}/explore/'>Explore</a> " +
-                link(controller:'public', action:'map') {"Natural History Collections"}
+                "<a href='${ConfigurationHolder.config.ala.baseURL}/explore/'>Explore</a> " + homeLink
     }
 
     def pageOptionsLink = {attrs, body ->
@@ -1855,6 +1858,18 @@ class CollectoryTagLib {
         }
         else if (attrs.resourceType == 'document' && attrs.status == 'linksAvailable') {
             out << startTag + "Links to this document appear on appropriate Atlas species pages." + endTag
+        }
+    }
+
+    /**
+     * List of content types.
+     *
+     * @attr types json list of string
+     */
+    def contentTypes = { attrs ->
+        if (attrs.types) {
+            def list = JSON.parse(attrs.types as String).collect {it.toString()}
+            out << '<p>Includes: ' + list.join(', ') + '.</p>'
         }
     }
 }

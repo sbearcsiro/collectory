@@ -34,7 +34,7 @@ div.center {
     text-align:center !important;
 }
 
-a.current {
+#breadcrumb a.current {
     text-decoration: none;
     color: #333;
     cursor: default;

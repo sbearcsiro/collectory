@@ -31,7 +31,7 @@
       <div id="content">
         <div id="header" class="collectory">
           <!--Breadcrumbs-->
-          <div id="breadcrumb"><cl:breadcrumbTrail/>
+          <div id="breadcrumb"><cl:breadcrumbTrail home="dataSets"/>
             <cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink>
           </div>
           <cl:pageOptionsPopup instance="${instance}"/>
@@ -79,6 +79,10 @@
             <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
             <cl:dataResourceContribution resourceType="${instance.resourceType}" status="${instance.status}" tag="p"/>
 
+            <g:if test="${instance.contentTypes}">
+              <h2>Type of content</h2>
+              <cl:contentTypes types="${instance.contentTypes}"/>
+            </g:if>
             <h2>Citation</h2>
             <g:if test="${instance.citation}">
               <cl:formattedText>${fieldValue(bean: instance, field: "citation")}</cl:formattedText>

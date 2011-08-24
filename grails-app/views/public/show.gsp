@@ -8,7 +8,6 @@
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
         <script type="text/javascript">
           $(document).ready(function() {
-            $('#nav-tabs > ul').tabs();
             greyInitialValues();
             $("a#lsid").fancybox({
                     'hideOnContentClick' : false,
@@ -66,14 +65,17 @@
               </g:if>
             </div>
           </div>
-          <div id="nav-tabs">
-            <ul class="ui-tabs-nav">
-                <li class="ui-tabs-selected"><a href="#overview">Overview</a></li>
-                <li><a href="#statistics">Records & Statistics</a></li>
+          <div>
+            <ul id="nav-tabs">
+                <li><a id="tab1" href="#overview">Overview</a></li>
+                <li><a id="tab2" href="#statistics">Records & Statistics</a></li>
             </ul>
           </div>
         </div><!--close header-->
-        <div id="overview" class="ui-tabs-panel">
+      <div class='panes'>
+        <br clear="all"/>
+
+        <div>
           <div id="column-one">
             <div class="section">
               <h2>Description</h2>
@@ -236,7 +238,7 @@
             </div>
           </div>
           </div><!--overview-->
-          <div id="statistics" class="ui-tabs-panel ui-tabs-hide">
+          <div>
             <div class="section">
               <h2>Digitised records available through the Atlas</h2>
               <div style="float:left;min-height: 60px;">
@@ -302,6 +304,7 @@
               </g:if>
             </div>
           </div>
+        </div>
         </div>
       <script type="text/javascript">
 /************************************************************\
@@ -527,6 +530,12 @@ function setProgress(percentage)
         google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(onLoadCallback);
 
-      </script>
+    // perform JavaScript after the document is scriptable.
+    $(function() {
+      // setup ul.tabs to work as tabs for each div directly under div.panes
+      $("ul#nav-tabs").tabs("div.panes > div", {history: true, effect: 'fade', fadeOutSpeed: 200});
+    });
+    </script>
+    <g:javascript library="jquery.tools.min"/>
     </body>
 </html>

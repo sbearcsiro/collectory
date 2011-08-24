@@ -43,7 +43,7 @@
                       </g:else>
 
                       <tr ${hide} class="ui-state-active">
-                        <td><g:if test="${r.rights}">
+                        <td><g:if test="${r.rights || r.permissionsDocument}">
                             <span onclick="toggleParams(this)" class="ui-icon ui-icon-triangle-1-e"> </span>
                         </g:if></td>
                         <td align="left">
@@ -58,17 +58,24 @@
                         <td class="center"><cl:dpaStatus brief="true" filed="${r.filed}" risk="${r.riskAssessment}"/></td>
                       </tr>
 
-                      <g:if test="${r.rights}">
+                      <g:if test="${r.rights || r.permissionsDocument}">
                           <tr style="display:none;">
-                              <td>Rights</td>
+                              <td></td>
                               <td colspan="6">
-                                  ${r.rights}
-                              </td>
-                          </tr>
-                          <tr style="display:none;">
-                              <td>Permissions Document</td>
-                              <td colspan="6">
-                                  ${r.permissionsDocument}
+                                <table class="shy">
+                                  <g:if test="${r.rights}">
+                                    <tr>
+                                      <td>Rights:</td>
+                                      <td>${r.rights}</td>
+                                    </tr>
+                                  </g:if>
+                                  <g:if test="${r.permissionsDocument}">
+                                    <tr>
+                                      <td>Permissions Document:</td>
+                                      <td>${r.permissionsDocument}</td>
+                                    </tr>
+                                  </g:if>
+                                </table>
                               </td>
                           </tr>
                        </g:if>
@@ -82,11 +89,9 @@
                 if ($(me).hasClass('ui-icon-triangle-1-e')) {
                     $(me).switchClass('ui-icon-triangle-1-e','ui-icon-triangle-1-s',10);
                     $(me).parent().parent().next().css('display','table-row');
-                    $(me).parent().parent().next().next().css('display','table-row');
                 } else {
                     $(me).switchClass('ui-icon-triangle-1-s','ui-icon-triangle-1-e',10);
                     $(me).parent().parent().next().css('display','none');
-                    $(me).parent().parent().next().next().css('display','none');
                 }
             }
             function hideEmpty() {
@@ -110,7 +115,11 @@
             function showAll() {
                 var all = $('span.ui-icon-triangle-1-e');
                 for (var i = 0; i < all.length; i++) {
-                    toggleParams(all[i]);
+                  var t = all[i];
+                    // only if container is visible
+                    if ($(t).parent().parent().css('display') != 'none') {
+                      toggleParams(t);
+                    }
                 }
                 $('#toggleAll a').attr('href',"javascript:hideAll();");
                 $('#toggleAll a span').html('Hide all details.' );

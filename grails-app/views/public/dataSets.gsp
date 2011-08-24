@@ -8,6 +8,7 @@
     <g:javascript library="datasets"/>
     <g:javascript library="jquery.json-2.2.min"/>
     <g:javascript library="jquery.ba-bbq.min"/>
+    <g:javascript library="jQueryRotateCompressed.2.1"/>
     <g:javascript library="debug"/>
     <script type="text/javascript">
       var altMap = true;
@@ -33,10 +34,8 @@
           </g:if>
           <div style="padding:0 15px 15px 15px;">
             <h1>Atlas data sets</h1>
-            <p>The Atlas draws much of its content from data sets. Data sets are the sources of information as diverse as occurrence records,
-                environmental data, images and the conservation status of species.
-            Data sets are represented by data resources in the Atlas. These are listed below. Use the filters on the left to refine the list.
-            Click an item in the list to expand it.</p>
+            <p style="padding-bottom:6px !important;">Much of the content in the Atlas, such as occurrence records, environmental data, images and the conservation status of species, comes from data sets provided by collecting institutions, individual collectors and community groups. These data sets are listed on this page.</p>
+            <p>Refine the list of data sets by clicking on a filter in the left hand list. Click the <img style="vertical-align:middle;" src="${resource(dir:'/images/skin',file:'ExpandArrow.png')}"/>toggle to see a description of the data set. To find out more, go to the data set's full metadata page by clicking on its name.</p>
           </div><!--close hrgroup-->
         </div><!--close section-->
       </div><!--close header-->
@@ -48,7 +47,7 @@
       </noscript>
 
       <div class="collectory-content">
-      <div id="SidebarBox" class="facets" style="float:left;width:250px;padding-left: 10px;padding-top:10px;">
+      <div id="sidebarBox" class="facets">
         <div class="sidebar-header">
           <h3>Refine Results</h3>
         </div>
@@ -61,7 +60,10 @@
       </div>
 
       <div id="data-set-list" style="float:left;width:720px;margin-right:10px;">
-        <div id="resultsReturned">Showing <strong></strong>&nbsp;data sets. <a href="javascript:reset()">Reset list</a></div>
+        <div id="listHeader"><span id="resultsReturned">Showing <strong></strong>&nbsp;data sets.</span>
+          <input type="text" name="dr-search" id="dr-search"/> <span title="Only show data sets which contain the search term" id="dr-search-link" class="link">Search</span>
+          <span id="reset"><a href="javascript:reset()" title="Remove all filters and sorting options">Reset list</a></span>
+        </div>
 
         <div id="searchControls">
           <div id="downloads">
@@ -76,11 +78,12 @@
               Sort by
               <g:select id="sort" name="sort" from="${['name','type','license']}"/>
               Sort order
-              <g:select id="dir" name="dir" from="${['asc','desc']}"/>
+              <g:select id="dir" name="dir" from="${['ascending','descending']}"/>
           </div>
         </div><!--drop downs-->
 
         <div id="results">
+          <div id="loading">Loading ..</div>
         </div>
 
         <div id="searchNavBar">
@@ -92,7 +95,6 @@
 
     </div><!--close content-->
 
-    <script type="text/javascript">
-    </script>
+    <g:javascript library="jquery.tools.min"/>
   </body>
 </html>

@@ -4,7 +4,7 @@
 
 <head profile="http://gmpg.org/xfn/11">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8; IE=EmulateIE9">
+  <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8; IE=EmulateIE9"-->
   <meta name="robots" content="index,follow"/>
   <meta name="app.version" content="${g.meta(name:'app.version')}"/>
   <meta name="app.build" content="${g.meta(name:'app.build')}"/>
@@ -27,6 +27,8 @@
 	<link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/highlights.css" />
   <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/jquery.autocomplete.css" />
 
+  <!--g:javascript library="jquery-1.5.1.min" /-->
+
   <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/iframe.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/form.js"></script>
 	<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
@@ -40,11 +42,6 @@
 
 		// initialise plugins
 		jQuery(function(){
-          jQuery('ul.sf').superfish( {
-              delay:500,
-              autoArrows:false,
-              dropShadows:false
-          });
 
           jQuery("form#search-form input#search").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
               extraParams: {limit: 100},

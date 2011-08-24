@@ -32,7 +32,7 @@
     <div id="content">
       <div id="header" class="collectory">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><cl:breadcrumbTrail/>
+        <div id="breadcrumb"><cl:breadcrumbTrail home="dataSets"/>
           <cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink>
         </div>
         <cl:pageOptionsPopup instance="${instance}"/>

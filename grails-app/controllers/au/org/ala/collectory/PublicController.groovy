@@ -527,7 +527,11 @@ class PublicController {
         if (!instance) {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataResource.label', default: 'Data resource'), params.code ? params.code : params.id])}"
             redirect(controller: "public", action: "map")
-        } else {
+        }
+        else if (instance.status == "declined") {
+            render "This resource has decided to not contribute to the Atlas."
+        }
+        else {
             ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
             [instance: instance]
         }
@@ -555,12 +559,16 @@ class PublicController {
     }
 
     def resources = {
-        def drs = DataResource.list([sort:'name']).collect {
+        def drs = DataResource.findAllByStatusNotEqual('declined',[sort:'name']).collect {
             def pdesc = it.pubDescription ? cl.formattedText(dummy:'1',it.pubDescription) : ""
             def tdesc = it.techDescription ? cl.formattedText(dummy:'1',it.techDescription) : ""
+            def inst = it.institution
+            def instName = (inst && inst.name.size() > 36 && inst.acronym) ? inst.acronym : inst?.name
+
             [name: it.name, resourceType: it.resourceType, licenseType: it.licenseType,
              licenseVersion: it.licenseVersion, pubDescription: pdesc, techDescription: tdesc,
-             uid: it.uid, status: it.status, websiteUrl: it.websiteUrl]
+             uid: it.uid, status: it.status, websiteUrl: it.websiteUrl, contentTypes: it.contentTypes,
+             institution: instName]
         }
         render drs as JSON
     }
@@ -573,11 +581,11 @@ class PublicController {
                 // check each filter
                 for (filter in filters) {
                     if (filter.value == 'noValue') {
-                        if (dr[filter.facet]) {
+                        if (dr[filter.name]) {
                             return false
                         }
                     }
-                    else if (dr[filter.facet] != filter.value) {
+                    else if (dr[filter.name] != filter.value) {
                         return false
                     }
                 }

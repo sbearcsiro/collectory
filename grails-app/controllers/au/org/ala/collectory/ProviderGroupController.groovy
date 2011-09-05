@@ -312,9 +312,10 @@ abstract class ProviderGroupController {
                 def name = params."name_${idx}"
                 return ["${value}": name]
             }
-            def coverage = [coverage: hints]
-            pg.taxonomyHints = coverage as JSON
-        
+            def th = pg.taxonomyHints ? JSON.parse(pg.taxonomyHints) : [:]
+            th.coverage = hints
+            pg.taxonomyHints = th as JSON
+
             pg.userLastModified = authService.username()
             if (!pg.hasErrors() && pg.save(flush: true)) {
                 flash.message =
@@ -322,7 +323,35 @@ abstract class ProviderGroupController {
                 redirect(action: "show", id: pg.uid)
             }
             else {
-                render(view: "description", model: [command: pg])
+                render(view: "/shared/editTaxonomyHints", model: [command: pg])
+            }
+        } else {
+            flash.message =
+                "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "show", id: params.id)
+        }
+    }
+
+    def updateTaxonomicRange = {
+        def pg = get(params.id)
+        if (pg) {
+            if (checkLocking(pg,'/shared/taxonomicRange')) { return }
+
+            // handle taxonomic range
+            def rangeList = params.range.tokenize(',')
+            def th = pg.taxonomyHints ? JSON.parse(pg.taxonomyHints) : [:]
+            th.range = rangeList
+            pg.taxonomyHints = th as JSON
+            println pg.taxonomyHints
+
+            pg.userLastModified = authService.username()
+            if (!pg.hasErrors() && pg.save(flush: true)) {
+                flash.message =
+                  "${message(code: 'default.updated.message', args: [message(code: "${pg.urlForm()}.label", default: pg.entityType()), pg.uid])}"
+                redirect(action: "show", id: pg.uid)
+            }
+            else {
+                render(view: "/shared/taxonomicRange", model: [command: pg])
             }
         } else {
             flash.message =

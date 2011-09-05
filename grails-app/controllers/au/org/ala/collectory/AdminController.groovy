@@ -5,7 +5,8 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVReader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
 import org.codehaus.groovy.grails.plugins.reloadableconfig.ConfigurationResourceListener
-import org.codehaus.groovy.grails.web.json.JSONObject
+
+import grails.web.JSONBuilder
 
 class AdminController {
 
@@ -344,5 +345,59 @@ class AdminController {
 
     def extractUid = {url ->
         url[url.lastIndexOf('/') + 1..url.size() - 1]
+    }
+
+    def speciesGroupLoader = {
+        def f = new FileInputStream('/data/collectory/bootstrap/groups.xml').text
+        def xml = new XmlSlurper().parseText(f)
+
+        def b = new JSONBuilder()
+        def str = ""
+        def res = b.build {
+            xml.groups.each { grps ->
+                str += "+ " + grps.@title + "\n"
+                groups(title:grps.@title.text()) {
+                    grps.group.each { grp1 ->
+                        str +=  " - " + grp1.name() + " - " + grp1.@namekey + "\n"
+                        group(namekey:grp1.@namekey.text(), common:grp1.@common.text())
+                        grp1.group.each { grp2 ->
+                            str +=  " -- " + grp2.name() + grp2.@namekey + "\n"
+                            group(namekey:grp2.@namekey.text(), common:grp2.@common.text())
+                        }
+                    }
+                }
+            }
+        }
+
+        def list = []
+        def ch = []
+        list << [data:'Fauna', attr: [id:'Fauna', rank:'group'], state:'open', children:ch]
+        xml.groups.each { grps ->
+            ch << addGroup(grps)
+        }
+
+        render list as JSON
+    }
+
+    def addGroup(node) {
+        def g = [:]
+        if (node.name() == 'groups') {
+            g.put 'data', node.@title.text()
+            g.put 'attr', [id:node.@title.text().replace(' ','_')]
+            g.put 'state', 'open'
+            g.put 'rank', 'group'
+        }
+        else {
+            g.put 'data', node.@namekey.text() + ' (' + node.@common.text() + ')'
+            g.put 'attr', [id:node.@namekey.text(), rank:node.@rank.text() ?: 'group']
+        }
+        if (node.group.size() > 0) {
+            def ch = []
+            node.group.each {
+                ch << addGroup(it)
+            }
+            g.put 'children', ch
+        }
+        return g
     }
 }

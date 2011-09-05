@@ -40,13 +40,13 @@
       <cl:partner test="${instance.institution?.isALAPartner}"/><br/>
 
       <!-- GUID    -->
-      <p><span class="category">LSID</span>: <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+      <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
       <!-- UID    -->
-      <p><span class="category">UID</span>: ${fieldValue(bean: instance, field: "uid")}</p>
+      <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
       <!-- Web site -->
-      <p><span class="category">Collection website</span>: <a target="_blank" href="${fieldValue(bean: instance, field: 'websiteUrl')}">${fieldValue(bean: instance, field: "websiteUrl")}</a></p>
+      <p><span class="category">Collection website:</span> <a target="_blank" href="${fieldValue(bean: instance, field: 'websiteUrl')}">${fieldValue(bean: instance, field: "websiteUrl")}</a></p>
 
       <!-- Networks -->
       <g:if test="${instance.networkMembership}">
@@ -59,7 +59,7 @@
       </g:if>
 
       <!-- last edit -->
-      <p><span class="category">Last change</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+      <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
       <cl:editButton uid="${instance.uid}" page="/shared/base"/>
     </div>
@@ -78,14 +78,14 @@
       <cl:temporalSpan start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/>
 
       <!-- Collection types -->
-      <p><span class="category">Collection types</span> include:
+      <p><span class="category">Collection types include:</span>
       <cl:JSONListAsStrings json='${instance.collectionType}'/>.</p>
 
       <!-- Active -->
-      <p><span class="category">Activity status</span> is <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
+      <p><span class="category">Activity status is:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
 
       <!-- Keywords -->
-      <p><span class="category">Keywords</span> are not directly displayed but are used for searching and filtering.
+      <p><span class="category">Keywords:</span> are not directly displayed but are used for searching and filtering.
         These keywords have been added for this collection: <cl:valueOrOtherwise value="${instance.listKeywords().join(', ')}" otherwise="none"/>.
         <g:if test="${!instance.listKeywords().contains('fauna')}">
           (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']">Add fauna</g:link>)

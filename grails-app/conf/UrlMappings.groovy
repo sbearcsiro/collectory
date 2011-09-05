@@ -96,6 +96,10 @@ class UrlMappings {
 
       "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
 
+      "/ws/tempDataResource" (controller: 'tempDataResource') {
+          action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
+      }
+
       "/"(controller:'public', action:'map')
       "500"(view:'/error')
 	}

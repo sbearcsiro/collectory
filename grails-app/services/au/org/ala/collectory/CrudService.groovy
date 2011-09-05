@@ -29,6 +29,9 @@ class CrudService {
     static dataResourceJSONArrays = ['connectionParameters', 'contentTypes', 'defaultDarwinCoreValues']
     //static dataResourceObjectProperties = ['dataProvider']
 
+    static tempDataResourceStringProperties = ['firstName','lastName','name','email']
+    static tempDataResourceNumberProperties = ['numberOfRecords']
+
     static institutionStringProperties = ['institutionType']
 
     static collectionStringProperties = ['collectionType','keywords','active','states','geographicDescription',
@@ -349,6 +352,49 @@ class CrudService {
                 dr.dataProvider = dp
             }
         }
+    }
+
+    /* temp data resource */
+
+    def readTempDataResource(TempDataResource p) {
+        def builder = new JSONBuilder()
+
+        def result = builder.build {
+            name = p.name
+            uid = p.uid
+            email = p.email
+            firstName = p.firstName
+            lastName = p.lastName
+            dateCreated = p.dateCreated
+            lastUpdated = p.lastUpdated
+            numberOfRecords = p.numberOfRecords
+        }
+        return result
+    }
+
+    def insertTempDataResource(obj) {
+        TempDataResource drt= new TempDataResource(uid: idGeneratorService.getNextTempDataResource())
+        updateTempDataResourceProperties(drt, obj)
+        //drt.userLastModified = obj.user ?: 'Data services'
+        if (!drt.hasErrors()) {
+             drt.save(flush: true)
+        }
+        return drt
+    }
+
+    def updateTempDataResource(drt, obj) {
+        updateBaseProperties(drt, obj)
+        updateDataResourceProperties(drt, obj)
+        //drt.userLastModified = obj.user ?: 'Data services'
+        if (!drt.hasErrors()) {
+             drt.save(flush: true)
+        }
+        return drt
+    }
+
+    private void updateTempDataResourceProperties(TempDataResource drt, obj) {
+        drt.properties[tempDataResourceStringProperties] = obj
+        drt.properties[tempDataResourceNumberProperties] = obj
     }
 
     /* institution */

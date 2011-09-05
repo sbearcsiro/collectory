@@ -1872,4 +1872,15 @@ class CollectoryTagLib {
             out << '<p>Includes: ' + list.join(', ') + '.</p>'
         }
     }
+
+    def taxonomicRangeDescription = { attrs ->
+        if (attrs.obj) {
+            def obj = JSON.parse(attrs.obj)
+            if (attrs.key) {
+                obj = obj[attrs.key]
+            }
+            def list = obj.collect {it.toString()}
+            out << '<p><span class="category">Range:</span> ' + list.join(', ') + '</p>'
+        }
+    }
 }

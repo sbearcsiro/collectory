@@ -36,12 +36,16 @@ var total = 0;
 /* the base url of the home server */
 var baseUrl;
 
+/* the base url of the biocache server */
+var biocacheUrl;
+
 /* options for all tooltips */
 var tooltipOptions = {position:'center right',offset:[-10,5],predelay:130, effect:'fade', fadeOutSpeed: 200}
 
 /** load resources and show first page **/
-function loadResources(serverUrl) {
+function loadResources(serverUrl, biocacheRecordsUrl) {
     baseUrl = serverUrl;
+    biocacheUrl = biocacheRecordsUrl;
     $.getJSON(baseUrl + "/public/resources.json", function(data) {
         allResources = data;
         // no filtering at this stage
@@ -102,7 +106,7 @@ function appendResource(value) {
     $rowB.append('<span><strong class="resultsLabel">License: </strong>' + (value.licenseType == null ? '' : value.licenseType) + '</span>'); // license type
     $rowB.append('<span><strong class="resultsLabel">License version: </strong>' + (value.licenseVersion == null ? '' : value.licenseVersion) + '</span>'); // license version
     if (value.resourceType == 'records') {
-        $rowB.append('<span><a title="View occurrence records for this data set" href="http://biocache-test.ala.org.au/occurrences/search?q=data_resource_uid:' + value.uid + '">View records</a></span>'); // records link
+        $rowB.append('<span><a title="View occurrence records for this data set" href="' + biocacheUrl + '/occurrences/search?q=data_resource_uid:' + value.uid + '">View records</a></span>'); // records link
     }
     if (value.resourceType == 'website' && value.websiteUrl) {
         $rowB.append('<span><a title="Open the website in another tab" class="external" target="_blank" href="' + value.websiteUrl + '">Website</a></span>'); // website link

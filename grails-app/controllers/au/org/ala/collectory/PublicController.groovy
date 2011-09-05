@@ -57,6 +57,8 @@ class PublicController {
             forward(action: 'showInstitution', params: params)
         } else if (params.id instanceof String && params.id.startsWith('dp')) {
             forward(action: 'showDataProvider', params: params)
+        } else if (params.id instanceof String && params.id.startsWith('drt')) {
+            forward(action: 'showTempDataResource', params: params)
         } else if (params.id instanceof String && params.id.startsWith('dr')) {
             forward(action: 'showDataResource', params: params)
         } else if (params.id instanceof String && params.id.startsWith('dh')) {
@@ -538,6 +540,21 @@ class PublicController {
     }
 
     /**
+     * Shows the public page for a temporary data resource.
+     */
+    def showTempDataResource = {
+        def instance = TempDataResource.findByUid(params.id)
+        if (!instance) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'dataResource.label', default: 'Data resource'), params.code ? params.code : params.id])}"
+            redirect(controller: "public", action: "map")
+        }
+        else {
+            ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
+            [instance: instance]
+        }
+    }
+
+    /**
      * Shows the public page for a data hub.
      */
     def showDataHub = {
@@ -559,9 +576,12 @@ class PublicController {
     }
 
     def resources = {
+        //println "all dr = ${DataResource.count()}"
+        //println "excluding declined = ${DataResource.findAllByStatusNotEqual('').size()}"
         def drs = DataResource.findAllByStatusNotEqual('declined',[sort:'name']).collect {
-            def pdesc = it.pubDescription ? cl.formattedText(dummy:'1',it.pubDescription) : ""
-            def tdesc = it.techDescription ? cl.formattedText(dummy:'1',it.techDescription) : ""
+        //def drs = DataResource.list([sort:'name']).collect {
+            def pdesc = it.pubDescription ? cl.formattedText(dummy:'1',limit(it.pubDescription,1000)) : ""
+            def tdesc = it.techDescription ? cl.formattedText(dummy:'1',limit(it.techDescription,1000)) : ""
             def inst = it.institution
             def instName = (inst && inst.name.size() > 36 && inst.acronym) ? inst.acronym : inst?.name
 
@@ -658,6 +678,13 @@ class PublicController {
 
         //def json = JSON.parse(features)
         render( locations as JSON )
+    }
+
+    private String limit(str, int length) {
+        if (str?.size() > length) {
+            return str[0..length] + "... and more."
+        }
+        return str
     }
 
     private boolean matchNetwork(pg, filterString) {

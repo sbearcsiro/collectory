@@ -24,7 +24,7 @@ class DataController {
 
     def check() {
         def uid = params.uid
-        if (uid) {
+        if (uid && !uid.startsWith('drt')) {  // allow temp data resources through
             // it must exist
             def pg = ProviderGroup._get(uid)
             if (pg) {
@@ -215,20 +215,25 @@ class DataController {
      * @param summary - any non-null value will cause a richer summary to be returned for entity lists
      */
     def getEntity = {
-        def urlForm = params.entity
-        def clazz = capitalise(urlForm)
-        if (params.pg) {
-            addContentLocation "/ws/${urlForm}/${params.pg.uid}"
-            addLastModifiedHeader params.pg.lastUpdated
-            render crudService."read${clazz}"(params.pg)
-        } else {
-            addContentLocation "/ws/${urlForm}"
-            def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
-            def list = domain.list([sort:'name'])
-            list = filter(list)
-            def detail = params.summary ? summary : brief
-            def summaries = list.collect(detail)
-            renderAsJson summaries
+        if (params.uid?.startsWith('drt')) {
+            forward(controller: 'tempDataResource', action: 'getEntity')
+        }
+        else {
+            def urlForm = params.entity
+            def clazz = capitalise(urlForm)
+            if (params.pg) {
+                addContentLocation "/ws/${urlForm}/${params.pg.uid}"
+                addLastModifiedHeader params.pg.lastUpdated
+                render crudService."read${clazz}"(params.pg)
+            } else {
+                addContentLocation "/ws/${urlForm}"
+                def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
+                def list = domain.list([sort:'name'])
+                list = filter(list)
+                def detail = params.summary ? summary : brief
+                def summaries = list.collect(detail)
+                renderAsJson summaries
+            }
         }
     }
 

@@ -530,9 +530,24 @@ abstract class ProviderGroup implements Serializable {
     def listTaxonomyHints() {
         def result = []
         if (taxonomyHints) {
-            JSON.parse(taxonomyHints).coverage.each {
+            JSON.parse(taxonomyHints).coverage?.each {
                 def key = it.keySet().iterator().next()
                 result << [rank: key, name: it[key]]
+            }
+        }
+        return result
+    }
+
+    /**
+     * Returns taxonomic range as a list of taxon names.
+     *
+     * @return List<String>
+     */
+    def listTaxonomicRange() {
+        def result = []
+        if (taxonomyHints) {
+            JSON.parse(taxonomyHints).range?.each {
+                result << it
             }
         }
         return result

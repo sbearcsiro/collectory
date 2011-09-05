@@ -64,7 +64,13 @@ class LookupController {
      */
     def summary = {
         log.info "debugging summary: request from ${request.remoteAddr} for ${params.id}"
-        ProviderGroup instance = ProviderGroup._get(params.id)
+        def instance
+        if (params.id?.startsWith('drt')) {
+            instance = TempDataResource.findByUid(params.id)
+        }
+        else {
+            instance = ProviderGroup._get(params.id)
+        }
         if (!instance) {
             instance = findCollection(params.id)
         }
@@ -155,7 +161,7 @@ class LookupController {
                     String result = "Resource name\tCitation\tRights\tMore information\tData generalizations\tInformation withheld\tDownload limit"
                     uids.each {
                         // get each pg
-                        def pg = ProviderGroup._get(it)
+                        def pg = it.startsWith('drt') ? TempDataResource.findByUid(it) : ProviderGroup._get(it)
                         if (pg) {
                             result += "\n" + buildCitation(pg,"tab separated")
                         }
@@ -165,7 +171,7 @@ class LookupController {
                 json {
                     def result = uids.collect {
                         // get each pg
-                        def pg = ProviderGroup._get(it)
+                        def pg = it.startsWith('drt') ? TempDataResource.findByUid(it) : ProviderGroup._get(it)
                         if (pg) {
                             return buildCitation(pg,"map")
                         }
@@ -186,8 +192,7 @@ class LookupController {
         CSVWriter writer = new CSVWriter(sw)
         writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld","Download limit"] as String[])
         uids.each {
-            // get each pg
-            def pg = ProviderGroup._get(it)
+            def pg = it.startsWith('drt') ? TempDataResource.findByUid(it) : ProviderGroup._get(it)
             if (pg) {
                 writer.writeNext(buildCitation(pg,"array") as String[])
             }
@@ -216,7 +221,7 @@ class LookupController {
         render (result) as JSON
     }
 
-    def buildCitation(ProviderGroup pg, format) {
+    def buildCitation(pg, format) {
         def citation = ConfigurationHolder.config.citation.template
         def rights = ConfigurationHolder.config.citation.rights.template
         def name = pg.name
@@ -234,9 +239,15 @@ class LookupController {
             infoWithheld = ih ?: infoWithheld
             downloadLimit = (pg as DataResource).downloadLimit ?: ""
         }
+        if (pg instanceof TempDataResource) {
+            citation = "This is a temporary data set"
+            rights = "No explicit rights"
+        }
+        else {
+            citation =  citation.replaceAll("@entityName@",name)
+        }
         def link = ConfigurationHolder.config.citation.link.template
-        link =  link.replaceAll("@link@",makeLink(pg.generatePermalink()))
-        citation =  citation.replaceAll("@entityName@",name)
+        link =  link.replaceAll("@link@",makeLink(pg.uid))
         switch (format) {
             case "tab separated": return "${name}\t${citation}\t${rights}\t${link}\t${dataGen}\t${infoWithheld}\t${downloadLimit}"
             case "map": return ['name': name, 'citation': citation, 'rights': rights, 'link': link,

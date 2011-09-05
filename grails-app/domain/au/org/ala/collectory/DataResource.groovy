@@ -77,8 +77,8 @@ class DataResource extends ProviderGroup implements Serializable {
     static contentTypesList = ['behaviour','commercial uses','common names','conservation management',
             'conservation status','description','distribution maps','distribution text','feeding and diet','habitat',
             'human interaction','identification keys','images','lifecycle','movies','pest management','pest status',
-            'point occurrence data','population','references','reproduction','scientific names','similar species',
-            'sound','species interactions','species list','taxonomy','threats']
+            'point occurrence data','population','references','reproduction','scientific names','sensitive species lists',
+            'similar species','sound','species interactions','species list','taxonomy','threats']
     /**
      * Integration status.
      * identified - Resource has been found but no further contact

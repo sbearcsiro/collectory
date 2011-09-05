@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="ala"/>
     <title>Atlas Datasets | Atlas of Living Australia</title>
-    <link rel="stylesheet" type="text/css" media="screen" href="http://biocache-test.ala.org.au/static/css/search.css"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="http://biocache.ala.org.au/static/css/search.css"/>
     <g:javascript library="datasets"/>
     <g:javascript library="jquery.json-2.2.min"/>
     <g:javascript library="jquery.ba-bbq.min"/>
@@ -15,7 +15,7 @@
       $(document).ready(function() {
         $('#nav-tabs > ul').tabs();
         greyInitialValues();
-        loadResources("${ConfigurationHolder.config.grails.serverURL}");
+        loadResources("${ConfigurationHolder.config.grails.serverURL}","${ConfigurationHolder.config.biocache.records.url}");
         $('select#per-page').change(onPageSizeChange);
         $('select#sort').change(onSortChange);
         $('select#dir').change(onDirChange);

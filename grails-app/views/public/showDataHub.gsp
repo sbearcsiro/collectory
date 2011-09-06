@@ -75,77 +75,11 @@
           <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
         </g:if>
 
+        <h2>Breakdown of specimen numbers</h2>
+          <p>There are <span id="totalRecords">Loading...</span> records in total.</p>
         <div id="charts" class="section vertical-charts">
-            <h2>Breakdown of specimen numbers</h2>
-          <!-- would normally use the following tag here - but it is directly coded as an example of a chart in a standalone app-->
-          <!--cl:taxonChart uid="${instance.uid}"/-->
-
-          <!--
-          *******                                  *****
-          ******* STANDALONE TAXON BREAKDOWN CHART *****
-          *******                                  *****
-          <div id='taxonChart'>
-            <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
-          </div>
-          <div id='taxonChartCaption' style='visibility:hidden;'>
-            <span class='taxonChartCaption'>Click a slice or legend to drill into a group.</span><br/>
-            <span id='resetTaxonChart' class="resetChart" style="visibility:hidden;" onclick='jpResetTaxonChart()'>Reset</span>
-          </div>
-          -->
-
-          <!--
-          *******                                        *****
-          ******* STANDALONE INSTITUTION BREAKDOWN CHART *****
-          *******                                        *****
-          <div id='instChart'>
-            <img style="margin-left: 230px;margin-top: 100px;margin-bottom: 118px;" alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
-          </div>
-          <div id='instChartCaptionBlock' style='visibility:hidden;'>
-            <span id="instChartCaption" class='taxonChartCaption'>Click a slice or legend to show the institution's collections.</span><br/>
-            <span id='resetInstChart' style="margin-left:90px;" class="resetChart" onclick='resetInstChart()'></span>
-          </div>
-          -->
-
-          <!--
-          *******                                  *****
-          ******* STANDALONE TYPES BREAKDOWN CHART *****
-          *******                                  *****
-          <div id='typesChart'>
-            <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
-          </div>
-          <div id='typesChartCaption'>
-            <span class='taxonChartCaption'>Click a slice or legend to show records of that type.</span><br/>
-          </div>
-          -->
-
-          <!--
-          *******                                  *****
-          ******* STANDALONE STATE BREAKDOWN CHART *****
-          *******                                  *****
-          <div id='statesChart'>
-            <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
-          </div>
-          <div id='statesChartCaption' style='visibility:hidden;'>
-            <span class='taxonChartCaption'>Click a slice or legend to learn more about the institution.</span><br/>
-          </div>
-          -->
-
-          <!--
-          *******                                                  *****
-          ******* STANDALONE SPECIMEN ACCUMULATION BREAKDOWN CHART *****
-          *******                                                  *****
-          <div id='recordsAccumChart'>
-            <img class='taxon-loading' alt='loading...' src='http://collections.ala.org.au/images/ala/ajax-loader.gif'/>
-          </div>
-          <div id='recordsAccumChartCaption'>
-            <span id='toggleAccumChart' class="resetChart" style="margin-left:200px;" onclick='toggleLogScale()'>Use linear scale</span>
-          </div>
-          <div id="raJson"></div>
-          -->
-
-
         </div>
-        
+
         <cl:lastUpdated date="${instance.lastUpdated}"/>
 
       </div><!--close section-->
@@ -221,18 +155,40 @@
 
 <script type="text/javascript">
 /************************************************************\
-* Fire chart loading
+* Charts
 \************************************************************/
-// define biocache server
-biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
-biocacheRecordsUrl = "${ConfigurationHolder.config.biocache.records.url}";
-useNewBiocache = ${ConfigurationHolder.config.useNewBiocache == 'true'};
-
+// configure the charts
+var facetChartOptions = {
+    /* base url of the collectory */
+    serverUrl: "${ConfigurationHolder.config.grails.serverURL}",
+    /* base url of the biocache */
+    biocacheUrl: "${ConfigurationHolder.config.biocache.baseURL}",
+    /* support click-thru to records subset - default is true */
+    clickThru: true,
+    /* support drill down into chart - default is false */
+    interactive: true,
+    /* a uid or list of uids to chart - either this or query must be present */
+    instanceUid: "${instance.uid}",
+    /* a query to set the scope of the records */
+    //query: 'state:"Tasmania"',
+    /* the id of the div to create the charts in */
+    targetDivId: "charts",
+    /* the jQuery selector for the element to write the total number of records */
+    totalRecordsSelector: "span#totalRecords",
+    /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
+    charts: ['institution_uid','country','state','species_group','assertions','type_status','state_conservation'],
+    /* override default options for individual charts */
+    state_conservation: {chartType: 'column', width: 450, title: 'By state conservation status'},
+    species_group: {title: 'By higher-level group', ignore: ['Animals']},
+    state: {ignore: ['Unknown1']},
+    type_status: {ignore: ['notatype']}
+}
+// load the packages
 google.load("visualization", "1", {packages:["corechart"]});
+// make it so
 google.setOnLoadCallback(function() {
-    loadHubCharts("${ConfigurationHolder.config.grails.serverURL}","${instance.uid}");
+    loadFacetChartsDirect(facetChartOptions);
 });
-//google.setOnLoadCallback(hubChartsOnLoadCallback);
 
 </script>
 

@@ -87,21 +87,15 @@ class PublicController {
         def uid = params.uid
 
         def baseUrl = ConfigurationHolder.config.biocache.baseURL
-        def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + uid
-        if (ConfigurationHolder.config.useNewBiocache == 'true') {
-            url = baseUrl + ConfigurationHolder.config.biocache.occurrences.json + "?q=" +
-                    uid.tokenize(',').collect({ fieldNameForSearch(it) + ":" + it}).join(' OR '.encodeAsURL())
-        }
-        //println "biocache occurrences url = " + url
+        def url = baseUrl + ConfigurationHolder.config.biocache.occurrences.json + "?q=" +
+             uid.tokenize(',').collect({ fieldNameForSearch(it) + ":" + it}).join(' OR '.encodeAsURL())
 
         def conn = new URL(url).openConnection()
         try {
             conn.setConnectTimeout(10000)
             conn.setReadTimeout(50000)
-            //conn.setRequestProperty('Connection','close')
             def json = conn.content.text
-            //println json
-            def searchResult = JSON.parse(json)?.searchResult ?: JSON.parse(json)
+            def searchResult = JSON.parse(json)
 
             // build map of facets
             def facets = [:]

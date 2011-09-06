@@ -1,13 +1,10 @@
-/*------------------------- TAXA BREAKDOWN CHARTS ------------------------------*/
+/*------------------------- RECORD BREAKDOWN CHARTS ------------------------------*/
 
 var instanceUid;
 var taxaThreshold;
 // the server base url
 var baseUrl;
-var biocacheUrl = "http://biocache.ala.org.au/";  // should be overriden from config by the calling page
-/* temp */
-var useNewBiocache = false;
-var biocacheRecordsUrl;
+var biocacheUrl = "http://biocache.ala.org.au/";  // should be overridden from config by the calling page
 
 var taxaChartOptions = {
     width: 400,
@@ -19,110 +16,6 @@ var taxaChartOptions = {
     legend: "left"
 };
 
-var genericChartOptions = {
-    width: 500,
-    height: 350,
-    chartArea: {left:0, top:30, width:"100%", height: "70%"},
-    is3D: false,
-    titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
-    sliceVisibilityThreshold: 0,
-    legend: "right"
-};
-
-function loadHubCharts(serverUrl, uid) {
-    var url = serverUrl + "/public/biocacheRecords.json?uid=" + uid;
-    $.getJSON(url, function(data) {
-        loadGenericFacetsCharts(data);
-    });
-}
-/*********************************************************************\
-* Loads charts based on the facets available in the biocache breakdown.
-* - does not require any markup other than div#charts element
-\*********************************************************************/
-function loadGenericFacetsCharts(dataTableMap) {
-    var pieCharts = ['institution_uid','country','state','species_group','assertions'];
-    $.each(pieCharts, function(index, value) {
-        if (dataTableMap[value] != undefined) {
-            buildGenericPieChart(value,dataTableMap[value]);
-        }
-    });
-    var columnCharts = ['state_conservation'];
-    $.each(columnCharts, function(index, value) {
-        if (dataTableMap[value] != undefined) {
-            buildGenericColumnChart(value,dataTableMap[value]);
-        }
-    });
-}
-/************************************************************\
-* Create and show a generic pie chart
-\************************************************************/
-function buildGenericPieChart(name, data) {
-
-    // create the data table
-    var dataTable = new google.visualization.DataTable(data,0.6);
-
-    // create the container
-    var $container = $("<div id='" + name + "'></div>");
-    $('div#charts').append($container);
-
-    // create the chart
-    var chart = new google.visualization.PieChart(document.getElementById(name));
-
-    // inject the data
-    var options = $.extend({}, genericChartOptions);
-    options.title = "By " + dataTable.getColumnLabel(0);
-    chart.draw(dataTable, options);
-
-    // setup a click handler
-    google.visualization.events.addListener(chart, 'select', function() {
-        // find out what they clicked
-        var id = dataTable.getValue(chart.getSelection()[0].row,0);
-
-        // get the context uid
-        var contextUid = dataTable.getTableProperty('uid');
-
-        var searchUrl = biocacheRecordsUrl + "occurrences/search?q=" + buildQueryString(contextUid) +
-                "&fq=" + name + ":" + id;
-
-        document.location = searchUrl;
-    });
-}
-/************************************************************\
-* Create and show a generic column chart
-\************************************************************/
-function buildGenericColumnChart(name, data) {
-
-    // create the data table
-    var dataTable = new google.visualization.DataTable(data,0.6);
-
-    // create the container
-    var $container = $("<div id='" + name + "'></div>");
-    $('div#charts').append($container);
-
-    // create the chart
-    var chart = new google.visualization.ColumnChart(document.getElementById(name));
-
-    // inject the data
-    var options = $.extend({}, genericChartOptions);
-    options.title = "By " + dataTable.getColumnLabel(0);
-    options.chartArea = {left:60, top:30, width:"90%", height: "70%"};
-    chart.draw(dataTable, options);
-
-    // setup a click handler
-    google.visualization.events.addListener(chart, 'select', function() {
-        // find out what they clicked
-        var id = dataTable.getValue(chart.getSelection()[0].row,0);
-
-        // get the context uid
-        var contextUid = dataTable.getTableProperty('uid');
-
-        var searchUrl = biocacheRecordsUrl + "occurrences/search?q=" + buildQueryString(contextUid) +
-                "&fq=" + name + ":" + id;
-
-        document.location = searchUrl;
-    });
-
-}
 /************************************************************\
 * Ajax request for taxa breakdown
 \************************************************************/
@@ -182,14 +75,8 @@ function drawTaxonChart(dataTable) {
     if (scope == "genus" && rank == "species") {
       name = dataTable.getTableProperty('name') + " " + name;
     }
-    var recordsLinkUrl;
-    if (useNewBiocache) {
-        recordsLinkUrl = biocacheRecordsUrl + "occurrences/search?q=" + buildQueryString(instanceUid) +
+    var recordsLinkUrl = biocacheUrl + "occurrences/search?q=" + buildQueryString(instanceUid) +
                 "&fq=" + rank + ":" + name;
-    }
-    else {
-        recordsLinkUrl = biocacheUrl + "occurrences/searchForUID?q=" + instanceUid + "&fq=" + rank + ":" + name;
-    }
     // drill down unless already at species
     if (rank != "species") {
       $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="' + baseUrl + '/images/ala/ajax-loader.gif"/>');
@@ -261,18 +148,9 @@ function drawDecadeChart(decadeData, uid, options) {
     if (decade != 'earlier' && decade.length > 3) {
         decade = decade.substr(0,4);
         var dateTo = addDecade(decade);
-        var searchUrl;
-        if (useNewBiocache) {
-            var dateRange = "occurrence_year:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
-            searchUrl = biocacheRecordsUrl + "occurrences/search?q=" + buildQueryString(uid) + "&fq=" + dateRange;
-        }
-        else {
-            var dateRange = "occurrence_date:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
-            // eg. occurrence_date:[1990-01-01T12:00:00Z%20TO%202000-01-01T12:00:00Z]
-            searchUrl = biocacheUrl + "occurrences/searchForUID?q=" +
-                uid + "&fq=" + dateRange;
-        }
-        document.location.href = searchUrl;
+        var dateRange = "occurrence_year:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
+        document.location.href = biocacheUrl + "occurrences/search?q=" + buildQueryString(uid) +
+                "&fq=" + dateRange;
       }
     });
     vis.draw(dataTable, decadeChartOptions);

@@ -1,515 +1,235 @@
-/**
- * scripts for charts that make direct jsonp calls to biocache services
- */
+/*------------------------- RECORD BREAKDOWN CHARTS ------------------------------*/
 
-/*******                                   *****
- *******       TAXON BREAKDOWN CHART       *****
- *******                                   *****/
+// the server base url
+var baseUrl;
+var biocacheUrl = "http://biocache.ala.org.au/";  // should be overridden from config by the calling page
 
-var taxaBreakdownUrl = "http://ala-bie1.vm.csiro.au:8080/biocache-service/breakdown/institutions/dp20";
-/************************************************************\
-*
-\************************************************************/
-function jpLoadTaxonChart(uid, name, rank) {
-  var url = taxaBreakdownUrl + "/rank/" + rank;
-  if (name != undefined) {
-    url = url + "/name/" + name;
-  }
-  url = url + ".json";
-  $.ajax({
-    url: url,
-    dataType: 'jsonp',
-    error: function(jqXHR, textStatus, errorThrown) {
-      alert(textStatus + ": " + errorThrown);
-    },
-    success: function(data) {
-      var dataTable = jpBuildDataTable(data, name, rank);
-      jpDrawTaxonChart(dataTable)
-    }
-  });
+var taxaChartOptions = {
+    width: 400,
+    height: 400,
+    chartArea: {left:0, top:30, width:"90%", height: "75%"},
+    is3D: false,
+    titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
+    sliceVisibilityThreshold: 0,
+    legend: "left"
+};
+
+var genericChartOptions = {
+    width: 500,
+    height: 350,
+    chartArea: {left:0, top:30, width:"100%", height: "70%"},
+    is3D: true,
+    titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
+    sliceVisibilityThreshold: 0,
+    legend: "right"
+};
+/*
+*//********************************************************************************\
+* Ajax request for charts based on the facets available in the biocache breakdown.
+\********************************************************************************//*
+function loadFacetCharts(chartOptions) {
+    if (chartOptions.serverUrl != undefined) { baseUrl = chartOptions.serverUrl; }
+    if (chartOptions.biocacheUrl != undefined) { biocacheUrl = chartOptions.biocacheUrl; }
+    var url = baseUrl + "/public/biocacheRecords.json?uid=" + chartOptions.instanceUid;
+    $.getJSON(url, function(data) {
+        loadGenericFacetsCharts(data, chartOptions);
+    });
 }
-/************************************************************\
-* Converts biocache json to Google VIS DataTable
-\************************************************************/
-function jpBuildDataTable(data, name, rank) {
-  var table = new google.visualization.DataTable();
-  table.addColumn('string', data.rank);
-  table.addColumn('number', 'count');
-
-  if (data.taxa == undefined) {
-    alert("no data");
-  }
-  for (var i = 0; i < data.taxa.length; i++) {
-    table.addRow([data.taxa[i].label,data.taxa[i].count]);
-  }
-  table.setTableProperty('rank', data.rank);
-  if (name == undefined) {
-    table.setTableProperty('scope', 'all');
-  } else {
-    table.setTableProperty('name', name);
-  }
-  return table
-}
-/************************************************************\
-* Draw the chart
-\************************************************************/
-function jpDrawTaxonChart(dataTable) {
-  var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
-  var options = {
-      width: 400,
-      height: 400,
-      chartArea: {left:0, top:30, width:"90%", height: "75%"},
-      is3D: false,
-      titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
-      sliceVisibilityThreshold: 0,
-      legend: "left"
-  };
-  if (dataTable.getTableProperty('scope') == "all") {
-    options.title = "Records by " + dataTable.getTableProperty('rank');
-  } else {
-    options.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank');
-  }
-  // only set the reset link text the first time in
-  if ($('span#resetTaxonChart').html() == 'Reset') {
-      $('span#resetTaxonChart').html("Reset to " + dataTable.getTableProperty('rank'));
-  }
-  google.visualization.events.addListener(chart, 'select', function() {
-    var rank = dataTable.getTableProperty('rank');
-    var name = dataTable.getValue(chart.getSelection()[0].row,0);
-    // add genus to name if we are at species level
-    var scope = dataTable.getTableProperty('scope');
-    if (scope == "genus" && rank == "species") {
-      name = dataTable.getTableProperty('name') + " " + name;
-    }
-    // drill down unless already at species
-    if (rank != "species") {
-      $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="http://collections.ala.org.au/images/ala/ajax-loader.gif"/>');
-      jpLoadTaxonChart('dp20', dataTable.getValue(chart.getSelection()[0].row,0), dataTable.getTableProperty('rank'));
-    }
-    // show reset link
-    $('span#resetTaxonChart').css('visibility','visible');
-  });
-
-  chart.draw(dataTable, options);
-
-  // show taxon caption
-  $('div#taxonChartCaption').css('visibility', 'visible');
-}
-/************************************************************\
-*
-\************************************************************/
-function jpResetTaxonChart() {
-  $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="http://collections.ala.org.au/images/ala/ajax-loader.gif"/>');
-  jpLoadTaxonChart(instanceUid, null, 'phylum');
-  $('span#resetTaxonChart').css('visibility','hidden');
-}
-
-/*******                                   *****
- *******       TYPES BREAKDOWN CHART       *****
- *******                                   *****/
-
-var priorityOfTypes = ['holotype','lectotype','neotype','syntype','paratype','allotype','topotype','paralectotype','cotype','hapantotype','allolectotype','paraneotype'];
-function drawTypesBreakdown(data) {
-  var types = data.fieldResult;
-  types.sort(typeSorter);
-  // build data table
-  var table = new google.visualization.DataTable();
-  table.addColumn('string', 'Type');
-  table.addColumn('number', 'Number of records');
-  for (var i = 0; i < types.length; i++) {
-    var label = types[i].label;
-    if (label == 'type') {label = 'unknown type';}
-    if (label != 'notatype') {
-      table.addRow([label,types[i].count]);
-    }
-  }
-
-  // chart options
-  var options = {
-      width: 510,
-      height: 280,
-      chartArea: {left:0, top:60, width:"100%", height: "90%"},
-      title: 'Records by type status',
-      titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
-      sliceVisibilityThreshold: 0,
-      legend: "right"
-  };
-
-  // create chart
-  var chart = new google.visualization.PieChart(document.getElementById('typesChart'));
-
-  // selection actions
-  google.visualization.events.addListener(chart, 'select', function() {
-    var name = table.getValue(chart.getSelection()[0].row,0);
-    // reverse any presentation transforms
-    if (name == 'unknown type') {name = 'type';}
-    window.location.href = "http://ozcam-demo.ala.org.au:8080/occurrences/search?q=*:*&fq=type_status:" + name;
-  });
-
-  // draw
-  chart.draw(table, options);
-}
-
-function typeSorter(a,b) {
-  // assign a rank to each
-  var aRank = 100;
-  var bRank = 100;
-  for (var i = 0; i < priorityOfTypes.length; i++) {
-    if (priorityOfTypes[i] == a.label) { aRank = i;}
-    if (priorityOfTypes[i] == b.label) { bRank = i;}
-  }
-  return aRank - bRank;
-}
-
-
-/*******                                   *****
- *******       STATE BREAKDOWN CHART       *****
- *******                                   *****/
-
-function drawStatesBreakdown(data) {
-  var drs = data.fieldResult;
-  // build data table
-  var table = new google.visualization.DataTable();
-  table.addColumn('string', 'Type');
-  table.addColumn('number', 'Number of records');
-  for (var i = 0; i < drs.length; i++) {
-    var label = drs[i].label;
-    table.addRow([label,drs[i].count]);
-  }
-
-  // chart options
-  var options = {
-      width: 510,
-      height: 280,
-      chartArea: {left:0, top:60, width:"100%", height: "90%"},
-      title: 'Records by state',
-      titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
-      sliceVisibilityThreshold: 0,
-      legend: "right"
-  };
-
-  // create chart
-  var chart = new google.visualization.PieChart(document.getElementById('statesChart'));
-
-  // selection actions
-  google.visualization.events.addListener(chart, 'select', function() {
-    var name = table.getValue(chart.getSelection()[0].row,0);
-    window.location.href = "http://ozcam-demo.ala.org.au:8080/occurrences/search?q=*:*&fq=state:" + name;
-  });
-
-  // draw
-  chart.draw(table, options);
-}
-
-
-/*******                                      *****
- *******    INSTITUTION BREAKDOWN CHART       *****
- *******                                      *****/
-
-var chart;
-var instBreakdownJson = {empty: true};
-var topLevel = true;
-var instTable;
-function loadInstChart() {
-  //var url = biocacheServicesUrl + "occurrences/data-provider/" + instanceUid + ".json?pageSize=0";
-  //var oldUrl = biocacheUrl + "occurrences/searchForUID.json?pageSize=0&q=" + instanceUid;
-  if (instBreakdownJson.empty) {
-    // load json one time only
-    var url = "http://collections.ala.org.au/public/recordsByCollectionByInstitution.json";
-    $.ajax({
-        url: url,
-        dataType: 'jsonp',
-        success: function(data) {
-          instBreakdownJson = data.breakdown;
-          drawInstitutionBreakdown();
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          alert(textStatus + ": " + errorThrown);//$('div#instChart').html(textStatus);
+*//*********************************************************************\
+* Loads charts based on the facets available in the biocache breakdown.
+* - does not require any markup other than div#charts element
+\*********************************************************************//*
+function loadGenericFacetsCharts(dataTableMap, chartOptions) {
+    $.each(chartOptions.charts, function(index, value) {
+        if (dataTableMap[value] != undefined) {
+            buildGenericFacetChart(value,dataTableMap[value], chartOptions[value]);
         }
     });
-  } else {
-    // json already loaded
-    drawInstitutionBreakdown();
-  }
 }
-function drawInstitutionBreakdown(data) {
-  topLevel = true;
-  var data = instBreakdownJson;
-  // build data table
-  instTable = new google.visualization.DataTable();
-  instTable.addColumn('string', 'Institution');
-  instTable.addColumn('number', 'Number of records');
-  for (var i = 0; i < data.length; i++) {
-    instTable.addRow([data[i].label,data[i].total]);
-  }
+*//************************************************************\
+* Create and show a generic facet chart
+\************************************************************//*
+function buildGenericFacetChart(name, data, options) {
 
-  // chart options
-  var options = {
-      width: 510,
-      height: 280,
-      chartArea: {left:0, top:60, width:"100%", height: "90%"},
-      title: 'Records by source institution',
-      titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
-      sliceVisibilityThreshold: 0,
-      legend: "right"
-  };
+    // determine chart type
+    var chartType = (options && options.chartType) ? options.chartType : 'pie';
 
-  // create chart
-  chart = new google.visualization.PieChart(document.getElementById('instChart'));
+    // create the data table
+    var dataTable = new google.visualization.DataTable(data,0.6);
 
-  // selection actions
-  google.visualization.events.addListener(chart, 'select', function() {
-    // only take an action if we are at the institution level
-    var label = instTable.getValue(chart.getSelection()[0].row,0);
-    if (topLevel) {
-      drawCollectionBreakdownChart(label);
-      topLevel = false;
-      // show reset link
-      $('span#resetInstChart').html("Return to institution view");
-      $('span#instChartCaption').html("Click a slice or legend to show records for the collection.");
-    } else {
-      var uid = instTable.getTableProperty('uid');
-      var instData;
-      for (var i = 0; i < instBreakdownJson.length; i++) {
-        if(instBreakdownJson[i].uid == instTable.getTableProperty('uid')) {
-          instData = instBreakdownJson[i].collections;
-        }
-      }
-      if (instData != undefined) {
-        var collectionUid;
-        for (var i = 0; i < instData.length; i++) {
-          if(instData[i].name == label) {
-            collectionUid = instData[i].uid;
-          }
-        }
-        window.location.href = "http://ozcam-demo.ala.org.au:8080/occurrences/search?q=*:*&fq=collection_code_uid:" + collectionUid;
-      }
+    // create the container
+    var $container = $("<div id='" + name + "'></div>");
+    $('div#charts').append($container);
+
+    // create the chart
+    var chart = (chartType == 'column') ?
+        new google.visualization.ColumnChart(document.getElementById(name)) :
+        new google.visualization.PieChart(document.getElementById(name));
+
+    // resolve the chart options
+    var opts = $.extend({}, genericChartOptions);
+    opts.title = "By " + dataTable.getColumnLabel(0);
+    if (chartType == 'column') {
+        opts.chartArea = {left:60, top:30, width:"90%", height: "70%"};
     }
-  });
+    opts = $.extend(true, opts, options);
+    chart.draw(dataTable, opts);
 
-  // draw
-  chart.draw(instTable, options);
+    // setup a click handler
+    google.visualization.events.addListener(chart, 'select', function() {
+        // find out what they clicked
+        var id = dataTable.getValue(chart.getSelection()[0].row,0);
 
-  // show caption
-  $('div#instChartCaptionBlock').css('visibility', 'visible');
+        // get the context uid
+        var contextUid = dataTable.getTableProperty('uid');
 
+        document.location = biocacheUrl + "occurrences/search?q=" + buildQueryString(contextUid) +
+                "&fq=" + name + ":" + id;
+    });
+}*/
+
+/*------------------------- DIRECT CALL TO BIOCACHE SERVICES ------------------------------*/
+var chartLabels = {
+    institution_uid: 'institution',
+    assertions: 'data assertion'
 }
 
-function drawCollectionBreakdownChart(label) {
-  // extract data section for name
-  var collData;
-  var name, uid;
-  for (var i = 0; i < instBreakdownJson.length; i++) {
-    if(instBreakdownJson[i].label == label) {
-      collData = instBreakdownJson[i].collections;
-      name = instBreakdownJson[i].name;
-      uid = instBreakdownJson[i].uid;
-    }
-  }
-  var nameLabel;
-  if (name == "Museum Victoria") {
-    nameLabel = name;
-  } else {
-    nameLabel = 'the ' + name;
-  }
-  // build data table
-  instTable = new google.visualization.DataTable();
-  instTable.addColumn('string', 'Collection');
-  instTable.addColumn('number', 'Number of records');
-  for (var i = 0; i < collData.length; i++) {
-    instTable.addRow([collData[i].name,collData[i].count]);
-  }
-  instTable.setTableProperty('uid',uid);
-  instTable.setTableProperty('name',name);
-  // chart options
-  var options = {
-      width: 510,
-      height: 280,
-      chartArea: {left:0, top:60, width:"100%", height: "90%"},
-      title: 'Records by collections for ' + nameLabel,
-      titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
-      sliceVisibilityThreshold: 0,
-      legend: "right"
-  };
-
-  // draw chart
-  chart.draw(instTable, options);
-
-  // set caption
-  $('div#instChartCaption').html("");
-
+var labelTransforms = {
+    institution_uid: 'lookupInstitutionName'
 }
 
-function resetInstChart() {
-  $('div#instChart').html('<img style="margin-left: 230px;margin-top: 140px;margin-bottom: 110px;" alt="loading..." src="http://collections.ala.org.au/images/ala/ajax-loader.gif"/>');
-  topLevel = true;
-  loadInstChart();
-  $('span#instChartCaption').html("Click a slice or legend to show the institution's collections.");
-  $('span#resetInstChart').html("");
-}
-
-
-/*******                                       *****
- *******  RECORDS ACCUMULATION BREAKDOWN CHART *****
- *******                                       *****/
-
-  var useStaticData = true;
-  var saveStaticData = false;
-  var accumChart;
-  var accumTable;
-  var accumOptions;
-  var rawData;
-  function loadRecordsAccumulation() {
-    var url = "http://collections.ala.org.au/public/recordsByDecadeByInstitution.json";
-    if (useStaticData) { url = url + "?static=true";}
-    if (saveStaticData) { url = url + "?save=true";}
+/********************************************************************************\
+* Ajax request for charts based on the facets available in the biocache breakdown.
+\********************************************************************************/
+function loadFacetChartsDirect(chartOptions) {
+    if (chartOptions.serverUrl != undefined) { baseUrl = chartOptions.serverUrl; }
+    if (chartOptions.biocacheUrl != undefined) { biocacheUrl = chartOptions.biocacheUrl; }
+    var chartsDiv = $('div#' + (chartOptions.targetDivId ? chartOptions.targetDivId : 'charts'));
+    chartsDiv.append($("<span>Loading charts...</span>"));
+    var query = chartOptions.query ? chartOptions.query : buildQueryString(chartOptions.instanceUid);
     $.ajax({
-      url: url,
+      url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=" + query,
       dataType: 'jsonp',
       error: function(jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
+        cleanUp();
       },
       success: function(data) {
-        drawRecordsAccumulation(data);
+
+          // clear loading message
+          chartsDiv.find('span').remove();
+
+          // update total if requested
+          if (chartOptions.totalRecordsSelector) {
+              $(chartOptions.totalRecordsSelector).html(addCommas(data.totalRecords));
+          }
+
+          // transform facet results into map
+          var facetMap = {};
+          $.each(data.facetResults, function(idx, obj) {
+              facetMap[obj.fieldName] = obj.fieldResult;
+          });
+
+          // draw the charts
+          loadGenericFacetsChartsDirect(query, facetMap, chartOptions, chartsDiv);
       }
     });
-  }
-  function drawRecordsAccumulation(data) {
-    rawData = data;
-    // build data table
-    accumTable = new google.visualization.DataTable();
-    accumTable.addRows(17);
-    accumTable.addColumn('string', 'Decade');
-    for (var i = 0; i < 17; i++) {
-      accumTable.setValue(i, 0, (i * 10 + 1850) + 's');
-    }
-    for (var i = 0; i < data.length; i++) {
-      accumTable.addColumn('number', data[i].label);
-      loadRecords(data[i], accumTable, i + 1);
-    }
+}
+/*********************************************************************\
+* Loads charts based on the facets available in the biocache breakdown.
+* - does not require any markup other than div#charts element
+\*********************************************************************/
+function loadGenericFacetsChartsDirect(query, facetMap, chartOptions, chartsDiv) {
+    $.each(chartOptions.charts, function(index, name) {
+        if (facetMap[name] != undefined) {
+            buildGenericFacetChartDirect(name,facetMap[name], chartOptions[name], query, chartsDiv, chartOptions);
+        }
+    });
+}
+/************************************************************\
+* Create and show a generic facet chart
+\************************************************************/
+function buildGenericFacetChartDirect(name, data, options, query, chartsDiv, chartOptions) {
 
-    //$('div#raJson').html(accumTable.toJSON());
+    // determine chart type
+    var chartType = (options && options.chartType) ? options.chartType : 'pie';
 
-    // chart options
-    accumOptions = {
-        width: 650,
-        height: 340,
-        vAxis: {logScale: true, title: "num records (log scale)", format: "#,###,###"},
-        //vAxis: {logScale: false, title: "number of records", format: "#,###,###"},
-        chartArea: {left: 80, width:"55%"},
-        title: 'Accumulated records by decade',
-        titleTextStyle: {color: "#1775BA", fontName: 'Arial', fontSize: 18},
-        sliceVisibilityThreshold: 0,
-        legend: "right"
-    };
-
-    // create chart
-    accumChart = new google.visualization.LineChart(document.getElementById('recordsAccumChart'));
-
-    // selection actions
-    google.visualization.events.addListener(accumChart, 'select', function() {
-      var selection = accumChart.getSelection()[0];
-      var instData = rawData[selection.column - 1];
-      var search = (instData.uid.substr(0,2)=="in" ? "&fq=institution_code_uid:" : "&fq=collection_code_uid:") + instData.uid;
-      var searchUrl = "http://ozcam-demo.ala.org.au:8080/occurrences/search?q=*:*" + search;
-      if (selection.row != undefined) {
-        var decadeStart = selection.row * 10 + 1850;
-        var decadeEnd = selection.row * 10 + 1850 + 10;
-        searchUrl = searchUrl + "&fq=occurrence_date:[" + decadeStart + "-01-01T12:00:00Z%20TO%20" + decadeEnd + "-01-01T12:00:00Z]";
-      }
-      window.location.href = searchUrl;
+    // create the data table
+    var dataTable = new google.visualization.DataTable();
+    dataTable.addColumn('string', chartLabels[name] ? chartLabels[name] : name);
+    dataTable.addColumn('number','records');
+    $.each(data, function(i,obj) {
+        // filter any crap
+        if (options == undefined || options.ignore == undefined || $.inArray(obj.label, options.ignore) == -1) {
+            dataTable.addRow([obj.label, obj.count]);
+        }
     });
 
-    // draw
-    accumChart.draw(accumTable, accumOptions);
-  }
+    // create the container
+    var $container = $("<div id='" + name + "'></div>");
+    chartsDiv.append($container);
 
-  function loadRecords(inst, table, col) {
-    table.setValue(0, col , inst.d1850);
-    table.setValue(1, col , inst.d1860);
-    table.setValue(2, col , inst.d1870);
-    table.setValue(3, col , inst.d1880);
-    table.setValue(4, col , inst.d1890);
-    table.setValue(5, col , inst.d1900);
-    table.setValue(6, col , inst.d1910);
-    table.setValue(7, col , inst.d1920);
-    table.setValue(8, col , inst.d1930);
-    table.setValue(9, col , inst.d1940);
-    table.setValue(10, col , inst.d1950);
-    table.setValue(11, col , inst.d1960);
-    table.setValue(12, col , inst.d1970);
-    table.setValue(13, col , inst.d1980);
-    table.setValue(14, col , inst.d1990);
-    table.setValue(15, col , inst.d2000);
-    table.setValue(16, col , inst.d2010);
-  }
+    // create the chart
+    var chart = (chartType == 'column') ?
+        new google.visualization.ColumnChart(document.getElementById(name)) :
+        new google.visualization.PieChart(document.getElementById(name));
 
-  function toggleLogScale() {
-    if ($('span#toggleAccumChart').html() == "Use log scale") {
-      accumOptions.vAxis = {logScale: true, title: "num records (log scale)", format: "#,###,###"}
-      accumChart.draw(accumTable, accumOptions);
-      $('span#toggleAccumChart').html('Use linear scale');
-    } else {
-      accumOptions.vAxis = {logScale: false, title: "number of records", format: "#,###,###"}
-      accumChart.draw(accumTable, accumOptions);
-      $('span#toggleAccumChart').html('Use log scale');
+    // resolve the chart options
+    var opts = $.extend({}, genericChartOptions);
+    opts.title = "By " + dataTable.getColumnLabel(0);
+    if (chartType == 'column') {
+        opts.chartArea = {left:60, top:30, width:"90%", height: "70%"};
     }
-  }
+    opts = $.extend(true, opts, options);
+    chart.draw(dataTable, opts);
 
+    // kick off post-draw asynch actions
+    if (labelTransforms[name]) {
+        window[labelTransforms[name]](chart, dataTable, opts);
+    }
 
-/*******                                   *****
- *******    LOAD FACETS FOR ALL RECORDS    *****
- *******                                   *****/
+    // setup a click handler - if requested
+    if (chartOptions.clickThru) {
+        google.visualization.events.addListener(chart, 'select', function() {
+            // find out what they clicked
+            var uid = dataTable.getProperty(chart.getSelection()[0].row,0,'uid');
+            var id = uid ? uid: dataTable.getValue(chart.getSelection()[0].row,0);
 
-function loadFacetCharts() {
-    // bio-cache facets data
-    var url = biocacheServicesUrl + "occurrences/search.json?q=*:*&pageSize=0";
+            document.location = biocacheUrl + "occurrences/search?q=" + query +
+                    "&fq=" + name + ":" + id;
+        });
+    }
+}
+
+/*--------------------- LABEL TRANSFORMATION METHODS ----------------------*/
+var institutionNameCache;
+function lookupInstitutionName(chart, table, opts) {
     $.ajax({
-      url: url,
+      url: baseUrl + "/ws/institution",
       dataType: 'jsonp',
-      cache: false,
-      error: function(jqXHR, textStatus, errorThrown) {
-        alert(textStatus);
-      },
       success: function(data) {
-        //var facets = data.facetResults; // services version
-        var facets = data.facetResults;
-        var foundTypesData = false;
-        var foundStatesData = false;
-        for (var i = 0; i < facets.length; i++) {
-          if (facets[i].fieldName == 'type_status') {
-            drawTypesBreakdown(facets[i]);
-            foundTypesData = true;
+          var map = {};
+          $.each(data, function(i, obj) {
+              map[obj.uid] = obj.name;
+          });
+          for (var i = 0; i < table.getNumberOfRows(); i++) {
+              var uid = table.getValue(i,0);
+              table.setValue(i, 0, map[uid]);
+              table.setProperty(i, 0, 'uid', uid);
           }
-          if (facets[i].fieldName == 'state') {
-            drawStatesBreakdown(facets[i]);
-            foundStatesData = true;
-          }
-        }
-        if (!foundTypesData) {
-          $('div#typesChart').css('display', 'none');
-        }
-        if (!foundStatesData) {
-          $('div#statesChart').css('display', 'none');
-        }
+          chart.draw(table, opts);
       }
     });
-
 }
 
-
-/*******                                   *****
- *******      Specify charts to load       *****
- *******                                   *****/
-var biocacheServicesUrl = "http://ala-bie1.vm.csiro.au:8080/biocache-service/";
-
-function hubChartsOnLoadCallback() {
-
-  loadInstChart();
-
-  loadFacetCharts();
-
-  jpLoadTaxonChart("dp20",null,"phylum");  // start with all phyla
-
-  loadRecordsAccumulation();
+/*------------------------- UTILITIES ------------------------------*/
+function fieldNameForSearch(uid) {
+    switch (uid.substr(0,2)) {
+        case 'co': return 'collection_uid';
+        case 'in': return 'institution_uid';
+        case 'dr': return 'data_resource_uid';
+        case 'dp': return 'data_provider_uid';
+        case 'dh': return 'data_hub_uid';
+        default: return ""
+    }
 }
+

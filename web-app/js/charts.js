@@ -23,7 +23,19 @@ var genericChartOptions = {
     is3D: true,
     titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
     sliceVisibilityThreshold: 0,
-    legend: "right"
+    legend: "right",
+    chartType: "pie"
+};
+
+// defaults for individual facet charts
+var individualChartOptions = {
+    state_conservation: {chartType: 'column', width: 450, chartArea: {left:60, height: "58%"},
+        title: 'By state conservation status', hAxis: {slantedText: true}},
+    occurrence_year: {chartType: 'column', width: 450, chartArea: {left:60, height: "65%"}, hAxis: {slantedText: true}},
+    species_group: {title: 'By higher-level group', ignore: ['Animals']},
+    state: {ignore: ['Unknown1']},
+    type_status: {title: 'By type status (as % of all type specimens)', ignore: ['notatype']},
+    assertions: {chartType: 'bar', chartArea: {left:170}}
 };
 
 /*----------------- FACET-BASED CHARTS USING DIRECT CALLS TO BIO-CACHE SERVICES ---------------------*/
@@ -43,7 +55,8 @@ var asyncTransforms = {
 }
 // synchronous transforms are applied to the json data before the data table is built
 var syncTransforms = {
-    occurrence_year: {method: 'transformDecadeData'}
+    occurrence_year: {method: 'transformDecadeData'}/*,
+    assertions: {method: 'expandCamelCase'}*/
 }
 
 /********************************************************************************\
@@ -102,17 +115,25 @@ function drawFacetCharts(data, chartOptions) {
     var query = chartOptions.query ? chartOptions.query : buildQueryString(chartOptions.instanceUid);
     $.each(chartOptions.charts, function(index, name) {
         if (facetMap[name] != undefined) {
-            buildGenericFacetChart(name,facetMap[name], chartOptions[name], query, chartsDiv, chartOptions);
+            buildGenericFacetChart(name, facetMap[name], query, chartsDiv, chartOptions);
         }
     });
 }
 /************************************************************\
 * Create and show a generic facet chart
 \************************************************************/
-function buildGenericFacetChart(name, data, options, query, chartsDiv, chartOptions) {
+function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
 
-    // determine chart type
-    var chartType = (options && options.chartType) ? options.chartType : 'pie';
+    // resolve chart label
+    var chartLabel = chartLabels[name] ? chartLabels[name] : name;
+
+    // resolve the chart options
+    var opts = $.extend({}, genericChartOptions);
+    opts.title = "By " + chartLabel;  // default title
+    var individualOptions = individualChartOptions[name] ? individualChartOptions[name] : {};
+    // merge generic, individual and user options
+    opts = $.extend(true, {}, opts, individualOptions, chartOptions[name]);
+    //Dumper.alert(opts);
 
     // optionally transform the data
     var xformedData = data;
@@ -122,12 +143,17 @@ function buildGenericFacetChart(name, data, options, query, chartsDiv, chartOpti
 
     // create the data table
     var dataTable = new google.visualization.DataTable();
-    dataTable.addColumn('string', chartLabels[name] ? chartLabels[name] : name);
+    dataTable.addColumn('string', chartLabel);
     dataTable.addColumn('number','records');
     $.each(xformedData, function(i,obj) {
         // filter any crap
-        if (options == undefined || options.ignore == undefined || $.inArray(obj.label, options.ignore) == -1) {
-            dataTable.addRow([obj.label, obj.count]);
+        if (opts == undefined || opts.ignore == undefined || $.inArray(obj.label, opts.ignore) == -1) {
+            if (detectCamelCase(obj.label)) {
+                dataTable.addRow([{v: obj.label, f: capitalise(expandCamelCase(obj.label))}, obj.count]);
+            }
+            else {
+                dataTable.addRow([obj.label, obj.count]);
+            }
         }
     });
 
@@ -144,20 +170,15 @@ function buildGenericFacetChart(name, data, options, query, chartsDiv, chartOpti
     }
 
     // specify the type (for css tweaking)
-    $container.addClass(chartType == 'column' ? 'column' : 'pie');
+    $container.addClass(opts.chartType);
             
     // create the chart
-    var chart = (chartType == 'column') ?
-        new google.visualization.ColumnChart(document.getElementById(name)) :
-        new google.visualization.PieChart(document.getElementById(name));
-
-    // resolve the chart options
-    var opts = $.extend({}, genericChartOptions);
-    opts.title = "By " + dataTable.getColumnLabel(0);
-    if (chartType == 'column') {
-        opts.chartArea = {left:60, top:30, width:"90%", height: "70%"};
+    var chart;
+    switch (opts.chartType) {
+        case 'column': chart = new google.visualization.ColumnChart(document.getElementById(name)); break;
+        case 'bar': chart = new google.visualization.BarChart(document.getElementById(name)); break;
+        default: chart = new google.visualization.PieChart(document.getElementById(name)); break;
     }
-    opts = $.extend(true, opts, options);
 
     chart.draw(dataTable, opts);
 
@@ -173,14 +194,10 @@ function buildGenericFacetChart(name, data, options, query, chartsDiv, chartOpti
             // default facet value is the name selected
             var id = dataTable.getValue(chart.getSelection()[0].row,0);
 
-            // this is overridden if the uid property has been set
-            var uid = dataTable.getProperty(chart.getSelection()[0].row,0,'uid');
-            if (uid) { id = uid; }
-
             // build the facet query
             var facetQuery = name + ":" + id;
 
-            // the whole facet query can be overridden for date ranges
+            // the facet query can be overridden for date ranges
             if (name == 'occurrence_year') {
                 if (id.startsWith('before')) {
                     facetQuery = "occurrence_year:[*%20TO%20" + "1850" + "-01-01T12:00:00Z]";
@@ -216,6 +233,16 @@ function transformDecadeData(data) {
     return transformedData;
 }
 /*--------------------- LABEL TRANSFORMATION METHODS ----------------------*/
+function detectCamelCase(name) {
+    return /[a-z][A-Z]/.test(name);
+}
+function expandCamelCase(name) {
+    return name.replace(/([a-z])([A-Z])/g, function(s, str1, str2){return str1 + " " + str2.toLowerCase();});
+}
+/* capitalises the first letter of the passed string */
+function capitalise(item) {
+    return item.replace(/^./, function(str){ return str.toUpperCase(); })
+}
 function lookupEntityName(chart, table, opts, entity) {
     var uidList = [];
     for (var i = 0; j = table.getNumberOfRows(), i < j; i++) {
@@ -227,8 +254,7 @@ function lookupEntityName(chart, table, opts, entity) {
       success: function(data) {
           for (var i = 0;j + table.getNumberOfRows(), i < j; i++) {
               var uid = table.getValue(i,0);
-              table.setValue(i, 0, data[uid]);
-              table.setProperty(i, 0, 'uid', uid);
+              table.setCell(i, 0, uid, data[uid]);
           }
           chart.draw(table, opts);
       },

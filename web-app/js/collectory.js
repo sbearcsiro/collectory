@@ -1,185 +1,30 @@
-/*------------------------- RECORD BREAKDOWN CHARTS ------------------------------*/
-
-var instanceUid;
-var taxaThreshold;
-// the server base url
-var baseUrl;
-var biocacheUrl = "http://biocache.ala.org.au/";  // should be overridden from config by the calling page
-
-var taxaChartOptions = {
-    width: 400,
-    height: 400,
-    chartArea: {left:0, top:30, width:"90%", height: "75%"},
-    is3D: false,
-    titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
-    sliceVisibilityThreshold: 0,
-    legend: "left"
-};
-
 /************************************************************\
-* Ajax request for taxa breakdown
+* Build phrase with num records and set to elements with id = numBiocacheRecords
 \************************************************************/
-function loadTaxonChart(serverUrl, uid, threshold, options) {
-  instanceUid = uid;
-  taxaThreshold = threshold;
-  baseUrl = serverUrl;
-  setChartOptions(taxaChartOptions, options);
-  var taxonUrl = baseUrl + "/public/taxonBreakdown/" + uid +
-          "?threshold=" + threshold;
-  $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
-}
-/************************************************************\
-* Ajax request for rank breakdown
-\************************************************************/
-function loadTaxonChartByRank(uid, name, rank) {
-  var taxonUrl = baseUrl + "/public/rankBreakdown/" + uid +
-          "?name=" + name +
-          "&rank=" + rank;
-  $.get(taxonUrl, {}, taxonBreakdownRequestHandler);
-}
-/************************************************************\
-* Handler for taxa breakdown - hides chart if no data
-\************************************************************/
-function taxonBreakdownRequestHandler(response) {
-  if (response.error == undefined) {
-    var data = new google.visualization.DataTable(response);
-    if (data.getNumberOfRows() > 0) {
-      drawTaxonChart(data);
-    } else {
-        // no data
-        $('div#taxonChart').css("display","none");
-        $('div#taxonChartCaption').css("display","none");
-    }
-  } else {
-    // an error occurred
-    $('div#taxonChart').css("display","none");
-    $('div#taxonChartCaption').css("display","none");
+function setNumbers(totalBiocacheRecords) {
+  var recordsClause = "";
+  switch (totalBiocacheRecords) {
+    case 0: recordsClause = "No records"; break;
+    case 1: recordsClause = "1 record"; break;
+    default: recordsClause = addCommas(totalBiocacheRecords) + " records";
   }
+  $('#numBiocacheRecords').html(recordsClause);
 }
 /************************************************************\
-* Draw the chart
+* Add commas to number strings
 \************************************************************/
-function drawTaxonChart(dataTable) {
-  var chart = new google.visualization.PieChart(document.getElementById('taxonChart'));
-
-  if (dataTable.getTableProperty('scope') == "all") {
-    taxaChartOptions.title = "Records by " + dataTable.getTableProperty('rank');
-  } else {
-    taxaChartOptions.title = dataTable.getTableProperty('name') + " records by " + dataTable.getTableProperty('rank');
-  }
-  google.visualization.events.addListener(chart, 'select', function() {
-    var rank = dataTable.getTableProperty('rank');
-    var name = dataTable.getValue(chart.getSelection()[0].row,0);
-    // add genus to name if we are at species level
-    var scope = dataTable.getTableProperty('scope');
-    if (scope == "genus" && rank == "species") {
-      name = dataTable.getTableProperty('name') + " " + name;
+function addCommas(nStr)
+{
+    nStr += '';
+    x = nStr.split('.');
+    x1 = x[0];
+    x2 = x.length > 1 ? '.' + x[1] : '';
+    var rgx = /(\d+)(\d{3})/;
+    while (rgx.test(x1)) {
+        x1 = x1.replace(rgx, '$1' + ',' + '$2');
     }
-    var recordsLinkUrl = biocacheUrl + "occurrences/search?q=" + buildQueryString(instanceUid) +
-                "&fq=" + rank + ":" + name;
-    // drill down unless already at species
-    if (rank != "species") {
-      $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="' + baseUrl + '/images/ala/ajax-loader.gif"/>');
-      loadTaxonChartByRank(instanceUid, dataTable.getValue(chart.getSelection()[0].row,0), dataTable.getTableProperty('rank'));
-    }
-    // show reset link if we were at top level
-    if ($('span#resetTaxonChart').html() == "") {
-      $('span#resetTaxonChart').html("Reset to " + dataTable.getTableProperty('rank'));
-    }
-    // show link to view records for the taxon group currently displayed
-    $('span#viewRecordsLink').html("<a class='recordsLink' href='" + recordsLinkUrl + "'>View records for " + name + "</a>");
-  });
-
-  //chart.draw(data, {width: 450, height: 300, title: 'My Daily Activities'});
-  chart.draw(dataTable, taxaChartOptions);
-
-  // show taxon caption
-  $('div#taxonChartCaption').css('visibility', 'visible');
-  $('div#taxonRecordsLink').css('visibility', 'visible');
+    return x1 + x2;
 }
-/************************************************************\
-*
-\************************************************************/
-function solrFieldNameForUid(uid) {
-    switch(uid.substring(0,2)) {
-        case 'co': return "collection_uid";
-        case 'in': return "institution_uid";
-        case 'dp': return "data_provider_uid";
-        case 'dr': return "data_resource_uid";
-        case 'dh': return "data_hub_uid";
-        default: return "";
-    }
-}
-/************************************************************\
-*
-\************************************************************/
-function resetTaxonChart() {
-  $('div#taxonChart').html('<img class="taxon-loading" alt="loading..." src="' + baseUrl + '/images/ala/ajax-loader.gif"/>');
-  loadTaxonChart(baseUrl, instanceUid, taxaThreshold);
-  $('span#resetTaxonChart').html("");
-  $('span#viewRecordsLink').html("<a href='" + biocacheUrl + "occurrences/searchForUID?q=" + instanceUid + "'>View all records</a>");
-}
-/*--(end)------------------ taxa breakdown charts ------------------------------*/
-
-
-/*------------------------ DECADE BREAKDOWN CHARTS -----------------------------*/
-var decadeChartOptions = {
-    width: 500,
-    height: 300,
-    chartArea: {left:50, top:30, width: "88%", height: "75%"},
-    title: "Additions by decade",
-    titleTextStyle: {color: "#555", fontName: 'Arial', fontSize: 15},
-    legend: "none"
-};
-/************************************************************\
-* Draw the chart
-\************************************************************/
-function drawDecadeChart(decadeData, uid, options) {
-  setChartOptions(decadeChartOptions, options);
-
-  var dataTable = new google.visualization.DataTable(decadeData,0.6);
-
-  if (dataTable.getNumberOfRows() > 0) {
-    var vis = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
-
-    google.visualization.events.addListener(vis, 'select', function() {
-    var decade = dataTable.getValue(vis.getSelection()[0].row,0);
-    // TODO: handle 'earlier' label
-    if (decade != 'earlier' && decade.length > 3) {
-        decade = decade.substr(0,4);
-        var dateTo = addDecade(decade);
-        var dateRange = "occurrence_year:[" + decade + "-01-01T12:00:00Z%20TO%20" + dateTo + "-01-01T12:00:00Z]";
-        document.location.href = biocacheUrl + "occurrences/search?q=" + buildQueryString(uid) +
-                "&fq=" + dateRange;
-      }
-    });
-    vis.draw(dataTable, decadeChartOptions);
-    // show caption
-    $('span.decadeChartCaption').css('visibility', 'visible');
-  } else {
-    // no data
-    $('div#decadeChart').css("display","none");
-  }
-}
-/************************************************************\
-* build records query handling multiple uids
-\************************************************************/
-function buildQueryString(uidStr) {
-    var str = "";
-    $.each(uidStr.split(','), function(index, value) {
-        str += solrFieldNameForUid(value) + ":" + value + " OR ";
-    });
-    return str.substring(0, str.length - 4);
-}
-/************************************************************\
-* increment year by a decade, eg 1990 -> 2000
-\************************************************************/
-function addDecade(from) {
-  var num = parseInt(from);
-  return num + 10;
-}
-/*--(end)----------------- decade breakdown charts -----------------------------*/
-
 /*----------------------------- RECORDS MAP ------------------------------------*/
 /************************************************************\
 * Draw the map and legend
@@ -198,135 +43,6 @@ function mapRequestHandler(response) {
   }
 }
 /*--(end)---------------------- records map ------------------------------------*/
-
-
-/*------------------------ GENERAL RECORDS & STATS -----------------------------*/
-/************************************************************\
-* Build phrase with num records and set to elements with id = numBiocacheRecords
-\************************************************************/
-function setNumbers(totalBiocacheRecords) {
-  var recordsClause = "";
-  switch (totalBiocacheRecords) {
-    case 0: recordsClause = "No records"; break;
-    case 1: recordsClause = "1 record"; break;
-    default: recordsClause = addCommas(totalBiocacheRecords) + " records";
-  }
-  $('#numBiocacheRecords').html(recordsClause);
-}
-/************************************************************\
-* Set options for a chart
-\************************************************************/
-function setChartOptions(globalOptions, options) {
-    // override with passed options
-    if (options != undefined) {
-        for (var key in options) {
-            if (options.hasOwnProperty(key)) {
-                globalOptions[key] = options[key];
-            }
-        }
-    }
-}
-/************************************************************\
-* Add commas to number strings
-\************************************************************/
-function addCommas(nStr)
-{
-    nStr += '';
-    x = nStr.split('.');
-    x1 = x[0];
-    x2 = x.length > 1 ? '.' + x[1] : '';
-    var rgx = /(\d+)(\d{3})/;
-    while (rgx.test(x1)) {
-        x1 = x1.replace(rgx, '$1' + ',' + '$2');
-    }
-    return x1 + x2;
-}
-/*--(end)----------------- general records & stats -----------------------------*/
-
-
-/************************************************************\
-*
-\************************************************************/
-function toggleRow( whichLayer ) {
-  var elem, vis;
-  if( document.getElementById ) // this is the way the standards work
-    elem = document.getElementById( whichLayer );
-  else if( document.all ) // this is the way old msie versions work
-      elem = document.all[whichLayer];
-  else if( document.layers ) // this is the way nn4 works
-    elem = document.layers[whichLayer];
-  vis = elem.style;
-  // if the style.display value is blank we try to figure it out here
-  if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
-    vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'table-row':'none';
-  vis.display = (vis.display==''||vis.display=='table-row')?'none':'table-row';
-}
-
-/************************************************************\
-*
-\************************************************************/
-function toggleLayer( whichLayer ) {
-  var elem, vis;
-  if( document.getElementById ) // this is the way the standards work
-    elem = document.getElementById( whichLayer );
-  else if( document.all ) // this is the way old msie versions work
-      elem = document.all[whichLayer];
-  else if( document.layers ) // this is the way nn4 works
-    elem = document.layers[whichLayer];
-  vis = elem.style;
-  // if the style.display value is blank we try to figure it out here
-  if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
-    vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'block':'none';
-  vis.display = (vis.display==''||vis.display=='block')?'none':'block';
-}
-
-/************************************************************\
-*
-\************************************************************/
-function toggleHelp(obj) {
-  node = findPrevious(obj.parentNode, 'td', 4);
-  var div;
-  if (node)
-    div = node.childNodes[0];
-  for(;div = div.nextSibling;) {
-    if (div.className && div.className == 'fieldHelp') {
-      vis = div.style;
-      // if the style.display value is blank we try to figure it out here
-      if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
-        vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'block':'none';
-      vis.display = (vis.display==''||vis.display=='block')?'none':'block';
-    }
-  }
-}
-
-/************************************************************\
-*
-\************************************************************/
-function findPrevious(o, tag, limit){
-  for(tag = tag.toLowerCase(); o = o.previousSibling;)
-      if(o.tagName && o.tagName.toLowerCase() == tag)
-          return o;
-      else if(limit && o == limit)
-          return null;
-  return null;
-}
-
-/************************************************************\
-*
-\************************************************************/
-  function anySelected(idOfSelect, message) {
-    var d = new Date();
-    var time = d.getHours();
-    var selected = document.getElementById(idOfSelect).selectedIndex;
-    if (selected == 0) {
-      alert(message);
-      return false;
-    } else {
-      document.getElementById('event').value = 'add';
-      return true;
-    }
-  }
-
 /************************************************************\
 *
 \************************************************************/

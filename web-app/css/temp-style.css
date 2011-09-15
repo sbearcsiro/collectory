@@ -259,6 +259,10 @@ div.result {
     cursor: pointer;
 }
 
+.under {
+    text-decoration: underline;
+}
+
 #navLinks ul {
     margin-left: 0;
     padding-right: 50px;

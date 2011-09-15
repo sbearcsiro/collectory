@@ -27,7 +27,10 @@
       });
     </script>
     <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+    <g:javascript library="jquery.ba-bbq.min"/>
+    <g:javascript library="jquery.jsonp-2.1.4.min"/>
     <g:javascript library="charts"/>
+    <g:javascript library="datadumper"/>
   </head>
   <body class="two-column-right">
     <div id="content">
@@ -76,7 +79,10 @@
         </g:if>
 
         <h2>Breakdown of specimen numbers</h2>
-          <p>There are <span id="totalRecords">Loading...</span> records in total.</p>
+        <p>There are <span id="totalRecords">Loading...</span> records in total.
+            <a href="${ConfigurationHolder.config.biocache.baseURL}/occurrences/search?q=data_hub_uid:${instance.uid}">View all records</a>
+            %{--&nbsp;&nbsp;&nbsp;<button type=button id="showTimings">Show timings</button>--}%
+        </p>
         <div id="charts" class="section vertical-charts">
         </div>
 
@@ -157,37 +163,58 @@
 /************************************************************\
 * Charts
 \************************************************************/
+$.ajaxSetup({cache: true});
 // configure the charts
 var facetChartOptions = {
     /* base url of the collectory */
-    serverUrl: "${ConfigurationHolder.config.grails.serverURL}",
+    collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+    /* base url of the biocache */
+    biocacheUrl: "${ConfigurationHolder.config.biocache.baseURL}",
+    /* support click-thru to records subset - default is true */
+    clickThru: true,
+    /* a uid or list of uids to chart - either this or query must be present */
+    instanceUid: "${instance.uid}",
+    /* a query to set the scope of the records */
+    //query: 'state:"Tasmania"',
+    /* the id of the div to create the charts in - defaults is 'charts' */
+    targetDivId: "charts",
+    /* the jQuery selector for the element to write the total number of records */
+    totalRecordsSelector: "span#totalRecords",
+    /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
+    charts: ['institution_uid','country','state','species_group','assertions','type_status',
+        'biogeographic_region','state_conservation','occurrence_year'],
+    /* override default options for individual charts */
+    assertions: {width:500, height: 400}
+}
+var taxonomyChartOptions = {
+    /* base url of the collectory */
+    collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
     /* base url of the biocache */
     biocacheUrl: "${ConfigurationHolder.config.biocache.baseURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* support drill down into chart - default is false */
-    interactive: true,
+    drillDown: true,
     /* a uid or list of uids to chart - either this or query must be present */
     instanceUid: "${instance.uid}",
     /* a query to set the scope of the records */
     //query: 'state:"Tasmania"',
-    /* the id of the div to create the charts in */
+    /* the id of the div to create the charts in - defaults is 'charts' */
     targetDivId: "charts",
-    /* the jQuery selector for the element to write the total number of records */
-    totalRecordsSelector: "span#totalRecords",
-    /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
-    charts: ['institution_uid','country','state','species_group','assertions','type_status','state_conservation'],
-    /* override default options for individual charts */
-    state_conservation: {chartType: 'column', width: 450, title: 'By state conservation status'},
-    species_group: {title: 'By higher-level group', ignore: ['Animals']},
-    state: {ignore: ['Unknown1']},
-    type_status: {ignore: ['notatype']}
+    /* threshold value to use for automagic rank selection - defaults to 55 */
+    threshold: 55,
+    /* taxonomic rank to use for initial breakdown - overrides threshold */
+    rank: 'phylum'
+    /* taxonomic name to use for initial breakdown - requires rank to be specified */
+    //name: 'Aves'
+    /* override default options */
 }
 // load the packages
 google.load("visualization", "1", {packages:["corechart"]});
 // make it so
 google.setOnLoadCallback(function() {
-    loadFacetChartsDirect(facetChartOptions);
+    loadTaxonomyChart(taxonomyChartOptions);
+    loadFacetCharts(facetChartOptions);
 });
 
 </script>

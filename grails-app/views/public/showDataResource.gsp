@@ -26,6 +26,8 @@
           });
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+        <g:javascript library="jquery.jsonp-2.1.4.min"/>
+        <g:javascript library="charts"/>
     </head>
     <body class="two-column-right">
       <div id="content">
@@ -147,13 +149,10 @@
             </g:if>
           </div>
           <g:if test="${instance.resourceType == 'records'}">
-              <div class="section vertical-charts">
+              <div id="recordsBreakdown" class="section vertical-charts">
                 <h3>Map of records</h3>
                 <cl:recordsMap/>
-                <h3>Records by taxonomic group</h3>
-                <cl:taxonChart uid="${instance.uid}"/>
-                <h3>Records by collection date</h3>
-                <cl:decadeChart/>
+                <div id="charts"></div>
               </div>
           </g:if>
           <cl:lastUpdated date="${instance.lastUpdated}"/>
@@ -252,7 +251,32 @@
       </div>
 
       <script type="text/javascript">
-        /************************************************************\
+          // configure the charts
+          var facetChartOptions = {
+              /* base url of the collectory */
+              collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+              /* base url of the biocache */
+              biocacheUrl: biocacheUrl,
+              /* a uid or list of uids to chart - either this or query must be present */
+              instanceUid: "${instance.uid}",
+              /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
+              charts: ['country','state','species_group','assertions','type_status',
+                  'biogeographic_region','state_conservation','occurrence_year']
+          }
+          var taxonomyChartOptions = {
+              /* base url of the collectory */
+              collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+              /* base url of the biocache */
+              biocacheUrl: biocacheUrl,
+              /* support drill down into chart - default is false */
+              drillDown: true,
+              /* a uid or list of uids to chart - either this or query must be present */
+              instanceUid: "${instance.uid}",
+              /* threshold value to use for automagic rank selection - defaults to 55 */
+              threshold: 25
+          }
+
+          /************************************************************\
         *
         \************************************************************/
         var queryString = '';
@@ -282,11 +306,36 @@
           // records
           if (${instance.resourceType == 'records'}) {
               // summary biocache data
-              var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
-              $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
+              $.ajax({
+                url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=data_resource_uid:${instance.uid}",
+                dataType: 'jsonp',
+                timeout: 20000,
+                complete: function(jqXHR, textStatus) {
+                    if (textStatus == 'timeout') {
+                        noData();
+                        alert('Sorry - the request was taking too long so it has been cancelled.');
+                    }
+                    if (textStatus == 'error') {
+                        noData();
+                        alert('Sorry - the records breakdowns are not available due to an error.');
+                    }
+                },
+                success: function(data) {
+                    // check for errors
+                    if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+                        noData();
+                    }
+                    else {
+                        setNumbers(data.totalRecords);
+                        facetChartOptions.response = data;
+                        // draw the charts
+                        drawFacetCharts(data, facetChartOptions);
+                    }
+                }
+              });
 
               // taxon chart
-              loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 25);
+              loadTaxonomyChart(taxonomyChartOptions);
 
               // records map
               var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
@@ -296,53 +345,16 @@
         /************************************************************\
         *
         \************************************************************/
-        function biocacheRecordsHandler(response) {
-          if (response.error == undefined) {
-            setNumbers(response.totalRecords);
-            drawDecadeChart(response.decades, "${instance.uid}");
-          } else {
+        function noData() {
             setNumbers(0);
-            $('div#decadeChart').css("display","none");
-          }
+            $('a.recordsLink').css('display','none');
+            $('#recordsBreakdown').css('display','none');
         }
-        /************************************************************\
-        * for testing
-        \************************************************************/
-        function simpleChart(decadeData) {
-          var json = '{"cols":[{"id":"","label":"","pattern":"","type":"string"},{"id":"","label":"","pattern":"","type":"number"}],"rows":[{"c":[{"v":"earlier","f":null},{"v":5,"f":null}]},{"c":[{"v":"1850s","f":null},{"v":13,"f":null}]},{"c":[{"v":"1860s","f":null},{"v":82,"f":null}]},{"c":[{"v":"1870s","f":null},{"v":306,"f":null}]},{"c":[{"v":"1880s","f":null},{"v":470,"f":null}]},{"c":[{"v":"1890s","f":null},{"v":2219,"f":null}]},{"c":[{"v":"1900s","f":null},{"v":5418,"f":null}]},{"c":[{"v":"1910s","f":null},{"v":10117,"f":null}]},{"c":[{"v":"1920s","f":null},{"v":5035,"f":null}]},{"c":[{"v":"1930s","f":null},{"v":3349,"f":null}]},{"c":[{"v":"1940s","f":null},{"v":4978,"f":null}]},{"c":[{"v":"1950s","f":null},{"v":15525,"f":null}]},{"c":[{"v":"1960s","f":null},{"v":44101,"f":null}]},{"c":[{"v":"1970s","f":null},{"v":58549,"f":null}]},{"c":[{"v":"1980s","f":null},{"v":59178,"f":null}]},{"c":[{"v":"1990s","f":null},{"v":47891,"f":null}]},{"c":[{"v":"2000s","f":null},{"v":8490,"f":null}]},{"c":[{"v":"2010s","f":null},{"v":1,"f":null}]}],"p":null}';
-          var dataTable = new google.visualization.DataTable(json);
-          var data = new google.visualization.DataTable();
-          data.addColumn('string', 'Year');
-          data.addColumn('number', 'Sales');
-          data.addColumn('number', 'Expenses');
-          data.addRows(4);
-          data.setValue(0, 0, '2004');
-          data.setValue(0, 1, 1000);
-          data.setValue(0, 2, 400);
-          data.setValue(1, 0, '2005');
-          data.setValue(1, 1, 1170);
-          data.setValue(1, 2, 460);
-          data.setValue(2, 0, '2006');
-          data.setValue(2, 1, 660);
-          data.setValue(2, 2, 1120);
-          data.setValue(3, 0, '2007');
-          data.setValue(3, 1, 1030);
-          data.setValue(3, 2, 540);
-          var chart = new google.visualization.ColumnChart(document.getElementById('decadeChart'));
-          chart.draw(dataTable, {width: 400, height: 240, title: 'Company Performance',
-                            hAxis: {title: 'Year', titleTextStyle: {color: 'red'}}
-                           });
-
-        }
-
         /************************************************************\
         *
         \************************************************************/
-
         // define biocache server
         biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
-        biocacheRecordsUrl = "${ConfigurationHolder.config.biocache.records.url}";
-        useNewBiocache = ${ConfigurationHolder.config.useNewBiocache == 'true'};
 
         google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(onLoadCallback);

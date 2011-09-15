@@ -308,14 +308,12 @@ class PublicController {
         response.addHeader("Cache-Control","no-store")
         def threshold = params.threshold ?: 20
         /* get taxon breakdown */
-        def taxonUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/taxa/${threshold}/${params.id}.json";
-        if (ConfigurationHolder.config.useNewBiocache == 'true') {
-            taxonUrl = ConfigurationHolder.config.biocache.baseURL +
+        def taxonUrl = ConfigurationHolder.config.biocache.baseURL +
                     ConfigurationHolder.config.biocache.breakdown.taxa + "?max=" + threshold
-            taxonUrl = taxonUrl.replaceFirst(/\{uid\}/, params.id ?: '')
-            taxonUrl = taxonUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
-        }
+        taxonUrl = taxonUrl.replaceFirst(/\{uid\}/, params.id ?: '')
+        taxonUrl = taxonUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
         //println "taxonUrl: " + taxonUrl
+
         def conn = new URL(taxonUrl).openConnection()
         def jsonResponse = null
         def breakdown = null

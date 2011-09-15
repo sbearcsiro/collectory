@@ -27,6 +27,8 @@
       });
     </script>
     <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+    <g:javascript library="jquery.jsonp-2.1.4.min"/>
+    <g:javascript library="charts"/>
   </head>
   <body class="two-column-right">
     <div id="content">
@@ -93,19 +95,14 @@
           </div>
         </g:if>
 
-        <g:if test="${ConfigurationHolder.config.ui.showChartsForInstitutions != 'false'}">
           <h2>Digitised records</h2>
           <div>
             <p style="padding-bottom:8px;"><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
             <cl:recordsLink entity="${instance}">Click to view records for the ${instance.name}.</cl:recordsLink>
           </div>
-          <div class="section vertical-charts">
-            <h3>Records by taxonomic group</h3>
-            <cl:taxonChart uid="${instance.descendantUids().join(',')}"/>
-            <h3>Records by collection date</h3>
-            <cl:decadeChart/>
+          <div id="recordsBreakdown" class="section vertical-charts">
+              <div id="charts"></div>
           </div>
-        </g:if>
 
         <cl:lastUpdated date="${instance.lastUpdated}"/>
 
@@ -180,7 +177,31 @@
     </div><!--close column-two-->
 
   </div><!--close content-->
-<script type="text/javascript">
+  <script type="text/javascript">
+      // configure the charts
+      var facetChartOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          /* base url of the biocache */
+          biocacheUrl: biocacheUrl,
+          /* a uid or list of uids to chart - either this or query must be present
+            (unless the facet data is passed in directly AND clickThru is set to false) */
+          instanceUid: "${instance.descendantUids().join(',')}",
+          /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
+          charts: ['country','state','species_group','assertions','type_status',
+              'biogeographic_region','state_conservation','occurrence_year']
+      }
+      var taxonomyChartOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          /* base url of the biocache */
+          biocacheUrl: biocacheUrl,
+          /* a uid or list of uids to chart - either this or query must be present */
+          instanceUid: "${instance.descendantUids().join(',')}",
+          /* threshold value to use for automagic rank selection - defaults to 55 */
+          threshold: 55,
+          rank: "${instance.startingRankHint()}"
+      }
 
 /************************************************************\
 * Actions when page is loaded
@@ -190,42 +211,42 @@ function onLoadCallback() {
   // stats
   //loadDownloadStats("${instance.uid}","${instance.name}", "1002");
 
-  var showStats = true;
-  if ("${ConfigurationHolder.config.ui.showChartsForInstitutions}" == "false") {
-    showStats = false;
-  }
+  // records
+  $.ajax({
+    url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=" + buildQueryString("${instance.descendantUids().join(',')}"),
+    dataType: 'jsonp',
+    timeout: 20000,
+    complete: function(jqXHR, textStatus) {
+        if (textStatus == 'timeout') {
+            noData();
+            alert('Sorry - the request was taking too long so it has been cancelled.');
+        }
+        if (textStatus == 'error') {
+            noData();
+            alert('Sorry - the records breakdowns are not available due to an error.');
+        }
+    },
+    success: function(data) {
+        // check for errors
+        if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+            noData();
+        }
+        else {
+            setNumbers(data.totalRecords);
+            // draw the charts
+            drawFacetCharts(data, facetChartOptions);
+        }
+    }
+  });
 
-  if (showStats) {
-    // summary biocache data
-    var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.descendantUids().join(',')}";
-    $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
-
-    // taxon chart
-    loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.descendantUids().join(',')}", 55);
-
-  }
-}
-/************************************************************\
-*
-\************************************************************/
-function biocacheRecordsHandler(response) {
-  if (response.error == undefined && response.totalRecords > 0) {
-    setNumbers(response.totalRecords);
-    drawDecadeChart(response.decades, "${instance.descendantUids().join(',')}");
-  } else {
-    setNumbers(0);
-    $('a.recordsLink').css("display","none");
-    $('div#decadeChart').css("display","none");
-    $('div.vertical-charts').css("display","none");
-  }
+  // taxon chart
+  loadTaxonomyChart(taxonomyChartOptions);
 }
 /************************************************************\
 *
 \************************************************************/
 // define biocache server
 biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
-biocacheRecordsUrl = "${ConfigurationHolder.config.biocache.records.url}";
-useNewBiocache = ${ConfigurationHolder.config.useNewBiocache == 'true'};
 
 google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(onLoadCallback);

@@ -51,7 +51,7 @@
                 <p><span class="category">Resource type:</span> ${fieldValue(bean: instance, field: "resourceType")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Collection website:</span> <a class="external_icon" target="_blank" href="${fieldValue(bean: instance, field: 'websiteUrl')}">${fieldValue(bean: instance, field: "websiteUrl")}</a></p>
+                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">

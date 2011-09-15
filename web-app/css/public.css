@@ -198,6 +198,17 @@ div.vertical-charts h3:first-child {
     margin-top: 15px;
 }
 
+#charts > div.pie {
+    margin-bottom: -50px;
+}
+
+#charts > div:last-child {
+    margin-bottom: 0;
+}
+
+#charts > div.pie, #charts > div.column, #charts > div.bar {
+    float:left;
+}
 /************************************************************\
 * Records maps
 \************************************************************/
@@ -212,6 +223,9 @@ img#mapLegend {
     padding-left: 10px;
 }
 
+#collectionRecordsMapContainer {
+    float:right;
+}
 /************************************************************\
 * Taxon charts
 \************************************************************/

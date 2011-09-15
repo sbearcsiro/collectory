@@ -80,17 +80,33 @@ class DataController {
         rfc1123Format.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    def renderJson = {json ->
-        if (params.callback) {
-            //render(contentType:'application/json', text: "${params.callback}(${json})")
-            render(contentType:'text/javascript', text: "${params.callback}(${json})", encoding: "UTF-8")
-        } else {
-            render json
+    def cacheAwareRender = { content, last, eTag ->
+        if (last) {
+            addLastModifiedHeader last
+        }
+        if (eTag) {
+            addETagHeader eTag
+        }
+        if (isNotModified(last, eTag)) {
+            //println "not modified"
+            notModified()
+        }
+        else {
+            //println "modified"
+            render content
         }
     }
 
-    def renderAsJson = {json ->
-        renderJson(json as JSON)
+    def renderJson = {json, last, eTag ->
+        if (params.callback) {
+            cacheAwareRender([contentType:'text/javascript', text: "${params.callback}(${json})", encoding: "UTF-8"], last, eTag)
+        } else {
+            cacheAwareRender json, last, eTag
+        }
+    }
+
+    def renderAsJson = {json, last, eTag ->
+        renderJson(json as JSON, last, eTag)
     }
 
     def addLocation(relativeUri) {
@@ -114,6 +130,10 @@ class DataController {
         render(status:200, text: text)
     }
 
+    def notModified = {
+        render(status: 304)
+    }
+    
     def notFound = { text ->
         render(status:404, text: text)
     }
@@ -138,6 +158,10 @@ class DataController {
 
     def addLastModifiedHeader = { when ->
         response.addHeader HttpHeaders.LAST_MODIFIED, rfc1123Format.format(when)
+    }
+
+    def addETagHeader = { eTag ->
+        response.addHeader HttpHeaders.ETAG, '"' + eTag + '"'
     }
 
     private capitalise(word) {
@@ -222,19 +246,66 @@ class DataController {
             def urlForm = params.entity
             def clazz = capitalise(urlForm)
             if (params.pg) {
+                // return specified entity
                 addContentLocation "/ws/${urlForm}/${params.pg.uid}"
-                addLastModifiedHeader params.pg.lastUpdated
-                render crudService."read${clazz}"(params.pg)
+                def eTag = (params.pg.uid + ":" + params.pg.lastUpdated).encodeAsMD5()
+
+                cacheAwareRender crudService."read${clazz}"(params.pg), params.pg.lastUpdated, eTag
+
             } else {
+                // return list of entities
                 addContentLocation "/ws/${urlForm}"
                 def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
                 def list = domain.list([sort:'name'])
                 list = filter(list)
+                def last = latestModified(list)
                 def detail = params.summary ? summary : brief
                 def summaries = list.collect(detail)
-                renderAsJson summaries
+                def eTag = summaries.toString().encodeAsMD5()
+
+                renderAsJson summaries, last, eTag
             }
         }
+    }
+
+    /**
+     * Supports caching. Tests whether the resource has been modified based on both last-modified
+     * date and eTags. Compares current state of resource with the appropriate request headers.
+     *
+     * @param last the timestamp representing when the resource was last modified
+     * @param eTag a calculated eTag for the resource
+     * @return true if the resource has not been modified (wrt the request)
+     */
+    def isNotModified(last, eTag) {
+        boolean modified = true
+        // compare 'last modified' with 'if modified since'
+        def since = request.getHeader(HttpHeaders.IF_MODIFIED_SINCE)
+        if (last && since) {
+            modified = rfc1123Format.parse(since) > last
+        }
+        // compare eTags
+        def match = request.getHeader(HttpHeaders.IF_NONE_MATCH)
+        if (eTag && match) {
+            boolean tagsDifferent = match ? (eTag != match[1..-2]) : true
+            modified &= tagsDifferent
+        }
+        return !modified
+    }
+
+    /**
+     * Calculates the latest last modified date for a list of entities with that property.
+     *
+     * @param list
+     * @return
+     */
+    def latestModified(list) {
+        def latest = null
+        list.each {
+            if (it.lastUpdated > latest) {
+                latest = it.lastUpdated
+            }
+        }
+        return latest
     }
 
     /**
@@ -276,6 +347,18 @@ class DataController {
             addLastModifiedHeader params.pg.lastUpdated
             render ""
         }
+    }
+
+    def resolveNames = {
+        def uids = params.uids.tokenize(',')
+        def result = [:]
+        uids.each {
+            def pg = ProviderGroup._get(it)
+            if (pg) {
+                result << ["${pg.uid}": pg.name]
+            }
+        }
+        renderAsJson result, null, result.toString().encodeAsMD5()
     }
 
     /********* delete **************************
@@ -323,7 +406,8 @@ class DataController {
                 if (error) {
                     render error
                 } else {
-                    render xml
+                    //render xml
+                    cacheAwareRender xml, pg.lastUpdated, xml.toString().encodeAsMD5()
                 }
             } else {
                 notFound 'no such entity ' + params.id
@@ -390,11 +474,13 @@ class DataController {
 
     /************* Data Hub services *********/
     def institutionsForDataHub = {
-        render params.pg.listMemberInstitutions() as JSON
+        def list = params.pg.listMemberInstitutions()
+        renderAsJson list, null, list.toString().encodeAsMD5()
     }
 
     def collectionsForDataHub = {
-        render params.pg.listMemberCollections() as JSON
+        def list = params.pg.listMemberCollections()
+        renderAsJson list, null, list.toString().encodeAsMD5()
     }
 
 

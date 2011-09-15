@@ -83,6 +83,9 @@ class UrlMappings {
       // preferred
       "/ws/eml/$id?" (controller:'data',action:'eml')
 
+      // high-performance name lookup from uid list
+      "/ws/resolveNames/$uids" (controller: 'data', action: 'resolveNames')
+
       "/ws/collection/contacts/$uid?" (controller:'data',action:'contactsForCollections')
       "/ws/institution/contacts/$uid?" (controller:'data',action:'contactsForInstitutions')
       "/ws/dataProvider/contacts/$uid?" (controller:'data',action:'contactsForDataProviders')

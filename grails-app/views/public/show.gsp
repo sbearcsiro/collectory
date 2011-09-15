@@ -26,6 +26,8 @@
           });
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+        <g:javascript library="jquery.jsonp-2.1.4.min"/>
+        <g:javascript library="charts"/>
     </head>
     <body class="two-column-right">
       <div id="content">
@@ -264,7 +266,6 @@
                 <div id="progress">
                   <img id="progressBar" src="${resource(dir:'images', file:'percentImage.png')}" alt="0%"
                           class="no-radius percentImage1" style='background-position: -120px 0;'/>
-                  <!--cl:progressBar percent="0.0"/-->
                 </div>
                 <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
               </div>
@@ -272,41 +273,51 @@
             <div class="section">
               <g:if test="${biocacheRecordsAvailable}">
                 <div style="clear:both;"></div>
-                <table class="charts">
-                  <colgroup><col width="530"><col width="400"></colgroup>
-                  <tr>
-                    <td>
+                  <div id='usage-stats' style="float:left;width:400px;height:191px;margin-right:50px;z-index:-20">
+                    <h3>Download statistics</h3>
+                    <div id='usage'>
+                      <p>Loading...</p>
+                    </div>
+                  </div>
+                  <div id="collectionRecordsMapContainer">
                       <h3>Map of occurrence records</h3>
-                      <cl:recordsMap/>
-                    </td>
-                    <td rowspan="2">
-                      <h3>Records by taxonomic group</h3>
-                      <cl:taxonChart uid="${instance.uid}"/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="padding-top:35px;">
-                      <h3>Records by collection date</h3>
-                      <cl:decadeChart/>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <div id='usage-stats'>
-                        <h2>Download statistics</h2>
-                        <div id='usage'>
-                          <p>Loading...</p>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
+                      <cl:collectionRecordsMap/>
+                  </div>
+                  <div id="charts"></div>
+                  <div id="iehack"></div>
               </g:if>
             </div>
           </div>
         </div>
         </div>
       <script type="text/javascript">
+      // configure the charts
+      var facetChartOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          /* base url of the biocache */
+          biocacheUrl: biocacheUrl,
+          /* a uid or list of uids to chart - either this or query must be present
+            (unless the facet data is passed in directly AND clickThru is set to false) */
+          instanceUid: "${instance.uid}",
+          /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
+          charts: ['country','state','species_group','assertions','type_status',
+              'biogeographic_region','data_resource_uid','state_conservation','occurrence_year']
+          /* override default options for individual charts */
+      }
+      var taxonomyChartOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          /* base url of the biocache */
+          biocacheUrl: biocacheUrl,
+          /* support drill down into chart - default is true */
+          drillDown: true,
+          /* a uid or list of uids to chart - either this or query must be present */
+          instanceUid: "${instance.uid}",
+          /* threshold value to use for automagic rank selection - defaults to 55 */
+          threshold: 55,
+          rank: "${instance.startingRankHint()}"
+      }
 /************************************************************\
 *
 \************************************************************/
@@ -331,21 +342,47 @@ $('img#mapLegend').each(function(i, n) {
 \************************************************************/
 function onLoadCallback() {
   // stats
+  // hack for ie6 & ie7
+  if (jQuery.browser.msie && (parseInt(jQuery.browser.version,10) === 6 || parseInt(jQuery.browser.version,10) === 7)) {
+      var $stats = $('#usage-stats');
+      $stats.detach().appendTo($('#iehack'));
+      $stats.css('padding-top','40px').css('margin-left','50px');
+      $('div.learnMaps').css('display','none');
+  }
   loadDownloadStats("${instance.uid}","${instance.name}", "1002");
 
-  // summary biocache data
-  var biocacheRecordsUrl = "${ConfigurationHolder.config.grails.context}/public/biocacheRecords.json?uid=${instance.uid}";
-  $.get(biocacheRecordsUrl, {}, biocacheRecordsHandler);
-
-  // taxon breakdown
-  loadTaxonChart("${ConfigurationHolder.config.grails.context}", "${instance.uid}", 55, {
-    width: 400,
-    height: 400//,
-    //chartArea: {left:10, top:40, width:"90%", height: "75%"}
+  // records
+  $.ajax({
+    url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=" + buildQueryString("${instance.uid}"),
+    dataType: 'jsonp',
+    timeout: 20000,
+    complete: function(jqXHR, textStatus) {
+        if (textStatus == 'timeout') {
+            noBiocacheData();
+            alert('Sorry - the request was taking too long so it has been cancelled.');
+        }
+        if (textStatus == 'error') {
+            noBiocacheData();
+            alert('Sorry - the records breakdowns are not available due to an error.');
+        }
+    },
+    success: function(data) {
+        // check for errors
+        if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+            noBiocacheData();
+        }
+        else {
+            setNumbers(data.totalRecords, ${instance.numRecords});
+            // draw the charts
+            drawFacetCharts(data, facetChartOptions);
+        }
+    }
   });
 
+  // taxon chart
+  loadTaxonomyChart(taxonomyChartOptions);
+
   // records map
-  //var mapServiceUrl = "${ConfigurationHolder.config.spatial.baseURL}/alaspatial/ws/density/map?collectionUid=${instance.uid}";
   var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
   $.get(mapServiceUrl, {}, mapRequestHandler);
 }
@@ -523,12 +560,10 @@ function setProgress(percentage)
 * Load charts
 \************************************************************/
 
-        // define biocache server
-        biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
-        biocacheRecordsUrl = "${ConfigurationHolder.config.biocache.records.url}";
-        useNewBiocache = ${ConfigurationHolder.config.useNewBiocache == 'true'};
-        google.load("visualization", "1", {packages:["corechart"]});
-        google.setOnLoadCallback(onLoadCallback);
+    // define biocache server
+    biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(onLoadCallback);
 
     // perform JavaScript after the document is scriptable.
     $(function() {

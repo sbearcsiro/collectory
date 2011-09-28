@@ -780,9 +780,9 @@ class CollectoryTagLib {
                 def urlMatch = /[^\[](http:\S*)\b/   // word boundary + http: + non-whitespace + word boundary
                 text = text.replaceAll(urlMatch) {s1, s2 ->
                     if (s2.indexOf('ala.org.au') > 0)
-                        "<a href='${s2}'>${s2}</a>"
+                        " <a href='${s2}'>${s2}</a>"
                     else
-                        "<a rel='nofollow' class='external' target='_blank' href='${s2}'>${s2}</a>"
+                        " <a rel='nofollow' class='external' target='_blank' href='${s2}'>${s2}</a>"
                 }
             }
 

@@ -1620,10 +1620,10 @@ class CollectoryTagLib {
                 out << imageHtml
             }
             else if (image) {
-                out << "${license} - ${display.display} ${imageHtml}"
+                out << "${display.display} ${attrs.version} Australia (${license}) ${imageHtml}"
             }
             else {
-                out << "${license} - ${display.display}"
+                out << "${display.display} ${attrs.version} Australia (${license})"
             }
         }
     }

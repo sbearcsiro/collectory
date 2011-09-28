@@ -13,21 +13,24 @@ class UrlMappings {
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
 
+      // data sets
+      "/datasets" (controller: 'public', action: 'dataSets')
+
       // data services
-        "/ws/$entity/$uid?" (controller:'data') {
+      "/ws/$entity/$uid?" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {
             entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
           }
-        }
+      }
 
-        "/ws/$entity/summary" (controller:'data') {
+      "/ws/$entity/summary" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {
             entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
           summary = 'true'
           }
-        }
+      }
 
       // data resource harvesting parameters
       "/ws/dataResource/$uid/connectionParameters" (controller:'data', action:'connectionParameters')

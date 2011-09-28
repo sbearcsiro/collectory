@@ -42,7 +42,7 @@
                     </div>--}%
                   <div>
                     <h4>Browse and select</h4>
-                    <div id="fauna-tree"></div>
+                    <div id="taxa-tree"></div>
                   </div>
                 </div>
 
@@ -93,8 +93,9 @@
         $('#addSci').click(function() {
           $('#selected-list ul').append('<li>' + $('#rank').val() + ': ' + $('#name').val() + '</li>');
         });*/
-        // add fauna tree
-        $('#fauna-tree').jstree({
+        // add tree
+        var $tree = $('#taxa-tree');
+        $tree.jstree({
           json_data: {
             /*data: sampleJson*/
             ajax: {
@@ -111,7 +112,7 @@
           plugins: ['json_data','themes','checkbox','ui']
         });
         // set initial state when tree has loaded
-        $('#fauna-tree').bind('loaded.jstree', function() {
+        $tree.bind('loaded.jstree', function() {
           var range = $('input#range').val();
           if (range != '') {
             var list = range.split(',');
@@ -119,38 +120,38 @@
 //              alert('checking ' + value + ': exists? ' + $('li#' + value).length);
               var hit = $('li#' + value);
               if (hit) {
-                $('#fauna-tree').jstree('change_state', hit);
+                $tree.jstree('change_state', hit);
                 // open the node
                 if (hit.hasClass('jstree-leaf')) {
                   // open the parent
-                  $('#fauna-tree').jstree('open_node', hit.parentsUntil('li'));
+                  $tree.jstree('open_node', hit.parentsUntil('li'));
                 }
                 else {
-                  $('#fauna-tree').jstree('open_node', hit);
+                  $tree.jstree('open_node', hit);
                 }
               }
             });
             if (jQuery.browser.msie) {
               var version = parseInt(jQuery.browser.version,10);
               if (version === 9 || version === 8 || version === 7) {
-                $('#fauna-tree').jstree('open_all', -1, false);
+                $tree.jstree('open_all', -1, false);
               }
             }
             updateList();
           }
           // update on check
-          $('#fauna-tree').bind('check_node.jstree',function(event, data){
+          $tree.bind('check_node.jstree',function(event, data){
             updateList();
           });
           // update on un-check
-          $('#fauna-tree').bind('uncheck_node.jstree',function(event, data){
+          $tree.bind('uncheck_node.jstree',function(event, data){
             updateList();
           });
         });
         // clear all
         $('#clear').click(function() {
           $('input#range').val('');
-          $('#fauna-tree').jstree('uncheck_node', 'li');
+          $tree.jstree('uncheck_node', 'li');
         });
         // init help link
         $('a#helpLink').overlay();
@@ -167,7 +168,7 @@
       function updateList() {
         $('#selected-list li').remove();
         $('input#range').val('');
-        var $checked = $('#fauna-tree').jstree('get_checked');
+        var $checked = $('#taxa-tree').jstree('get_checked');
         $.each($checked, function(i, obj) {
           addItem($(obj).attr('rank'),$(obj).attr('id'));
         })

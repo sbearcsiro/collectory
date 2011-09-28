@@ -35,7 +35,7 @@
             <td style="padding-bottom:20px;">
               <span class="contactButton buttonRight">
                 <g:link class="edit-small" controller="contact" action='edit' id="${cf.contact.id}"
-                        params='[returnTo: "/${entityNameLower}/edit/${command.id}?page=/shared/showContacts"]'>
+                        params='[returnTo: "/${command.urlForm()}/edit/${command.id}?page=/shared/showContacts"]'>
                   ${message(code: 'default.button.editContact.label', default: "Edit the contact's details")}
                 </g:link>
               </span>
@@ -54,7 +54,7 @@
             <td>
               <span class="contactButton buttonRight">
                 <g:link class="edit-small" action='editRole' id="${cf.id}"
-                  params='[returnTo: "/${entityNameLower}/edit/${command.id}?page=/shared/showContacts"]'>
+                  params='[returnTo: "/${command.urlForm()}/edit/${command.id}?page=/shared/showContacts"]'>
                   Edit the contact's role in this ${entityNameLower}
                 </g:link>
               </span>

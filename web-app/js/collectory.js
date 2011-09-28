@@ -46,6 +46,49 @@ function mapRequestHandler(response) {
 /************************************************************\
 *
 \************************************************************/
+function toggleHelp(obj) {
+  node = findPrevious(obj.parentNode, 'td', 4);
+  var div;
+  if (node)
+    div = node.childNodes[0];
+  for(;div = div.nextSibling;) {
+    if (div.className && div.className == 'fieldHelp') {
+      vis = div.style;
+      // if the style.display value is blank we try to figure it out here
+      if(vis.display==''&&elem.offsetWidth!=undefined&&elem.offsetHeight!=undefined)
+        vis.display = (elem.offsetWidth!=0&&elem.offsetHeight!=0)?'block':'none';
+      vis.display = (vis.display==''||vis.display=='block')?'none':'block';
+    }
+  }
+}
+/************************************************************\
+*
+\************************************************************/
+function findPrevious(o, tag, limit){
+  for(tag = tag.toLowerCase(); o = o.previousSibling;)
+      if(o.tagName && o.tagName.toLowerCase() == tag)
+          return o;
+      else if(limit && o == limit)
+          return null;
+  return null;
+}
+/************************************************************\
+*
+\************************************************************/
+  function anySelected(idOfSelect, message) {
+    var selected = document.getElementById(idOfSelect).selectedIndex;
+    if (selected == 0) {
+      alert(message);
+      return false;
+    } else {
+      document.getElementById('event').value = 'add';
+      return true;
+    }
+  }
+
+/************************************************************\
+*
+\************************************************************/
 // opens email window for slightly obfuscated email addy
 var strEncodedAtSign = "(SPAM_MAIL@ALA.ORG.AU)";
 function sendEmail(strEncoded) {

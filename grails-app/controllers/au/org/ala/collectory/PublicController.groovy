@@ -568,8 +568,7 @@ class PublicController {
     }
 
     def resources = {
-        //println "all dr = ${DataResource.count()}"
-        //println "excluding declined = ${DataResource.findAllByStatusNotEqual('').size()}"
+        cache shared:true, validFor: 3600*24
         def drs = DataResource.findAllByStatusNotEqual('declined',[sort:'name']).collect {
         //def drs = DataResource.list([sort:'name']).collect {
             def pdesc = it.pubDescription ? cl.formattedText(dummy:'1',limit(it.pubDescription,1000)) : ""

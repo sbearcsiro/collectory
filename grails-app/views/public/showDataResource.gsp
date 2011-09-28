@@ -6,6 +6,7 @@
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
+        <link rel="stylesheet" type="text/css" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" />
         <script type="text/javascript">
           $(document).ready(function() {
             greyInitialValues();
@@ -27,7 +28,11 @@
         </script>
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
         <g:javascript library="jquery.jsonp-2.1.4.min"/>
+        <g:javascript library="jquery.jstree"/>
+        <g:javascript library="jquery-ui-1.8.16.custom.min"/>
+        %{--<g:javascript library="jquery.tools.min"/>--}%
         <g:javascript library="charts"/>
+        <g:javascript library="datadumper"/>
     </head>
     <body class="two-column-right">
       <div id="content">
@@ -93,14 +98,12 @@
               <p>No citation information available.</p>
             </g:else>
 
-            <g:if test="${instance.rights}">
+            <g:if test="${instance.rights || instance.creativeCommons}">
               <h2>Rights</h2>
+              <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
               <g:if test="${instance.creativeCommons}">
-                <p>${fieldValue(bean: instance, field: "rights")}<cl:displayLicenseType type="${instance.licenseType}" version="${instance.licenseVersion}" imageOnly="true"/></p>
+                <p><cl:displayLicenseType type="${instance.licenseType}" version="${instance.licenseVersion}"/></p>
               </g:if>
-              <g:else>
-                <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
-              </g:else>
             </g:if>
             
             <g:if test="${instance.dataGeneralizations}">
@@ -118,6 +121,8 @@
               <p>Downloads from this data resource are limited to ${fieldValue(bean: instance, field: "downloadLimit")} records.</p>
             </g:if>
 
+            <div id="pagesContributed"></div>
+
             <g:if test="${instance.resourceType == 'website' && (instance.lastChecked || instance.dataCurrency)}">
               <h2>Data currency</h2>
                 <p><cl:lastChecked date="${instance.lastChecked}"/>
@@ -130,11 +135,11 @@
                   <div id='usage'>
                     <p>Loading...</p>
                   </div>
-              </div>
-            </g:if>
 
-            <g:if test="${instance.resourceType == 'website'}">
-                <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
+                  <g:if test="${instance.resourceType == 'website'}">
+                      <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
+                  </g:if>
+              </div>
             </g:if>
 
             <g:if test="${instance.resourceType == 'records'}">
@@ -152,6 +157,7 @@
               <div id="recordsBreakdown" class="section vertical-charts">
                 <h3>Map of records</h3>
                 <cl:recordsMap/>
+                <div id="tree"></div>
                 <div id="charts"></div>
               </div>
           </g:if>
@@ -272,8 +278,22 @@
               drillDown: true,
               /* a uid or list of uids to chart - either this or query must be present */
               instanceUid: "${instance.uid}",
+              //query: "notomys",
+              //rank: "kingdom",
               /* threshold value to use for automagic rank selection - defaults to 55 */
               threshold: 25
+          }
+          var taxonomyTreeOptions = {
+              /* base url of the collectory */
+              collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+              /* base url of the biocache */
+              biocacheUrl: biocacheUrl,
+              /* the id of the div to create the charts in - defaults is 'charts' */
+              targetDivId: "tree",
+              /* a uid or list of uids to chart - either this or query must be present */
+              instanceUid: "${instance.uid}",
+              /* a query to set the scope of the records */
+              //query: "notomys"
           }
 
           /************************************************************\
@@ -303,13 +323,28 @@
               loadDownloadStats("${instance.uid}","${instance.name}", "1002");
           }
 
+          // species pages
+          $.ajax({
+              url: bieUrl + "search.json?q=*&fq=uid:${instance.uid}",
+              dataType: 'jsonp',
+              success: function(data) {
+                  var pages = data.searchResults.totalRecords;
+                  if (pages) {
+                      var $contrib = $('#pagesContributed');
+                      $contrib.append($('<h2>Contribution to the Atlas</h2><p>This resource has contributed to <strong>' +
+                          pages + '</strong> pages of taxa. ' +
+                          '<a href="' + bieUrl + 'search?q=*&fq=uid:' + "${instance.uid}" + '">View a list</a></p>'));
+                  }
+              }
+          });
+
           // records
           if (${instance.resourceType == 'records'}) {
               // summary biocache data
               $.ajax({
                 url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=data_resource_uid:${instance.uid}",
                 dataType: 'jsonp',
-                timeout: 20000,
+                timeout: 30000,
                 complete: function(jqXHR, textStatus) {
                     if (textStatus == 'timeout') {
                         noData();
@@ -340,8 +375,11 @@
               // records map
               var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
               $.get(mapServiceUrl, {}, mapRequestHandler);
+
+              // tree
+              initTaxonTree(taxonomyTreeOptions);
           }
-       }
+        }
         /************************************************************\
         *
         \************************************************************/
@@ -355,6 +393,7 @@
         \************************************************************/
         // define biocache server
         biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+        bieUrl = "${ConfigurationHolder.config.bie.baseURL}";
 
         google.load("visualization", "1", {packages:["corechart"]});
         google.setOnLoadCallback(onLoadCallback);

@@ -426,7 +426,7 @@ img.ccimage {
 table.counts {
     border: none;
     padding: 0;
-    margin: 0;
+    /*margin: 0;*/
 }
 
 table.counts tr td:nth-child(2) {

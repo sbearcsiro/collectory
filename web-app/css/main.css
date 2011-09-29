@@ -1238,3 +1238,14 @@ input.selector {
     padding: 1px 0 1px 16px;
     cursor: pointer;
 }
+
+.link {
+    /*text-decoration: underline;*/
+    color: #666;
+    cursor: pointer;
+}
+
+.under {
+    text-decoration: underline;
+}
+

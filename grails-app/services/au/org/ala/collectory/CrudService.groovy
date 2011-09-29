@@ -22,7 +22,7 @@ class CrudService {
     static baseJSONArrays = ['networkMembership']
 
     static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld',
-                'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes',
+                'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes','provenance',
                 'harvestingNotes','connectionParameters','resourceType','permissionsDocumentType','riskAssessment','filed']
     static dataResourceNumberProperties = ['harvestFrequency','downloadLimit']
     static dataResourceTimestampProperties = ['lastChecked','dataCurrency']
@@ -309,6 +309,7 @@ class CrudService {
                 }
                 hasMappedCollections = p.hasMappedCollections()
                 status = p.status
+                provenance = p.provenance
                 harvestFrequency = p.harvestFrequency
                 lastChecked = p.lastChecked
                 dataCurrency = p.dataCurrency

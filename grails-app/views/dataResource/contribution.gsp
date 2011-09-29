@@ -5,10 +5,8 @@
         <meta name="layout" content="main" />
         <title><g:message code="dataResource.base.label" default="Edit data resource metadata" /></title>
         <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
-        <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-timepicker.css')}" type="text/css" media="screen"/>
         <g:javascript library="jquery-1.5.1.min"/>
         <g:javascript library="jquery-ui-1.8.14.custom.min"/>
-        <g:javascript library="jquery.ui.timepicker"/>
     </head>
     <body>
         <div class="nav">
@@ -41,6 +39,21 @@
                                         from="${DataResource.statusList}"
                                         value="${command.status}"/>
                                 <cl:helpText code="dataResource.status"/>
+                              </td>
+                              <cl:helpTD/>
+                        </tr>
+
+                        <!-- provenance -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="provenance"><g:message code="dataResource.provenance.label" default="Provenance" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'provenance', 'errors')}">
+                                <g:select name="provenance"
+                                        from="${DataResource.provenanceTypesList}"
+                                        value="${command.provenance}"
+                                        noSelection="${['':'none']}"/>
+                                <cl:helpText code="dataResource.provenance"/>
                               </td>
                               <cl:helpTD/>
                         </tr>
@@ -235,8 +248,55 @@
                 instrument();
             }
             instrument();
-            $('[name="start_date"]').datepicker({dateFormat: 'yy-mm-dd'});
-            
+            //$('[name="start_date"]').datepicker({dateFormat: 'yy-mm-dd'});
+
+            /* this expands lists of urls into an array of text inputs */
+
+            // create a delete element that removes the element before it and itself
+            var deleteImageUrl = "${resource(dir:'/images/ala',file:'delete.png')}";
+            var $deleteLink = $('<img src="' + deleteImageUrl + '" alt="delete"/>')
+                    .click(function() {
+                        $(this).prev().remove();
+                        $(this).remove();
+                    });
+
+            // handle all urls (including hidden ones)
+            var urlInputs = $('input[name="url"]');
+
+            $.each(urlInputs, function(i, obj) {
+                var urls = $(obj).val().split(',');
+                if (urls.length > 1) {
+                    // more than one url so create an input for each extra one
+                    $.each(urls,function(i,url) {
+                        if (i == 0) {
+                            // existing input gets the first url
+                            $(obj).val(url);
+                        }
+                        else {
+                            // clone the existing field and inject the next value - adding a delete link
+                            $(obj).clone()
+                                .val(url.trim())
+                                .css('width','95%')
+                                .insertAfter($(obj).parent().children('input,img').last())
+                                .after($deleteLink.clone(true));
+                        }
+                    });
+                };
+            });
+
+            /* this injects 'add another' functionality to urls */
+            $.each(urlInputs, function(i, obj) {
+                $('<span class="link under">Add another</span>')
+                        .insertAfter($(obj).parent().children('input,img').last())
+                        .click(function() {
+                            // clone the original input
+                            var $clone = $(obj).clone();
+                            $clone.val('').css('width','95%');
+                            $clone.insertBefore(this);
+                            $clone.after($deleteLink.clone(true)); // add delete link
+                        });
+            });
+
             /* this binds the code to add a new term to the list */
             $('#more-terms').click(function() {
                 var term = $('#otherKey').val();

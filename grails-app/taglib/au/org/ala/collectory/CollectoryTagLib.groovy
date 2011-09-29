@@ -1651,6 +1651,10 @@ class CollectoryTagLib {
                     // show as comma separated list
                     value = cp."${pp.name}".collect {it}.join(', ') as String
                 }
+                else if (cp."${pp.name}" instanceof List) {
+                    // show as list
+                    value = cp."${pp.name}".join('<br/>');
+                }
                 else {
                     // encode any control characters
                     value = encodeControlChars(cp."${pp.name}")

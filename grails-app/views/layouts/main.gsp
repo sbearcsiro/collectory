@@ -11,15 +11,13 @@
 <title><g:layoutTitle default="Atlas of Living Australia %naquo; Collectory" /></title>
  
 <link rel="stylesheet" href="${resource(dir:'css',file:'style.css')}" type="text/css" media="screen"/>
+<link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
 <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
 
 <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
 <link rel="EditURI" type="application/rsd+xml" title="RSD" href="${ConfigurationHolder.config.ala.baseURL}/xmlrpc.php?rsd" />
 <link rel="wlwmanifest" type="application/wlwmanifest+xml" href="${ConfigurationHolder.config.ala.baseURL}/wp-includes/wlwmanifest.xml" />
 <link rel='index' title='Atlas of Living Australia' href='${ConfigurationHolder.config.ala.baseURL}' />
-
-<link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
-<link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon" />
 
 <g:javascript library="application" />
 <g:javascript library="collectory" />

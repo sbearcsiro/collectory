@@ -18,6 +18,7 @@ class DataResource extends ProviderGroup implements Serializable {
     String licenseType = "other"
     String licenseVersion
     String resourceType = "records"
+    String provenance
     String informationWithheld
     String dataGeneralizations
     String permissionsDocument      // location of the documentation of the right to use
@@ -46,6 +47,7 @@ class DataResource extends ProviderGroup implements Serializable {
         resourceType(maxSize:255, validator: {
             return it in resourceTypeList
         })
+        provenance(nullable:true,maxSize:45,inList: provenanceTypesList)
         dataProvider(nullable:true)
         institution(nullable:true)
         dataGeneralizations(nullable:true, maxSize:2048)
@@ -79,6 +81,7 @@ class DataResource extends ProviderGroup implements Serializable {
             'human interaction','identification keys','images','lifecycle','movies','pest management','pest status',
             'point occurrence data','population','references','reproduction','scientific names','sensitive species lists',
             'similar species','sound','species interactions','species list','taxonomy','threats']
+    static provenanceTypesList = ['Individual sightings','Published dataset']
     /**
      * Integration status.
      * identified - Resource has been found but no further contact

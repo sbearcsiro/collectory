@@ -117,6 +117,9 @@
                 <!-- status -->
                 <p><span class="category">Status:</span> ${fieldValue(bean: instance, field: "status")}</p>
 
+                <!-- provenance -->
+                <p><span class="category">Provenance:</span> ${fieldValue(bean: instance, field: "provenance")}</p>
+
                 <!-- last checked -->
                 <p><span class="category">Last checked:</span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
 

@@ -671,6 +671,9 @@ class PublicController {
         render( locations as JSON )
     }
 
+    def chart = {}
+    
+    /************************************ helpers ***********************************/
     private String limit(str, int length) {
         if (str?.size() > length) {
             return str[0..length] + "... and more."

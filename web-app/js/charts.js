@@ -86,8 +86,11 @@ function loadFacetCharts(chartOptions) {
       }
     });
 }
-function cleanUp() {
+function cleanUp(chartOptions) {
     $('img.loading').remove();
+    if (chartOptions != undefined && chartOptions.error) {
+         window[chartOptions.error]();
+    }
 }
 /*********************************************************************\
 * Loads charts based on the facets declared in the config object.
@@ -199,7 +202,7 @@ function buildGenericFacetChart(name, data, query, chartsDiv, chartOptions) {
 
             // the facet query can be overridden for date ranges
             if (name == 'occurrence_year') {
-                if (id.startsWith('before')) {
+                if (id.match("^before") == 'before') { // startWith
                     facetQuery = "occurrence_year:[*%20TO%20" + "1850" + "-01-01T12:00:00Z]";
                 }
                 else {
@@ -296,12 +299,14 @@ function loadTaxonomyChart(chartOptions) {
           if (textStatus == 'error') {
               alert('Sorry - the chart cannot be redrawn due to an error.');
           }
-          cleanUp();
+          if (textStatus != 'success') {
+              cleanUp(chartOptions);
+          }
       },
       success: function(data) {
           // check for errors
-          if (data.length == 0) {
-              cleanUp();
+          if (data == undefined || data.length == 0) {
+              cleanUp(chartOptions);
           }
           else {
               // draw the chart

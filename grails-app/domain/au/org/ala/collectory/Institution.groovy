@@ -159,6 +159,16 @@ class Institution extends ProviderGroup {
     }
 
     /**
+     * This returns a list of child collections.
+     *
+     * @return list of Collection
+     */
+    @Override
+    def children() {
+        return collections
+    }
+
+    /**
      * List the uids that identify this institution and all its descendant institutions.
      *
      * @return list of UID

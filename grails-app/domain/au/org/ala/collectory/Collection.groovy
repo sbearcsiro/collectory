@@ -378,6 +378,11 @@ class Collection extends ProviderGroup implements Serializable {
         return getPrimaryPublicContact() ?: institution?.inheritPrimaryPublicContact()
     }
 
+    @Override
+    def parent() {
+        return institution
+    }
+
     long dbId() { return id }
 
     String entityType() {

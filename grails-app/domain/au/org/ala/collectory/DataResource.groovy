@@ -216,6 +216,11 @@ class DataResource extends ProviderGroup implements Serializable {
         return getPrimaryPublicContact() ?: dataProvider?.inheritPrimaryPublicContact()
     }
 
+    @Override
+    def parent() {
+        return dataProvider
+    }
+
     long dbId() {
         return id;
     }

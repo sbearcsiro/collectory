@@ -121,6 +121,11 @@ class DataProvider extends ProviderGroup implements Serializable {
         }
     }
 
+    @Override
+    def children() {
+        return resources
+    }
+
     long dbId() {
         return id;
     }

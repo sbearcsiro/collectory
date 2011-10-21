@@ -128,9 +128,11 @@
         </div>
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="contacts">List all contacts</g:link></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="duplicateContacts">Show duplicate contacts</g:link></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="contactsForCouncilMembers">Show contacts for member collections</g:link>
           <span class="linkText">- lists all collections that are members of councils and their contact emails.</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="contactsForCollections">Show contacts for all collections</g:link>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="contactsForInstitutions">Show contacts for all institutions</g:link>
         </div>
       </div>
 

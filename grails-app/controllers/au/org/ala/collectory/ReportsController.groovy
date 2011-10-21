@@ -43,6 +43,11 @@ class ReportsController {
         [contacts:model]
     }
 
+    def contactsForInstitutions = {
+        def model = DataController.buildContactsModel(Institution.list([sort:'name']))
+        [contacts:model]
+    }
+
     def data = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'data'
         [reports: new ReportCommand('data')]
@@ -80,6 +85,24 @@ class ReportsController {
 
     def codes = {
         [codeSummaries: (ProviderMap.list().collect { it.collection.buildSummary() }).sort {it.name}]
+    }
+
+    def duplicateContacts = {
+        // find duplicate emails
+        def dupEmails = []
+        Contact.executeQuery("select email, count(*) as ct from Contact group by email").each {
+            if (it[1] > 1 && it[0] != null) {
+                dupEmails << [email: it[0], contacts: Contact.findAllByEmail(it[0])]
+            }
+        }
+        // find duplicate names
+        def dupNames = []
+        Contact.executeQuery("select firstName, lastName, count(*) as ct from Contact group by firstName, lastName").each {
+            if (it[2] > 1 && it[0] != null && it[1] != null) {
+                dupNames << [firstName: it[0], lastName: it[1], contacts: Contact.findAllByLastNameAndFirstName(it[1], it[0])]
+            }
+        }
+        [dupEmails: dupEmails, dupNames: dupNames]
     }
 
     /**

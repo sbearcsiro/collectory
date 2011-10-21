@@ -76,7 +76,7 @@ abstract class ProviderGroup implements Serializable {
     static embedded = ['address', 'logoRef', 'imageRef']
 
     static transients = ['primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'mappable','ALAPartner',
-        'primaryPublicContact','publicContactsPrimaryFirst','contactsPrimaryFirst']
+        'primaryPublicContact','publicContactsPrimaryFirst','contactsPrimaryFirst', 'authorised']
 
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
@@ -268,6 +268,30 @@ abstract class ProviderGroup implements Serializable {
      */
     void deleteFromContacts(Contact contact) {
         ContactFor.findByEntityUidAndContact(uid, contact)?.delete()
+    }
+
+    /**
+     * Determines whether the person with the specified email has the rights to edit this entity.
+     * A person is authorised to edit if:
+     * 1) they are a contact for this entity with administrator privilege,
+     * 2) they are a contact for the parent of this entity with administrator privilege.
+     *
+     * @param email the email (username) of the person to check
+     * @return true if the person has rights to edit
+     */
+    boolean isAuthorised(email) {
+        // get contact
+        Contact c = Contact.findByEmail(email)
+        if (c) {
+            ContactFor cf = ContactFor.findByContactAndEntityUid(c, this.uid)
+            if (cf?.administrator) {
+                return true
+            } else {
+                // check parent
+                return parent()?.isAuthorised(email)
+            }
+        }
+        return false
     }
     
     /**
@@ -607,6 +631,26 @@ abstract class ProviderGroup implements Serializable {
         return logoRef?.file ?
             ConfigurationHolder.config.grails.serverURL + "/data/" + urlForm() + "/" + logoRef.file :
             ""
+    }
+
+    /**
+     * Returns the parent entity if one exists else null.
+     *
+     * This method should be overridden by subclasses for their specific relationships.
+     * @return the parent if any
+     */
+    def parent() {
+        return null
+    }
+
+    /**
+     * Returns a list of child entities.
+     *
+     * This method should be overridden by subclasses for their specific relationships.
+     * @return list of ProviderGroup
+     */
+    def children() {
+        return []
     }
 
     /**

@@ -1,8 +1,7 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
-
-<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
- 
-<head profile="http://gmpg.org/xfn/11">
+<!DOCTYPE html>
+<html>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name='robots' content='noindex,nofollow' />
 <meta name="app.version" content="${g.meta(name:'app.version')}"/>
@@ -28,7 +27,7 @@
  
 <div id="page">
  
-	<div id="header" class="clearfix">
+	<div id="header">
 		<h1 id="blog-title"><a href="${ConfigurationHolder.config.ala.baseURL}">Atlas of Living Australia</a>
 		    <span id="blog-url">&lt;${ConfigurationHolder.config.ala.baseURL}&gt;</span></h1>
 		<h2 id="blog-description">A biodiversity data management system for Australia</h2>
@@ -36,19 +35,19 @@
 
 	</div><!-- end header -->
 
-<div class="login-info">
-    <cl:isLoggedIn>
-        <span id="logged-in">Logged in as <cl:loggedInUsername/></span>
-        <a href="http://auth.ala.org.au/cas/logout?url=${ConfigurationHolder.config.security.cas.serverName}/${ConfigurationHolder.config.security.cas.context}">Logout</a>
-    </cl:isLoggedIn>
-    <cl:isNotLoggedIn>
-        <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}/${ConfigurationHolder.config.security.cas.context}/admin">Logout</a>
-    </cl:isNotLoggedIn>
-</div>
-  
 <div id="content" class="clearfix">
- 
-	<div id="content-full-width">
+
+    <div class="login-info">
+        <cl:isLoggedIn>
+            <span id="logged-in">Logged in as <cl:loggedInUsername/></span>
+            <a href="http://auth.ala.org.au/cas/logout?url=${ConfigurationHolder.config.security.cas.serverName}${request.forwardURI}">Logout</a>
+        </cl:isLoggedIn>
+        <cl:isNotLoggedIn>
+            <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}${request.forwardURI}">Login</a>
+        </cl:isNotLoggedIn>
+    </div>
+    
+	<div id="content-full-width" class="clearfix"  style="clear:both;">
  
 
 

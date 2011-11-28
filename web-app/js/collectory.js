@@ -81,7 +81,6 @@ function findPrevious(o, tag, limit){
       alert(message);
       return false;
     } else {
-      document.getElementById('event').value = 'add';
       return true;
     }
   }
@@ -101,6 +100,23 @@ function sendEmail(strEncoded) {
         event.cancelBubble = true;
     }
     return false;
+}
+
+/************************************************************\
+*
+\************************************************************/
+function getController(uid) {
+    if (!uid || uid.length < 2) {
+        return "unknown"
+    }
+    switch (uid.substr(0,2)) {
+        case "in": return "institution";
+        case "co": return "collection";
+        case "dr": return "dataResource";
+        case "drt": return "dataResourceTemporary";
+        case "dp": return "dataProvider";
+        default: return "unknown"
+    }
 }
 
 /************************************************************\

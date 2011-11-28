@@ -168,8 +168,10 @@ $.ajaxSetup({cache: true});
 var facetChartOptions = {
     /* base url of the collectory */
     collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-    /* base url of the biocache */
-    biocacheUrl: "${ConfigurationHolder.config.biocache.baseURL}",
+    /* base url of the biocache ws*/
+    biocacheServicesUrl: "${ConfigurationHolder.config.biocache.baseURL}ws",
+    /* base url of the biocache webapp*/
+    biocacheWebappUrl: "${ConfigurationHolder.config.biocache.baseURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* a uid or list of uids to chart - either this or query must be present */
@@ -189,8 +191,10 @@ var facetChartOptions = {
 var taxonomyChartOptions = {
     /* base url of the collectory */
     collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-    /* base url of the biocache */
-    biocacheUrl: "${ConfigurationHolder.config.biocache.baseURL}",
+    /* base url of the biocache ws*/
+    biocacheServicesUrl: "${ConfigurationHolder.config.biocache.baseURL}ws",
+    /* base url of the biocache webapp*/
+    biocacheWebappUrl: "${ConfigurationHolder.config.biocache.baseURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* support drill down into chart - default is false */

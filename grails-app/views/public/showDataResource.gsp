@@ -261,8 +261,10 @@
           var facetChartOptions = {
               /* base url of the collectory */
               collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-              /* base url of the biocache */
-              biocacheUrl: biocacheUrl,
+              /* base url of the biocache ws*/
+              biocacheServicesUrl: biocacheServicesUrl,
+              /* base url of the biocache webapp*/
+              biocacheWebappUrl: biocacheWebappUrl,
               /* a uid or list of uids to chart - either this or query must be present */
               instanceUid: "${instance.uid}",
               /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
@@ -272,8 +274,10 @@
           var taxonomyChartOptions = {
               /* base url of the collectory */
               collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-              /* base url of the biocache */
-              biocacheUrl: biocacheUrl,
+              /* base url of the biocache ws*/
+              biocacheServicesUrl: biocacheServicesUrl,
+              /* base url of the biocache webapp*/
+              biocacheWebappUrl: biocacheWebappUrl,
               /* support drill down into chart - default is false */
               drillDown: true,
               /* a uid or list of uids to chart - either this or query must be present */
@@ -286,8 +290,10 @@
           var taxonomyTreeOptions = {
               /* base url of the collectory */
               collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-              /* base url of the biocache */
-              biocacheUrl: biocacheUrl,
+              /* base url of the biocache ws*/
+              biocacheServicesUrl: biocacheServicesUrl,
+              /* base url of the biocache webapp*/
+              biocacheWebappUrl: biocacheWebappUrl,
               /* the id of the div to create the charts in - defaults is 'charts' */
               targetDivId: "tree",
               /* a uid or list of uids to chart - either this or query must be present */
@@ -342,7 +348,7 @@
           if (${instance.resourceType == 'records'}) {
               // summary biocache data
               $.ajax({
-                url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=data_resource_uid:${instance.uid}",
+                url: biocacheServicesUrl + "/occurrences/search.json?pageSize=0&q=data_resource_uid:${instance.uid}",
                 dataType: 'jsonp',
                 timeout: 30000,
                 complete: function(jqXHR, textStatus) {
@@ -392,7 +398,8 @@
         *
         \************************************************************/
         // define biocache server
-        biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+        biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
+        biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
         bieUrl = "${ConfigurationHolder.config.bie.baseURL}";
 
         google.load("visualization", "1", {packages:["corechart"]});

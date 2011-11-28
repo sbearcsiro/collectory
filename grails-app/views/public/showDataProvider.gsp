@@ -179,7 +179,7 @@
     *
     \************************************************************/
     // define biocache server
-    biocacheUrl = "${ConfigurationHolder.config.biocache.records.url}";
+    biocacheServicesUrl = "${ConfigurationHolder.config.biocache.records.url}ws";
 
     google.load("visualization", "1", {packages:["corechart"]});
     google.setOnLoadCallback(onLoadCallback);

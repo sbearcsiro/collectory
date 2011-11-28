@@ -182,8 +182,10 @@
       var facetChartOptions = {
           /* base url of the collectory */
           collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-          /* base url of the biocache */
-          biocacheUrl: biocacheUrl,
+          /* base url of the biocache ws*/
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
           /* a uid or list of uids to chart - either this or query must be present
             (unless the facet data is passed in directly AND clickThru is set to false) */
           instanceUid: "${instance.descendantUids().join(',')}",
@@ -194,8 +196,10 @@
       var taxonomyChartOptions = {
           /* base url of the collectory */
           collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-          /* base url of the biocache */
-          biocacheUrl: biocacheUrl,
+          /* base url of the biocache ws*/
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
           /* a uid or list of uids to chart - either this or query must be present */
           instanceUid: "${instance.descendantUids().join(',')}",
           /* threshold value to use for automagic rank selection - defaults to 55 */
@@ -213,7 +217,7 @@ function onLoadCallback() {
 
   // records
   $.ajax({
-    url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=" + buildQueryString("${instance.descendantUids().join(',')}"),
+    url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + buildQueryString("${instance.descendantUids().join(',')}"),
     dataType: 'jsonp',
     timeout: 20000,
     complete: function(jqXHR, textStatus) {
@@ -246,7 +250,8 @@ function onLoadCallback() {
 *
 \************************************************************/
 // define biocache server
-biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
+biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
 
 google.load("visualization", "1", {packages:["corechart"]});
 google.setOnLoadCallback(onLoadCallback);

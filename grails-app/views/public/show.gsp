@@ -295,8 +295,10 @@
       var facetChartOptions = {
           /* base url of the collectory */
           collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-          /* base url of the biocache */
-          biocacheUrl: biocacheUrl,
+          /* base url of the biocache ws*/
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
           /* a uid or list of uids to chart - either this or query must be present
             (unless the facet data is passed in directly AND clickThru is set to false) */
           instanceUid: "${instance.uid}",
@@ -309,7 +311,9 @@
           /* base url of the collectory */
           collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
           /* base url of the biocache */
-          biocacheUrl: biocacheUrl,
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
           /* support drill down into chart - default is true */
           drillDown: true,
           /* a uid or list of uids to chart - either this or query must be present */
@@ -353,7 +357,7 @@ function onLoadCallback() {
 
   // records
   $.ajax({
-    url: biocacheUrl + "ws/occurrences/search.json?pageSize=0&q=" + buildQueryString("${instance.uid}"),
+    url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + buildQueryString("${instance.uid}"),
     dataType: 'jsonp',
     timeout: 20000,
     complete: function(jqXHR, textStatus) {
@@ -561,7 +565,8 @@ function setProgress(percentage)
 \************************************************************/
 
     // define biocache server
-    biocacheUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+    biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
+    biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
     google.load("visualization", "1", {packages:["corechart"]});
     google.setOnLoadCallback(onLoadCallback);
 

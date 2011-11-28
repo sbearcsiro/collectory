@@ -210,7 +210,7 @@ function filterList() {
             query += (i == 0) ? term : "&fq=text:" + term
         });
         // do search
-        $.ajax({url:"http://bie.ala.org.au/search.json?q=" + query + "&fq=idxtype:DATASET",
+        $.ajax({url:"http://bie.ala.org.au/search.json?q=" + query + "&fq=idxtype:DATASET&pageSize=1000&sort=name",
             dataType:'jsonp',
             success: function(data) {
                 var uids = extractListOfUidsFromSearchResults(data);
@@ -240,9 +240,7 @@ function filterBy(filter, uidList) {
     var newResourcesList = [];
     var facet = facets[filter.name];
     $.each(resources, function(index, resource) {
-        if (resource.uid == 'dr466') {
-            var i = 0;
-        }
+
         // filter by has
         if (facet.action == "has") {
             if (resource[filter.name] && resource[filter.name].indexOf(filter.value) > 0) {
@@ -639,16 +637,6 @@ function wireSearchLink() {
         if (event.which == 13 && $('#dr-search').val() != "") {
             event.preventDefault();
             addFilter('contains',$('#dr-search').val());
-        }
-    });
-}
-function doSearch(term) {
-    $.ajax({url:"http://bie.ala.org.au/search.json?q=" + term + "&fq=idxtype:DATASET",
-        dataType:'jsonp',
-        success: function(data) {
-            var uids = extractListOfUidsFromSearchResults(data);
-            addFilter('contains',term,uids);
-            $('#dr-search').val('');
         }
     });
 }

@@ -34,7 +34,7 @@
                         <tr><td colspan="3"><h4>Geographic range</h4></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="geographicDescription" source="collection" default="Geographic description"/>
+                              <label for="geographicDescription">Geographic description</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'geographicDescription', 'errors')}">
                                 <g:textField name="geographicDescription" value="${command?.geographicDescription}" />
@@ -45,7 +45,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="states" source="collection" default="States"/>
+                              <label for="states">States</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'states', 'errors')}">
                                 <g:textField name="states" value="${command?.states}" />
@@ -61,7 +61,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="eastCoordinate" source="collection" default="Most eastern longitude"/>
+                              <label for="eastCoordinate">Most eastern longitude</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'eastCoordinate', 'errors')}">
                               <g:textField name="eastCoordinate" value="${cl.showDecimal(value: command.eastCoordinate)}" />
@@ -72,7 +72,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="westCoordinate" source="collection" default="Western extent"/>
+                              <label for="westCoordinate">Western extent</label>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'westCoordinate', 'errors')}">
                               <g:textField name="westCoordinate" value="${cl.showDecimal(value: command.westCoordinate)}" />
                               <cl:helpText code="collection.westCoordinate"/>
@@ -82,7 +82,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="northCoordinate" source="collection" default="Northern extent"/>
+                              <label for="northCoordinate">Northern extent</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'northCoordinate', 'errors')}">
                                 <g:textField name="northCoordinate" value="${cl.showDecimal(value: command.northCoordinate)}" />
@@ -93,7 +93,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="southCoordinate" source="collection" default="Southern extent"/>
+                              <label for="southCoordinate">Southern extent</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'southCoordinate', 'errors')}">
                               <g:textField name="southCoordinate" value="${cl.showDecimal(value: command.southCoordinate)}" />
@@ -106,7 +106,7 @@
                         <tr><td colspan="3"><h4>Taxonomic range</h4></td></tr>
                         <tr class="prop">
                             <td valign="top" class="checkbox">
-                              <cl:label for="kingdomCoverage" source="collection" default="Kingdom coverage"/>
+                              <label for="kingdomCoverage">Kingdom coverage</label>
                             </td>
                             <td valign="top" class="checkbox">
                                 <cl:checkBoxList name="kingdomCoverage" from="${Collection.kingdoms}" value="${command?.kingdomCoverage}" />
@@ -117,7 +117,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="scientificNames" source="collection" default="Scientific names"/>
+                              <label for="scientificNames">Scientific names</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'scientificNames', 'errors')}">
                                 <!--richui:autoComplete name="scientificNames" controller="collection" action="scinames" title="sci name"/-->

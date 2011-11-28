@@ -20,7 +20,6 @@
             <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-            <span class="entityType" style="float:right;">Data Provider</span>
         </div>
         <div class="body">
             <g:if test="${flash.message}">
@@ -55,7 +54,7 @@
                 <!-- last edit -->
                 <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/base']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <cl:editButton uid="${instance.uid}" page="/shared/base"/>
               </div>
 
               <!-- description -->
@@ -82,7 +81,7 @@
                   <li><g:link controller="dataResource" action="create" params='[dataProviderUid: "${instance.uid}"]'>create a new data resource for this provider</g:link></li>
                 </ul>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <cl:editButton uid="${instance.uid}" page="description"/>
               </div>
 
               <!-- images -->

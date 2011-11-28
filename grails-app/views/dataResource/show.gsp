@@ -20,7 +20,6 @@
             <span class="menuButton"><cl:homeLink/></span>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-            <span class="entityType" style="float:right;">Data Resource</span>
         </div>
         <div class="body">
             <g:if test="${flash.message}">
@@ -66,7 +65,7 @@
                 <!-- last edit -->
                 <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/base']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <cl:editButton uid="${instance.uid}" page="/shared/base" notAuthorisedMessage="You are not authorised to edit this resource."/>
               </div>
 
               <!-- description -->
@@ -94,7 +93,7 @@
                 <!-- content types -->
                 <p><span class="category">Content types:</span> ${fieldValue(bean: instance, field: "contentTypes")}</p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <cl:editButton uid="${instance.uid}" page="description"/>
               </div>
 
               <!-- taxonomic range -->
@@ -197,7 +196,7 @@
                 <!-- download limit -->
                 <p><span class="category">Download limit:</span> ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'rights']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <cl:editButton uid="${instance.uid}" page="rights"/>
               </div>
 
               <!-- images -->

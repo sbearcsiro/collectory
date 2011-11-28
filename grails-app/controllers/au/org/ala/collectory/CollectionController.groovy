@@ -93,39 +93,11 @@ class CollectionController extends ProviderGroupController {
             flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'collection.label', default: 'Collection'), params.id])}"
             redirect(action: "list")
         } else {
-            // contact email - temp
-            def contact = collectionInstance.getPrimaryContact()?.contact
-            def body = ""
-            if (contact?.email) {
-                body = "Dear ${contact.firstName},%0A%0A" +
-
-"""
-The web address for the Atlas of Living Australia is: http://www.ala.org.au.%0A%0A
-
-However, you can find:%0A%0A
-
-Your Collection page at: http://collections.ala.org.au/public/show/""" + collectionInstance.uid + "%0A%0A" +
-
-"Your Institution page at: http://collections.ala.org.au/public/showInstitution/${collectionInstance.institution?.uid}%0A%0A" +
-
-"""Or explore your collections community at: http://collections.ala.org.au/public/map.%0A%0A
-
-After consulting the website, please respond to this email with any feedback and edits that you would like made to your Collections and Institution pages before Monday the 25th of October 2010.%0A%0A
-
-Regards,%0A
-The Atlas of Living Australia%0A%0A
-
-Dr. Peter Neville%0A
-Research Projects Officer | Atlas of Living Australia%0A
-CSIRO
-"""
-            }
-
             // show it
             log.debug ">>${username()} showing ${collectionInstance.name}"
             ActivityLog.log username(), isAdmin(), collectionInstance.uid, Action.VIEW
             [instance: collectionInstance, contacts: collectionInstance.getContacts(),
-                    changes: getChanges(collectionInstance.uid), contactEmailBody: body]
+                    changes: getChanges(collectionInstance.uid)]
         }
     }
 
@@ -200,6 +172,22 @@ CSIRO
         def term = params.term
         def criteria = term ? term : "blank"        // for display purposes
         [providerGroupInstanceList : results, providerGroupInstanceTotal: results.getTotalCount(), criteria: [criteria], term: term]
+    }
+
+    /**
+     * Returns JSON to indicate whether the collection name exists.
+     */
+    def nameExists = {
+        def name = params.name
+        def match = Collection.findByName(name)
+        if (match) {
+            def result = [found: "true", uid: match.uid]
+            render result as JSON
+        }
+        else {
+            def result = [found: "false"]
+            render result as JSON
+        }
     }
 
     /** V2 editing ****************************************************************************************************/

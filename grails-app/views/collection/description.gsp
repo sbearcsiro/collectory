@@ -93,7 +93,7 @@
                         <!-- start date -->
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="startDate" source="scope" default="Start date"/>
+                              <label for="startDate">Start date</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'startDate', 'errors')}">
                                 <g:textField name="startDate" maxlength="45" value="${command?.startDate}" />
@@ -105,7 +105,7 @@
                         <!-- end date -->
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <cl:label for="endDate" source="scope" default="End date"/>
+                              <label for="endDate">End date</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'endDate', 'errors')}">
                                 <g:textField name="endDate" maxlength="45" value="${command?.endDate}" />

@@ -1,3 +1,4 @@
+<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -49,6 +50,8 @@
     <div id="charts"></div>
 
     <script type="text/javascript">
+        var biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
+        var biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
         var taxonomyChartOptions = { rank: "kingdom", error: "badQuery" }
         var facetChartOptions = { error: "badQuery" }
         $('#draw').click(drawChart);
@@ -58,10 +61,6 @@
                 drawChart();
             }
         });
-        // if there is already text in the query box (eg the browser has inserted it from history), draw the chart
-        if ($('#query').val() != "") {
-            drawChart();
-        }
 
         function drawChart() {
             $('#charts').html("");
@@ -69,15 +68,11 @@
             var type = $('#types input:checked').val();
             if (type == "taxonomy") {
                 taxonomyChartOptions.query = query;
-                var rank = $('#rank').val();
-                if (rank != "") {
-                    taxonomyChartOptions.rank = rank;
+                taxonomyChartOptions.rank = $('#rank').val();
+                if (taxonomyChartOptions.rank == "") {
+                    taxonomyChartOptions.threshold = $('#max').val();
                 } else {
-                    var max = $('#max').val();
-                    if (max != "") {
-                        taxonomyChartOptions.rank = "";
-                        taxonomyChartOptions.threshold = max;
-                    }
+                    taxonomyChartOptions.threshold = "";
                 }
                 loadTaxonomyChart(taxonomyChartOptions);
             }
@@ -102,6 +97,13 @@
             $('#charts').append($('<span>Bad query</span>'));
         }
         google.load("visualization", "1", {packages:["corechart"]});
+        google.setOnLoadCallback(function() {
+            // if there is already text in the query box (eg the browser has inserted it from history), draw the chart
+            if ($('#query').val() != "") {
+                drawChart();
+            }
+        });
+
     </script>
   </body>
 </html>

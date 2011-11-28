@@ -7,7 +7,7 @@
   <title><g:message code="default.show.label" args="[entityName]"/></title>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.3&sensor=false"></script>
 </head>
-<body onload="initializeLocationMap('${instance.canBeMapped()}',${instance.latitude},${instance.longitude});">
+<body>
 <style>
 #mapCanvas {
   width: 200px;
@@ -22,7 +22,6 @@
   <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]"/></g:link></span>
   <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span>
   <!--span class="buttons"><input type="submit" class="special" value="Contact the curator"/></span-->
-  <span class="entityType" style="float:right;">Collection</span>
   </g:form>
 </div>
 <div class="body">
@@ -61,7 +60,7 @@
       <!-- last edit -->
       <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
-      <cl:editButton uid="${instance.uid}" page="/shared/base"/>
+      <cl:editButton uid="${instance.uid}" page="/shared/base" notAuthorisedMessage="Not authorised to edit."/>
     </div>
 
     <!-- collection description -->
@@ -333,39 +332,11 @@ function addCommas(nStr)
 *
 \************************************************************/
 
-google.setOnLoadCallback(onLoadCallback);
+$(document).ready(function() {
+    onLoadCallback();
+    initializeLocationMap('${instance.canBeMapped()}',${instance.latitude},${instance.longitude});
+});
 
-/************************************************************\
-*
-\************************************************************/
-  function contactCurator(email, firstName, uid, instUid) {
-      var subject = "Request to review web pages presenting information about your natural history collection.";
-      var content = "Dear " + firstName + ",\n\n";
-      content = content + "The Atlas of Living Australia aims to amalgamate biodiversity information, data and images on all the living plants, animals and microbes found within Australia.  In addition to this, the Atlas has created a tool to promote knowledge of Natural History Collections throughout Australia and to highlight the importance of our partners (Council Heads of Museums and Herbaria).\n\n";
-      content = content + "This database of Natural History Collections was created based on the Biodiversity Collections Index (http://www.biodiversitycollectionsindex.org/static/index.html) and the information we could find for your collection at this resource.  However, as some of this information is out-of-date, we would like you to take a sneak peak at the web site we are creating and provide feedback and edits to the information displayed.  In the future, and in consultation with the Australian Biological Resources Study (ABRS), we intend to build an on-line data collection and editing tool that will allow curators to maintain metadata on their collections and allow key elements of the ABRS \"taxonomic workforce and Institutional Surveys\" to be completed on-line.\n\n";
-      content = content + "The web address for the Atlas of Living Australia is: http://www.ala.org.au.\n\n";
-      content = content + "However, you can find:\n\n";
-      content = content + "Your Collection page at: http://collections.ala.org.au/public/show/" + uid + ".\n\n";
-      content = content + "Your Institution page at: http://collections.ala.org.au/public/showInstitution/" + instUid + ".\n\n";
-      content = content + "Or explore your collections community at: http://collections.ala.org.au/public/map.\n\n";
-      content = content + "After consulting the website, please respond to this email with any feedback and edits that you would like made to your Collections and Institution pages before Monday the 25th of October 2010.\n\n";
-      content = content + "Regards,\n";
-      content = content + "\tThe Atlas of Living Australia\n\n";
-      content = content + "Dr. Peter Neville\n";
-      content = content + "Research Projects Officer | Atlas of Living Australia\n";
-      content = content + "CSIRO\n";
-
-      $post({
-          url: 'mailto:' + email + '?subject=' + subject,
-          data: 'body=' + encodeURI(content),
-          success: function() {alert('here')}
-      });
-
-      if (event) {
-          event.cancelBubble = true;
-      }
-      return false;
-  }
 </script>
 </body>
 </html>

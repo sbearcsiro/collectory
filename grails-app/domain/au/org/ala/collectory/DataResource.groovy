@@ -25,7 +25,7 @@ class DataResource extends ProviderGroup implements Serializable {
     String permissionsDocumentType = "Other"  // type of document
     boolean riskAssessment = false  // has risk assessment been done (for Data Provider Agreements only)
     boolean filed = false           // has the document been filed (for Data Provider Agreements only)
-    String status                   // integration status (of the integration of the resource into the atlas)
+    String status = "identified"    // integration status (of the integration of the resource into the atlas)
     String harvestingNotes          // may include which components (text, images, etc) can be harvested
     String mobilisationNotes        //
     int harvestFrequency = 0
@@ -54,7 +54,7 @@ class DataResource extends ProviderGroup implements Serializable {
         informationWithheld(nullable:true, maxSize:2048)
         permissionsDocument(nullable:true, maxSize:2048)
         permissionsDocumentType(nullable:true, inList: permissionsDocumentTypes)
-        status(nullable:true)
+        status(maxSize:45)
         harvestingNotes(nullable:true, maxSize:4096)
         mobilisationNotes(nullable:true, maxSize:4096)
         lastChecked(nullable:true)

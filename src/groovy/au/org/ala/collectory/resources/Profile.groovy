@@ -40,6 +40,8 @@ class PP {
     final static PP CSV_END_OF_LINE = new PP(name:'csv_eol',display:'Line delimiter', type:'delimiter', defaultValue: '\n')
     final static PP CSV_ESCAPE = new PP(name:'csv_escape_char',display:'Escape character', type:'text', defaultValue: '/')
     final static PP CSV_QUOTE = new PP(name:'csv_text_enclosure',display:'Text enclosure', type:'text', defaultValue: '"')
+    final static PP ID_REGEX = new PP(name:'autofeed_id_regex',display:'Regex to match id files', type:'text')
+    final static PP DATA_REGEX = new PP(name:'autofeed_data_regex',display:'Regex to match data files', type:'text')
 
 /*
     final static String HT = "\u0009"
@@ -76,6 +78,8 @@ enum Profile {
             [PP.LOCATION_URL,PP.AUTO,PP.CSV_DELIMITER,PP.CSV_END_OF_LINE,PP.CSV_ESCAPE,PP.CSV_QUOTE,PP.TERMS]),
     DwCA('DarwinCore archive',
             [PP.LOCATION_URL,PP.AUTO,PP.TERMS]),
+    AutoFeed('Automated feed',
+            [PP.LOCATION_URL,PP.AUTO,PP.CSV_DELIMITER,PP.CSV_END_OF_LINE,PP.CSV_ESCAPE,PP.CSV_QUOTE,PP.TERMS,PP.ID_REGEX,PP.DATA_REGEX]),
     WebsiteWithSitemap('Website with sitemap',
             [PP.WEBSITE_URL,PP.DOCUMENT_MAPPER,PP.SITE_MAP,PP.HARVESTER,PP.MIME_TYPE]),
     Flickr('Flickr API',

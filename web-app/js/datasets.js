@@ -59,7 +59,9 @@ function loadResources(serverUrl, biocacheRecordsUrl) {
         displayPage();
         wireDownloadLink();
         wireSearchLink();
-        $('[title]').tooltip(tooltipOptions);
+        $('[title][id!="downloadLink"]').tooltip(tooltipOptions); // don't do download link because the title
+                                                                  // changes and the tootip app does not update
+                                                                  // - rely on built-in tooltips
     });
 }
 /*************************************************\
@@ -146,7 +148,7 @@ function activateClicks() {
             {
                 click: function() {
                     // hide tooltip
-                    $(this).data("tooltip").hide();
+                    hideTooltip(this);
 
                     var $target = $(this).parent().parent().find('.rowC');
                     if ($target.css('display') == 'none') {
@@ -287,7 +289,7 @@ function addFilter(facet, value, element) {
         // duplicate of existing filter so do nothing
         return;
     }
-    var filter = {name:facet, value:value};
+    var filter = {name:facet, value:value, action: facets[facet].action};
     currentFilters.push(filter);
     serialiseFiltersToHash();
     filterList();
@@ -615,18 +617,21 @@ function capitalise(item) {
 
 /*************************************************\
  *  Download csv of data sets
- \*************************************************/
+\*************************************************/
 function wireDownloadLink() {
     $('#downloadLink').click(function() {
-        var filters = $.toJSON(currentFilters);
-        document.location.href = baseUrl + "/public/downloadDataSets?filters=" + filters;
+        var uids = [];
+        $.each(resources, function(i,obj) {
+            uids.push(obj.uid);
+        });
+        document.location.href = baseUrl + "/public/downloadDataSets?uids=" + uids.join(',');
         return false;
     });
 }
 
 /*************************************************\
  *  Searching
- \*************************************************/
+\*************************************************/
 function wireSearchLink() {
     $('#dr-search-link').click(function() {
         if ($('#dr-search').val() != "") {

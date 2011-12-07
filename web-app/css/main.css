@@ -581,7 +581,7 @@ input.addAction, input.cancelAction {
 }
 
 #page > #content {
-	padding: 15px 0 0 0;
+	padding: 0;
 }
 
 /* MEW front page links */
@@ -726,6 +726,22 @@ div.fieldHelp {
     color: #666;
 }
 
+div.reports ul {
+    list-style-type: none;
+}
+
+div.reports ul ul {
+    margin-left: 40px;
+}
+
+table.separate-rows td {
+    border-bottom: 1px solid #ccc;
+}
+
+table.separate-rows tr:last-child td {
+    border-bottom: none;
+}
+
 /* MEW for collection preview page */
 .previewHeader {
     margin-top: 20px;
@@ -826,24 +842,28 @@ a.preview {
     color: #333;
     background: transparent;
     font-weight: bold;
-    font-family: arial,helvetica,clean,sans-serif;
+    /*font-family: arial,helvetica,clean,sans-serif;*/
+}
+
+span.button img {
+    border:  none;
+    padding: 2px 6px 6px 5px;
+    margin: 2px 0 2px 3px;
 }
 
 span.button img.json {
-    vertical-align: -3px;
-    padding-right: 3px;
+    vertical-align: middle;
 }
 
 span.button img.ala {
-    vertical-align: -5px;
-    padding-right: 3px;
+    vertical-align: middle;
 }
 
-a.json {
+span.button a {
     color: #333;
     background: transparent; /* url(../images/json.png) left center no-repeat;*/
     font-weight: bold;
-    font-family: arial,helvetica,clean,sans-serif;
+    /*font-family: arial,helvetica,clean,sans-serif;*/
     margin-left: 10px;
 }
 
@@ -1249,3 +1269,92 @@ input.selector {
     text-decoration: underline;
 }
 
+/*************** self-service pages ****************/
+div.manage {
+    color: #222;
+}
+
+div.manage img {
+    border: none;
+}
+
+div.manage p {
+    padding-bottom: 2px;
+    color: #222;
+}
+
+div.manage h1 {
+    font-size: 22px;
+    padding-bottom: 10px;
+}
+
+div.manage h2 {
+    font-size: 18px;
+    color: black;
+}
+
+div.manage h3 {
+    font-size: 16px;
+    color: #222;
+}
+
+div.manage h4 {
+    font-size: 14px;
+    color: #333;
+    font-weight: normal;
+    font-style: italic;
+    padding-bottom: 5px;
+    margin-top: 8px;
+}
+
+div.manage ol {
+    margin: 0 0 10px 25px;
+}
+
+div.manage ul {
+    list-style: none;
+    margin-left: 10px;
+}
+
+div.manage td {
+    font-size: 12px;
+    line-height: 20px;
+}
+
+#login-button {
+    float: right;
+    border: 1px solid #ccc;
+    padding:  3px;
+    background-color: #eee;
+}
+
+#login-button a {
+    color: black;
+}
+
+#instructions {
+    overflow:  hidden;
+    height: 0;
+    margin: 10px 20px;
+    padding: 0;
+    background-color: #eee;
+}
+
+#instructions > div {
+    padding: 10px;
+}
+
+.ok {
+    background: url("../images/ala/olive-tick.png") no-repeat;
+    padding-left: 15px;
+}
+
+.missing {
+    background: transparent url("../images/ala/delete.png") left 30% no-repeat;
+    padding-left: 15px;
+}
+
+div.manage ul.list {
+    list-style: disc outside none;
+    margin-left: 35px;
+}

@@ -69,8 +69,8 @@ reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
  *  SECURITY
 \******************************************************************************/
 if (!security.cas.urlPattern) {
-    security.cas.urlPattern = "/admin.*,/collection.*,/institution.*," +
-            "/contact.*,/reports.*,/providerCode.*,/providerMap.*,/dataProvider.*,/dataResource.*,/dataHub.*"
+    security.cas.urlPattern = "/admin.*,/collection.*,/institution.*,/contact.*,/reports.*," +
+            "/providerCode.*,/providerMap.*,/dataProvider.*,/dataResource.*,/dataHub.*,/manage/.*"
 }
 if (!security.cas.loginUrl) {
     security.cas.loginUrl = "https://auth.ala.org.au/cas/login"
@@ -151,10 +151,13 @@ environments {
     }
     development {
         grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
+        //grails.serverURL = "http://localhost:8080/Collectory"
+        //grails.serverURL = "http://152.83.199.239:8080/Collectory"
         grails.context = '/Collectory'
         security.cas.serverName = "http://woodfired.ala.org.au:8080"
+        //security.cas.serverName = "http://152.83.199.239:8080"
         security.cas.contextPath = grails.context
-        security.cas.bypass = false
+        security.cas.bypass = true
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

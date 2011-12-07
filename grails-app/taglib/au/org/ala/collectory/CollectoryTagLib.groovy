@@ -1,6 +1,5 @@
 package au.org.ala.collectory
 
-//import org.codehaus.groovy.grails.plugins.springsecurity.AuthorizeTools
 import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
@@ -14,7 +13,7 @@ import au.org.ala.collectory.resources.PP
 
 class CollectoryTagLib {
 
-    //def authenticateService
+    def authService
 
     static namespace = 'cl'
 
@@ -32,7 +31,7 @@ class CollectoryTagLib {
      * Will be to log in or out based on current auth status.
      */
     def loginoutLink = {
-        def requestUri = request.forwardURI
+        def requestUri = ConfigurationHolder.config.security.cas.serverName + request.forwardURI
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             // currently logged in
             out << "<li class='nav-logout nav-right'><a id='${AuthenticationCookieUtils.getUserName(request)}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
@@ -86,6 +85,7 @@ class CollectoryTagLib {
      * <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
      *  The specified role must be granted for the tag to output its body.
      * </g:ifGranted>
+     * @attr role the role to check
      */
     def ifGranted = { attrs, body ->
         if (ConfigurationHolder.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
@@ -97,11 +97,25 @@ class CollectoryTagLib {
      * <cl:ifNotGranted role="ROLE_COLLECTION_ADMIN">
      *  The specified role must be missing for the tag to output its body.
      * </g:ifNotGranted>
+     * @attr role the role to check
      */
     def ifNotGranted = { attrs, body ->
         if (!ConfigurationHolder.config.security.cas.bypass && !request.isUserInRole(attrs.role)) {
             out << body()
         }
+    }
+
+    /**
+     * List interesting roles.
+     */
+    def roles = {
+        def roles = []
+        ['ROLE_ADMIN','ROLE_COLLECTION_EDITOR','ROLE_COLLECTION_ADMIN'].each {
+            if (authService.userInRole(it)) {
+                roles << it
+            }
+        }
+        out << roles.join(', ')
     }
 
     def isLoggedIn = { attrs, body ->
@@ -119,8 +133,12 @@ class CollectoryTagLib {
     def loggedInUsername = { attrs ->
         if (ConfigurationHolder.config.security.cas.bypass) {
             out << 'cas bypassed'
-        } else if (request.getUserPrincipal()) {
+        }
+        else if (request.getUserPrincipal()) {
         	out << request.getUserPrincipal().name
+        }
+        else if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            out << AuthenticationCookieUtils.getUserName(request) + '*'
         }
     }
 
@@ -128,16 +146,25 @@ class CollectoryTagLib {
         return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
     }
 
+    /**
+     * Determines whether the person with the specified email has the rights to edit the specified entity.
+     * A person can edit an entity if:
+     * 1) they are admin,
+     * 2) they are a contact for the entity with administrator privilege,
+     * 3) they are a contact for a parent of the entity with administrator privilege.
+     *
+     * @param uid the uid of the entity
+     * @param email the email (username) of the person to check
+     * @return true if has rights to edit
+     */
     private boolean isAuthorisedToEdit(uid, email) {
         if (isAdmin()) {
             return true
-        } else {
-            if (email) {
-                Contact c = Contact.findByEmail(email)
-                if (c) {
-                    ContactFor cf = ContactFor.findByContactAndEntityUid(c, uid)
-                    return cf?.administrator
-                }
+        }
+        else if (email) {
+            ProviderGroup pg = ProviderGroup._get(uid)
+            if (pg) {
+                return pg.isAuthorised(email)
             }
         }
         return false
@@ -156,6 +183,14 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Writes the main heading of the page - usually the entity name.
+     * Font size is adjusted for longer text.
+     *
+     * @attr value the text to display
+     * @attr edit the id for an optional edit link
+     * @attr id optional id for the h1 element
+     */
     def h1 = { attrs ->
         def style = ""
         if (attrs.value?.size() > 70) {
@@ -167,9 +202,19 @@ class CollectoryTagLib {
         if (attrs.value?.size() > 50) {
             style = ' style="font-size:1.8em;"'
         }
-        out << "<h1${style}>${attrs.value}</h1>"
+        def editLink = ""
+        if (attrs.edit) {
+            editLink = change(id: attrs.edit)
+        }
+        def id = attrs.id ? " id=${attrs.id}" : ""
+
+        out << "<h1${style}${id}>${attrs.value}${editLink}</h1>"
     }
-    
+
+    def change = { attrs ->
+        out << "<img id='${attrs.id}' class='changeLink' src='${resource(dir:'images/admin',file:'change.png')}'/>"
+    }
+
     def showDecimal = { attrs ->
         BigDecimal val = -1
         if (attrs.value?.class == BigDecimal.class) {
@@ -338,8 +383,8 @@ class CollectoryTagLib {
     /**
      * Show lsid as a link
      *
-     * @attrs guid
-     * @attrs target
+     * @attrs guid only shown if it is an lsid
+     * @attrs target for the link
      */
     def guid = { attrs ->
         def lsid = attrs.guid
@@ -350,105 +395,9 @@ class CollectoryTagLib {
             target = ""
         }
         if (lsid =~ 'lsid') {  // contains
-            out << "<a${target} rel='nofollow' class='external_icon' href='http://biocol.org/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
-        } else {
-            out << lsid.encodeAsHTML()
+            def authority = lsid[9..lsid.indexOf(':',10)-1]
+            out << "<a${target} rel='nofollow' class='external' href='http://${authority}/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
         }
-    }
-
-    /**
-     * This simplifies the coding for a property label that is looked up in the message properties and which may have
-     * a tool tip as well.
-     *
-     * Implementation is a bit tricky because it calls other taglibs to expand tags.
-     *
-     * Usage is :
-     *  <cl:label for="<property-name>" source="containing-class" default="<>default-value"/>
-     * eg
-     *  <cl:label for="eastCoordinate" source="infoSource" default="East Coordinate"/>
-     *
-     * Builds something like:
-     *  <label for='eastCoordinate'>
-     *    <span id='gui_0c5f0293aadeedb82edfc5d3370fcdf4' class='yui-tip'
-     *      title='<span class="tooltip">Furthest point East for this dataset in decimal degrees</span>'>East Coordinate
-     *    </span>
-     *  </label>
-     *
-     * @attrs for the label
-     * @attrs source the message code
-     * @attrs default the default message
-     */
-    def label = {attrs ->
-        def _for = attrs.for
-        def source = attrs.source
-        def _default = attrs.default
-
-        def tooltipText = g.message(code: source + "." + _for + ".tooltip", default: "")
-        def labelText = g.message(code: source + "." + _for + ".label", default: _default)
-
-        out << "<label for='${_for}'>"
-
-        if (tooltipText?.isEmpty()) {
-            out << labelText
-        } else {
-            out << gui.toolTip(text: tooltipText, labelText)
-        }
-
-        out << "</label>"
-    }
-
-    /**
-     * Generates submit buttons for web flows.
-     *
-     * Web flow events are not easily supported by submit buttons. The event can be the value of the button but this
-     * tightly couples the controller to the view. This technique assumes there is a hidden field with id="event" and
-     * name="_eventId". It builds a submit button with the form:
-     *
-     * <input type="submit" onclick="return document.getElementById('event').value = 'back'" value="${message(code: 'default.button.back.label', default: 'previous')}" />
-     *
-     * where the event is given by the value assigned to the hidden field.
-     *
-     * Tag is of the form: <cl:createFlowSubmit event="someEvent" value="labelToShow" />
-     *
-     * To create the button disabled or hidden (for layout purposes) use the attribute show=false
-     *
-     * @attrs event controls the event submitted AND the appearance of the button
-     * @attrs show whether the button is enabled
-     * @attrs value the text shown
-     */
-    def createFlowSubmit = {attrs ->
-        def event = attrs.event
-        if (!event) {
-            out << '<!-- No event specified -->'
-        }
-
-        def tabIndex = ""
-        if (event == 'next') {
-            tabIndex = " tabIndex='1'"
-        }
-        out << """<input type="submit" class="${event}"${tabIndex} ${(attrs.show == 'false' ? "disabled='true' style='opacity:0.3;filter:alpha(opacity=30);' " : "")}onclick="return document.getElementById('event').value = '${event}'" value="${attrs.value}"/>"""
-    }
-
-    /**
-     * Generates the set of nav buttons - back, next, cancel & done.
-     *
-     * - use attribute exclude to omit buttons, eg <cl:navButtons exclude="back" />
-     * - excluded buttons are still created so they participate in layout
-     *
-     * @attrs exclude list of buttons to disable (eg back on the first page)
-     *
-     */
-    def navButtons = {attrs ->
-        out << """<div class="buttons flowButtons">"""
-        out << cl.createFlowSubmit(event:"back", show: attrs.exclude?.contains("back") ? "false" : "true",
-                value:"${message(code: 'default.button.cancel.label', default: 'Previous')}")
-        out << cl.createFlowSubmit(event:"cancel", show: attrs.exclude?.contains("cancel") ? "false" : "true",
-                value:"${message(code: 'default.button.cancel.label', default: 'Cancel')}")
-        out << cl.createFlowSubmit(event:"done", show: attrs.exclude?.contains("done") ? "false" : "true",
-                value:"${message(code: 'default.button.done.label', default: 'Done')}")
-        out << cl.createFlowSubmit(event:"next", show: attrs.exclude?.contains("next") ? "false" : "true",
-                value:"${message(code: 'default.button.next.label', default: 'Next')}")
-        out << "</div>"
     }
 
     /** Checkbox list that can be used as a more user-friendly alternative to
@@ -460,7 +409,7 @@ class CollectoryTagLib {
      * @attrs height optional height
      * @attrs width optional width
      * @attrs optionKey optional optionKey to use in list
-     * @attrs readonly creates list for red only
+     * @attrs readonly creates list for read only
      */
     def checkBoxList = {attrs, body ->
         def from = attrs.from
@@ -638,14 +587,20 @@ class CollectoryTagLib {
 
     /**
      * Selects the words to describe the start and end dates of a collection based on data availability.
+     * @attr start the start date
+     * @attr end the end date
+     * @attr change if true show a placeholder instead of nothing when there is no data
      */
-    def temporalSpan = { attrs ->
-        if (attrs.start && attrs.end)
-          out << "<p>The collection was established in ${attrs.start} and ceased acquisitions in ${attrs.end}.</p>"
-        else if (attrs.start)
-          out << "<p>The collection was established in ${attrs.start} and continues to the present.</p>"
-        else if (attrs.end)
-          out << "<p>The collection ceased acquisitions in ${attrs.end}.</p>"
+    def temporalSpanText = { attrs ->
+        if (attrs.start && attrs.end) {
+            out << "The collection was established in ${attrs.start} and ceased acquisitions in ${attrs.end}."
+        } else if (attrs.start) {
+            out << "The collection was established in ${attrs.start} and continues to the present."
+        } else if (attrs.end) {
+            out << "The collection ceased acquisitions in ${attrs.end}."
+        } else if (attrs.change) {
+            out << "[No start or end date specified for this collection.]"
+        }
     }
 
     def stateCoverage = {attrs ->
@@ -753,6 +708,10 @@ class CollectoryTagLib {
         out << "</tr></table>"
     }
 
+    def raw = { attrs->
+        out << attrs.value
+    }
+    
     /**
      * Formats free text so:
      *  line feeds are honoured
@@ -764,76 +723,84 @@ class CollectoryTagLib {
      * @param attrs.noList suppresses lists
      * @param body the text to format
      * @param pClass the class to use for paras
+     * @param body pass the text in as a attr rather than as body (won't be encoded)
      */
     def formattedText = {attrs, body ->
-        def text = body().toString()
+        def text = attrs.body ?: body().toString()
         if (text) {
 
-            // italic
-            def italicMarkup = /(\b)_([^\r\n_]*)_(\b)/  // word boundary _ thing to be italised _ word boundary
-            text = text.replaceAll(italicMarkup) {match, s1, s2, s3 ->
-                s1 + '<em>' + s2 + '</em>' + s3         // word boundary <em> thing to be italised </em> word boundary
+            if (text.indexOf('<') >= 0 && text.indexOf('>') >= 0) {
+                // assume this is already marked up as html
+                out << text
             }
+            else {
 
-            // in-line links
-            if (!attrs.noLink) {
-                def urlMatch = /[^\[](http:\S*)\b/   // word boundary + http: + non-whitespace + word boundary
-                text = text.replaceAll(urlMatch) {s1, s2 ->
-                    if (s2.indexOf('ala.org.au') > 0)
-                        " <a href='${s2}'>${s2}</a>"
-                    else
-                        " <a rel='nofollow' class='external' target='_blank' href='${s2}'>${s2}</a>"
+                // italic
+                def italicMarkup = /(\b)_([^\r\n_]*)_(\b)/  // word boundary _ thing to be italised _ word boundary
+                text = text.replaceAll(italicMarkup) {match, s1, s2, s3 ->
+                    s1 + '<em>' + s2 + '</em>' + s3         // word boundary <em> thing to be italised </em> word boundary
                 }
-            }
 
-            // wiki-like links
-            if (!attrs.noLink) {
-                def urlMatch = /\[(http:\S*)\b ([^\]]*)\]/   // [http: + text to next word boundary + space + all text ubtil next ]
-                text = text.replaceAll(urlMatch) {s1, s2, s3 ->
-                    if (s2.indexOf('ala.org.au') > 0)
-                        "<a href='${s2}'>${s3}</a>"
-                    else
-                        "<a rel='nofollow' class='external' target='_blank' href='${s2}'>${s3}</a>"
-                }
-            }
-
-            // bold
-            def regex = /\+([^\r\n+]*)\+/
-            text = text.replaceAll(regex) {match, group -> '<b>' + group + '</b>'}
-
-            // lists
-            if (!attrs.noList) {
-                def lines = text.tokenize("\r\n")
-                def inList = false
-                def newText = ""
-                // for each line
-                lines.each {
-                    if (it[0] == '*') {
-                        // replace list markup
-                        def item = "<li>" + it.substring(1,it.length()) + "</li>"
-                        if (inList) {
-                            it = item
-                        } else {
-                            inList = true
-                            it = "<ul class='simple'>" + item
-                        }
-                    } else {
-                        if (it) { // skip blank content
-                            def para = (attrs.pClass) ? "<p class='${attrs.pClass}'>" : "<p>"
-                            it = para + it + "</p>"
-                        }
-                        if (inList) {
-                            inList = false
-                            it = "</ul>" + it
-                        }
+                // in-line links
+                if (!attrs.noLink) {
+                    def urlMatch = /[^\[](http:\S*)\b/   // word boundary + http: + non-whitespace + word boundary
+                    text = text.replaceAll(urlMatch) {s1, s2 ->
+                        if (s2.indexOf('ala.org.au') > 0)
+                            " <a href='${s2}'>${s2}</a>"
+                        else
+                            " <a rel='nofollow' class='external' target='_blank' href='${s2}'>${s2}</a>"
                     }
-                    newText += it
                 }
-                if (inList) { newText = newText + "</ul>"}
-                text = newText
-            }
 
-            out << text
+                // wiki-like links
+                if (!attrs.noLink) {
+                    def urlMatch = /\[(http:\S*)\b ([^\]]*)\]/   // [http: + text to next word boundary + space + all text ubtil next ]
+                    text = text.replaceAll(urlMatch) {s1, s2, s3 ->
+                        if (s2.indexOf('ala.org.au') > 0)
+                            "<a href='${s2}'>${s3}</a>"
+                        else
+                            "<a rel='nofollow' class='external' target='_blank' href='${s2}'>${s3}</a>"
+                    }
+                }
+
+                // bold
+                def regex = /\+([^\r\n+]*)\+/
+                text = text.replaceAll(regex) {match, group -> '<b>' + group + '</b>'}
+
+                // lists
+                if (!attrs.noList) {
+                    def lines = text.tokenize("\r\n")
+                    def inList = false
+                    def newText = ""
+                    // for each line
+                    lines.each {
+                        if (it[0] == '*') {
+                            // replace list markup
+                            def item = "<li>" + it.substring(1,it.length()) + "</li>"
+                            if (inList) {
+                                it = item
+                            } else {
+                                inList = true
+                                it = "<ul class='simple'>" + item
+                            }
+                        } else {
+                            if (it) { // skip blank content
+                                def para = (attrs.pClass) ? "<p class='${attrs.pClass}'>" : "<p>"
+                                it = para + it + "</p>"
+                            }
+                            if (inList) {
+                                inList = false
+                                it = "</ul>" + it
+                            }
+                        }
+                        newText += it
+                    }
+                    if (inList) { newText = newText + "</ul>"}
+                    text = newText
+                }
+
+                out << text
+            }
         }
     }
 
@@ -1064,7 +1031,7 @@ class CollectoryTagLib {
     }
     
     def homeLink = {
-        out << '<a class="home" href="' + createLink(uri:"/admin") + '">Home</a>'
+        out << '<a class="home" href="' + createLink(uri:"/manage") + '">Home</a>'
     }
 
     def returnLink = { attrs ->
@@ -1439,6 +1406,7 @@ class CollectoryTagLib {
      * @params controller optional controller - defaults to not specified (current)
      * @params id optional id to edit if it is different to the uid
      * @params any other attrs are passed to link as url params
+     * @params notAuthorisedMessage written in place of button if not authorised - defaults to blank
      * @body the label for the button - defaults to 'Edit' if not specified
      */
     def editButton = { attrs, body ->
@@ -1460,7 +1428,7 @@ class CollectoryTagLib {
             out << link(paramsMap) {body() ?: 'Edit'}
             out << "</span></div>"
         } else {
-            out << "Not authorised to edit."
+            out << attrs.notAuthorisedMessage
         }
     }
 
@@ -1565,7 +1533,7 @@ class CollectoryTagLib {
     }
 
     def viewPublicLink = { attrs, body ->
-        out << link(class:"preview", controller:"public", action:'show', id:attrs.uid) { "<img class='ala' alt='ala' src='${resource(dir:"images", file:"favicon.ico")}'/>View public page" }
+        out << link(class:"preview", controller:"public", action:'show', id:attrs.uid) { "<img class='ala' alt='ala' src='${resource(dir:"images", file:"favicon.gif")}'/>View public page" }
     }
 
     def jsonSummaryLink = { attrs, body ->

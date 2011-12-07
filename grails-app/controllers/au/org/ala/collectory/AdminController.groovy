@@ -31,7 +31,9 @@ class AdminController {
  End access control
  */
 
-    def index = { }
+    def index = {
+        redirect(controller: 'manage')
+    }
 
     def home = { }
 

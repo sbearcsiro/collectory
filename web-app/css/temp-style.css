@@ -6,7 +6,7 @@
 }
 
 #page-collections-map #map_canvas {
-    border:1px solid #333;
+    border:1px solid #333 !important;
     width:588px ! important;
     height:470px;
 }

@@ -586,8 +586,12 @@ class PublicController {
 
     def downloadDataSets = {
         def filters = params.filters ? JSON.parse(params.filters) : [];
+        println 'filters'
+        filters.each { println it }
+        println 'uids: ' + params.uids
+        def uids = params.uids.tokenize(',')
         def drs = DataResource.list([sort:'name'])
-        if (filters) {
+        /*if (filters) {
             drs = drs.findAll { dr ->
                 // check each filter
                 for (filter in filters) {
@@ -596,10 +600,22 @@ class PublicController {
                             return false
                         }
                     }
+                    // TODO: handle filters for properties with multiple values
                     else if (dr[filter.name] != filter.value) {
                         return false
                     }
                 }
+                return true
+            }
+        }*/
+        drs = drs.findAll { dr ->
+            if (dr.status == 'declined') {
+                return false
+            }
+            else if (uids) {
+                return dr.uid in uids
+            }
+            else {
                 return true
             }
         }

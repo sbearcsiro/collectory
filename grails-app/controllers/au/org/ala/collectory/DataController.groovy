@@ -620,6 +620,22 @@ class DataController {
     }
 
     /**
+     * Returns a list of entities that the specified contact is authorised to edit.
+     * @param email of the user
+     */
+    def authorisedForContact = {
+        println 'hello'
+        def contact = Contact.get(params.id)
+        if (!contact) {
+            badRequest "contact ${params.id} does not exist"
+        }
+        else {
+            def result = authService.authorisedForUser(contact)
+            renderAsJson result.sorted, result.latestMod, result.keys.toString().encodeAsMD5()
+        }
+    }
+
+    /**
      * Returns a json list of contacts to be notified on significant entity events.
      * @param uid of the entity
      */
@@ -641,12 +657,12 @@ class DataController {
      * { event: 'user annotation', id: 'ann03468', uid: 'co13' }
      */
     def notify = {
-        println "notify"
+        //println "notify"
         if (request.method != 'POST') {
             println "not allowed"
             notAllowed()
         } else {
-            println params.json
+            //println params.json
             def payload = params.json
             def uid = payload.uid
             def event = payload.event
@@ -656,7 +672,7 @@ class DataController {
                 println "bad request"
                 badRequest 'must specify a uid, an event and an event id'
             } else {
-                println "OK"
+                //println "OK"
                 // register the event
                 ActivityLog.log([user: 'notify-service', isAdmin: false, action: "${action}d ${id}", entityUid: uid])
                 success "notification accepted"

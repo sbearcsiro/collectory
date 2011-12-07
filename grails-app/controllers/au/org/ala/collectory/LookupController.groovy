@@ -229,15 +229,22 @@ class LookupController {
         def infoWithheld = ''
         def downloadLimit = ''
         if (pg instanceof DataResource) {
-            def cit = (pg as DataResource).getCitation()
+            def cit = pg.getCitation()
             citation = cit ? cit : citation
-            def rit = (pg as DataResource).getRights()
+            def rit = ""
+            if (pg.creativeCommons) {
+                def display = DataResource.ccDisplayList.find { it.type == pg.licenseType }
+                rit = "${display.display} ${pg.licenseVersion} Australia (${pg.licenseType})"
+            }
+            if (pg.getRights()) {
+                rit = rit ? rit + " " + pg.getRights() : pg.getRights()
+            }
             rights = rit ? rit : rights
-            def dg = (pg as DataResource).getDataGeneralizations()
+            def dg = pg.getDataGeneralizations()
             dataGen = dg ?: dataGen
-            def ih = (pg as DataResource).getInformationWithheld()
+            def ih = pg.getInformationWithheld()
             infoWithheld = ih ?: infoWithheld
-            downloadLimit = (pg as DataResource).downloadLimit ?: ""
+            downloadLimit = pg.downloadLimit ?: ""
         }
         if (pg instanceof TempDataResource) {
             citation = "This is a temporary data set"

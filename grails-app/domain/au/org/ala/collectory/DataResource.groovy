@@ -76,7 +76,7 @@ class DataResource extends ProviderGroup implements Serializable {
         [type:'other',display:'Some other or no license']]
     static licenseTypeList = creativeCommonsLicenses + ["other"]
     static permissionsDocumentTypes = ['','Email','Data Provider Agreement','Web Page','Other']
-    static contentTypesList = ['behaviour','commercial uses','common names','conservation management',
+    static contentTypesList = ['authoritative','behaviour','commercial uses','common names','conservation management',
             'conservation status','description','distribution maps','distribution text','feeding and diet','habitat',
             'human interaction','identification keys','images','lifecycle','movies','pest management','pest status',
             'point occurrence data','population','references','reproduction','scientific names','sensitive species lists',

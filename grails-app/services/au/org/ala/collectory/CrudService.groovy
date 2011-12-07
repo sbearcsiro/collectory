@@ -617,7 +617,10 @@ class CrudService {
         updateBaseProperties(inst, obj)
         updateCollectionProperties(inst, obj)
         inst.userLastModified = obj.user ?: 'Data services'
-        if (!inst.hasErrors()) {
+        if (inst.hasErrors()) {
+            inst.errors.each { println it }
+        }
+        else {
              inst.save(flush: true)
         }
         return inst

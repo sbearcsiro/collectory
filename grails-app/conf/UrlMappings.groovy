@@ -16,6 +16,9 @@ class UrlMappings {
       // data sets
       "/datasets" (controller: 'public', action: 'dataSets')
 
+      // self-service
+      //"/manage" (controller: 'manage', action: 'index')
+
       // data services
       "/ws/$entity/$uid?" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
@@ -36,7 +39,10 @@ class UrlMappings {
       "/ws/dataResource/$uid/connectionParameters" (controller:'data', action:'connectionParameters')
 
       // raw contact data
-      "/ws/contacts/$id?" (controller: 'data', action: 'contacts')  
+      "/ws/contacts/$id?" (controller: 'data', action: 'contacts')
+
+      // entities that can be edited by a contact
+      "/ws/contacts/$id/authorised" (controller: 'data', action: 'authorisedForContact')
 
       // entity contacts
       "/ws/$entity/$uid/contacts/$id?" {

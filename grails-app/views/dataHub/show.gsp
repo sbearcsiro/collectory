@@ -62,11 +62,11 @@
 
                 <!-- Pub Desc -->
                 <div class="source">[Public description]</div><div style="clear:both;"></div>
-                <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
+                <cl:formattedText body="${instance.pubDescription}"/>
 
                 <!-- Tech Desc -->
                 <div class="source">[Technical description]</div><div style="clear:both;"></div>
-                <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
+                <cl:formattedText body="${instance.techDescription}"/>
 
                 <!-- Contribution -->
                 <div class="source">[Contribution]</div><div style="clear:both;"></div>

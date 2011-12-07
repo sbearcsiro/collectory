@@ -81,9 +81,11 @@
           <div id="column-one">
             <div class="section">
               <h2>Description</h2>
-              <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
+              <cl:formattedText body="${instance.pubDescription}"/>
               <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
-              <cl:temporalSpan start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/>
+              <g:if test="${instance.startDate || instance.endDate}">
+                  <p><cl:temporalSpanText start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/></p>
+              </g:if>
 
               <h2>Taxonomic range</h2>
               <g:if test="${fieldValue(bean: instance, field: 'focus')}">

@@ -490,3 +490,47 @@ span.number {
     height: 100%;
     overflow: auto;
 }
+
+/* manage pages */
+
+img.changeLink {
+    vertical-align: bottom;
+    cursor: pointer;
+}
+
+h2.pseudoLink {
+    color: #555;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.ui-dialog {
+    text-align: left;
+    font-size: 13px !important;
+}
+
+p.dialog-hints {
+    padding-bottom: 15px;
+}
+
+.CheckBoxList input {
+    margin-right:4px;
+    width: auto;
+}
+
+input[type='checkbox'] {
+    background: transparent; /* IE */
+    border: 0;  /* IE */
+}
+
+.CheckBoxList {
+    overflow: auto; overflow-x: hidden; border: 0px solid #000;
+    list-style-type: none; margin: 0; padding:0px
+}
+
+.CheckBoxList li  {
+    padding:2px;
+    display: inline;
+    color: #333;
+    margin-right: 12px;
+}

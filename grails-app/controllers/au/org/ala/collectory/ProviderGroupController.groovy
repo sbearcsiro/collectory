@@ -27,7 +27,7 @@ abstract class ProviderGroupController {
     def beforeInterceptor = [action:this.&auth]
     def auth() {
         if (!authService.userInRole(ProviderGroup.ROLE_EDITOR)) {
-            render "You are not authorised to access this page."
+            render "You are not authorised to access this page. You do not have 'Collection editor' rights."
             return false
         }
     }
@@ -120,34 +120,71 @@ abstract class ProviderGroupController {
      *
      */
     def create = {
+        def name = params.name ?: "enter name"
         ProviderGroup pg
         switch (entityName) {
             case Collection.ENTITY_TYPE:
-                pg = new Collection(uid: idGeneratorService.getNextCollectionId(), name: 'enter name', userLastModified: authService.username())
+                pg = new Collection(uid: idGeneratorService.getNextCollectionId(), name: name, userLastModified: authService.username())
                 if (params.institutionUid && Institution.findByUid(params.institutionUid)) {
                     pg.institution = Institution.findByUid(params.institutionUid)
                 }
                 break
             case Institution.ENTITY_TYPE:
-                pg = new Institution(uid: idGeneratorService.getNextInstitutionId(), name: 'enter name', userLastModified: authService.username()); break
+                pg = new Institution(uid: idGeneratorService.getNextInstitutionId(), name: name, userLastModified: authService.username()); break
             case DataProvider.ENTITY_TYPE:
-                pg = new DataProvider(uid: idGeneratorService.getNextDataProviderId(), name: 'enter name', userLastModified: authService.username()); break
+                pg = new DataProvider(uid: idGeneratorService.getNextDataProviderId(), name: name, userLastModified: authService.username()); break
             case DataResource.ENTITY_TYPE:
-                pg = new DataResource(uid: idGeneratorService.getNextDataResourceId(), name: 'enter name', userLastModified: authService.username())
+                pg = new DataResource(uid: idGeneratorService.getNextDataResourceId(), name: name, userLastModified: authService.username())
             if (params.dataProviderUid && DataProvider.findByUid(params.dataProviderUid)) {
                 pg.dataProvider = DataProvider.findByUid(params.dataProviderUid)
             }
             break
             case DataHub.ENTITY_TYPE:
-                pg = new DataHub(uid: idGeneratorService.getNextDataHubId(), name: 'enter name', userLastModified: authService.username()); break
+                pg = new DataHub(uid: idGeneratorService.getNextDataHubId(), name: name, userLastModified: authService.username()); break
         }
         if (!pg.hasErrors() && pg.save(flush: true)) {
+            // add the user as a contact if specified
+            if (params.addUserAsContact) {
+                addUserAsContact(pg, params)
+            }
             flash.message = "${message(code: 'default.created.message', args: [message(code: "${pg.urlForm()}", default: pg.urlForm()), pg.uid])}"
             redirect(action: "show", id: pg.uid)
         } else {
             flash.message = "Failed to create new ${entityName}"
             redirect(controller: 'admin', action: 'index')
         }
+    }
+
+    /**
+     * Adds the current user as a contact for the specified entity.
+     *
+     * Used when creating new entities.
+     * @param pg the entity
+     * @param params values for contact fields if the contact does not already exist
+     */
+    void addUserAsContact(ProviderGroup pg, params) {
+        def user = authService.username()
+        // find contact
+        Contact c = Contact.findByEmail(user)
+        if (!c) {
+            // create from params
+            c = new Contact(email: user,
+                userLastModified: user,
+                firstName: params.firstName ?: null,
+                lastName: params.lastName ?: null,
+                title: params.title ?: null,
+                phone: params.phone ?: null,
+                publish: (params.publish == 'true')
+            )
+            c.save(flush:true)
+            if (c.hasErrors()) {
+                c.errors.each {
+                    log.debug("Error saving new contact for ${user} - ${it}")
+                    println "Error saving new contact for ${user} - ${it}"
+                }
+            }
+        }
+        pg.addToContacts(c, params.role ?: 'editor', true, false, user)
     }
 
     def cancel = {

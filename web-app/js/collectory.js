@@ -11,6 +11,14 @@ function setNumbers(totalBiocacheRecords) {
   $('#numBiocacheRecords').html(recordsClause);
 }
 /************************************************************\
+ * Called when an ajax request returns no records.
+ \************************************************************/
+function noData() {
+    setNumbers(0);
+    $('a.recordsLink').css('display','none');
+    $('#recordsBreakdown').css('display','none');
+}
+/************************************************************\
 * Add commas to number strings
 \************************************************************/
 function addCommas(nStr)

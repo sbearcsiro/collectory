@@ -389,14 +389,6 @@
         /************************************************************\
         *
         \************************************************************/
-        function noData() {
-            setNumbers(0);
-            $('a.recordsLink').css('display','none');
-            $('#recordsBreakdown').css('display','none');
-        }
-        /************************************************************\
-        *
-        \************************************************************/
         // define biocache server
         biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
         biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";

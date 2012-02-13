@@ -44,6 +44,17 @@ class PublicController {
     def index = { redirect(action: 'map')}
 
     /**
+     * Do logouts through this app so we can invalidate the session.
+     *
+     * @param casUrl the url for logging out of cas
+     * @param appUrl the url to redirect back to after the logout
+     */
+    def logout = {
+        session.invalidate()
+        redirect(url:"${params.casUrl}?url=${params.appUrl}")
+    }
+
+    /**
      * Shows the public page for any entity when passed a UID.
      *
      * If the id is not a UID it will be assumed to be a collection and will be treated as:

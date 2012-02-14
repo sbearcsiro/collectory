@@ -2,18 +2,9 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="ala2" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Web Services | Natural History Collections | Atlas of Living Australia</title>
-
-        <script type="text/javascript">
-          var altMap = true;
-          $(document).ready(function() {
-            $('#nav-tabs > ul').tabs();
-            greyInitialValues();
-            <!-- calling initMap() here rather than in onload() causes instability -->
-          });
-        </script>
     </head>
     <body class="two-column-right" onload="">
     <div id="content">

@@ -2,13 +2,8 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
         <title>${fieldValue(bean: instance, field: "name")} | Data sets | Atlas of Living Australia</title>
-        <script type="text/javascript">
-          $(document).ready(function() {
-            greyInitialValues();
-          });
-        </script>
     </head>
     <body class="two-column-right">
       <div id="content">

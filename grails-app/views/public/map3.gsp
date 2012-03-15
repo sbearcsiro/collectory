@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Natural History Collections | Atlas of Living Australia</title>
         <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.core.js"></script>
@@ -16,7 +16,6 @@
           var altMap = true;
           $(document).ready(function() {
             $('#nav-tabs > ul').tabs();
-            greyInitialValues();
             <!-- calling initMap() here rather than in onload() causes instability -->
           });
         </script>
@@ -25,7 +24,7 @@
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}">Home</a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/">Explore</a><span class="current">Natural History Collections</span></div>
+        <div id="breadcrumb"><cl:breadcrumbTrail atBase="true"/></div>
         <div class="section full-width">
           <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>

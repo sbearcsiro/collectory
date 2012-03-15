@@ -36,10 +36,19 @@ if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
 println "(*) grails.config.locations = ${grails.config.locations}"
 
 /******************************************************************************\
+ *  SKINNING
+ \******************************************************************************/
+if (!ala.skin) {
+    ala.skin = 'ala2';
+}
+/******************************************************************************\
  *  EXTERNAL SERVERS
 \******************************************************************************/
 if (!bie.baseURL) {
      bie.baseURL = "http://bie.ala.org.au/"
+}
+if (!bie.searchPath) {
+    bie.searchPath = "/search"
 }
 if (!biocache.baseURL) {
      biocache.baseURL = "http://biocache.ala.org.au/"
@@ -49,6 +58,9 @@ if (!spatial.baseURL) {
 }
 if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
+}
+if (!headerAndFooter.baseURL) {
+    headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 }
 /******************************************************************************\
  *  BIOCACHE URLS
@@ -74,6 +86,9 @@ if (!security.cas.urlPattern) {
 }
 if (!security.cas.loginUrl) {
     security.cas.loginUrl = "https://auth.ala.org.au/cas/login"
+}
+if (!security.cas.logoutUrl) {
+    security.cas.logoutUrl = "https://auth.ala.org.au/cas/logout"
 }
 if (!citation.template) {
     citation.template = 'Records provided by @entityName@, accessed through ALA website.'
@@ -151,13 +166,14 @@ environments {
     }
     development {
         grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
+        //grails.serverURL = "http://mark1-be.nexus.csiro.au:8080/Collectory"
         //grails.serverURL = "http://localhost:8080/Collectory"
         //grails.serverURL = "http://152.83.199.239:8080/Collectory"
         grails.context = '/Collectory'
         security.cas.serverName = "http://woodfired.ala.org.au:8080"
         //security.cas.serverName = "http://152.83.199.239:8080"
         security.cas.contextPath = grails.context
-        security.cas.bypass = true
+        security.cas.bypass = false
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
@@ -170,8 +186,8 @@ environments {
 }
 
 println "serverUrl = " + grails.serverURL
-println "cas.serverName = " + security.cas.serverName
-println "cas.context = " + security.cas.context
+println "security.cas.serverName = " + security.cas.serverName
+println "security.cas.context = " + security.cas.contextPath
 
 hibernate = "off"
 
@@ -199,12 +215,19 @@ auditLog.verbose = false
 \******************************************************************************/
 log4j = {
 
+/*
     appenders {
         file name:'appLog', file: "${logDirectory}/collectory.log".toString()
 
         // set up a log file for the stacktrace log; be sure to use .toString() with ${}
         rollingFile name:'tomcatLog', file:"${logDirectory}/stacktrace.log".toString(), maxFileSize:'100KB'
         'null' name:'stacktrace'
+    }
+*/
+    production {
+        appenders {
+            rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat55/collectory-stacktrace.log"
+        }
     }
 
     root {

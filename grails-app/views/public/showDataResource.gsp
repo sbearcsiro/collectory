@@ -2,14 +2,13 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
         <link rel="stylesheet" type="text/css" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" />
         <script type="text/javascript">
           $(document).ready(function() {
-            greyInitialValues();
             $("a#lsid").fancybox({
                     'hideOnContentClick' : false,
                     'titleShow' : false,
@@ -150,13 +149,14 @@
                   <cl:dataCurrency date="${instance.dataCurrency}"/>
                   </p>
                   <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
+                  %{--<p><cl:archiveLink uid="${instance.uid}" allowed="${instance.publicArchiveAvailable}"/></p>--}%
                 </div>
             </g:if>
           </div>
           <g:if test="${instance.resourceType == 'records'}">
               <div id="recordsBreakdown" class="section vertical-charts">
                 <h3>Map of records</h3>
-                <cl:recordsMap/>
+                <cl:recordsMapDirect uid="${instance.uid}"/>
                 <div id="tree"></div>
                 <div id="charts"></div>
               </div>
@@ -297,7 +297,7 @@
               /* the id of the div to create the charts in - defaults is 'charts' */
               targetDivId: "tree",
               /* a uid or list of uids to chart - either this or query must be present */
-              instanceUid: "${instance.uid}",
+              instanceUid: "${instance.uid}"
               /* a query to set the scope of the records */
               //query: "notomys"
           }
@@ -314,9 +314,9 @@
             $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
           });
           // IE hack as IE doesn't trigger the error handler
-          if ($.browser.msie && !n.complete) {
+          /*if ($.browser.msie && !n.complete) {
             $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
-          }
+          }*/
         });
         /************************************************************\
         *
@@ -379,8 +379,8 @@
               loadTaxonomyChart(taxonomyChartOptions);
 
               // records map
-              var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-              $.get(mapServiceUrl, {}, mapRequestHandler);
+              /*var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
+              $.get(mapServiceUrl, {}, mapRequestHandler);*/
 
               // tree
               initTaxonTree(taxonomyTreeOptions);

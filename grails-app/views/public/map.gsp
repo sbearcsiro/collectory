@@ -3,7 +3,7 @@
     <head>
         <!-- this is not the current version - use map3 -->
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="ala2" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Natural History Collections | Atlas of Living Australia</title>
         <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>

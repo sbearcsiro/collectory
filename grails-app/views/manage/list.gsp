@@ -20,6 +20,23 @@
             <div class="message">${flash.message}</div>
         </g:if>
 
+        <g:if test="${show == 'user'}"><div>
+            <h2>User details</h2>
+            <p>Security is ${ConfigurationHolder.config.security.cas.bypass ? 'bypassed' : 'active'}.</p>
+            <g:set var="username" value="${request.userPrincipal?.name}"/>
+            <g:if test="${username}">
+                <p>Logged in as ${username}.</p>
+                <p>User ${request.isUserInRole('ROLE_COLLECTION_ADMIN') ? 'has' : 'does not have'} ROLE_COLLECTION_ADMIN.</p>
+                <p>User ${request.isUserInRole('ROLE_COLLECTION_EDITOR') ? 'has' : 'does not have'} ROLE_COLLECTION_EDITOR.</p>
+            </g:if>
+            <g:else><p>Not logged in.</p></g:else>
+            <p>
+                <g:set var="cookiename" value="${cookie(name: 'ALA-Auth')}"/>
+                <g:if test="${cookiename}">Cookie is present. Name is ${cookiename}.</g:if>
+                <g:else>No cookie found.</g:else>
+            </p>
+        </div></g:if>
+
         <h2>Your metadata</h2>
         <p>The institutions, collections and data resources that you are authorised to access are listed below.
         Be aware that all changes are immediately reflected in the ALA website and any hubs or other websites
@@ -237,8 +254,7 @@
         <script type="text/javascript">
 
             function edit(uid) {
-                document.location.href = "${ConfigurationHolder.config.grails.serverURL}/" + getController(uid) +
-                        "/show/" + uid;
+                document.location.href = "${ConfigurationHolder.config.grails.serverURL}/manage/show/" + uid;
             }
             $('#instructions-link').click(function() {
                 var height = $('#instructions').css('height');

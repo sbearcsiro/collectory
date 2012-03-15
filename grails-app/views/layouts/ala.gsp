@@ -18,9 +18,8 @@
   <title><g:layoutTitle/></title>
   <link rel="stylesheet" href="${resource(dir:'css',file:'temp-style.css')}"/>
   <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
+  <link rel="stylesheet" href="${resource(dir:'css',file:'ala-style.css')}"/>
 
-  <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/style.css" type="text/css" media="screen" />
-  <!--link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon"-->
   <link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
   <link rel="shortcut icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/images/favicon.ico" />
 	<link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/css/sf.css" />

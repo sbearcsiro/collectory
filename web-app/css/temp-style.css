@@ -253,6 +253,10 @@ div.result {
     list-style-type: none !important;
 }
 
+#page-datasets #navLinks {
+    width: 100%;
+}
+
 .link {
     /*text-decoration: underline;*/
     color: #01716E;
@@ -396,4 +400,26 @@ ul#nav-tabs a.current {
 
 div.panes {
     margin-top: -20px;
+}
+
+/* 2010 -> 2011 transition styles */
+ol, ul {
+    margin-left: 30px !important;
+}
+
+h2 {
+    padding-bottom: .3em !important;
+}
+
+footer ul, nav ol, nav ul {
+    margin-left: 0 !important;
+}
+
+#page-datasets #page-header {
+    background:#436404 url(images/bg_datasets.jpg) center bottom no-repeat;
+    padding-top:38px;
+    position:relative;
+    top:-38px;
+    margin-bottom:-38px;
+    background-color:#486688;
 }

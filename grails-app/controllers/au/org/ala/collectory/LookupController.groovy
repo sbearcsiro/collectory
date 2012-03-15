@@ -63,7 +63,7 @@ class LookupController {
      * 3. acronym if it matches a collection
      */
     def summary = {
-        log.info "debugging summary: request from ${request.remoteAddr} for ${params.id}"
+        log.debug "debugging summary: request from ${request.remoteAddr} for ${params.id}"
         def instance
         if (params.id?.startsWith('drt')) {
             instance = TempDataResource.findByUid(params.id)
@@ -77,7 +77,8 @@ class LookupController {
         if (instance) {
             render instance.buildSummary() as JSON
         } else {
-            log.error "Unable to find entity for id = ${params.id}"
+            // we would normally log this as a warning but it occurs too often
+            //log.warning "Unable to find entity for id = ${params.id}"
             def error = ["error":"unable to find an entity for id = " + params.id]
             render error as JSON
         }
@@ -302,6 +303,9 @@ class LookupController {
     }
 
     private ProviderGroup findCollection(id) {
+        if (!id) {
+            return null
+        }
         // try lsid
         if (id instanceof String && id.startsWith('urn:lsid:')) {
             return Collection.findByGuid(id)

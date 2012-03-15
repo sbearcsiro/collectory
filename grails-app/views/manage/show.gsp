@@ -1,13 +1,14 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat; au.org.ala.collectory.Collection; au.org.ala.collectory.Institution" %>
+<%@ page import="au.org.ala.collectory.ContactFor; grails.converters.deep.JSON; org.codehaus.groovy.grails.commons.ConfigurationHolder; java.text.DecimalFormat; au.org.ala.collectory.Collection; au.org.ala.collectory.Institution" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="ala2" />
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
         <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" type="text/css" media="screen"/>
         <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
         <g:javascript library="jquery-ui-1.8.16.custom.min"/>
+        <g:javascript library="jQueryRotateCompressed.2.1"/>
         <g:javascript library="change"/>
         %{--<g:javascript library="datadumper"/>--}%
         <g:javascript library="json2"/>
@@ -74,62 +75,93 @@
           <div id="column-one">
             <div class="section">
 
-              <h2>Description<cl:change id="descriptionLink"/></h2>
-              <div id="description">
+                <h2>Description<cl:change id="descriptionLink"/></h2>
+                <div id="description">
                   <cl:formattedText body="${instance.pubDescription}"/>
                   <cl:formattedText body="${instance.techDescription}"/>
-              </div>
-              <p><span id="temporalSpan"><cl:temporalSpanText start="${instance.startDate}" end="${instance.endDate}" change="true"/></span>
+                </div>
+                <p><span id="temporalSpan"><cl:temporalSpanText start="${instance.startDate}" end="${instance.endDate}" change="true"/></span>
                   <cl:change id="temporalSpanLink"/></p>
 
-              <h2>Taxonomic range<cl:change id="taxonomicRangeLink"/></h2>
-              <g:if test="${fieldValue(bean: instance, field: 'focus')}">
-                <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
-              </g:if>
-              <g:if test="${fieldValue(bean: instance, field: 'kingdomCoverage')}">
-                <p>Kingdoms covered include: <cl:concatenateStrings values='${fieldValue(bean: instance, field: "kingdomCoverage")}'/>.</p>
-              </g:if>
-              <g:if test="${fieldValue(bean: instance, field: 'scientificNames')}">
-                <p><cl:collectionName name="${instance.name}" prefix="The "/> includes members from the following taxa:<br/>
-                <cl:JSONListAsStrings json='${fieldValue(bean: instance, field: "scientificNames")}'/>.</p>
-              </g:if>
+                <h2>Taxonomic range<cl:change id="taxonomicRangeLink"/></h2>
+                <p class="${instance.focus ? '' : 'empty'}" id="focus">${fieldValue(bean: instance, field: "focus")}</p>
+                <p class="${instance.kingdomCoverage ? '' : 'empty'}" id="kingdomCoverage">Kingdoms covered include: <cl:concatenateStrings values='${fieldValue(bean: instance, field: "kingdomCoverage")}'/>.</p>
+                <p class="${instance.scientificNames ? '' : 'empty'}" id="sciNames"><cl:collectionName name="${instance.name}" prefix="The "/> includes members from the following taxa:<br/>
+                <span id="scientificNames"><cl:JSONListAsStrings json='${fieldValue(bean: instance, field: "scientificNames")}'/></span>.</p>
 
-                <h2>Geographic range<cl:change id="geographicRange"/></h2>
-                <g:if test="${fieldValue(bean: instance, field: 'geographicDescription')}">
-                  <p>${fieldValue(bean: instance, field: "geographicDescription")}</p>
-                </g:if>
-                <g:if test="${fieldValue(bean: instance, field: 'states')}">
-                  <p><cl:stateCoverage states='${fieldValue(bean: instance, field: "states")}'/></p>
-                </g:if>
-                <g:if test="${instance.westCoordinate != -1}">
-                  <p>The western most extent of the collection is: <cl:showDecimal value='${instance.westCoordinate}' degree='true'/></p>
-                </g:if>
-                <g:if test="${instance.eastCoordinate != -1}">
-                  <p>The eastern most extent of the collection is: <cl:showDecimal value='${instance.eastCoordinate}' degree='true'/></p>
-                </g:if>
-                <g:if test="${instance.northCoordinate != -1}">
-                  <p>The northtern most extent of the collection is: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></p>
-                </g:if>
-                <g:if test="${instance.southCoordinate != -1}">
-                  <p>The southern most extent of the collection is: <cl:showDecimal value='${instance.southCoordinate}' degree='true'/></p>
-                </g:if>
+                <h2>Geographic range<cl:change id="geographicRangeLink"/></h2>
+                <p class="${instance.geographicDescription ? '' : 'empty'}" id="geographicDescription">${fieldValue(bean: instance, field: "geographicDescription")}</p>
+                <p class="${instance.states ? '' : 'empty'}" id="states"><cl:stateCoverage states='${fieldValue(bean: instance, field: "states")}'/></p>
 
-              <g:set var="nouns" value="${cl.nounForTypes(types:instance.listCollectionTypes())}"/>
-              <h2>Number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> in the collection<cl:change id="records"/></h2>
-              <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
+                <g:set var="nouns" value="${cl.nounForTypes(types:instance.listCollectionTypes())}"/>
+                <h2>Number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> in the collection<cl:change id="records"/></h2>
+                <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
                 <p>The estimated number of ${nouns} in <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
-              </g:if>
-              <g:if test="${fieldValue(bean: instance, field: 'numRecordsDigitised') != '-1'}">
+                </g:if>
+                <g:if test="${fieldValue(bean: instance, field: 'numRecordsDigitised') != '-1'}">
                 <p>Of these ${fieldValue(bean: instance, field: "numRecordsDigitised")} are databased.
                 This represents <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> of the collection.</p>
-              </g:if>
-              <p>Click the Records & Statistics tab to access those database records that are available through the atlas.</p>
+                </g:if>
+                <p>Click the Records & Statistics tab to access those database records that are available through the atlas.</p>
 
                 <h2>Sub-collections<cl:change id="subCollections"/></h2>
                 <p><cl:collectionName prefix="The " name="${instance.name}"/> contains these significant collections:</p>
                 <cl:subCollectionList list="${instance.subCollections}"/>
 
-              <cl:lastUpdated date="${instance.lastUpdated}"/>
+                <cl:lastUpdated date="${instance.lastUpdated}"/>
+                <div>
+                    <p id="showChangesLink" class="link under" style="color:#01716E;margin-left:15px;">Show recent changes</p>
+                    <div id="changes" style="display:none;">
+                      <g:each in="${changes}" var="ch">
+                          <div>
+                            <g:if test="${ch.eventName == 'UPDATE'}">
+                              <p class="relatedFollows">
+                                  <img style="vertical-align: bottom;" title="Click to show more information" src="${resource(dir:'images/skin', file:'ExpandArrow.png')}"/>
+                                  At ${ch.lastUpdated} <em>${ch.actor}</em> changed the <strong>${ch.propertyName}</strong> field</p>
+                              <table class="textChanges">
+                                <tr>
+                                  <td>to:</td><td><cl:cleanString class="changeTo" value="${ch.newValue}" field="${ch.propertyName}"/></td>
+                                </tr><tr>
+                                  <td>from:</td><td><cl:cleanString class="changeFrom" value="${ch.oldValue}" field="${ch.propertyName}"/></td>
+                                </tr>
+                              </table>
+                            </g:if>
+                            <g:elseif test="${ch.eventName == 'INSERT' && cl.shortClassName(className:ch.className) == 'ContactFor'}">
+                              <g:set var="cf" value="${ContactFor.get(ch.persistedObjectId)}"/>
+                              <p class="relatedFollows">
+                                  <img style="vertical-align: bottom;" title="Click to show more information" src="${resource(dir:'images/skin', file:'ExpandArrow.png')}"/>
+                                  At ${ch.lastUpdated} <em>${ch.actor}</em> added a contact</p>
+                              <table class="textChanges">
+                                <tr>
+                                  <td>id:${ch.persistedObjectId}</td><td>${cf ? cf.contact?.buildName() : 'name missing - may have been deleted'}</td>
+                                </tr>
+                              </table>
+                            </g:elseif>
+                            <g:elseif test="${ch.eventName == 'DELETE' && cl.shortClassName(className:ch.className) == 'ContactFor'}">
+                              <p class="relatedFollows">
+                                  <img style="vertical-align: bottom;" title="Click to show more information" src="${resource(dir:'images/skin', file:'ExpandArrow.png')}"/>
+                                  At ${ch.lastUpdated} <em>${ch.actor}</em> removed a contact</p>
+                              <table class="textChanges">
+                                <tr>
+                                  <td>id:${ch.persistedObjectId}</td><td>name not available - has been deleted</td>
+                                </tr>
+                              </table>
+                            </g:elseif>
+                            <g:elseif test="${ch.eventName == 'INSERT' && ch.uri == instance.uid}">
+                              <p class="relatedFollows">
+                                  <img style="vertical-align: bottom;" title="Click to show more information" src="${resource(dir:'images/skin', file:'ExpandArrow.png')}"/>
+                                  At ${ch.lastUpdated} <em>${ch.actor}</em> created this ${entityNameLower}.</p>
+                              <table class="textChanges">
+                                <tr>
+                                  <td colspan="2">${instance.name}</td>
+                                </tr>
+                              </table>
+                            </g:elseif>
+                          </div>
+                      </g:each>
+                    </div>
+                </div>
+
             </div><!--close section-->
           </div><!--close column-one-->
 
@@ -268,12 +300,36 @@
             <input type="text" style="width:350px;" name="endDate" id="endDateInput" value="${instance.endDate}" maxlength="45"/>
         </div>
         <div id="taxonomicRange-dialog">
-            <p class="dialog-hints">Describe the main taxonomic focus of the collection, such as 'Fungi of medical importance'.</p>
             <p class="validateTips"> </p>
-            <textarea  name="focus" id="focusInput" rows=6 cols="80" >${instance.focus}</textarea>
-            <p class="dialog-hints">Indicate which biological kingdoms are covered by your collection.</p>
-            <cl:checkBoxList name="kingdomCoverage" from="${Collection.kingdoms}" value="${instance?.kingdomCoverage}" />
-            <textarea  name="scientificNames" id="scientificNameInput" rows=6 cols="80" >${instance.scientificNames}</textarea>
+            <fieldset class="dialog">
+                <legend>Focus</legend>
+                <p>Describe the intended taxonomic focus of the collection, such as 'Fungi of medical importance'.</p>
+                <textarea  name="focus" id="focusInput" rows=5 cols="90" >${instance.focus}</textarea>
+            </fieldset>
+            <fieldset class="dialog">
+                <legend>Kingdom coverage</legend>
+                <p>Indicate which biological kingdoms are covered by your collection.</p>
+                <cl:checkBoxList name="kingdomCoverage" from="${Collection.kingdoms}" value="${instance?.kingdomCoverage}" />
+            </fieldset>
+            <fieldset class="dialog">
+                <legend>Scientific names</legend>
+                <p>Enter any number of taxon names that describe the taxonomic scope of the collection.
+                Names of families or higher ranks are suitable. Separate names with a comma, eg Insecta, Arachnida</p>
+                <textarea  name="scientificNames" id="scientificNamesInput" rows=5 cols="90" ><cl:JSONListAsStrings pureList='true' json='${fieldValue(bean: instance, field: "scientificNames")}'/></textarea>
+            </fieldset>
+        </div>
+        <div id="geographicRange-dialog">
+            <p class="validateTips"> </p>
+            <fieldset class="dialog">
+                <legend>Geographic description</legend>
+                <p>A free text description of the geographical scope of the collection.</p>
+                <textarea  name="geographicDescription" id="geographicDescriptionInput" rows=5 cols="90" >${instance.geographicDescription}</textarea>
+            </fieldset>
+            <fieldset class="dialog">
+                <legend>States covered</legend>
+                <p>States and territories that are covered by the collection.</p>
+                <textarea  name="states" id="statesInput" rows=5 cols="90" >${instance.states}</textarea>
+            </fieldset>
         </div>
 
         <script type="text/javascript">
@@ -283,8 +339,20 @@
             var baseUrl = "${ConfigurationHolder.config.grails.serverURL}",
                 uid = "${instance.uid}",
                 username = "<cl:loggedInUsername/>",
-                startDate = "${instance.startDate}",
-                endDate = "${instance.endDate}";
+                currentValue = {
+                    name: "${instance.name}",
+                    acronym: "${instance.acronym}",
+                    guid: "${instance.guid}",
+                    pubDescription: "",   // not initialised as the initial text is
+                    techDescription: "",  // taken from the formatted page elements
+                    startDate: "${instance.startDate}",
+                    endDate: "${instance.endDate}",
+                    focus: "${instance.focus}",
+                    kingdomCoverage: "${instance.kingdomCoverage}",
+                    scientificNames: <cl:raw value="${instance.scientificNames}" default="[]"/>,
+                    geographicDescription: "${instance.geographicDescription}",
+                    states: "${instance.states}"
+                };
         </script>
     </body>
 </html>

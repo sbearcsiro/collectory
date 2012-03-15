@@ -1,8 +1,9 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
+<!DOCTYPE html>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="ala"/>
+    <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
     <title>Atlas Datasets | Atlas of Living Australia</title>
     <link rel="stylesheet" type="text/css" media="screen" href="http://biocache.ala.org.au/static/css/search.css"/>
     <g:javascript library="datasets"/>
@@ -14,7 +15,6 @@
       var altMap = true;
       $(document).ready(function() {
         $('#nav-tabs > ul').tabs();
-        greyInitialValues();
         loadResources("${ConfigurationHolder.config.grails.serverURL}","${ConfigurationHolder.config.biocache.records.url}");
         $('select#per-page').change(onPageSizeChange);
         $('select#sort').change(onSortChange);
@@ -25,9 +25,19 @@
 
   <body id="page-datasets">
     <div id="content">
-      <div id="header">
+        %{--<header id="page-header">
+            <div class="inner">
+                <nav id="breadcrumb"><ol><li><a href="http://www.ala.org.au">Home</a></li> <li><a href='${ConfigurationHolder.config.ala.baseURL}/data-sets/'>Data sets</a></li> <li class="last">List</li></ol></nav>
+                <h1>Atlas data sets</h1>
+            </div><!--inner-->
+        </header>
+        <g:if test="${flash.message}">
+            <div class="message">${flash.message}</div>
+        </g:if>--}%
+
+        <div id="header">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}">Home</a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/">Explore</a><span class="current">Data sets</span></div>
+        <div id="breadcrumb"><cl:breadcrumbTrail home="dataSets" atBase="true"/></div>
         <div class="full-width">
           <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -55,7 +65,7 @@
         <div id="currentFilterHolder">
         </div>
 
-        <div id="facets">
+        <div id="dsFacets">
         </div>
       </div>
 
@@ -86,7 +96,7 @@
           <div id="loading">Loading ..</div>
         </div>
 
-        <div id="searchNavBar">
+        <div id="searchNavBar" class="clearfix">
           <div id="navLinks"></div>
         </div>
       </div>

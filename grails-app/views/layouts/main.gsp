@@ -38,13 +38,7 @@
 <div id="content" class="clearfix">
 
     <div class="login-info">
-        <cl:isLoggedIn>
-            <span id="logged-in">Logged in as <cl:loggedInUsername/></span>
-            <a href="http://auth.ala.org.au/cas/logout?url=${ConfigurationHolder.config.security.cas.serverName}${request.forwardURI}">Logout</a>
-        </cl:isLoggedIn>
-        <cl:isNotLoggedIn>
-            <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}${request.forwardURI}">Login</a>
-        </cl:isNotLoggedIn>
+        <cl:loginoutLink2011 showUser="true" fixedAppUrl="${ConfigurationHolder.config.grails.serverURL}/manage"/>
     </div>
     
 	<div id="content-full-width" class="clearfix"  style="clear:both;">

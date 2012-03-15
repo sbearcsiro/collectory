@@ -59,9 +59,11 @@ function loadResources(serverUrl, biocacheRecordsUrl) {
         displayPage();
         wireDownloadLink();
         wireSearchLink();
-        $('[title][id!="downloadLink"]').tooltip(tooltipOptions); // don't do download link because the title
-                                                                  // changes and the tootip app does not update
-                                                                  // - rely on built-in tooltips
+
+        // set up tooltips
+        // - don't do download link because the title changes and the tooltip app does not update
+        // - also limit to content to exclude links in header
+        $('div.collectory-content [title][id!="downloadLink"]').tooltip(tooltipOptions);
     });
 }
 /*************************************************\
@@ -254,7 +256,7 @@ function filterBy(filter, uidList) {
             if (uidList.length == 1 && resource.uid == uidList[0]) { // don't know why this is needed - seems to be a bug
                 newResourcesList.push(resource);
             }
-            else if (uidList && $.inArray(resource.uid,uidList) > 0) {
+            else if (uidList && $.inArray(resource.uid,uidList) >= 0) {
                 newResourcesList.push(resource);
             }
         }
@@ -334,7 +336,7 @@ function showPaginator() {
     else {
         $pago.append('<li id="prevPage">« Previous</li>');
     }
-    for (var i = 1; i < 10 && i <= maxPage; i++) {
+    for (var i = 1; i <= maxPage; i++) {
         if (i == currentPage) {
             $pago.append('<li class="currentPage">' + i + '</li>');
         }
@@ -470,13 +472,13 @@ var facets = {
 
 /** calculate facet totals and display them **/
 function calculateFacets() {
-    $('div#facets div').remove();
+    $('#dsFacets div').remove();
     $.each(facets, function(i, obj) {
         if (obj.name != 'contains') {
             var list = sortByCount(getSetOfFacetValuesAndCounts(obj));
             // don't show if only one value
             if (list.length > 1) {
-                $('div#facets').append(displayFacet(obj, list));
+                $('#dsFacets').append(displayFacet(obj, list));
             }
         }
     });

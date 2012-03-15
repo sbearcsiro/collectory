@@ -91,6 +91,38 @@ var validator = {
             var authority = lsid.substring(9,lsid.indexOf(':',10));
             return '<a target="_blank" rel="nofollow" class="external" href="http://' + authority +
                     '/' + lsid +  '">' + lsid + '</a>';
+        },
+        checkboxesToList: function (checkedInputs) {
+            var kc = [];
+            $.each(checkedInputs, function(i, obj) {
+                kc.push($(obj).val());
+            });
+            return kc;
+        },
+        commaSeparatedToList: function (str) {
+            if (str === "") { return [] }
+            var list = [];
+            $.each(str.split(','), function (i,obj) {
+                list.push(obj.trim());
+            });
+            return list;
+        },
+        listToString: function (list) {
+            var len = list.length;
+            //alert(list.join(' ') + " (" + len + ")");
+            switch (len) {
+                case 0: return "";
+                case 1: return list[0];
+                default: return list.slice(0,list.length - 1).join(', ') + " and " + list[list.length - 1];
+            }
+        },
+        states: function (str) {
+            if (str === "") { return ""; }
+            if ($.inArray(str.toLowerCase(), ["all", "all states", "australian states"]) > -1) {
+                return "All Australian states are covered.";
+            } else {
+                return "Australian states covered include: " + str + ".";
+            }
         }
     },
 
@@ -115,28 +147,20 @@ var validator = {
                 user: username
             };
             $.each(pageButtons.changes, function (i, name) {
-                if (fields[name].pageStore != undefined) {
-                    // use the page store for the value
-                    payload[fields[name].property] =
-                            $(fields[name].pageStore.selector).data(fields[name].pageStore.key);
-                }
-                else {
-                    // just use the value being displayed
-                    payload[fields[name].property] = $('#' + name).html();
-                }
-                // this moves all techDescription into the pubDescription
-                if (name === "description") {
-                    payload.techDescription = ""; // clear tech - all description written to pub
-                }
+                payload[name] = currentValue[name];
             });
             $.ajax({
                 type: 'POST',
                 url: baseUrl + '/ws/collection/' + uid,
-                data: JSON.stringify(payload),
+                data: JSON.stringify(payload, function (key, value) {
+                    if (value instanceof Array && value.length === 0) {
+                        return "";
+                    } else {
+                        return value;
+                    }
+                }),
                 contentType: 'application/json',
                 success: function(data, textStatus, jqXHR) {
-                    //alert("Collection updated");
-                    //window.location.href = baseUrl + "/manage/show/" + uid + "?message=Collection updated";
                     window,location.reload();
                 },
                 complete: function (jqXHR, textStatus) {
@@ -151,18 +175,14 @@ var validator = {
         }
     },
 
-    fields = {
+    dialogs = {
         name: {
-            display: '#name',
-            input: '#nameInput',
-            property: "name",
             width: 500,
             title: 'Change the name of the collection',
             ok: function() {
-                var field = this.id.substr(0, this.id.indexOf('-')),
-                    bValid = true,
-                    $input = $(fields[field].input),
-                    $display = $(fields[field].display);
+                var bValid = true,
+                    $input = $('#nameInput'),
+                    $display = $('#name');
 
                 $input.removeClass( "ui-state-error" );
 
@@ -174,25 +194,16 @@ var validator = {
                 //bValid = bValid && validator.checkUnique($nameInput);
 
                 if ( bValid ) {
-                    var val = $input.val();
-                    if (val !== $display.html()) {
-                        pageButtons.changed('name');
-                        $display.html(val);
-                    }
+                    dialogs.checkAndUpdateText('name');
                     $(this).dialog("close");
                 }
             }},
         acronym: {
-            display: '#acronym',
-            input: '#acronymInput',
-            property: "acronym",
             width: 400,
             title: 'Change the acronym for the collection',
             ok: function() {
-                var field = this.id.substr(0, this.id.indexOf('-')),
-                    bValid = true,
-                    $input = $(fields[field].input),
-                    $display = $(fields[field].display);
+                var bValid = true,
+                    $input = $('#acronymInput');
 
                 $input.removeClass( "ui-state-error" );
 
@@ -202,41 +213,32 @@ var validator = {
                         "Acronym may consist of a-z, 0-9, underscores, begin with a letter.");
 
                 if ( bValid ) {
-                    var val = $input.val();
-                    if (val !== $display.html()) {
-                        pageButtons.changed('acronym');
-                        $display.html(val);
-                    }
+                    dialogs.checkAndUpdateText('acronym');
                     $(this).dialog("close");
                 }
             }
         },
         lsid: {
-            display: '#lsid',
-            input: '#lsidInput',
-            property: "guid",
             pageStore: {selector: "#lsid", key: 'lsid'},
             width: 400,
             title: 'Enter a valid LSID for the collection if one exists',
             ok: function() {
-                var field = this.id.substr(0, this.id.indexOf('-')),
-                    bValid = true,
-                    $input = $(fields[field].input),
-                    $display = $(fields[field].display);
+                var bValid = true,
+                    $input = $('#lsidInput'),
+                    $display = $('#lsid');
 
                 $input.removeClass( "ui-state-error" );
 
-                bValid = bValid && validator.checkLength( $input, "acronym", 0, 45 );
+                bValid = bValid && validator.checkLength( $input, "lsid", 0, 45 );
 
                 bValid = bValid && validator.checkRegexp( $input, /urn:lsid:([\w\-\.]+\.[\w\-\.]+)+:\w+:\S+/i,
                         "A valid LSID has the form - URN:LSID:<Authority>:<Namespace>:<ObjectID>[:<Version>]");
 
                 if ( bValid ) {
                     var val = $input.val();
-                    if (val !== $display.html()) {
-                        // store the data in the element
-                        $display.data('lsid',val);
-                        pageButtons.changed(field);
+                    if (val !== currentValue.guid) {
+                        currentValue.guid = val;
+                        pageButtons.changed('guid');
                         $display.html(transformer.lsidHtml(val));
                     }
                     $(this).dialog("close");
@@ -244,23 +246,20 @@ var validator = {
             }
         },
         description: {
-            display: "#description",
-            input: "#descriptionInput",
-            property: "pubDescription",
             width: 700,
             title: 'Edit the description of the collection',
             ok: function () {
                 // update page
                 var newContent = $('#descriptionInput').tinymce().getContent();
+                currentValue.pubDescription = newContent;
+                currentValue.techDescription = "";
                 $('#description').html(newContent);
+                pageButtons.changed('pubDescription');
+                pageButtons.changed('techDescription');
                 $(this).dialog("close");
-                pageButtons.changed('description');
             }
         },
         temporalSpan: {
-            display: "#temporalSpan",
-            input: "#descriptionInput",
-            property: "pubDescription",
             width: 400,
             title: 'Edit the start and end dates of the collection',
             ok: function () {
@@ -283,18 +282,97 @@ var validator = {
 
                 if (bValid) {
                     $span.html(transformer.temporalSpan(sDateVal, eDateVal));
-                    // store actual data values in jquery data obj
-                    $span.data('startDate', sDateVal);
-                    $span.data('endDate', eDateVal);
-                    $(this).dialog("close");
-                    if (sDateVal != startDate) {
+                    if (sDateVal != currentValue.startDate) {
+                        currentValue.startDate = sDateVal;
                         pageButtons.changed('startDate');
                     }
-                    if (eDateVal != endDate) {
+                    if (eDateVal != currentValue.endDate) {
+                        currentValue.endDate = eDateVal;
                         pageButtons.changed('endDate');
                     }
+                    $(this).dialog("close");
                 }
             }
+        },
+        taxonomicRange: {
+            title: "Edit the taxonomic range of the collection",
+            width: 700,
+            ok: function () {
+                var $kingdomCoverageElement = $('#kingdomCoverage'),
+                    $scientificNamesElement = $('#scientificNames'),
+                    selectedKingdoms = transformer.checkboxesToList($('input:checked[name="kingdomCoverage"]')),
+                    kingdomCoverageVal = selectedKingdoms.join(' '),
+                    scientificNamesVal = transformer.commaSeparatedToList($('#scientificNamesInput').val());
+
+                dialogs.checkAndUpdateText('focus');
+
+                if (kingdomCoverageVal !== currentValue.kingdomCoverage) {
+                    $kingdomCoverageElement.html("Kingdoms covered include: " + transformer.listToString(selectedKingdoms));
+                    $kingdomCoverageElement.toggleClass('empty', kingdomCoverageVal === "");
+                    currentValue.kingdomCoverage = kingdomCoverageVal;
+                    pageButtons.changed('kingdomCoverage');
+                }
+
+                if (scientificNamesVal.join(',') !== currentValue.scientificNames.join(',')) {
+                    $scientificNamesElement.html(transformer.listToString(scientificNamesVal));
+                    $('#sciNames').toggleClass('empty', scientificNamesVal.length === 0);
+                    currentValue.scientificNames = scientificNamesVal;
+                    pageButtons.changed('scientificNames');
+                }
+
+                $(this).dialog("close");
+            }
+        },
+        geographicRange: {
+            title: "Edit the geographic range of the collection",
+            width: 700,
+            ok: function () {
+                dialogs.checkAndUpdateText("geographicDescription");
+                dialogs.checkAndUpdateText("states", "states");
+                $(this).dialog("close");
+            }
+        },
+        /** Handles ok processing for text properties.
+         * @param f the name of the field
+         * @param transform optional name of transformer method to use for display
+         */
+        checkAndUpdateText: function (f, transform) {
+            var element, val;
+            element = $('#' + f);
+            val = $('#' + f + 'Input').val();
+            if (val !== currentValue[f]) {
+                if (transform !== undefined) {
+                    element.html(transformer[transform](val)); // set transformed value on page
+                } else {
+                    element.html(val);  // set value on page
+                }
+                currentValue[f] = val;  // set as current value
+                element.toggleClass('empty', val === "");  // toggle visibility of container in case there is extra text
+                pageButtons.changed(f);  // mark as changed
+            }
+        }
+    },
+
+    fields = {
+        name: {
+            display: '#name',
+            property: "name"
+        },
+        acronym: {
+            display: '#acronym',
+            property: "acronym"
+        },
+        guid: {
+            property: "guid",
+            pageStore: {selector: "#lsid a", key: 'lsid'}
+        },
+        pubDescription: {
+            display: "#description",
+            property: "pubDescription"
+        },
+        techDescription: {
+            display: "#description",
+            property: "techDescription"
         },
         startDate: {
             property: 'startDate',
@@ -304,60 +382,81 @@ var validator = {
             property: 'endDate',
             pageStore: {selector: "#temporalSpan", key: 'endDate'}
         },
-        taxonomicRange: {
-            title: "Edit the taxonomic range of the collection",
-            property: ['focus','kingdomCoverage','scientificNames'],
-            width: 700,
-            ok: function () {
-
-            }
+        focus: {
+            property: 'focus'
+        },
+        kingdomCoverage: {
+            property: "kingdomCoverage"
+        },
+        scientificNames: {
+            display: "scientificNames",
+            property: 'scientificNames'
         }
     },
 
     originalValues = {};
 
 $(function() {
-    validator.tips = $(".validateTips");
-    var $nameInput = $("#nameInput"),
-        $name = $('#name'),
-        $acronymInput = $('#acronymInput'),
-        $acronym = $('#acronym');
+    var $showChangesLink = $('#showChangesLink');
 
-    for (var field in fields) {
-        $('#' + field + '-dialog').dialog({
+    validator.tips = $(".validateTips");
+
+    //var model = JSON.parse(modelJson);
+
+    // toggle for recent changes
+    $showChangesLink.click(function () {
+        var $changes = $('#changes');
+        if ($('#changes:visible').length > 0) {
+            $changes.slideUp();
+            $showChangesLink.html("Show recent changes");
+        } else {
+            $changes.slideDown();
+            $showChangesLink.html("Hide recent changes");
+        }
+    });
+
+    // bind click handler to twisty in recent changes
+    $('p.relatedFollows').rotate({
+        bind:
+            {
+                click: function() {
+                    var $target = $(this).parent().find('table'),
+                        $twisty = $(this).find('img');
+                    if ($target.css('display') == 'none') {
+                        $twisty.rotate({animateTo:90,duration:350});
+                        $target.slideDown();
+                    }
+                    else {
+                        $twisty.rotate({animateTo:0,duration:350});
+                        $target.slideUp();
+                    }
+                    return false;
+                }
+            }
+    });
+
+    // init dialogs
+    for (var dialog in dialogs) {
+        $('#' + dialog + '-dialog').dialog({
             autoOpen: false,
-            width: fields[field].width,
+            width: dialogs[dialog].width,
             modal: true,
-            title: fields[field].title,
+            title: dialogs[dialog].title,
             buttons: {
-                "Ok": fields[field].ok,
+                "Ok": dialogs[dialog].ok,
                 Cancel: function() {
                     $(this).dialog("close");
                 }
             },
             close: function() {
-                $('#' + field).removeClass( "ui-state-error" );
+                $('#' + dialog).removeClass( "ui-state-error" );
             }
         });
     }
 
+    // handle change links - show dialogs
     $('img.changeLink').click(function() {
         switch (this.id) {
-            case 'nameLink':
-                // make sure the dialog has the current value
-                $nameInput.val($name.html());
-                $("#name-dialog").dialog("open");
-                break;
-            case 'acronymLink':
-                // make sure the dialog has the current value
-                $acronymInput.val($acronym.html());
-                $("#acronym-dialog").dialog("open");
-                break;
-            case 'lsidLink':
-                // make sure the dialog has the current value
-                $('#lsidInput').val($('#lsid a').html());
-                $("#lsid-dialog").dialog("open");
-                break;
             case 'descriptionLink':
                 // see whether tinymce has already been initialised
                 var inited = $('textarea.tinymce').attr('aria-hidden');
@@ -373,34 +472,16 @@ $(function() {
                         theme_advanced_buttons2: "",
                         theme_advanced_buttons3: ""
                     });
-                    break;
                 }
-                // make sure the dialog has the current value
+                // note that this is loaded from the page elements not the currentValue object
+                //  because we are leveraging the formattedText tag where the text is still in old markup
                 $('#descriptionInput').html($('#description').html());
                 // TODO: clear undo list else undo will reverse the above text insertion
                 $("#description-dialog").dialog("open");
                 break;
-            case 'temporalSpanLink':
-                var $span = $('#temporalSpan');
-
-                // check whether dates have already been modified and stored in jquery data
-                if ($span.data('startDate') != undefined) {
-                    $('#startDateInput').val($('#temporalSpan').data('startDate'));
-                    $('#endDateInput').val($('#temporalSpan').data('endDate'));
-                }
-                // otherwise use initial values
-                else {
-                    $('#startDateInput').val(startDate);
-                    $('#endDateInput').val(endDate);
-                }
-
-                // show dialog
-                $("#temporalSpan-dialog").dialog("open");
-                break;
-            case 'taxonomicRangeLink':
-                // show dialog
-                $("#taxonomicRange-dialog").dialog("open");
-                break;
+            default:
+                // follows the convention: '<name>Link' opens '<name>-dialog'
+                $('#' + this.id.substr(0, this.id.length - 4) + "-dialog").dialog("open");
         }
     });
 });

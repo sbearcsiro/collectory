@@ -230,19 +230,19 @@ class ReportsController {
             if (it.numRecordsDigitised > 0) {
                 // find the number of biocache records
                 def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + it.generatePermalink()
-
+                def url = baseUrl + "ws/occurrences/collections/" + it.generatePermalink() + ".json?pageSize=0"
                 def count = 0
                 def conn = new URL(url).openConnection()
                 conn.setConnectTimeout 3000
                 try {
                     def json = conn.content.text
-                    count = JSON.parse(json)?.searchResult?.totalRecords
+                    count = JSON.parse(json)?.totalRecords
+                    if (count == null) { count = 0 } // safety in case json structure changes
                 } catch (Exception e) {
                     log.error "Failed to lookup record count. ${e.getClass()} ${e.getMessage()} URL= ${url}."
                 }
                 // compare to num digistised
-                if (count == 0 || count / it.numRecordsDigitised < 0.7) {
+                if (count == 0 || (count / it.numRecordsDigitised) < 0.7) {
                     mrs << [collection:it.buildSummary(), biocacheCount: count, claimed: it.numRecordsDigitised]
                 }
             }

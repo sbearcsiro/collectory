@@ -42,6 +42,31 @@ class CollectoryTagLib {
     }
 
     /**
+     * Generate the login link for the banner.
+     *
+     * Will be to log in or out based on current auth status.
+     * TODO: also check for user principal in request in case cookies are disabled
+     * 
+     * @attr showUser if supplied, the username will be shown before the logout link
+     * @attr fixedAppUrl if supplied will be used for logout instead of the current page
+     */
+    def loginoutLink2011 = { attrs ->
+        def requestUri = ConfigurationHolder.config.security.cas.serverName + request.forwardURI
+        if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+            // currently logged in
+            if (attrs.showUser) {
+                out << "<span id='logged-in'>Logged in as ${loggedInUsername()}</span>"
+            }
+            out << link(controller: 'public', action: 'logout',
+                    params: [casUrl: ConfigurationHolder.config.security.cas.logoutUrl,
+                    appUrl: attrs.fixedAppUrl ?: requestUri]) {'Logout'}
+        } else {
+            // currently logged out
+            out << "<a href='https://auth.ala.org.au/cas/login?service=${requestUri}'><span>Log in</span></a>"
+        }
+    }
+
+    /**
      * Decorates the role if present
      *
      * @attrs role the role to display
@@ -130,7 +155,7 @@ class CollectoryTagLib {
         }
     }
 
-    def loggedInUsername = { attrs ->
+    def loggedInUsername = {
         if (ConfigurationHolder.config.security.cas.bypass) {
             out << 'cas bypassed'
         }
@@ -491,15 +516,28 @@ class CollectoryTagLib {
 
     /**
      * Displays a JSON list as a comma-separated list of strings.
-     * The last separator is the word 'and'.
+     * The last separator is the word 'and', unless pureList is true.
+     *
+     * @attr json the json array
+     * #attr pureList if true only commas are use as separators and no spaces are injected
      */
     def JSONListAsStrings = {attrs ->
-        if (!attrs?.json)
-            return ""
+        if (!attrs?.json) { return "" }
+        def str = ""
         def list = JSON.parse(attrs.json.toString())
-        if (list) {
-            out << (list.size() == 1 ? list[0] : list[0..list.size()-2].join(', ') + " and " + list.last())
-        }
+        switch (list.size()) {
+            case 0: break;
+            case 1: str = list[0]; break;
+            default:
+                if (attrs.pureList == 'true') {
+                    str = list[0..-1].join(', ')  // bizarrely this gives a different output to list.join(', ')
+                }
+                else {
+                    str = list[0..-2].join(', ') + " and " + list.last()
+                }
+                break
+            }
+        out << str
     }
 
     /**
@@ -709,7 +747,12 @@ class CollectoryTagLib {
     }
 
     def raw = { attrs->
-        out << attrs.value
+        if (!attrs.value) {
+            out << attrs.default
+        }
+        else {
+            out << attrs.value
+        }
     }
     
     /**
@@ -840,10 +883,25 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Builds a link to the publicly available archive of all records.
+     *
+     * @attr uid of the instance (assumed to be a data resource)
+     * @attr allowed if the archive is available
+     */
     def downloadRecordsLink = {attrs, body ->
-        if (attrs.uid) {
-            def url = ConfigurationHolder.config.biocache.baseURL + "occurrences/download?q=*.*&fq=collection_uid=${attrs.uid}#download"
+        if (attrs.uid && attrs.allowed) {
+            def url = ConfigurationHolder.config.biocache.baseURL +
+                    "occurrences/download?q=*.*&fq=collection_uid=${attrs.uid}#download"
             out << "<a href='${url}'>Download all records</a>"
+        }
+    }
+
+    def archiveLink = { attrs ->
+        if (attrs.uid) {
+            def url = ConfigurationHolder.config.biocache.baseURL +
+                    "archives/${attrs.uid}/${attrs.uid}_ror_dwca.zip"
+            out << "<p><a href='${url}'>Download darwin core archive of all records</a></p>"
         }
     }
 
@@ -957,8 +1015,37 @@ class CollectoryTagLib {
     /**
      * Show map of records based on UID
      *
+     * - content is loaded directly by constructing the image url
+     * 
+     * @attr uid of the instance
+     */
+    def recordsMapDirect = { attrs ->
+        if (attrs.uid) {
+            def urlBase = ConfigurationHolder.config.biocache.baseURL + "ws/density/"
+            def query = "?q=" + fieldNameForSearch(attrs.uid) + ":" + attrs.uid
+            out <<
+                "<div class='recordsMap'>" +
+                " <img id='recordsMap' class='no-radius' src='${urlBase}map${query}' width='340' />" +
+                " <img id='mapLegend' src='${urlBase}legend${query}' width='128' />" +
+                "</div>" +
+                "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
+        }
+        else {
+            out <<
+                "<div class='recordsMap'>" +
+                " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'mapping-data-not-available.png')}' width='340' />" +
+                " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
+                "</div>" +
+                "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
+        }
+    }
+
+    /**
+     * Show map of records based on UID
+     *
      * - different structure to above - to accommodate 2 column layout
      * TODO: this should be rationalised
+     * @deprecated use recordsMapDirect
      */
     def collectionRecordsMap = {
         out <<
@@ -1168,19 +1255,20 @@ class CollectoryTagLib {
     }
 
     /**
-     * Returns a string representation of the value suiable for short display such as in change logs.
+     * Returns a string representation of the value suitable for short display such as in change logs.
      */
     def cleanString = { attrs ->
         def text = attrs.value
+        println text
         // detect json array of strings
-        if (text && text[0..1] == '["' && text[text.size()-2..text.size()-1] == '"]') {
+        if (text && text.size() > 1 && text[0..1] == '["' && text[text.size()-2..text.size()-1] == '"]') {
             def list = JSON.parse(text.toString())
             String str = ""
             list.each {str += "${it}, "}
             text = str.size() > 3 ? str[0..str.size()-3] : ""
         }
         // detect json array of objects
-        if (text && text[0..1] == '[{' && text[text.size()-2..text.size()-1] == '}]') {
+        if (text && text.size() > 1 && text[0..1] == '[{' && text[text.size()-2..text.size()-1] == '}]') {
             def list = JSON.parse(text.toString())
             String str = ""
             list.each {
@@ -1300,13 +1388,39 @@ class CollectoryTagLib {
         }
     }
 
+    /**
+     * Write the appropriate breadcrumb trail.
+     *
+     * Checks the config for skin to choose the correct hierarchy.
+     *
+     * @attr home the root of the page - defaults to collections
+     * @attr atBase true if the page is the base page of the root (no link is added)
+     */
     def breadcrumbTrail = {attrs ->
-        def home = attrs.home ?: 'nhc'
-        def homeLink = home == 'dataSets' ?
-            link(controller:'public', action:'dataSets') {"Data sets"} :
-            link(controller:'public', action:'map') {"Natural History Collections"}
+        def hereLink = ""
+        def topLevelLink = ""
+        switch (attrs.home) {
+            case 'dataSets':
+                hereLink = attrs.atBase == 'true' ?
+                    "List" :
+                    link(controller:'public', action:'dataSets') {"List"}
+                topLevelLink =
+                    "<a href='${ConfigurationHolder.config.ala.baseURL}/data-sets/'>Data sets</a> "
+                break
+            case 'dashboard':
+                hereLink = attrs.atBase == 'true' ?
+                    "Dashboard" :
+                    link(controller:'dashboard', action:'index') {"Dashboard"}
+                topLevelLink = ""
+                break
+            default:
+                hereLink = attrs.atBase == 'true' ?
+                    "Collections" :
+                    link(controller:'public', action:'map') {"Collections"}
+                topLevelLink = ""
+        }
         out << "<a href='${ConfigurationHolder.config.ala.baseURL}'>Home</a> " +
-                "<a href='${ConfigurationHolder.config.ala.baseURL}/explore/'>Explore</a> " + homeLink
+                topLevelLink + hereLink
     }
 
     def pageOptionsLink = {attrs, body ->
@@ -1769,16 +1883,17 @@ class CollectoryTagLib {
         if (attrs.url) {
             String url = attrs.url
             // only show document name
-            def name = url
-            if (url?.indexOf('/') > -1) {
-                name = url[(url.lastIndexOf('/')+1)..-1]
-            }
+            def bits = url.tokenize('/')
+            // grab the text after the last /
+            def name = bits.size() ? bits[-1] : url
+
             def limit = 17
+            
             if (name.size() > limit) {
-                /*def endChunckSize = (limit-3)/2 as int
-                name = name[0..endChunckSize] + "..." + name[-endChunckSize..-1]*/
-                def tail = (name.indexOf('.') > -1) ? name[name.lastIndexOf('.')+1..-1] : ""
-                name = name[0..8] + '...' + tail
+                def dotBits = name.tokenize('.')
+                def head = dotBits.size() > 1 ? dotBits[0..-2].join('.') : name
+                def tail = dotBits.size() > 1 ? dotBits[-1] : ""
+                name = (head.size() > 8 ? head[0..8] : head) + '...' + tail
             }
             out << name
         }
@@ -1873,5 +1988,20 @@ class CollectoryTagLib {
             href = "http://" + href
         }
         out << """<a class="external_icon" target="_blank" href="${href}">${attrs.href}</a>"""
+    }
+
+    def toJson = { attrs ->
+        def json = attrs.obj as JSON
+        println json
+        out << json.toString()
+    }
+
+    def selected = {
+        if (request.requestURL =~ 'datasets') {
+            out << ""
+        }
+        else {
+            out << ' selected'
+        }
     }
 }

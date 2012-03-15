@@ -624,7 +624,6 @@ class DataController {
      * @param email of the user
      */
     def authorisedForContact = {
-        println 'hello'
         def contact = Contact.get(params.id)
         if (!contact) {
             badRequest "contact ${params.id} does not exist"

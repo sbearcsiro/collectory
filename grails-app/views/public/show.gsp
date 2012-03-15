@@ -2,13 +2,12 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala" />
+        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
         <script type="text/javascript">
           $(document).ready(function() {
-            greyInitialValues();
             $("a#lsid").fancybox({
                     'hideOnContentClick' : false,
                     'titleShow' : false,
@@ -283,7 +282,7 @@
                   </div>
                   <div id="collectionRecordsMapContainer">
                       <h3>Map of occurrence records</h3>
-                      <cl:collectionRecordsMap/>
+                      <cl:recordsMapDirect uid="${instance.uid}"/>
                   </div>
                   <div id="charts"></div>
                   <div id="iehack"></div>
@@ -339,9 +338,9 @@ $('img#mapLegend').each(function(i, n) {
     $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
   });
   // IE hack as IE doesn't trigger the error handler
-  if ($.browser.msie && !n.complete) {
+  /*if ($.browser.msie && !n.complete) {
     $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
-  }
+  }*/
 });
 /************************************************************\
 * initiate ajax calls
@@ -388,9 +387,6 @@ function onLoadCallback() {
   // taxon chart
   loadTaxonomyChart(taxonomyChartOptions);
 
-  // records map
-  var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-  $.get(mapServiceUrl, {}, mapRequestHandler);
 }
 /************************************************************\
 * Handle biocache records response
@@ -455,22 +451,6 @@ function addCommas(nStr)
 		x1 = x1.replace(rgx, '$1' + ',' + '$2');
 	}
 	return x1 + x2;
-}
-/************************************************************\
-* Handle map response
-\************************************************************/
-function mapRequestHandler(response) {
-  if (response.error != undefined) {
-    // set map url
-    $('#recordsMap').attr("src","${resource(dir:'images/map',file:'mapaus1_white-340.png')}");
-    // set legend url
-    $('#mapLegend').attr("src","${resource(dir:'images/map',file:'mapping-data-not-available.png')}");
-  } else {
-    // set map url
-    $('#recordsMap').attr("src",response.mapUrl);
-    // set legend url
-    $('#mapLegend').attr("src",response.legendUrl);
-  }
 }
 /************************************************************\
 * DEPRECATED

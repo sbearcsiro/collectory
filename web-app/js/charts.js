@@ -35,8 +35,11 @@ var genericChartOptions = {
 var individualChartOptions = {
     state_conservation: {chartType: 'column', width: 450, chartArea: {left:60, height: "58%"},
         title: 'By state conservation status', hAxis: {slantedText: true}},
-    occurrence_year: {chartType: 'column', width: 450, chartArea: {left:60, height: "65%"}, hAxis: {slantedText: true}},
-    species_group: {title: 'By higher-level group', ignore: ['Animals']},
+    occurrence_year: {chartType: 'column', width: 450, chartArea: {left:60, height: "65%"},
+        hAxis: {slantedText: true}},
+    species_group: {title: 'By higher-level group', ignore: ['Animals'], chartType: 'column',
+        width: 450, chartArea: {left:60, height:"58%"}, vAxis: {minValue: 0},
+        colors: ['#108628']},
     state: {ignore: ['Unknown1']},
     type_status: {title: 'By type status (as % of all type specimens)', ignore: ['notatype']},
     assertions: {chartType: 'bar', chartArea: {left:170}}

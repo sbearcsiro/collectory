@@ -79,6 +79,10 @@ class ReportsController {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'providers'
     }
 
+    def resources = {
+        ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'resources'
+    }
+
     def contacts = {
         ActivityLog.log authService.username(), authService.isAdmin(), Action.REPORT, 'contacts'
     }

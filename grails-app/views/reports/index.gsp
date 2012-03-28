@@ -112,6 +112,8 @@
           <span class="linkText">- list rights, license details and permissions details for data resources</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="harvesters">Show data mobilisation parameters</g:link>
           <span class="linkText">- list mobilisation, harvesting and connection parameters for data resources</span></p>
+          <p class="pageLink"><g:link class="mainLink" controller="reports" action="resources">Show other resource parameters</g:link>
+          <span class="linkText">- list links for public archives that are available for download</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="dataLinks">Show data interactions</g:link>
           <span class="linkText">- show which providers/resources provide data records for which institutions/collections</span></p>
         </div>

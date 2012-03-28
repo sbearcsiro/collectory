@@ -119,6 +119,18 @@
                               <cl:helpTD/>
                         </tr>
 
+                        <!-- public archive -->
+                        <tr class="prop">
+                            <td valign="top" class="name">
+                              <label for="publicArchiveAvailable"><g:message code="dataResource.publicArchiveAvailable.label" default="Public archive available" /></label>
+                            </td>
+                            <td valign="top" class="value ${hasErrors(bean: command, field: 'publicArchiveAvailable', 'errors')}">
+                                <g:checkBox name="publicArchiveAvailable" value="${command?.publicArchiveAvailable}" />
+                                <cl:helpText code="dataResource.publicArchiveAvailable"/>
+                              </td>
+                              <cl:helpTD/>
+                        </tr>
+
                         <!-- harvest parameters -->
                         <tr><td colspan="3"><b>Connection parameters</b></td></tr>
                         <cl:connectionParameters bean="command" connectionParameters="${command.connectionParameters}"/>

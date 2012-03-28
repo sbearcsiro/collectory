@@ -138,6 +138,9 @@
                 <!-- harvesting notes -->
                 <p><span class="category">Harvesting notes:</span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
 
+                <!-- public archive available -->
+                <p><span class="category">Public archive available:</span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
+
                 <!-- connection parameters -->
                 <p><span class="category">Connection parameters:</span> <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
 

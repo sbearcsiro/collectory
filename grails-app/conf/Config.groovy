@@ -90,6 +90,9 @@ if (!security.cas.loginUrl) {
 if (!security.cas.logoutUrl) {
     security.cas.logoutUrl = "https://auth.ala.org.au/cas/logout"
 }
+/******************************************************************************\
+ *  TEMPLATES
+ \******************************************************************************/
 if (!citation.template) {
     citation.template = 'Records provided by @entityName@, accessed through ALA website.'
 }
@@ -98,6 +101,9 @@ if (!citation.link.template) {
 }
 if (!citation.rights.template) {
     citation.rights.template = ''
+}
+if (!resource.publicArchive.url.template) {
+    resource.publicArchive.url.template = "${biocache.baseURL}archives/@UID@/@UID@_ror_dwca.zip"
 }
 
 /******* standard grails **********/
@@ -165,15 +171,15 @@ environments {
         security.cas.contextPath = grails.context
     }
     development {
-        grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
+        //grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
         //grails.serverURL = "http://mark1-be.nexus.csiro.au:8080/Collectory"
-        //grails.serverURL = "http://localhost:8080/Collectory"
+        grails.serverURL = "http://localhost:8080/Collectory"
         //grails.serverURL = "http://152.83.199.239:8080/Collectory"
         grails.context = '/Collectory'
         security.cas.serverName = "http://woodfired.ala.org.au:8080"
         //security.cas.serverName = "http://152.83.199.239:8080"
         security.cas.contextPath = grails.context
-        security.cas.bypass = false
+        security.cas.bypass = true
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"

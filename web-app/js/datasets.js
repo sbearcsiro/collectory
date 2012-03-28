@@ -201,7 +201,7 @@ function filterList() {
     var searchTerms = [];
     $.each(currentFilters, function(i, obj) {
         if (obj.name == 'contains') {
-            searchTerms.push(obj.value);
+            searchTerms.push(obj.value.toLowerCase());
         }
     });
 

@@ -23,7 +23,8 @@ class CrudService {
 
     static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld',
                 'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes','provenance',
-                'harvestingNotes','connectionParameters','resourceType','permissionsDocumentType','riskAssessment','filed']
+                'harvestingNotes','connectionParameters','resourceType','permissionsDocumentType','riskAssessment',
+                'filed','publicArchiveAvailable']
     static dataResourceNumberProperties = ['harvestFrequency','downloadLimit']
     static dataResourceTimestampProperties = ['lastChecked','dataCurrency']
     static dataResourceJSONArrays = ['connectionParameters', 'contentTypes', 'defaultDarwinCoreValues']
@@ -314,6 +315,8 @@ class CrudService {
                 lastChecked = p.lastChecked
                 dataCurrency = p.dataCurrency
                 harvestingNotes = p.harvestingNotes
+                publicArchiveAvailable = p.publicArchiveAvailable
+                publicArchiveUrl = ConfigurationHolder.config.resource.publicArchive.url.template.replaceAll('@UID@',p.uid)
                 downloadLimit = p.downloadLimit
             }
         }

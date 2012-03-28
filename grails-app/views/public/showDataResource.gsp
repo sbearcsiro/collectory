@@ -149,7 +149,7 @@
                   <cl:dataCurrency date="${instance.dataCurrency}"/>
                   </p>
                   <cl:recordsLink collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
-                  %{--<p><cl:archiveLink uid="${instance.uid}" allowed="${instance.publicArchiveAvailable}"/></p>--}%
+                  <cl:downloadPublicArchive uid="${instance.uid}" available="${instance.publicArchiveAvailable}"/>
                 </div>
             </g:if>
           </div>

@@ -897,11 +897,17 @@ class CollectoryTagLib {
         }
     }
 
-    def archiveLink = { attrs ->
-        if (attrs.uid) {
-            def url = ConfigurationHolder.config.biocache.baseURL +
-                    "archives/${attrs.uid}/${attrs.uid}_ror_dwca.zip"
-            out << "<p><a href='${url}'>Download darwin core archive of all records</a></p>"
+    def downloadPublicArchive = { attrs ->
+        if (attrs.uid && attrs.available) {
+            def url = ConfigurationHolder.config.resource.publicArchive.url.template.replaceAll('@UID@',attrs.uid)
+            out << "<p><a class='downloadLink' href='${url}'>Download darwin core archive of all records</a></p>"
+        }
+    }
+
+    def publicArchiveLink = { attrs ->
+        if (attrs.uid && attrs.available) {
+            def url = ConfigurationHolder.config.resource.publicArchive.url.template.replaceAll('@UID@',attrs.uid)
+            out << "<a href='${url}'>${url}</a>"
         }
     }
 

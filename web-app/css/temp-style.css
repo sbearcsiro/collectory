@@ -192,18 +192,18 @@ p.collectionsCount {
 }
 
 .filter-buttons h2 a:hover, .filter-buttons h2 a:active, .filter-buttons h2 a:hover span, .filter-buttons h2 a:active span {
-    color:#dd3102;
+    color:#016071;
     text-decoration: none;
 }
 
 .filter-buttons h2 a:hover, .buttons h2 a:active, .buttons h3 a:hover, .buttons h3 a:active, .sorry h2 a:hover, .sorry h2 a:active, .sorry h3 a:hover, .sorry h3 a:active{
-    border-color:#dd3102;
+    border-color:#016071;
     -o-box-shadow: 4px 4px 0px #dd3102;
     -icab-box-shadow: 4px 4px 0px #dd3102;
     -khtml-box-shadow: 4px 4px 0px #dd3102;
     -moz-box-shadow: 4px 4px 0px #dd3102;
     -webkit-box-shadow: 4px 4px 0px #dd3102;
-    box-shadow: 4px 4px 0px #dd3102;
+    box-shadow: 4px 4px 0px #016071;
 }
 
 #resultsReturned {
@@ -257,9 +257,17 @@ div.result {
     width: 100%;
 }
 
+#page-datasets #sortWidgets, #page-datasets #downloads {
+    display: inline;
+}
+
+#searchControls {
+    *border-bottom: none !important; /* IE 7 */
+}
+
 .link {
     /*text-decoration: underline;*/
-    color: #01716E;
+    color: #3A5C83 !important;
     cursor: pointer;
 }
 

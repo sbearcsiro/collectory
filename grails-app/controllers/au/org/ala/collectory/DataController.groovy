@@ -269,6 +269,50 @@ class DataController {
     }
 
     /**
+     * Return JSON representation of the counts of the specified entity
+     * grouped by the specified property.
+     *
+     * @param entity - controller form of domain class, eg dataProvider
+     * @param groupBy - name of the property to group by
+     */
+    def count = {
+
+        // get list of entities
+        def urlForm = params.entity
+        def clazz = capitalise(urlForm)
+        def domain = grailsApplication.getClassForName("au.org.ala.collectory.${clazz}")
+        def list = domain.list()
+        
+        // suppress 'declined' data resources
+        if (urlForm == 'dataResource' && params.public == "true") {
+            list = list.findAll { it.status != 'declined' }
+        }
+        
+        // init results with total
+        def results = [total: list.size()]
+
+        if (params.groupBy) {
+            results.groupBy = params.groupBy
+            def groups = [:]
+            list.each {
+                def value = it[params.groupBy]
+                if (groups[value]) {
+                    groups[value]++
+                }
+                else {
+                    groups[value] = 1
+                }
+            }
+            results.groups = groups
+        }
+
+        addContentLocation "/ws/${urlForm}/count"
+        def last = latestModified(list)
+
+        renderAsJson results, last, ""
+    }
+
+    /**
      * Supports caching. Tests whether the resource has been modified based on both last-modified
      * date and eTags. Compares current state of resource with the appropriate request headers.
      *

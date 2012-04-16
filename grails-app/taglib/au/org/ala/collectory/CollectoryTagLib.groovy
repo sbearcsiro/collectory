@@ -981,30 +981,6 @@ class CollectoryTagLib {
     }
 
     /**
-     * Show distribution map if there are provider codes
-     *
-     * @param inst list of institution codes
-     * @param coll list of collection codes
-     * @body html fragment to include above map
-     */
-    def distributionImg = {attrs, body ->
-        def codes = ""
-        if (attrs.inst && !attrs.inst.empty) {
-            attrs.inst.each {codes += "&institution_code=" + it}
-        }
-        if (attrs.coll && !attrs.coll.empty) {
-            attrs.coll.each {codes += "&collection_code=" + it}
-        }
-        if (codes) {
-            // replace first & with ?
-            codes = "?" + codes.substring(1)
-            def baseUrl = ConfigurationHolder.config.spatial.baseURL
-            def url = baseUrl + "alaspatial/ws/density/map${codes}"
-            out << "<div class='distributionImage'>${body()}<img src='${url}' width='350' /></div>"
-        }
-    }
-
-    /**
      * Show map of records based on UID
      *
      * - content is loaded by ajax calls
@@ -1034,7 +1010,7 @@ class CollectoryTagLib {
                 " <img id='recordsMap' class='no-radius' src='${urlBase}map${query}' width='340' />" +
                 " <img id='mapLegend' src='${urlBase}legend${query}' width='128' />" +
                 "</div>" +
-                "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
+                "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/faq/species-data/errors-in-maps/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
         }
         else {
             out <<
@@ -1042,7 +1018,7 @@ class CollectoryTagLib {
                 " <img id='recordsMap' class='no-radius' src='${resource(dir:'images/map',file:'mapping-data-not-available.png')}' width='340' />" +
                 " <img id='mapLegend' src='${resource(dir:'images/ala', file:'legend-not-available.png')}' width='128' />" +
                 "</div>" +
-                "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/about/progress/map-ranges/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
+                "<div class='learnMaps'><span class='asterisk-container'><a href='${ConfigurationHolder.config.ala.baseURL}/faq/species-data/errors-in-maps/'>Learn more about Atlas maps</a>&nbsp;</span></div>"
         }
     }
 

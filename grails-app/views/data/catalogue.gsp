@@ -60,6 +60,16 @@
               <td><a href="http://collections.ala.org.au/ws/institution/in72.json">http://collections.ala.org.au/ws/institution/in72</a></td>
             </tr>
             <tr>
+              <td>The URI to get a total count of a specific resource is resource name followed by 'count'.
+              For example, the number of institutions is given by:</td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/institution/count">http://collections.ala.org.au/ws/institution/count</a></td>
+            </tr>
+            <tr>
+              <td>Counts for a specific resource can be grouped by any attribute of the resource.
+              For example, the breakdown of institutions by state is given by:</td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/institution/count/state">http://collections.ala.org.au/ws/institution/count/state</a></td>
+            </tr>
+            <tr>
               <td>Resources that are attributes of a resource, such as the list of contacts for a collection, are addressed by appending the resource type to the uri that represents the main resource, eg:</td>
               <td><a href="http://collections.ala.org.au/ws/institution/in72/contacts.json">http://collections.ala.org.au/ws/institution/in72/contacts</a></td>
             </tr>

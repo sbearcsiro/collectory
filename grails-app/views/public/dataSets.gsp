@@ -83,7 +83,7 @@
 
           <div id="sortWidgets">
               <label for="per-page">Results per page</label>
-              <g:select id="per-page" name="per-page" from="${[10,20,50,100]}" value="${pageSize ?: 20}"/>
+              <g:select id="per-page" name="per-page" from="${[10,20,50,100,500]}" value="${pageSize ?: 20}"/>
 
               Sort by
               <g:select id="sort" name="sort" from="${['name','type','license']}"/>

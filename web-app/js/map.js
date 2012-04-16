@@ -21,6 +21,9 @@ var baseUrl;
 // the ajax url for getting filtered features
 var featuresUrl;
 
+// flag to make sure we only apply the url initial filter once
+var firstLoad = true;
+
 if (altMap == undefined) {
     var altMap = false;
 }
@@ -162,6 +165,7 @@ function initMap(serverUrl) {
 
     // initial data load
     reloadData();
+
 }
 
 /************************************************************\
@@ -225,6 +229,12 @@ function dataRequestHandler(data) {
 
     // fire moved to initialise number visible
     moved(null);
+
+    // first time only: select the filter if one is specified in the url
+    if (firstLoad) {
+        selectInitialFilter();
+        firstLoad = false;
+    }
 }
 
 /************************************************************\
@@ -592,14 +602,15 @@ function outputMultipleInstitutions(parents) {
 }
 
 /************************************************************\
-*   grab name from institution or collection
+*   grab name from institution
 \************************************************************/
 function getName(obj) {
-    if (obj instanceof Array) {
-        return obj[0].attributes.instName;
-    } else {
-        return obj.attributes.name;
+    var name = obj[0].attributes.instName;
+    // remove leading 'The ' so the institutions sort by first significant letter
+    if (name !== null && name.length > 4 && name.substr(0,4) === "The ") {
+        name = name.substr(4);
     }
+    return name;
 }
 
 /************************************************************\
@@ -906,6 +917,22 @@ function toggleButton(button) {
     if (filters == 'fauna') {filters = 'fauna,entomology'}
     $.get(featuresUrl, {filters: filters}, dataRequestHandler);
     
+}
+
+/************************************************************\
+ *   select filter if one is specified in the url
+ \************************************************************/
+function selectInitialFilter() {
+    var params = $.deparam.querystring(),
+        start = params.start,
+        filter;
+    if (start) {
+        if (start === 'insects') { start = 'entomology'; }
+        filter = $("#" + start);
+        if (filter.length > 0) {
+            toggleButton(filter[0]);
+        }
+    }
 }
 
 /************************************************************\

@@ -412,51 +412,6 @@ class PublicController {
         }
     }
 
-    def recordsMapService = {
-        // lookup urls for displaying records map and legend
-        def baseUrl = ConfigurationHolder.config.spatial.baseURL
-        def uidType = 'collectionUid'
-        if (params.uid?.size() > 2) {
-            switch (params.uid[0..1]) {
-                case DataResource.ENTITY_PREFIX: uidType = 'dataResourceUid'; break
-                case DataProvider.ENTITY_PREFIX: uidType = 'dataProviderUid'; break
-                case Institution.ENTITY_PREFIX: uidType = 'institutionUid'; break
-             }
-        }
-        def url = baseUrl + "alaspatial/ws/density/map?${uidType}=" + params.uid
-        def conn = new URL(url).openConnection()
-        conn.addRequestProperty("accept","application/json")
-        def json
-        try {
-            conn.setConnectTimeout 5000
-            conn.setReadTimeout 10000
-            json = conn.content.text
-            def mapResponse = JSON.parse(json)
-            def mapType = mapResponse.type
-            def legendUrl = mapResponse.legendUrl
-            def mapUrl = mapResponse.mapUrl
-            if (mapType == 'blank' || mapType == '' || mapUrl.endsWith('mapaus1_white.png')) {
-                // means no data available
-                legendUrl = resource(dir:'images/map',file:'mapping-data-not-available.png')
-            }
-            if (mapType == 'points') {
-                legendUrl = resource(dir:'images/map',file:'single-occurrences.png')
-            }
-            def result = [mapUrl: mapUrl, legendUrl: legendUrl, type: mapType]
-            //println "mapType=${mapType}, mapUrl=${mapUrl}, legendUrl=${legendUrl}"
-      //sleep delay
-            renderAsJson result
-        } catch (SocketTimeoutException e) {
-            log.warn "Timed out getting records map urls. ${e.getMessage()}"
-            def result = [error:"Timed out getting records map urls.", dataTable: null]
-            renderAsJson result
-        } catch (Exception e) {
-            log.warn "failed to get records map urls - json = ${json} ${e.getMessage()}"
-            def error = ["error":"failed to get records map urls"]
-            renderAsJson error
-        }
-    }
-
     /**
      * Shows the public page for an institution.
      */

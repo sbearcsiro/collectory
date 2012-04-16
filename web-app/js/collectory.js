@@ -257,7 +257,7 @@ function loadDownloadStats(uid, name, eventType) {
 
             $('div#usage').html(stats);
 
-            drawVisualization(data, eventType);
+            //drawVisualization(data, eventType);
 
         }
       }

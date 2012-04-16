@@ -378,10 +378,6 @@
               // taxon chart
               loadTaxonomyChart(taxonomyChartOptions);
 
-              // records map
-              /*var mapServiceUrl = "${ConfigurationHolder.config.grails.context}/public/recordsMapService?uid=${instance.uid}";
-              $.get(mapServiceUrl, {}, mapRequestHandler);*/
-
               // tree
               initTaxonTree(taxonomyTreeOptions);
           }

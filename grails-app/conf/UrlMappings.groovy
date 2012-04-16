@@ -20,6 +20,12 @@ class UrlMappings {
       //"/manage" (controller: 'manage', action: 'index')
 
       // data services
+      "/ws/$entity/count/$groupBy?" (controller:'data', action: 'count') {
+          constraints {
+            entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+          }
+      }
+
       "/ws/$entity/$uid?" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {

@@ -209,6 +209,12 @@ div.vertical-charts h3:first-child {
 #charts > div.pie, #charts > div.column, #charts > div.bar {
     float:left;
 }
+
+#charts > div:first-child {
+    width: 530px;
+    *width: auto; /* IE 7 */
+}
+
 /************************************************************\
 * Records maps
 \************************************************************/

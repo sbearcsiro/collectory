@@ -126,6 +126,15 @@ class LookupController {
         }
     }
 
+    def downloadLimits = {
+        def list = DataResource.list(sort: "uid").findAll({it.downloadLimit > 0}).collect {
+            [uid: it.uid,
+            name: it.name,
+            downloadLimit: it.downloadLimit]
+        }
+        render list as JSON
+    }
+
     def citations = {
         if (params.include) {
             params.uids = "[${params.include}]"
@@ -159,7 +168,7 @@ class LookupController {
                 }
                 tsv {  // old
                     response.addHeader HttpHeaders.CONTENT_TYPE, 'text/tsv'
-                    String result = "Resource name\tCitation\tRights\tMore information\tData generalizations\tInformation withheld\tDownload limit"
+                    String result = "Resource name\tCitation\tRights\tMore information\tData generalizations\tInformation withheld\tDownload limit\tUID"
                     uids.each {
                         // get each pg
                         def pg = it.startsWith('drt') ? TempDataResource.findByUid(it) : ProviderGroup._get(it)
@@ -191,7 +200,7 @@ class LookupController {
     def csvCitations(uids) {
         StringWriter sw = new StringWriter()
         CSVWriter writer = new CSVWriter(sw)
-        writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld","Download limit"] as String[])
+        writer.writeNext(["Resource name","Citation","Rights","More information", "Data generalizations", "Information withheld","Download limit","UID"] as String[])
         uids.each {
             def pg = it.startsWith('drt') ? TempDataResource.findByUid(it) : ProviderGroup._get(it)
             if (pg) {
@@ -257,10 +266,10 @@ class LookupController {
         def link = ConfigurationHolder.config.citation.link.template
         link =  link.replaceAll("@link@",makeLink(pg.uid))
         switch (format) {
-            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}\t${dataGen}\t${infoWithheld}\t${downloadLimit}"
+            case "tab separated": return "${name}\t${citation}\t${rights}\t${link}\t${dataGen}\t${infoWithheld}\t${downloadLimit}\t${pg.uid}"
             case "map": return ['name': name, 'citation': citation, 'rights': rights, 'link': link,
-                'dataGeneralizations': dataGen, 'informationWithheld': infoWithheld, 'downloadLimit': downloadLimit]
-            case "array": return [name, citation, rights, link, dataGen, infoWithheld, downloadLimit]
+                'dataGeneralizations': dataGen, 'informationWithheld': infoWithheld, 'downloadLimit': downloadLimit, 'uid': pg.uid]
+            case "array": return [name, citation, rights, link, dataGen, infoWithheld, downloadLimit, pg.uid]
         }
     }
 

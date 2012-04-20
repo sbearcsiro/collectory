@@ -93,6 +93,9 @@ class UrlMappings {
       // citations
       "/ws/citations/$include?" (controller:'lookup', action:'citations')
 
+      // download limits
+      "/ws/downloadLimits" (controller:'lookup', action:'downloadLimits')
+
       // eml
       "/eml/$id?" (controller:'data',action:'eml')
       // preferred

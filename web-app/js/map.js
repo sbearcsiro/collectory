@@ -605,7 +605,12 @@ function outputMultipleInstitutions(parents) {
 *   grab name from institution
 \************************************************************/
 function getName(obj) {
-    var name = obj[0].attributes.instName;
+    var name;
+    if ($.isArray(obj)) {
+        name = obj[0].attributes.instName;
+    } else {
+        name = obj.attributes.instName;
+    }
     // remove leading 'The ' so the institutions sort by first significant letter
     if (name !== null && name.length > 4 && name.substr(0,4) === "The ") {
         name = name.substr(4);

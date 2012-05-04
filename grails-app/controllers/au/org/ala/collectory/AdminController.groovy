@@ -63,8 +63,23 @@ class AdminController {
     def showConfig = {
         def target = params.scope ? ConfigurationHolder.config[params.scope] : ConfigurationHolder.config
         if (target instanceof ConfigObject) {
-            def flat = target.flatten()
-            render flat as JSON
+            String res = "<ul>"
+            ConfigurationHolder.config.each { key, value ->
+                if (value instanceof Map) {
+                    res += "<p>" + key + "</p>"
+                    res += "<ul>"
+                    value.each { k1, v1 ->
+                        res += "<li>" + k1 + " = " + v1 + "</li>"
+                    }
+                    res += "</ul>"
+                }
+                else {
+                    res += "<li>${key} = ${value}</li>"
+                }
+            }
+            render res + "</ul>"
+            //def flat = target.flatten()
+            //render flat as JSON
         }
         else {
             render target

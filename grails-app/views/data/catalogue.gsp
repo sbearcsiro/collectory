@@ -25,11 +25,11 @@
       </div><!--close header-->
       <div id="column-one">
         <div class="section infoPage">
-          <div id='warnings'>
+          %{--<div id='warnings'>
             <h2>Disclaimer</h2>
             <p>Please be aware that these services are still being refined. The specifications should be treated as experimental.
             They may change.</p>
-          </div>
+          </div>--}%
 
           <h2 id="WS0024">Data services</h2>
           <p>The registry of the Atlas of Living Australia maintains metadata that describe:</p>
@@ -251,6 +251,12 @@
               <td colspan="2"><a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_taxonomic_coverage_hints_from_UID">More information.</a></td>
             </tr>
           </table>
+
+          <h3>List download limits for all data resources</h3>
+          <p>Limits can be applied to the number of records that can be downloaded from a particular resource per request.
+          If <span class="code">[ ]</span> is returned, there are no limits currently set.
+          The form is:</p>
+          <p><span class="code">GET <a href="http://collections.ala.org.au/lookup/downloadLimits">http://collections.ala.org.au/lookup/downloadLimits</a></span></p>
 
           <h3>Generate UID for a new entity</h3>
           <p>This is a temporary service used when new data resources are discovered during the harvesting of records. This service will disappear when the

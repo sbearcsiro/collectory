@@ -667,7 +667,7 @@ class CollectoryTagLib {
         int index = email.indexOf('@')
         if (index > 0) {
             email = email.replaceAll("@", strEncodedAtSign)
-            out << "<span class='link' onclick=\"return sendEmail('${email}')\">${body()}</span>"
+            out << "<span class='link under' onclick=\"return sendEmail('${email}')\">${body()}</span>"
         }
     }
 

@@ -7,7 +7,7 @@
         <p>${cf?.role}</p>
         <cl:ifNotBlank prefix="phone: " value='${fieldValue(bean: cf, field: "contact.phone")}'/>
         <cl:ifNotBlank prefix="fax: " value='${fieldValue(bean: cf, field: "contact.fax")}'/>
-        <p><cl:emailLink email="${cf?.contact?.email}">email</cl:emailLink></p>
+        <p><cl:emailLink email="${cf?.contact?.email}">email this contact</cl:emailLink></p>
       </div>
     </g:each>
   </div>

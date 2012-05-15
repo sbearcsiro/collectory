@@ -103,7 +103,8 @@
                     </ul>
                 </g:if>
 
-              </div>
+                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'members']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+            </div>
 
               <!-- images -->
               <g:render template="/shared/images" model="[target: 'logoRef', image: instance.logoRef, title:'Logo', instance: instance]"/>

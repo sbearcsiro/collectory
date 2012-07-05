@@ -288,12 +288,12 @@
                             // clone the existing field and inject the next value - adding a delete link
                             $(obj).clone()
                                 .val(url.trim())
-                                .css('width','95%')
+                                .css('width','93%')
                                 .insertAfter($(obj).parent().children('input,img').last())
                                 .after($deleteLink.clone(true));
                         }
                     });
-                };
+                }
             });
 
             /* this injects 'add another' functionality to urls */

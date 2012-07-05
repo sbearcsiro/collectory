@@ -10,7 +10,7 @@ import grails.web.JSONBuilder
 
 class AdminController {
 
-    def dataLoaderService, idGeneratorService, authService
+    def dataLoaderService, idGeneratorService, authService, metadataService
 
     //static defaultAction = "home"
     
@@ -84,6 +84,26 @@ class AdminController {
         else {
             render target
         }
+    }
+
+    def clearConnectionProfiles = {
+        metadataService.clearConnectionProfiles()
+        metadataService.clearConnectionParameters()
+        render 'Done.'
+    }
+
+    def getConnectionProfiles = {
+        render metadataService.getConnectionProfiles() as JSON
+    }
+
+    def getConnectionProfile = {
+        def profile = metadataService.getConnectionProfile(params.profile)
+        println profile
+        render profile as JSON
+    }
+
+    def getConnectionParameters = {
+        render metadataService.getConnectionParameters() as JSON
     }
 
     def search = {

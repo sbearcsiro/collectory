@@ -6,14 +6,13 @@ import org.codehaus.groovy.grails.web.util.StreamCharBuffer
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
-import au.org.ala.collectory.resources.Profile
 import org.codehaus.groovy.grails.web.json.JSONArray
 import java.text.SimpleDateFormat
 import au.org.ala.collectory.resources.PP
 
 class CollectoryTagLib {
 
-    def authService
+    def authService, metadataService
 
     static namespace = 'cl'
 
@@ -1703,25 +1702,25 @@ class CollectoryTagLib {
             def cp = JSON.parse(attrs.connectionParameters.toString())
 
             // load the profile of the selected protocol
-            Profile protocol = Profile.valueOf(cp.protocol)
+            def profile = metadataService.getConnectionProfile(cp.protocol)
 
             // display the protocol
-            out << "<tr><td>Protocol:</td><td>${protocol}</td></tr>"
+            out << "<tr><td>Protocol:</td><td>${profile.display}</td></tr>"
 
             // display each of the protocol's parameters
-            protocol.parameters.each {pp ->
+            profile.params.each {pp ->
                 def value
-                if (pp.name == "termsForUniqueKey") {
+                if (pp.paramName == "termsForUniqueKey") {
                     // show as comma separated list
-                    value = cp."${pp.name}".collect {it}.join(', ') as String
+                    value = cp."${pp.paramName}".collect {it}.join(', ') as String
                 }
-                else if (cp."${pp.name}" instanceof List) {
+                else if (cp."${pp.paramName}" instanceof List) {
                     // show as list
-                    value = cp."${pp.name}".join('<br/>');
+                    value = cp."${pp.paramName}".join('<br/>');
                 }
                 else {
                     // encode any control characters
-                    value = encodeControlChars(cp."${pp.name}")
+                    value = encodeControlChars(cp."${pp.paramName}")
                 }
                 out << "<tr><td>${pp.display}:</td><td>" + (value ?: '') + "</td></tr>"
             }
@@ -1756,6 +1755,9 @@ class CollectoryTagLib {
         return outStr
     }
 
+    /**
+     * Builds the html for editing connection parameters.
+     */
     def connectionParameters = { attrs ->
         // see if we have a protocol
         def cp = null
@@ -1773,9 +1775,10 @@ class CollectoryTagLib {
             <td valign="top" class="value">""" +
                 select(id:'protocolSelector',
                        name:"protocol",
-                       from:Profile.values(),
+                       from:metadataService.getConnectionProfilesAsList(),
                        value:protocol,
-                       optionValue:'name',
+                       optionValue:'display',
+                       optionKey:'name',
                        onchange:'changeProtocol()') +
                 """<cl:helpText code="dataResource.connectionParameters.protocol"/>
               </td>
@@ -1783,15 +1786,17 @@ class CollectoryTagLib {
         </tr>"""
 
         // create the widgets for each protocol (profile)
-        Profile.values().each {
+        metadataService.getConnectionProfilesAsList().each {
             // is this the selected protocol?
-            boolean selected = (it.toString() == cp?.protocol)
+            boolean selected = (it.name == cp?.protocol)
             String hidden = selected ? '' : "display:none;"
 
-            it.parameters.each {pp ->
+            it.params.each {ppName ->
+
+                def pp = metadataService.getConnectionParameter(ppName)
 
                 // get value from object
-                def displayedValue = cp?."${pp.name}"?:""
+                def displayedValue = cp?."${pp.paramName}"?:""
 
                 // inject default if no value
                 if (!displayedValue && pp.defaultValue) {
@@ -1808,15 +1813,15 @@ class CollectoryTagLib {
                     displayedValue = encodeControlChars(displayedValue)
                 }
 
-                def attributes = [name:pp.name, value:displayedValue]
+                def attributes = [name:pp.paramName, value:displayedValue]
                 if (!selected) {
                     attributes << [disabled:true]
                 }
-                if (pp.name == "termsForUniqueKey") {
+                if (pp.paramName == "termsForUniqueKey") {
                     // handle terms specially
-                    out << """<tr class='labile' id="${it}" style="${hidden}"><td class='be-careful' colspan='2'>
+                    out << """<tr class='labile' id="${it.name}" style="${hidden}"><td class='be-careful' colspan='2'>
                         Don't change the following terms unless you know what you are doing. Incorrect values can cause major devastation.</td></tr>
-                        <tr class="prop labile" style="${hidden}" id="${it}">
+                        <tr class="prop labile" style="${hidden}" id="${it.name}">
                         <td valign="top" class="name"
                           <label for="termsForUniqueKey">${pp.display}</label>
                         </td>
@@ -1833,13 +1838,13 @@ class CollectoryTagLib {
                         case 'boolean': widget = 'checkBox'; break
                         default: widget = 'textField'; break
                     }
-                    out << """<tr class="prop labile" style="${hidden}" id="${it}">
+                    out << """<tr class="prop labile" style="${hidden}" id="${it.name}">
                         <td valign="top" class="name"
-                          <label for="${pp.name}">${pp.display}</label>
+                          <label for="${pp.paramName}">${pp.display}</label>
                         </td>
                         <td valign="top" class="value">""" +
                             "${widget}"(attributes) +
-                            helpText(code:'dataResource.' + pp.name) +
+                            helpText(code:'dataResource.' + pp.paramName) +
                         "</td>" +  helpTD() + "</tr>"
                 }
             }

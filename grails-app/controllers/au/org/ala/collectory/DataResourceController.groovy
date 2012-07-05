@@ -1,12 +1,13 @@
 package au.org.ala.collectory
 
 import grails.converters.JSON
-import au.org.ala.collectory.resources.Profile
 import java.text.SimpleDateFormat
 import au.org.ala.collectory.resources.PP
 import au.org.ala.collectory.resources.DarwinCoreFields
 
 class DataResourceController extends ProviderGroupController {
+
+    def metadataService
 
     DataResourceController() {
         entityName = "DataResource"
@@ -65,27 +66,27 @@ class DataResourceController extends ProviderGroupController {
         if (protocol) {
             cp.protocol = protocol
         }
-        def profile = Profile.valueOf(protocol)
-        profile.parameters.each {pp ->
+        def profile = metadataService.getConnectionProfile(protocol)
+        profile.params.each {pp ->
             if (pp.type == 'boolean') {
                 // the presence of the param indicates it is checked
-                cp."${pp.name}" = params.containsKey(pp.name)
+                cp."${pp.paramName}" = params.containsKey(pp.paramName)
             }
-            else if (params."${pp.name}") {
-                if (pp.name == 'termsForUniqueKey') {
-                    cp."${pp.name}" = params."${pp.name}".tokenize(', ')
+            else if (params."${pp.paramName}") {
+                if (pp.paramName == 'termsForUniqueKey') {
+                    cp."${pp.paramName}" = params."${pp.paramName}".tokenize(', ')
                 }
                 else if (pp.type == 'delimiter') {
-                    def str = params."${pp.name}"
+                    def str = params."${pp.paramName}"
                     str = str.replaceAll('HT', PP.HT_CHAR)
                     str = str.replaceAll('LF', PP.LF_CHAR)
                     str = str.replaceAll('VT', PP.VT_CHAR)
                     str = str.replaceAll('FF', PP.FF_CHAR)
                     str = str.replaceAll('CR', PP.CR_CHAR)
-                    cp."${pp.name}" = str
+                    cp."${pp.paramName}" = str
                 }
                 else {
-                    cp."${pp.name}" = params."${pp.name}"
+                    cp."${pp.paramName}" = params."${pp.paramName}"
                 }
             }
         }

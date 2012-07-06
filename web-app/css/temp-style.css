@@ -431,3 +431,8 @@ footer ul, nav ol, nav ul {
     margin-bottom:-38px;
     background-color:#486688;
 }
+
+/* override detrimental change in search.css */
+span.FieldName {
+    float: none !important;
+}

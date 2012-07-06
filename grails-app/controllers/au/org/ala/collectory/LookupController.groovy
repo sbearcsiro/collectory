@@ -20,37 +20,61 @@ class LookupController {
     def collection = {
         def inst = params.inst
         def coll = params.coll
-        if (!inst) {
-            def error = ["error":"must specify an institution code as parameter inst"]
-            render error as JSON
+        if (!inst && !coll) {
+            // do standard entity lookup
+            renderEntitySummaries(Collection, params.id)
         }
-        if (!coll) {
-            def error = ["error":"must specify a collection code as parameter coll"]
-            render error as JSON
-        }
-        Collection col = ProviderMap.findMatch(inst, coll)
-        if (col) {
-            render col.buildSummary() as JSON
-        } else {
-            def error = ["error":"unable to find collection with inst code = ${inst} and coll code = ${coll}"]
-            render error as JSON
+        else {
+            // do coll/inst code lookup
+            if (!inst) {
+                def error = ["error":"must specify an institution code as parameter inst"]
+                render error as JSON
+            }
+            if (!coll) {
+                def error = ["error":"must specify a collection code as parameter coll"]
+                render error as JSON
+            }
+            Collection col = ProviderMap.findMatch(inst, coll)
+            if (col) {
+                render col.buildSummary() as JSON
+            } else {
+                def error = ["error":"unable to find collection with inst code = ${inst} and coll code = ${coll}"]
+                render error as JSON
+            }
         }
     }
 
     def institution = {
-        Institution inst = null
-        if (params.id) {
-            inst = findInstitution(params.id) as Institution
+        renderEntitySummaries(Institution, params.id)
+    }
+
+    def dataProvider = {
+        renderEntitySummaries(DataProvider, params.id)
+    }
+
+    def dataResource = {
+        renderEntitySummaries(DataResource, params.id)
+    }
+
+    def renderEntitySummaries(domain, uid = null) {
+        def pg = null
+        if (uid) {
+            // summary for single entity
+            pg = ProviderGroup._get(uid)
+            if (pg) {
+                render pg.buildSummary() as JSON
+            } else {
+                log.error "Unable to find entity. id = ${params.id}"
+                def error = ["error":"unable to find entity - id = ${params.id}"]
+                render error as JSON
+            }
         } else {
-            def error = ["error":"no code or id passed in request"]
-            render error as JSON
-        }
-        if (inst) {
-            render inst.buildSummary() as JSON
-        } else {
-            log.error "Unable to find institution. id = ${params.id}"
-            def error = ["error":"unable to find institution - id = ${params.id}"]
-            render error as JSON
+            // return summaries for all
+            def list = []
+            domain.list().each {
+                list << it.buildSummary()
+            }
+            render list as JSON
         }
     }
 

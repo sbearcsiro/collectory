@@ -1201,6 +1201,9 @@ class CollectoryTagLib {
      */
     def nounForTypes = {attrs ->
         def nouns = []
+        if (attrs.types =~ "seedbank") {
+            nouns << "accessions"
+        }
         if (attrs.types =~ "preserved") {
             nouns << "specimens"
         }

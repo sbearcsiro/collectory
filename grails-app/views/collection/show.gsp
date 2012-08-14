@@ -170,9 +170,9 @@
       </table>
 
       <!-- estimate of records -->
-      <h2 style="padding-top:10px;">Number of specimens in the collection</h2>
+      <h2 style="padding-top:10px;">Number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> in the collection</h2>
       <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
-        <p>The estimated number of specimens within <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
+        <p>The estimated number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> within <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
       </g:if>
       <g:if test="${fieldValue(bean: instance, field: 'numRecordsDigitised') != '-1'}">
         <p>Of these ${fieldValue(bean: instance, field: "numRecordsDigitised")} are digitised.
@@ -193,7 +193,7 @@
         <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
       </div>
 
-      <p style="margin-top:20px;">The mapping of records to this collection is based on the provider codes shown in the next section.</p>
+      <p style="margin-top:20px;">The mapping of records to this collection is based on the provider codes shown in the 'Provider codes' section.</p>
       <cl:warnIfInexactMapping collection="${instance}"/>
 
       <cl:editButton uid="${instance.uid}" page="range"/>

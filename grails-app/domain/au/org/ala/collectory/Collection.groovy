@@ -78,7 +78,7 @@ class Collection extends ProviderGroup implements Serializable {
 
     // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/CollectionType.rdf
     static collectionTypes = ["archival","art","audio","cellcultures","electronic","facsimiles","fossils","genetic",
-                        "living","observations","preserved","products","taxonomic","texts","tissue","visual"]
+                        "living","observations","preserved","products","seedbank","taxonomic","texts","tissue","visual"]
 
     // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/Collection.rdf
     static kingdoms = ['Animalia', 'Archaebacteria', 'Eubacteria', 'Fungi', 'Plantae', 'Protista']

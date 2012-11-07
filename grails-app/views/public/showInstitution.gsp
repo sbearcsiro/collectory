@@ -84,14 +84,12 @@
           </g:each>
         </ol>
 
-        <g:if test="${false}">
           <div id='usage-stats'>
-            <h2>Usage statistics</h2>
-            <div id='usage'>
-              <p>Loading...</p>
-            </div>
+              <h2>Usage statistics</h2>
+              <div id='usage'>
+                <p>Loading...</p>
+              </div>
           </div>
-        </g:if>
 
           <h2>Digitised records</h2>
           <div>
@@ -211,7 +209,7 @@
 function onLoadCallback() {
 
   // stats
-  //loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+  loadDownloadStats("${instance.uid}","${instance.name}", "1002");
 
   // records
   $.ajax({

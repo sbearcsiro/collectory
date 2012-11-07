@@ -134,7 +134,6 @@
                   <div id='usage'>
                     <p>Loading...</p>
                   </div>
-
                   <g:if test="${instance.resourceType == 'website'}">
                       <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
                   </g:if>

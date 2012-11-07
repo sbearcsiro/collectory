@@ -279,7 +279,7 @@ function loadDownloadStats(uid, name, eventType) {
                 } else {
                     var stats;
                     stats = "<p class='short-bot'>Breakdown by reason of occurrence record downloads from last 12 months:</p>";
-                    stats += "<table>";
+                    stats += "<table class='usageByReasonBreakdown'>";
 
                     stats += "<tr><td>Conservation management/planning:</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["conservation management/planning"].records) + "</span></td><td>from <span class='number'>" +

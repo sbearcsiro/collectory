@@ -590,3 +590,5 @@ span.changeTo {
 table.textChanges {
     display: none;
 }
+
+table.usageByReasonBreakdown { border-bottom:none; }

@@ -137,7 +137,17 @@
                 <cl:subCollectionList list="${instance.subCollections}"/>
               </g:if>
 
+              <g:if test="${biocacheRecordsAvailable}">
+              <div id='usage-stats' style="">
+                <h2>Usage statistics</h2>
+                <div id='usage'>
+                  <p>Loading...</p>
+                </div>
+              </div>
+              </g:if>
+
               <cl:lastUpdated date="${instance.lastUpdated}"/>
+
             </div><!--close section-->
           </div><!--close column-one-->
 
@@ -256,8 +266,7 @@
                   <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
                   <cl:warnIfInexactMapping collection="${instance}"/>
                   <cl:recordsLink entity="${instance}">
-                    Click to view all records for the <cl:collectionName name="${instance.name}"/></cl:recordsLink>
-                  <!--cl:downloadRecordsLink uid="${instance.uid}"/-->
+                  Click to view all records for the <cl:collectionName name="${instance.name}"/></cl:recordsLink>
                 </g:if>
                 <g:else>
                   <p>No database records for this collection can be accessed through the Atlas of Living Australia.</p>
@@ -274,12 +283,6 @@
             <div class="section">
               <g:if test="${biocacheRecordsAvailable}">
                 <div style="clear:both;"></div>
-                  <div id='usage-stats' style="float:left;width:400px;height:191px;margin-right:50px;z-index:-20">
-                    <h3>Download statistics</h3>
-                    <div id='usage'>
-                      <p>Loading...</p>
-                    </div>
-                  </div>
                   <div id="collectionRecordsMapContainer">
                       <h3>Map of occurrence records</h3>
                       <cl:recordsMapDirect uid="${instance.uid}"/>
@@ -348,12 +351,13 @@ $('img#mapLegend').each(function(i, n) {
 function onLoadCallback() {
   // stats
   // hack for ie6 & ie7
-  if (jQuery.browser.msie && (parseInt(jQuery.browser.version,10) === 6 || parseInt(jQuery.browser.version,10) === 7)) {
-      var $stats = $('#usage-stats');
-      $stats.detach().appendTo($('#iehack'));
-      $stats.css('padding-top','40px').css('margin-left','50px');
-      $('div.learnMaps').css('display','none');
-  }
+//  if (jQuery.browser.msie && (parseInt(jQuery.browser.version,10) === 6 || parseInt(jQuery.browser.version,10) === 7)) {
+//      var $stats = $('#usage-stats');
+//      $stats.detach().appendTo($('#iehack'));
+//      $stats.css('padding-top','40px').css('margin-left','50px');
+//      $('div.learnMaps').css('display','none');
+//  }
+
   loadDownloadStats("${instance.uid}","${instance.name}", "1002");
 
   // records

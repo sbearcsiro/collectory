@@ -28,7 +28,12 @@
     <g:each var='resource' in="${resources}">
         <registryObject group="Atlas of Living Australia">
             <key>ala.org.au/${resource.uid}</key>
+            <g:if test="${resource.dataProvider}">
             <originatingSource>${resource.dataProvider.name}</originatingSource>
+            </g:if>
+            <g:else>
+            <originatingSource>Atlas of Living Australia</originatingSource>
+            </g:else>
             <collection type="dataset">
                 <identifier type="local">ala.org.au/${resource.uid}</identifier>
                 <name type="primary">
@@ -47,29 +52,41 @@
                     <title>${resConnectionParameters[resource.uid].getAt('resource')}</title>
                 </relatedInfo>
                 </g:if>
+                <g:if test="${resource.dataProvider}">
                 <relatedInfo type="website">
                     <identifier type="uri">${resource.websiteUrl}</identifier>
                     <title>See this Collection on the website of ${resource.dataProvider.name}</title>
                 </relatedInfo>
+                </g:if>
+                <g:else>
+                <relatedInfo type="website">
+                    <identifier type="uri">http://collections.ala.org.au</identifier>
+                    <title>See this Collection on the website of The Atlas of Living Australia</title>
+                </relatedInfo>
+                </g:else>
+                <g:if test="${resource.dataProvider}">
                 <relatedObject>
                     <key>ala.org.au/${resource.dataProvider.uid}</key>
                     <relation type="isManagedBy" />
                 </relatedObject>
+                </g:if>
                 <relatedObject>
                     <key>Contributor:Atlas of Living Australia</key>
                     <relation type="hasCollector" />
                 </relatedObject>
                 <rights>
                     <licence type="${resource.licenseType}" />
-                    <rightsStatement>${resource.rights}</rightsStatement>
+                    <rightsStatement><![CDATA[${resource.rights}]]></rightsStatement>
                 </rights>
-                <description type="brief">${resource.pubDescription}</description>
+                <description type="brief"><![CDATA[${resource.pubDescription}]]></description>
                 <g:if test="${resContentTypes[resource.uid]}">
                 <description type="notes">Includes: ${resContentTypes[resource.uid]}</description>
                 </g:if>
+                <g:if test="${resource.citation}">
                 <citationInfo>
-                    <fullCitation>${resource.citation}</fullCitation>
+                    <fullCitation><![CDATA[${resource.citation}]]></fullCitation>
                 </citationInfo>
+                </g:if>
             </collection>
         </registryObject>
     </g:each>

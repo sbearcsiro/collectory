@@ -3,7 +3,7 @@ package au.org.ala.collectory
 import grails.converters.deep.JSON
 import org.apache.commons.lang.StringUtils
 
-class AandsController {
+class RifCsController {
 
     def index = {
         def resConnectionParameters = [:]
@@ -21,6 +21,8 @@ class AandsController {
                 resContentTypes[res.uid] = StringUtils.join(obj, ',')
             }
         }
+
+        response.contentType = 'text/xml'
 
         [providers: DataProvider.list([sort: 'uid']), resources: DataResource.list(sort: 'uid'), resConnectionParameters: resConnectionParameters, resContentTypes: resContentTypes]
     }

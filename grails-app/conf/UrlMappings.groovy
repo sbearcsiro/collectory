@@ -121,6 +121,8 @@ class UrlMappings {
           action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
       }
 
+      "/ws/rif-cs" (controller:'rifCs',action:'index')
+
       "/"(controller:'public', action:'map')
       "500"(view:'/error')
 	}

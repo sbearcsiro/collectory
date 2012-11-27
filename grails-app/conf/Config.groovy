@@ -71,6 +71,11 @@ if (!biocache.occurrences.json) {
 if (!biocache.breakdown.taxa) {
     biocache.breakdown.taxa = "ws/breakdown/{entity}/{uid}"
 }
+
+if (!biocache.bounding.box) {
+    biocache.bounding.box = "ws/mapping/bounds"
+}
+
 /******************************************************************************\
  *  RELOADABLE CONFIG
 \******************************************************************************/

@@ -87,6 +87,9 @@
                     <fullCitation><![CDATA[${resource.citation}]]></fullCitation>
                 </citationInfo>
                 </g:if>
+                <g:if test="${resBoundingBoxCoords.containsKey(resource.uid)}" >
+                    <spatial type="iso19139dcmiBox">northlimit=${resBoundingBoxCoords[resource.uid][3]}; southlimit=${resBoundingBoxCoords[resource.uid][1]}; westlimit=${resBoundingBoxCoords[resource.uid][0]}; eastLimit=${resBoundingBoxCoords[resource.uid][2]}; projection=WGS84</spatial>
+                </g:if>
             </collection>
         </registryObject>
     </g:each>

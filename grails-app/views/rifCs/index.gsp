@@ -42,28 +42,22 @@
                 <location>
                     <address>
                         <electronic>
-                            <value>${resource.websiteUrl}</value>
+                            <value>${resource.buildPublicUrl()}</value>
                         </electronic>
                     </address>
                 </location>
-                <g:if test="${resConnectionParameters[resource.uid]}">
-                <relatedInfo type="website">
-                    <identifier type="uri">${resConnectionParameters[resource.uid].getAt('url')}</identifier>
-                    <title>${resConnectionParameters[resource.uid].getAt('resource')}</title>
-                </relatedInfo>
-                </g:if>
-                <g:if test="${resource.dataProvider}">
+
+                <g:if test="${resource.websiteUrl}">
                 <relatedInfo type="website">
                     <identifier type="uri">${resource.websiteUrl}</identifier>
+                    <g:if test="${resource.dataProvider}">
                     <title>See this Collection on the website of ${resource.dataProvider.name}</title>
+                    </g:if>
                 </relatedInfo>
                 </g:if>
-                <g:else>
                 <relatedInfo type="website">
-                    <identifier type="uri">http://collections.ala.org.au</identifier>
-                    <title>See this Collection on the website of The Atlas of Living Australia</title>
+                    <identifier type="uri">${resource.buildPublicUrl()}</identifier>
                 </relatedInfo>
-                </g:else>
                 <g:if test="${resource.dataProvider}">
                 <relatedObject>
                     <key>ala.org.au/${resource.dataProvider.uid}</key>
@@ -76,7 +70,9 @@
                 </relatedObject>
                 <rights>
                     <licence type="${resource.licenseType}" />
+                    <g:if test="${resource.rights}">
                     <rightsStatement><![CDATA[${resource.rights}]]></rightsStatement>
+                    </g:if>
                 </rights>
                 <description type="brief"><![CDATA[${resource.pubDescription}]]></description>
                 <g:if test="${resContentTypes[resource.uid]}">

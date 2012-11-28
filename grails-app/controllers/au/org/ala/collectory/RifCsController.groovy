@@ -7,18 +7,11 @@ import org.codehaus.groovy.grails.commons.ConfigurationHolder
 class RifCsController {
 
     def index = {
-        def resConnectionParameters = [:]
         def resContentTypes = [:]
 
         def resBoundingBoxCoords = [:]
 
         for (res in DataResource.list()) {
-            def connectionParametersJson = res.connectionParameters
-            if (connectionParametersJson != null) {
-                def obj = JSON.parse(connectionParametersJson)
-                resConnectionParameters[res.uid] = obj
-            }
-
             def contentTypesJson = res.contentTypes
             if (contentTypesJson != null) {
                 def obj = JSON.parse(contentTypesJson)
@@ -60,6 +53,6 @@ class RifCsController {
 
         response.contentType = 'text/xml'
 
-        [providers: DataProvider.list([sort: 'uid']), resources: DataResource.list(sort: 'uid'), resConnectionParameters: resConnectionParameters, resContentTypes: resContentTypes, resBoundingBoxCoords: resBoundingBoxCoords]
+        [providers: DataProvider.list([sort: 'uid']), resources: DataResource.list(sort: 'uid'), resContentTypes: resContentTypes, resBoundingBoxCoords: resBoundingBoxCoords]
     }
 }

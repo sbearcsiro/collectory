@@ -89,7 +89,7 @@ class CrudService {
                     caption = p.imageRef?.caption
                     copyright = p.imageRef?.copyright
                     attribution = p.imageRef?.attribution
-                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/dataProvider/" + p.imageRef.file
                 }
             }
             if (p.logoRef?.file) {
@@ -98,7 +98,7 @@ class CrudService {
                     caption = p.logoRef?.caption
                     copyright = p.logoRef?.copyright
                     attribution = p.logoRef?.attribution
-                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/dataProvider/" + p.logoRef.file
                 }
             }
             use (OutputFormat) {
@@ -175,7 +175,7 @@ class CrudService {
                     caption = p.imageRef?.caption
                     copyright = p.imageRef?.copyright
                     attribution = p.imageRef?.attribution
-                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/dataHub/" + p.imageRef.file
                 }
             }
             if (p.logoRef?.file) {
@@ -184,7 +184,7 @@ class CrudService {
                     caption = p.logoRef?.caption
                     copyright = p.logoRef?.copyright
                     attribution = p.logoRef?.attribution
-                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/dataHub/" + p.logoRef.file
                 }
             }
             use (OutputFormat) {
@@ -260,7 +260,7 @@ class CrudService {
                     caption = p.imageRef?.caption
                     copyright = p.imageRef?.copyright
                     attribution = p.imageRef?.attribution
-                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.imageRef.file
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/dataResource/" + p.imageRef.file
                 }
             }
             if (p.logoRef?.file) {
@@ -269,7 +269,7 @@ class CrudService {
                     caption = p.logoRef?.caption
                     copyright = p.logoRef?.copyright
                     attribution = p.logoRef?.attribution
-                    uri = ConfigurationHolder.config.grails.serverURL + "/data/institution/" + p.logoRef.file
+                    uri = ConfigurationHolder.config.grails.serverURL + "/data/dataResource/" + p.logoRef.file
                 }
             }
             use (OutputFormat) {

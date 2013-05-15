@@ -22,21 +22,21 @@ class UrlMappings {
       // data services
       "/ws/$entity/count/$groupBy?" (controller:'data', action: 'count') {
           constraints {
-            entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+            entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
           }
       }
 
       "/ws/$entity/$uid?" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {
-            entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+            entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
           }
       }
 
       "/ws/$entity/summary" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {
-            entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+            entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
           summary = 'true'
           }
       }
@@ -45,7 +45,12 @@ class UrlMappings {
       "/ws/dataResource/$uid/connectionParameters" (controller:'data', action:'connectionParameters')
 
       // raw contact data
-      "/ws/contacts/$id?" (controller: 'data', action: 'contacts')
+      //"/ws/contacts/$id?" (controller: 'data', action: 'contacts')
+      "/ws/contacts/email/$email?" (controller: 'data', action: 'getContactByEmail')
+
+      "/ws/contacts/$id?" (controller:'data') {
+        action = [GET:'contacts', PUT:'updateContact', DELETE:'deleteContact', POST:'updateContact']
+      }
 
       // entities that can be edited by a contact
       "/ws/contacts/$id/authorised" (controller: 'data', action: 'authorisedForContact')
@@ -53,9 +58,9 @@ class UrlMappings {
       // entity contacts
       "/ws/$entity/$uid/contacts/$id?" {
           controller = 'data'
-          action = 'contactForEntity'
+          action = [GET:'contactForEntity', PUT:'updateContactFor', POST:'updateContactFor', DELETE: 'deleteContactFor']
           constraints {
-              entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+              entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
           }
       }
 
@@ -66,6 +71,7 @@ class UrlMappings {
       "/ws/institution/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
       "/ws/dataProvider/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
       "/ws/dataResource/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
+      "/ws/tempDataResource/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'tempDataResource'}
       "/ws/dataHub/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
 
       // contacts to be notified on entity instance event
@@ -73,7 +79,7 @@ class UrlMappings {
             controller = 'data'
             action = 'notifyList'
             constraints {
-                entity(inList:['collection','institution','dataProvider','dataResource','dataHub'])
+                entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
             }
       }
 
@@ -117,9 +123,9 @@ class UrlMappings {
 
       "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
 
-      "/ws/tempDataResource" (controller: 'tempDataResource') {
+      /*"/ws/tempDataResource" (controller: 'tempDataResource') {
           action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
-      }
+      }*/
 
       "/ws/rif-cs" (controller:'rifCs',action:'index')
 

@@ -388,7 +388,7 @@ class CrudService {
 
     def updateTempDataResource(drt, obj) {
         updateBaseProperties(drt, obj)
-        updateDataResourceProperties(drt, obj)
+        updateTempDataResourceProperties(drt, obj)
         //drt.userLastModified = obj.user ?: 'Data services'
         if (!drt.hasErrors()) {
              drt.save(flush: true)
@@ -396,7 +396,7 @@ class CrudService {
         return drt
     }
 
-    private void updateTempDataResourceProperties(TempDataResource drt, obj) {
+    def updateTempDataResourceProperties(drt, obj) {
         drt.properties[tempDataResourceStringProperties] = obj
         drt.properties[tempDataResourceNumberProperties] = obj
     }
@@ -698,7 +698,7 @@ class CrudService {
         }
     }
 
-    private void updateBaseProperties(ProviderGroup pg, obj) {
+    private void updateBaseProperties(pg, obj) {
         adjustEmptyProperties obj
         // handle values that might be passed as JSON arrays or string representations of JSON arrays
         convertJSONToString(obj, baseJSONArrays)

@@ -1,5 +1,6 @@
 package au.org.ala.collectory
 
+import grails.converters.JSON
 import org.springframework.web.context.request.RequestContextHolder
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 
@@ -79,13 +80,32 @@ class AuthService {
                 }
                 // add children
                 pg.children().each { child ->
-                    def ch = ProviderGroup._get(child.uid)
-                    if (ch) {
-                        entities.put ch.uid, [uid: ch.uid, name: ch.name]
+                    // children() now seems to return some internal class resources
+                    // so make sure they are PGs
+                    if (child instanceof ProviderGroup) {
+                        def ch = ProviderGroup._get(child.uid)
+                        if (ch) {
+                            entities.put ch.uid, [uid: ch.uid, name: ch.name]
+                        }
                     }
                 }
             }
         }
         return [sorted: entities.values().sort { it.name }, keys:entities.keySet().sort(), latestMod: latestMod]
+    }
+
+    def checkApiKey(key) {
+        // try the preferred api key store first
+        def url = ConfigurationHolder.config.security.apikey.serviceUrl + key
+        def conn = new URL(url).openConnection()
+        if (conn.getResponseCode() == 200) {
+            return JSON.parse(conn.content.text)
+        }
+        log.info "Rejected change using key ${key}"
+        println "Rejected change using key ${key}"
+        // else try the old key if it is configured
+        def resp = [:]
+        resp.valid = ConfigurationHolder.config.api_key == key
+        return resp
     }
 }

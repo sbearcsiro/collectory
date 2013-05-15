@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 
 class TempDataResourceController {
 
-    def crudService
+    def crudService, authService
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -115,7 +115,8 @@ class TempDataResourceController {
             session.username = obj.user
         }
 
-        if (obj.api_key != ConfigurationHolder.config.api_key) {
+        def keyCheck = authService.checkApiKey(obj.api_key)
+        if (!keyCheck.valid) {
             unauthorised()
         }
         else {

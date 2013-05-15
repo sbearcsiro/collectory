@@ -508,7 +508,13 @@ class PublicController {
         }
         else {
             ActivityLog.log authService.username(), authService.isAdmin(), instance.uid, Action.VIEW
-            [instance: instance]
+            def name = (instance.firstName ? instance.firstName + ' ' : '') + (instance.lastName ?: '')
+            if (!name) { name = instance.email }
+            if (!name) {
+                def pc = instance.getPrimaryContact()
+                name = pc ? pc.contact.buildName() : 'anonymous'
+            }
+            [instance: instance, name: name]
         }
     }
 

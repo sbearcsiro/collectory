@@ -23,10 +23,6 @@
         </div><!--close header-->
         <div id="column-one">
           <div class="section">
-            <g:set var="name" value="${[instance.firstName, instance.lastName].join(' ')}"/>
-            <g:if test="${!name}">
-              <g:set var="name" value="${instance.email}"/>
-            </g:if>
             <p>This data set is a temporary set of records that has been uploaded to the sandbox by ${name}
             on ${instance.dateCreated}.</p>
             <p>The data set contains ${instance.numberOfRecords} records.</p>
@@ -37,7 +33,11 @@
         <div id="column-two">
           <div class="section sidebar">
 
-            <div class="section">
+              <!-- contacts -->
+              <g:set var="contacts" value="${instance.getPublicContactsPrimaryFirst()}"/>
+              <g:render template="contacts" bean="${contacts}"/>
+
+              <div class="section">
               <p>${fieldValue(bean: instance, field: "firstName")} ${fieldValue(bean: instance, field: "lastName")}</p>
               <g:if test="${instance.email}"><cl:emailLink>${fieldValue(bean: instance, field: "email")}</cl:emailLink><br/></g:if>
             </div>

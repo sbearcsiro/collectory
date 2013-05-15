@@ -171,7 +171,7 @@ var validator = {
             });
         },
         cancel: function () {
-            window,location.reload();
+            window.location.reload();
         }
     },
 

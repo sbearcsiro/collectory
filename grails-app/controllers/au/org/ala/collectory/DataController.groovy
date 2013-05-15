@@ -24,9 +24,9 @@ class DataController {
 
     def check() {
         def uid = params.uid
-        if (uid && !uid.startsWith('drt')) {  // allow temp data resources through
+        if (uid) {
             // it must exist
-            def pg = ProviderGroup._get(uid)
+            def pg = uid.startsWith('drt') ? TempDataResource.findByUid(uid) : ProviderGroup._get(uid)
             if (pg) {
                 params.pg = pg
                 // if entity is specified, the instance must be of type entity
@@ -41,8 +41,8 @@ class DataController {
                 return false
             }
         }
-        if (request.method == 'POST' || request.method == "PUT") {
-            if (request.getContentLength() == 0) {
+        if (request.method == 'POST' || request.method == "PUT" || request.method == 'DELETE') {
+            if (request.getContentLength() == 0 && request.method != 'DELETE') {
                 // no payload so return OK as entity exists (if specified)
                 success "no post body"
                 return false
@@ -57,6 +57,18 @@ class DataController {
                     return false
                 }
             }
+            // all data modifications by ws require a valid api key in the body
+            if (!params.json) {
+                unauthorised()
+                return false
+            }
+            def keyCheck = authService.checkApiKey(params.json.api_key)
+            if (!keyCheck.valid) {
+                unauthorised()
+                return false
+            }
+            // inject the user name into the session so it can be used by audit logging if changes are made
+            session.username = keyCheck.app ?: (keyCheck.userEmail ?: params.json.user)
         }
         return true
     }
@@ -87,14 +99,16 @@ class DataController {
         if (eTag) {
             addETagHeader eTag
         }
-        if (isNotModified(last, eTag)) {
+        // remove this as it seemed to be fooled by local time diffs
+        /*if (isNotModified(last, eTag)) {
             //println "not modified"
             notModified()
         }
         else {
             //println "modified"
             render content
-        }
+        }*/
+        render content
     }
 
     def renderJson = {json, last, eTag ->
@@ -189,15 +203,7 @@ class DataController {
         def urlForm = params.entity
         def clazz = capitalise(urlForm)
 
-        // inject the user name into the session so it can be used by audit logging if changes are made
-        if (obj.user) {
-            session.username = obj.user
-        }
-
-        if (obj.api_key != ConfigurationHolder.config.api_key) {
-            unauthorised()
-        }
-        else if (pg) {
+        if (pg) {
             // check type
             if (pg.getClass().getSimpleName() == clazz) {
                 // update
@@ -407,31 +413,26 @@ class DataController {
 
     /********* delete **************************
      *
-     * Disabled until we can more easily restore deleted entities.
-     *
      */
     def delete = {
-        if (true) {
+        if (ConfigurationHolder.config.deletesForbidden) {
             render(status:405, text:'delete is currently unavailable')
             return
         }
         // check role
-        if (authService.isAdmin()) {
-            if (params.uid) {
-                def pg = ProviderGroup._get(params.uid)
-                if (pg) {
-                    def name = pg.name
-                    pg.delete()
-                    def message = ['message':"deleted ${name}"]
-                    render message as JSON
-                } else {
-                    def error = ['error': "no uid specified"]
-                    render error as JSON
-                }
+        if (params.uid) {
+            def pg = params.uid.startsWith('drt') ?
+                TempDataResource.findByUid(params.uid) :
+                ProviderGroup._get(params.uid)
+            if (pg) {
+                def name = pg.name
+                pg.delete()
+                def message = ['message':"deleted ${name}"]
+                render message as JSON
+            } else {
+                def error = ['error': "no uid specified"]
+                render error as JSON
             }
-        } else {
-            def error = ['error': "only ADMIN can invoke this service"]
-            render error as JSON
         }
     }
 
@@ -539,13 +540,18 @@ class DataController {
      */
     def contacts = {
         if (params.id) {
-            addContentLocation "/ws/contacts/${params.id}"
-            addVaryAcceptHeader()
-            def cm = buildContactModel(Contact.get(params.id))
-            withFormat {
-                csv {render (contentType: 'text/csv', text: CONTACT_HEADER + mapToCsv(cm))}
-                xml {render (contentType: 'text/xml', text: objToXml(cm, 'contact'))}
-                json {render cm as JSON}
+            def c = Contact.get(params.id)
+            if (c) {
+                addContentLocation "/ws/contacts/${params.id}"
+                addVaryAcceptHeader()
+                def cm = buildContactModel(c)
+                withFormat {
+                    csv {render (contentType: 'text/csv', text: CONTACT_HEADER + mapToCsv(cm))}
+                    xml {render (contentType: 'text/xml', text: objToXml(cm, 'contact'))}
+                    json {render cm as JSON}
+                }
+            } else {
+                badRequest ' no such id'
             }
         } else {
             addContentLocation "/ws/contacts"
@@ -570,6 +576,86 @@ class DataController {
             [contact: buildContactModel(cf.contact), role: cf.role, primaryContact: cf.primaryContact,
                     editor: cf.administrator, notify: cf.notify, dateCreated: cf.dateCreated, lastUpdated: cf.dateLastModified,
                     uri: "${ConfigurationHolder.config.grails.serverURL}/ws/${urlContext}/${cf.entityUid}/contacts/${cf.id}"])
+    }
+
+    /**
+     * Returns a contact that matches the supplied email.
+     */
+    def getContactByEmail = {
+        def email = params.email
+        if (email) {
+            def c = Contact.findByEmail(email)
+            if (c) {
+                addContentLocation "/ws/contacts/${c.id}"
+                addVaryAcceptHeader()
+                def cm = buildContactModel(c)
+                cm.id = c.id
+                render cm as JSON
+            } else {
+                notFound 'no such email'
+            }
+        } else {
+            badRequest 'no email provided'
+        }
+    }
+
+    /************* contact update services **********/
+    def updateContact = {
+        def props = params.json
+        props.userLastModified = session.username
+        //println "body = "  + props
+        if (params.id) {
+            // update
+            def c = Contact.get(params.id)
+            if (c) {
+                bindData(c, props as Map, ['id'])
+                c.save(flush: true)
+                c.errors.each { println it}
+                addContentLocation "/ws/contacts/${c.id}"
+                def cm = buildContactModel(c)
+                cm.id = c.id
+                render cm as JSON
+            } else {
+                badRequest 'no such id'
+            }
+        } else {
+            // create
+            if (props.email) {
+                def c = new Contact(props as Map)
+                c.save(flush: true)
+                c.errors.each { println it}
+                addContentLocation "/ws/contacts/${c.id}"
+                def cm = buildContactModel(c)
+                cm.id = c.id
+                render cm as JSON
+                //created 'contacts', c.id
+            } else {
+                badRequest 'email must be supplied'
+            }
+        }
+    }
+
+    def deleteContact = {
+        def props = params.json
+        //println "body = "  + props
+        if (params.id) {
+            // update
+            def c = Contact.get(params.id)
+            if (c) {
+                // remove its links as well
+                ActivityLog.log session.username as String, true, Action.DELETE, "contact ${c.buildName()}"
+                // need to delete any ContactFor links first
+                ContactFor.findAllByContact(c).each {
+                    it.delete(flush: true)
+                }
+                c.delete(flush: true)
+                success "deleted"
+            } else {
+                badRequest 'contact does not exist'
+            }
+        } else {
+            badRequest 'no id supplied'
+        }
     }
 
     /**
@@ -722,6 +808,57 @@ class DataController {
             }
         }
     }
+
+    /************* contactFor update services **********/
+    /**
+     * Updates or creates a contact association for a single entity.
+     * URI form: /ws/$entity/$uid/contacts/$id?
+     * @param entity an entity type in url form ie one of collection, institution, dataProvider, dataResource, dataHub
+     * @param uid the entity instance
+     * @param id the contact id
+     */
+    def updateContactFor = {
+        def props = params.json
+        props.userLastModified = session.username
+        //println "body = "  + props
+        def c = Contact.get(params.id)
+        def cf = ContactFor.findByContactAndEntityUid(c, params.pg.uid)
+        if (cf) {
+            // update
+            bindData(cf, props as Map, ['entityUid'])
+            c.save(flush: true)
+            c.errors.each { println it}
+            success 'updated'
+        } else {
+            // create
+            if (c) {
+                params.pg.addToContacts c,
+                        props.role ?: '',
+                        (props.administrator ?: false) as Boolean,
+                        (props.primaryContact ?: false) as Boolean,
+                        props.userLastModified
+                created 'contactFor', params.pg.uid
+            } else {
+                badRequest "contact doesn't exist"
+            }
+        }
+    }
+
+    def deleteContactFor = {
+        def props = params.json
+        props.userLastModified = session.username
+        println "body = "  + props
+        def c = Contact.get(params.id)
+        def cf = ContactFor.findByContactAndEntityUid(c, params.pg.uid)
+        if (cf) {
+            cf.delete(flush: true)
+            success "deleted"
+        } else {
+            badRequest 'contact association does not exist'
+        }
+    }
+
+    /************* connection parameters services **********/
 
     def connectionParameters = {
         ProviderGroup pg = params.pg

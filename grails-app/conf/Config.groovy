@@ -95,6 +95,9 @@ if (!security.cas.loginUrl) {
 if (!security.cas.logoutUrl) {
     security.cas.logoutUrl = "https://auth.ala.org.au/cas/logout"
 }
+if (!security.apikey.serviceUrl) {
+    security.apikey.serviceUrl = "http://auth.ala.org.au/apikey/ws/check?apikey="
+}
 /******************************************************************************\
  *  TEMPLATES
  \******************************************************************************/
@@ -226,15 +229,35 @@ auditLog.verbose = false
 \******************************************************************************/
 log4j = {
 
-/*
     appenders {
-        file name:'appLog', file: "${logDirectory}/collectory.log".toString()
-
-        // set up a log file for the stacktrace log; be sure to use .toString() with ${}
-        rollingFile name:'tomcatLog', file:"${logDirectory}/stacktrace.log".toString(), maxFileSize:'100KB'
-        'null' name:'stacktrace'
+        environments {
+            development {
+                console name: "stdout",
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "ecodataLog",
+                        maxFileSize: 104857600,
+                        file: "/var/log/tomcat6/collectory.log",
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: "/var/log/tomcat6/colectory-stacktrace.log"
+            }
+        }
     }
-*/
+
+    environments {
+        development {
+            all additivity: false, stdout: [
+                    'grails.app.controllers.au.org.ala.collectory',
+                    'grails.app.domain.au.org.ala.collectory',
+                    'grails.app.services.au.org.ala.collectory',
+                    'grails.app.taglib.au.org.ala.collectory',
+                    'grails.app.conf.au.org.ala.collectory',
+                    'grails.app.filters.au.org.ala.collectory'/*,
+                    'au.org.ala.cas.client'*/
+            ]
+        }
+    }
     production {
         appenders {
             rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat55/collectory-stacktrace.log"
@@ -278,7 +301,7 @@ log4j = {
 
     info   'grails.app.controller'
 
-    debug
+    debug 'grails.app.controllers.au.org.ala'
 
 /* debug logging
     debug  'org.springframework.webflow',

@@ -681,6 +681,7 @@ class PublicController {
     }
 
     private findCollection(id) {
+        if (!id) { return null }
         // try lsid
         if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
             return Collection.findByGuid(id)
@@ -694,12 +695,13 @@ class PublicController {
             NumberFormat.getIntegerInstance().parse(id)
             def result = Collection.read(id)
             if (result) {return result}
-        } catch (ParseException e) {}
+        } catch (Exception e) {}
         // try acronym
         return Collection.findByAcronym(id)
     }
 
     private findInstitution(id) {
+        if (!id) { return null }
         // try lsid
         if (id instanceof String && id.startsWith(ProviderGroup.LSID_PREFIX)) {
             return Institution.findByGuid(id)

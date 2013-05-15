@@ -37,8 +37,9 @@
             <li><span class='entity'>collections</span> - natural history collections;</li>
             <li><span class='entity'>institutions</span> - institutions and organisations that manage collections;</li>
             <li><span class='entity'>dataProviders</span> - providers of biodiversity information in electronic form, eg occurrence records, websites;</li>
-            <li><span class='entity'>dataResources</span> - specific resources made available by data providers; and</li>
-            <li><span class='entity'>dataHubs</span> - aggregators of biodiversity data.</li>
+            <li><span class='entity'>dataResources</span> - specific resources made available by data providers;</li>
+            <li><span class='entity'>tempDataResources</span> - temporary resources holding records uploaded to the sandbox;</li>
+            <li><span class='entity'>dataHubs</span> - aggregators of biodiversity data; and</li>
             <li><span class='entity'>contacts</span> - for any of the above resources.</li>
           </ul>
           <p>Access to this metadata is provided by <em>resource-oriented web services</em> that adhere to <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> principles.
@@ -49,15 +50,15 @@
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
               <td>All service URIs are based on the URI of this page:</td>
-              <td><a href="http://collections.ala.org.au/ws">http://collections.ala.org.au/ws</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws">http://collections.ala.org.au/ws</a></td>
             </tr>
             <tr>
               <td>URI's for the resources listed above are this root plus the name of the type of resource, eg:</td>
-              <td><a href="http://collections.ala.org.au/ws/institution.json">http://collections.ala.org.au/ws/institution</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/institution.json">http://collections.ala.org.au/ws/institution</a></td>
             </tr>
             <tr>
               <td>The URI for a specific instance of a resource is the same followed by the UID of the instance. For example, the resource representing the Aust. Wine Research Institute (UID=in72) is:</td>
-              <td><a href="http://collections.ala.org.au/ws/institution/in72.json">http://collections.ala.org.au/ws/institution/in72</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/institution/in72.json">http://collections.ala.org.au/ws/institution/in72</a></td>
             </tr>
             <tr>
               <td>The URI to get a total count of a specific resource is resource name followed by 'count'.
@@ -71,7 +72,7 @@
             </tr>
             <tr>
               <td>Resources that are attributes of a resource, such as the list of contacts for a collection, are addressed by appending the resource type to the uri that represents the main resource, eg:</td>
-              <td><a href="http://collections.ala.org.au/ws/institution/in72/contacts.json">http://collections.ala.org.au/ws/institution/in72/contacts</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/institution/in72/contacts.json">http://collections.ala.org.au/ws/institution/in72/contacts</a></td>
             </tr>
           </table>
           <h3>Methods</h3>
@@ -92,20 +93,51 @@
           <p>Other properties are treated as the properties to be updated. Property names are the same as those used in the GET representation.</p>
           <p><span class='entity'>PUT</span> behaves the same as POST.</p>
           <p><span class='entity'>OPTIONS</span> returns a list of the allowed methods.</p>
-          <p><span class='entity'>DELETE</span> will remove the specified resource. This is currently disallowed.</p>
-          <h3 id="WS0025">Contacts</h3>
-          <p>Contacts exist as resources in their own right. They can be addressed in the standard form.</p>
+          <p><span class='entity'>DELETE</span> will remove the specified resource. The body must be valid json and you must specify these properties:</p>
+            <ul>
+                <li>user - the name of the application that is requesting the update; and</li>
+                <li>api_key - a valid key to verify that you are authorised to modify the resource.</li>
+            </ul>
+
+        <h3 id="WS0025">Contacts</h3>
+          <p>Contacts exist as resources in their own right. They can be accessed in the standard form.</p>
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
               <td>List all contacts:</td>
-              <td><a href="http://collections.ala.org.au/ws/contacts.json">http://collections.ala.org.au/ws/contacts</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/contacts.json">http://collections.ala.org.au/ws/contacts</a></td>
             </tr>
             <tr>
               <td>Get details for a specific contact</td>
-              <td><a href="http://collections.ala.org.au/ws/contacts/31.json">http://collections.ala.org.au/ws/contacts/31</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/contacts/31.json">http://collections.ala.org.au/ws/contacts/31</a></td>
+            </tr>
+            <tr>
+              <td>Find a contact by its email address</td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/contacts/email/dave.martin@csiro.au">http://collections.ala.org.au/ws/contacts/email/dave.martin@csiro.au</a></td>
             </tr>
           </table>
+          <p>Editing contacts follows the same pattern as the major entities. <span class='entity'>PUT</span> and <span class='entity'>POST</span> will update a contact if
+          an id is specified in the url, else a new contact is added. <span class='entity'>DELETE</span> will remove a contact.</p>
+            <p>The body must be valid json and you must specify at least these properties:</p>
+            <ul>
+                <li>user - the name of the application that is requesting the update; and</li>
+                <li>api_key - a valid key to verify that you are authorised to modify the resource.</li>
+            </ul>
+            <p>and may also specify</p>
+            <ul>
+                <li>firstName</li>
+                <li>lastName</li>
+                <li>fax</li>
+                <li>phone</li>
+                <li>mobile</li>
+                <li>notes</li>
+                <li>public (true or false) - controls whether the contact will be displayed on a public web page</li>
+            </ul>
+
+          <p>Note that contacts do not have UIDs. They use the raw DB-assigned ID instead.</p>
+          <p>The user's email is effectively the primary key for a contact. Always check whether a contact exists
+          (by searching for its email address) before creating one.</p>
+          <h4>Contact relationships</h4>
           <p>A contact may be associated with any number of resources. A resource may have any number of contacts.
           The relationship between a contact and a resource has its own metadata such as the role that the contact has in relation to the resource,
           the contact's editing rights, etc.</p>
@@ -115,46 +147,83 @@
               <td colspan="2">This metadata is accessed by appending <span class="code">contacts</span> to the uri of a resource using the form:</td>
             </tr>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts</span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts</span></td>
             </tr>
             <tr>
               <td>For example:</td>
-              <td><a href="http://collections.ala.org.au/ws/collection/co13/contacts.json">http://collections.ala.org.au/ws/collection/co13/contacts</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/collection/co13/contacts.json">http://collections.ala.org.au/ws/collection/co13/contacts</a></td>
             </tr>
             <tr>
               <td colspan="2">The metadata for a specific contact relationship has the form:</td>
             </tr>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/{id}</span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/{id}</span></td>
             </tr>
             <tr>
               <td>For example:</td>
-              <td><a href="http://collections.ala.org.au/ws/collection/co13/contacts/20.json">http://collections.ala.org.au/ws/collection/co13/contacts/20</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/collection/co13/contacts/20.json">http://collections.ala.org.au/ws/collection/co13/contacts/20</a></td>
             </tr>
             <tr>
               <td colspan="2">The primary contacts for all instances of a type of resource can be accessed using the form:</td>
             </tr>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/ws/{resource type}/contacts</span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/contacts</span></td>
             </tr>
             <tr>
               <td>For example:</td>
-              <td><a href="http://collections.ala.org.au/ws/collection/contacts.json">http://collections.ala.org.au/ws/collection/contacts</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/collection/contacts.json">http://collections.ala.org.au/ws/collection/contacts</a></td>
             </tr>
             <tr>
               <td colspan="2">Contacts may elect to be notified when significant events occur to a resource.
               The list of contacts to be notified for a specific resource can be retrieved from a uri of the form:</td>
             </tr>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/notifiable</span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/notifiable</span></td>
             </tr>
             <tr>
               <td>For example:</td>
-              <td><a href="http://collections.ala.org.au/ws/collection/co13/contacts/notifiable.json">http://collections.ala.org.au/ws/collection/co13/contacts/notifiable</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/collection/co13/contacts/notifiable.json">http://collections.ala.org.au/ws/collection/co13/contacts/notifiable</a></td>
+            </tr>
+            <tr>
+              <td colspan="2">You can retrieve all the entities that the specified contact is authorised to edit.
+              The uri has the form:</td>
+            </tr>
+            <tr>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/contacts/{contact id}/authorised</span></td>
+            </tr>
+            <tr>
+              <td>For example:</td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/contacts/132/authorised.json">http://collections.ala.org.au/ws/contacts/132/authorised</a></td>
             </tr>
           </table>
           <p>All contact services can return payload as CSV, XML or JSON via content negotiation.<br/>
             <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Data_services">More information.</a></p>
+
+          <p>Contact relationships can be updated by following the usual rules. The contact must already exist.</p>
+            <p><span class='entity'>POST</span> will add the contact to a resource if it does not already exist or
+            will update the relationship using the json data in the request body.</p>
+            <p>The body must be valid json and you must specify at least these properties:</p>
+            <ul>
+                <li>user - the name of the application that is requesting the update; and</li>
+                <li>api_key - a valid key to verify that you are authorised to modify the resource.</li>
+            </ul>
+            <p>and may also specify</p>
+            <ul>
+                <li>role - the role the contact has in for this resource eg, 'Manager'</li>
+                <li>notify (true or false) - if the contact wishes to be notified on significant events (this has been superceded by Alerts)</li>
+                <li>administrator - if the contact is allowed to administer this resource</li>
+                <li>primaryContact - if the contact is the primary contact for this resource</li>
+            </ul>
+            <p>The form of the url is http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/{contact id}</p>
+            <p><span class='entity'>PUT</span> same as POST.</p>
+            <p><span class='entity'>DELETE</span> will remove the contact from a resource.</p>
+            <p>The body must be valid json and you must specify at least these properties:</p>
+            <ul>
+                <li>user - the name of the application that is requesting the update; and</li>
+                <li>api_key - a valid key to verify that you are authorised to modify the resource.</li>
+            </ul>
+          <p>The url has the same form as above.</p>
+
 
           <h3 id="WS0026">EML metadata interchange</h3>
           <p>The registry provides a service to extract resource metadata in EML format. The response complies with <a href="http://community.gbif.org/pg/pages/view/10913/the-gbif-eml-metadata-profile">GBIF's EML schema</a>.
@@ -163,11 +232,11 @@
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/ws/eml/<strong>{uid}</strong></span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/eml/<strong>{uid}</strong></span></td>
             </tr>
             <tr>
               <td>This example uri returns an XML document describing the set of occurrence records for the DECCW Atlas of NSW Wildlife:</td>
-              <td><a href="http://collections.ala.org.au/ws/eml/dr368">http://collections.ala.org.au/ws/eml/dr368</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/eml/dr368">http://collections.ala.org.au/ws/eml/dr368</a></td>
             </tr>
           </table>
 
@@ -182,14 +251,14 @@
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/ws/citations/<strong>{listOfUIDs}</strong></span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/citations/<strong>{listOfUIDs}</strong></span></td>
             </tr>
             <tr>
               <td colspan="2">where <span class="code">listOfUIDs</span> is a comma-separated list of UID.</td>
             </tr>
             <tr>
               <td>This example uri returns a list of citations for the three specified data resources:</td>
-              <td><a href="http://collections.ala.org.au/ws/citations/dr368,dr105,dr357">http://collections.ala.org.au/ws/citations/dr368,dr105,dr357</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/ws/citations/dr368,dr105,dr357">http://collections.ala.org.au/ws/citations/dr368,dr105,dr357</a></td>
             </tr>
           </table>
 
@@ -204,11 +273,11 @@
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/lookup/inst/<strong>{institution-code}</strong>/coll/<strong>{collection-code}</strong></span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/lookup/inst/<strong>{institution-code}</strong>/coll/<strong>{collection-code}</strong></span></td>
             </tr>
             <tr>
               <td>This example uri returns metadata for the Australian National Insect Collection:</td>
-              <td><a href="http://collections.ala.org.au/lookup/inst/ANIC/coll/Insects.json">http://collections.ala.org.au/lookup/inst/ANIC/coll/Insects</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/lookup/inst/ANIC/coll/Insects.json">http://collections.ala.org.au/lookup/inst/ANIC/coll/Insects</a></td>
             </tr>
             <tr>
               <td colspan="2"><a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_collection_from_institution_and_collection_codes">More information.</a></td>
@@ -220,11 +289,11 @@
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/lookup/summary/<strong>{uid}</strong></span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/lookup/summary/<strong>{uid}</strong></span></td>
             </tr>
             <tr>
               <td>This example uri returns the short metadata for the Birds Australia data provider:</td>
-              <td><a href="http://collections.ala.org.au/lookup/summary/dp28.json">http://collections.ala.org.au/lookup/summary/dp28</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/lookup/summary/dp28.json">http://collections.ala.org.au/lookup/summary/dp28</a></td>
             </tr>
           </table>
           <p>The summary services are less useful now that we have full RESTful metadata services but are retained for backward compatibility. They also provide a small efficiency
@@ -232,7 +301,7 @@
 
           <h3 id="WS0029">Lookup the name of an entity</h3>
           <p>This service is even more cut down than the summary. It returns only the name of an entity given its UID. The form is: </p>
-          <p><span class="code">GET http://collections.ala.org.au/lookup/name/<strong>{uid}</strong></span></p>
+          <p><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/lookup/name/<strong>{uid}</strong></span></p>
           <p><a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_name_from_UID">More information.</a></p>
 
           <h3 id="WS0030">Get taxonomic coverage hints for an entity</h3>
@@ -241,11 +310,11 @@
           <table class="clean no-left-pad">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
-              <td colspan="2"><span class="code">GET http://collections.ala.org.au/lookup/taxonomicCoverageHints/<strong>{uid}</strong></span></td>
+              <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/lookup/taxonomicCoverageHints/<strong>{uid}</strong></span></td>
             </tr>
             <tr>
               <td>This example uri returns a list of rank-name pairs that describe a taxonomic range:</td>
-              <td><a href="http://collections.ala.org.au/lookup/taxonomyCoverageHints/co12.json">http://collections.ala.org.au/lookup/taxonomyCoverageHints/co12</a></td>
+              <td><a href="${ConfigurationHolder.config.grails.serverURL}/lookup/taxonomyCoverageHints/co12.json">http://collections.ala.org.au/lookup/taxonomyCoverageHints/co12</a></td>
             </tr>
             <tr>
               <td colspan="2"><a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_taxonomic_coverage_hints_from_UID">More information.</a></td>
@@ -256,7 +325,7 @@
           <p>Limits can be applied to the number of records that can be downloaded from a particular resource per request.
           If <span class="code">[ ]</span> is returned, there are no limits currently set.
           The form is:</p>
-          <p><span class="code">GET <a href="http://collections.ala.org.au/lookup/downloadLimits">http://collections.ala.org.au/lookup/downloadLimits</a></span></p>
+          <p><span class="code"><span class='entity'>GET</span> <a href="http://collections.ala.org.au/lookup/downloadLimits">http://collections.ala.org.au/lookup/downloadLimits</a></span></p>
 
           <h3>Generate UID for a new entity</h3>
           <p>This is a temporary service used when new data resources are discovered during the harvesting of records. This service will disappear when the

@@ -99,13 +99,11 @@ class AuthService {
         def url = ConfigurationHolder.config.security.apikey.serviceUrl + key
         def conn = new URL(url).openConnection()
         if (conn.getResponseCode() == 200) {
-            return JSON.parse(conn.content.text)
+            return JSON.parse(conn.content.text as String)
+        } else {
+            log.info "Rejected change using key ${key}"
+            println "Rejected change using key ${key}"
+            return [valid:false]
         }
-        log.info "Rejected change using key ${key}"
-        println "Rejected change using key ${key}"
-        // else try the old key if it is configured
-        def resp = [:]
-        resp.valid = ConfigurationHolder.config.api_key == key
-        return resp
     }
 }

@@ -112,15 +112,17 @@ class LookupController {
      * Returns the name for the entity with the passed UID.
      */
     def name = {
-        def uid = params.id
+        String uid = params.id
         def result
         if (uid && uid.size() > 2) {
             def nm = ''
-            switch (uid[0..1]) {
+            def prefix = uid.startsWith('drt') ? 'drt' : uid[0..1]
+            switch (prefix) {
                 case 'co': nm = Collection.executeQuery("select c.name from Collection c where c.uid = ?",[uid]); break
                 case 'in': nm = Collection.executeQuery("select c.name from Institution as c where c.uid = ?",[uid]); break
                 case 'dp': nm = Collection.executeQuery("select c.name from DataProvider as c where c.uid = ?",[uid]); break
                 case 'dr': nm = Collection.executeQuery("select c.name from DataResource as c where c.uid = ?",[uid]); break
+                case 'drt': nm = Collection.executeQuery("select c.name from TempDataResource as c where c.uid = ?",[uid]); break
                 case 'dh': nm = Collection.executeQuery("select c.name from DataHub as c where c.uid = ?",[uid]); break
             }
             if (nm) {

@@ -126,7 +126,7 @@ class TempDataResourceController {
                 if (drt.hasErrors()) {
                     badRequest drt.errors
                 } else {
-                    addContentLocation "/ws/dataResource/${params.uid}"
+                    addContentLocation "/ws/tempDataResource/${params.uid}"
                     success "updated entity"
                 }
             }
@@ -153,7 +153,7 @@ class TempDataResourceController {
      */
     def getEntity = {
         if (params.drt) {
-            addContentLocation "/ws/dataResource/${params.drt.uid}"
+            addContentLocation "/ws/tempDataResource/${params.drt.uid}"
             //addLastModifiedHeader params.drt.lastUpdated
             render crudService.readTempDataResource(params.drt)
         } else {

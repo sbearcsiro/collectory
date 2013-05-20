@@ -245,7 +245,7 @@ class DataController {
      * @param summary - any non-null value will cause a richer summary to be returned for entity lists
      */
     def getEntity = {
-        if (params.uid?.startsWith('drt')) {
+        if (params.entity == 'tempDataResource') {
             forward(controller: 'tempDataResource', action: 'getEntity')
         }
         else {

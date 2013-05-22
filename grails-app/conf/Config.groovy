@@ -181,13 +181,13 @@ environments {
     development {
         //grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
         //grails.serverURL = "http://mark1-be.nexus.csiro.au:8080/Collectory"
-        grails.serverURL = "http://localhost:8080/Collectory"
+        grails.serverURL = "http://devt.ala.org.au:8080/Collectory"
         //grails.serverURL = "http://152.83.199.239:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://woodfired.ala.org.au:8080"
+        security.cas.serverName = "http://devt.ala.org.au:8080"
         //security.cas.serverName = "http://152.83.199.239:8080"
         security.cas.contextPath = grails.context
-        security.cas.bypass = true
+        security.cas.bypass = false
     }
     test {
         grails.serverURL = "http://localhost:8080/${appName}"
@@ -234,13 +234,13 @@ log4j = {
             development {
                 console name: "stdout",
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "ecodataLog",
+                rollingFile name: "collectoryLog",
                         maxFileSize: 104857600,
                         file: "/var/log/tomcat6/collectory.log",
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
                 rollingFile name: "stacktrace",
                         maxFileSize: 104857600,
-                        file: "/var/log/tomcat6/colectory-stacktrace.log"
+                        file: "/var/log/tomcat6/collectory-stacktrace.log"
             }
         }
     }
@@ -253,23 +253,36 @@ log4j = {
                     'grails.app.services.au.org.ala.collectory',
                     'grails.app.taglib.au.org.ala.collectory',
                     'grails.app.conf.au.org.ala.collectory',
-                    'grails.app.filters.au.org.ala.collectory'/*,
-                    'au.org.ala.cas.client'*/
+                    'grails.app.filters.au.org.ala.collectory',
+                    'au.org.ala.cas.client'
+            ]
+            all additivity: false, collectoryLog: [
+                    'grails.app.controllers.au.org.ala.collectory',
+                    'grails.app.domain.au.org.ala.collectory',
+                    'grails.app.services.au.org.ala.collectory',
+                    'grails.app.taglib.au.org.ala.collectory',
+                    'grails.app.conf.au.org.ala.collectory',
+                    'grails.app.filters.au.org.ala.collectory',
+                    'au.org.ala.cas.client'
             ]
         }
     }
     production {
         appenders {
             rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat55/collectory-stacktrace.log"
+            rollingFile name: "collectoryLog",
+                    maxFileSize: 104857600,
+                    file: "/var/log/tomcat55/collectory.log",
+                    layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
         }
     }
 
     root {
-        // change the root logger to my tomcatLog file
-        error 'stdout', 'tomcatLog', 'appLog'
-        warn 'stdout', 'tomcatLog', 'appLog'
-        info 'stdout','appLog'
-        //debug 'stdout','appLog'
+        // change the root logger to my log file
+        error 'stdout', 'collectoryLog'
+        warn 'stdout', 'collectoryLog'
+        info 'stdout', 'collectoryLog'
+        debug 'stdout', 'collectoryLog'
         additivity = true
     }
 

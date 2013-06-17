@@ -22,7 +22,7 @@
         <div style="width:400px;">
             <h2 style="margin-top:30px;">Please log in</h2>
             <span id="login-button">
-                <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}${request.forwardURI}">&nbsp;Log in&nbsp;</a>
+                <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.appServerName}${request.forwardURI}">&nbsp;Log in&nbsp;</a>
             </span>
 
             <p>You must log in to manage metadata</p>

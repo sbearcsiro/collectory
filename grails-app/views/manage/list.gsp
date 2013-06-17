@@ -3,9 +3,9 @@
     <head>
         <title>ALA Metadata Management</title>
 	    <meta name="layout" content="main" />
-        <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" type="text/css" media="screen"/>
+        <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.19.custom.css')}" type="text/css" media="screen"/>
         <g:javascript library="collectory"/>
-        <g:javascript library="jquery-ui-1.8.16.custom.min"/>
+        <g:javascript library="jquery-ui-1.8.19.custom.min"/>
     </head>
     
     <body>

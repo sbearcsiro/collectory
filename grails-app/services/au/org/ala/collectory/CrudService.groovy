@@ -41,6 +41,9 @@ class CrudService {
             'northCoordinate','southCoordinate']
     static collectionJSONArrays = ['keywords','collectionType','scientificNames','subCollections']
 
+    static contactProperties = ['title','firstName','lastName','phone','mobile','email','fax','notes','publish']
+    static contactForProperties = ['entitiyUid','role','administrator','primaryContact','notify']
+
     //static collectionObjectProperties = ['institution','providerMap']
 
     /**
@@ -619,6 +622,7 @@ class CrudService {
     def updateCollection(inst, obj) {
         updateBaseProperties(inst, obj)
         updateCollectionProperties(inst, obj)
+        updateContacts(inst, obj)
         inst.userLastModified = obj.user ?: 'Data services'
         if (inst.hasErrors()) {
             inst.errors.each { println it }
@@ -708,7 +712,91 @@ class CrudService {
         // only add objects if they exist
         baseObjectProperties.each {
             if (obj.has(it)) {
+                // remove properties that cause a ReadOnlyPropertyException
+                obj[it].remove('class')
+                obj[it].remove('empty')
+                // update ProviderGroup embedded object
                 pg."${it}" = obj."${it}"
+            }
+        }
+    }
+
+    private void updateContacts(ProviderGroup pg, obj) {
+        def transformJson = {
+            def out = [:]
+            it.each { key, value ->
+                out[key] = (value == JSONObject.NULL) ? null : value
+            }
+            return out
+        }
+
+        if (obj.has('contacts')) {
+            List updates = obj['contacts']
+
+            updates.each {
+                switch(it.action) {
+                    case 'insert':
+                        def contact
+                        if (it.contact.id.startsWith('new')) {
+                            contact = new Contact()
+                            contact.userLastModified = obj.user ?: 'Data services'
+                        } else {
+                            contact = Contact.get(it.contact.id)
+                        }
+                        contact.properties[contactProperties] = transformJson(it.contact)
+                        if (contact.isDirty()) {
+                            contact.userLastModified = obj.user ?: 'Data services'
+                        }
+
+                        if (!contact.save()) {
+                            contact.errors.each { e ->
+                                println e
+                            }
+                        } else {
+                            def contactFor = new ContactFor()
+                            contactFor.properties[contactForProperties] = transformJson(it)
+                            contactFor.contact = contact
+                            contactFor.entityUid = obj.uid
+                            contactFor.userLastModified = obj.user ?: 'Data services'
+                            if (!contactFor.save()) {
+                                contactFor.errors.each { e ->
+                                    println e
+                                }
+                            }
+                        }
+
+                        break
+
+                    case 'update':
+                        def contactFor = ContactFor.get(it.id)
+                        def contact = Contact.get(it.contact.id)
+                        contactFor.properties[contactForProperties] = transformJson(it)
+                        contact.properties[contactProperties] = transformJson(it.contact)
+                        if (contactFor.isDirty()) {
+                            contactFor.userLastModified = obj.user ?: 'Data services'
+                            contactFor.dateLastModified = new Date()
+                        }
+                        if (contact.isDirty()) {
+                            contact.userLastModified = obj.user ?: 'Data services'
+                            contact.lastUpdated = new Date()
+                        }
+                        if (!contact.save()) {
+                            contact.errors.each { e ->
+                                println e
+                            }
+                        } else {
+                            if (!contactFor.save()) {
+                                contactFor.errors.each { e ->
+                                    println e
+                                }
+                            }
+                        }
+                        break
+
+                    case 'delete':
+                        ContactFor.get(it.id).delete()
+                        break
+                }
             }
         }
     }

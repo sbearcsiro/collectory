@@ -3,7 +3,7 @@ package au.org.ala.collectory
 import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
-import grails.converters.JSON
+import grails.converters.deep.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.converters.exceptions.ConverterException
 import au.org.ala.collectory.resources.Profile
@@ -31,7 +31,7 @@ class CollectoryTagLib {
      * Will be to log in or out based on current auth status.
      */
     def loginoutLink = {
-        def requestUri = ConfigurationHolder.config.security.cas.serverName + request.forwardURI
+        def requestUri = ConfigurationHolder.config.security.cas.appServerName + request.forwardURI
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             // currently logged in
             out << "<li class='nav-logout nav-right'><a id='${AuthenticationCookieUtils.getUserName(request)}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
@@ -51,7 +51,7 @@ class CollectoryTagLib {
      * @attr fixedAppUrl if supplied will be used for logout instead of the current page
      */
     def loginoutLink2011 = { attrs ->
-        def requestUri = ConfigurationHolder.config.security.cas.serverName + request.forwardURI
+        def requestUri = ConfigurationHolder.config.security.cas.appServerName + request.forwardURI
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             // currently logged in
             if (attrs.showUser) {
@@ -237,7 +237,7 @@ class CollectoryTagLib {
     }
 
     def change = { attrs ->
-        out << "<img id='${attrs.id}' class='changeLink' src='${resource(dir:'images/admin',file:'change.png')}'/>"
+        out << "<img id='${attrs.id}' class='changeLink' src='${resource(dir:'images/admin',file:'change.png')}' style='${attrs.style}'/>"
     }
 
     def showDecimal = { attrs ->
@@ -340,7 +340,7 @@ class CollectoryTagLib {
         // determine whether to show it
         if (attrs.value) {
             out << text
-        } else if (!attrs.containsKey('value') && body()) { // only test body if value was not present (cf was null, blank or false)
+        } else if (!attrs.containsKey('value') && body()) { // only test body if value was not present (contactFor was null, blank or false)
             out << text
         } else if (attrs.otherwise) {
             out << attrs.otherwise
@@ -714,7 +714,7 @@ class CollectoryTagLib {
     def subCollectionList = { attrs ->
         if (attrs.list) {
             try {
-                out << "<ul class='fancy'>"
+                out << "<ul id='subCollectionList' class='fancy'>"
                 JSON.parse(attrs.list).each { sub ->
                     out << "<li>${cl.subCollectionDisplay(sub: sub)}</li>"
                 }
@@ -1973,9 +1973,12 @@ class CollectoryTagLib {
     }
 
     def toJson = { attrs ->
-        def json = attrs.obj as JSON
-        println json
-        out << json.toString()
+        if (attrs.domainClass?.equalsIgnoreCase('true')) {
+            out << attrs.obj.encodeAsJSON()
+        } else {
+            def json = attrs.obj as JSON
+            out << json.toString()
+        }
     }
 
     def selected = {
@@ -1986,4 +1989,5 @@ class CollectoryTagLib {
             out << ' selected'
         }
     }
+
 }

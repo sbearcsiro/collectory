@@ -31,7 +31,7 @@
 
     %{--<script language="JavaScript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>--}%
     <g:javascript library="application" />
-    <g:javascript library="jquery-1.6.2.min"/>
+    <g:javascript library="jquery-1.6.2"/>
     <g:javascript library="collectory" />
     <g:layoutHead />
     <script type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/scripts/html5.js"></script>

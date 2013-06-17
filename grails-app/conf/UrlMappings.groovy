@@ -19,6 +19,9 @@ class UrlMappings {
       // self-service
       //"/manage" (controller: 'manage', action: 'index')
 
+      // file upload
+      "/upload" (controller: 'upload', action: 'index')
+
       // data services
       "/ws/$entity/count/$groupBy?" (controller:'data', action: 'count') {
           constraints {

@@ -17,16 +17,20 @@
     </context-param>
 
     <!-- ***** CAS security ***** -->
-     <!-- CAS Authentication related properties -->
+    <listener>
+        <listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
+    </listener>
+
+    <!-- CAS Authentication related properties -->
     <context-param>
         <!-- Parameter used by CAS filters -->
         <param-name>serverName</param-name>
-        <param-value>@security.cas.serverName@</param-value>
+        <param-value>@security.cas.appServerName@</param-value>
     </context-param>
 
     <context-param>
         <param-name>casServerName</param-name>
-        <param-value>https://auth.ala.org.au</param-value>
+        <param-value>@security.cas.casServerName@</param-value>
     </context-param>
 
     <context-param>
@@ -38,7 +42,12 @@
         <param-name>uriFilterPattern</param-name>
         <!--param-value>/Collectory/admin</param-value-->
         <!--param-value>/admin</param-value-->
-        <param-value>/substitute-me</param-value>
+        <param-value>@security.cas.urlPattern@</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>authenticateOnlyIfLoggedInFilterPattern</param-name>
+        <param-value>@security.cas.authenticateOnlyIfLoggedInPattern@</param-value>
     </context-param>
 
     <!-- CAS Authentication Service filters -->
@@ -56,7 +65,7 @@
         </init-param>
         <init-param>
             <param-name>casServerLoginUrl</param-name>
-            <param-value>https://auth.ala.org.au/cas/login</param-value>
+            <param-value>@security.cas.loginUrl@</param-value>
         </init-param>
         <init-param>
             <param-name>gateway</param-name>
@@ -73,7 +82,7 @@
         </init-param>
         <init-param>
             <param-name>casServerUrlPrefix</param-name>
-            <param-value>https://auth.ala.org.au/cas</param-value>
+            <param-value>@security.cas.casServerName@/cas</param-value>
         </init-param>
     </filter>
 

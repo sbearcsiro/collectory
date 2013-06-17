@@ -7,6 +7,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 class ManageController {
 
     def authService
+    def crudService
 
     /**
      * Landing page for self-service management of entities.
@@ -51,6 +52,26 @@ class ManageController {
             [instance: instance, changes: getChanges(instance.uid)]
         }
 
+    }
+
+    def update = {
+        if (request.post && request.getHeader('Content-Type').equals('application/json')) {
+            def changes = request.JSON
+            if (changes.api_key != 'Venezuela') {
+                render(status: 403, text: 'Forbidden access')
+            } else {
+                println(changes)
+                def instance = ProviderGroup._get(changes.uid)
+                if (instance.version != changes.version as int) {
+                    render(status: 202, text: 'Another user has updated this record while you were editing.')
+                } else {
+                    crudService.updateCollection(instance, changes)
+                    render(status: 200, text: 'Ok')
+                }
+            }
+        } else {
+            render(status: 400, text: 'Wrong format')
+        }
     }
 
     def getChanges(uid) {

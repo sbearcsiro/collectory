@@ -26,7 +26,7 @@
                           <a href="http://auth.ala.org.au/cas/logout?url=${ConfigurationHolder.config.grails.serverURL}/admin/home">logout</a>
                       </cl:isLoggedIn>
                       <cl:isNotLoggedIn>
-                          <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}/${ConfigurationHolder.config.security.cas.context}/admin">login</a>
+                          <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.appServerName}/${ConfigurationHolder.config.security.cas.context}/admin">login</a>
                       </cl:isNotLoggedIn>
                   </li>
             </ul>

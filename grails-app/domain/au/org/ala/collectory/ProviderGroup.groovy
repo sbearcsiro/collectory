@@ -753,7 +753,7 @@ class Address implements Serializable {
  * Used 'in-line' in ProviderGroup, ie does not create a separate table.
  */
 class Image implements Serializable {
-    static final long serialVersionUID = 1L;
+//    static final long serialVersionUID = 1L;
 
     String file
     String caption

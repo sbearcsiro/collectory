@@ -6,7 +6,7 @@
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
-        <link rel="stylesheet" type="text/css" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" />
+        <link rel="stylesheet" type="text/css" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.18.custom.css')}" />
         <script type="text/javascript">
           $(document).ready(function() {
             $("a#lsid").fancybox({
@@ -28,7 +28,7 @@
         <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
         <g:javascript library="jquery.jsonp-2.1.4.min"/>
         <g:javascript library="jquery.jstree"/>
-        <g:javascript library="jquery-ui-1.8.16.custom.min"/>
+        <g:javascript library="jquery-ui-1.8.18.custom.min"/>
         %{--<g:javascript library="jquery.tools.min"/>--}%
         <g:javascript library="charts"/>
         <g:javascript library="datadumper"/>

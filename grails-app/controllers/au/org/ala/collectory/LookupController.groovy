@@ -56,7 +56,7 @@ class LookupController {
         renderEntitySummaries(DataResource, params.id)
     }
 
-    def renderEntitySummaries(domain, uid = null) {
+    def renderEntitySummaries(domain, uid) {
         def pg = null
         if (uid) {
             // summary for single entity

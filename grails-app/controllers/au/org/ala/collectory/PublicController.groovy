@@ -23,9 +23,9 @@ class PublicController {
 
     def delay = 3000    // testing delay for responses
     def sleep = {
-        if (GrailsUtil.getEnvironment() == GrailsApplication.ENV_DEVELOPMENT) {  // in case we forget to remove
-            this.sleep(delay)
-        }
+//        if (GrailsUtil.getEnvironment() == GrailsApplication.ENV_DEVELOPMENT) {  // in case we forget to remove
+//            this.sleep(delay)
+//        }
     }
 
     def renderJson = {json ->

@@ -92,8 +92,8 @@ abstract class ProviderGroup implements Serializable {
         uid(blank:false, maxSize:20)
         name(blank:false, maxSize:1024)
         acronym(nullable:true, maxSize:45)
-        pubDescription(nullable:true, maxSize:30000)
-        techDescription(nullable:true, maxSize:30000)
+        pubDescription(nullable:true, maxSize:20000)
+        techDescription(nullable:true, maxSize:20000)
         focus(nullable:true, maxSize:4096)
         address(nullable:true)
 //        postalAddress(nullable:true)
@@ -689,62 +689,62 @@ abstract class ProviderGroup implements Serializable {
  *
  * Used 'in-line' in ProviderGroup, ie does not create a separate table.
  */
-class Address implements Serializable {
-    static final long serialVersionUID = 1L;//1681261914339207268L;
-
-    String street           // includes number eg 186 Tinaroo Creek Road
-    String postBox          // eg PO Box 2104
-    String city
-    String state            // full name eg Queensland
-    String postcode
-    String country
-
-    static transients = ['empty']
-
-    static constraints = {
-        street(nullable:true)
-        postBox(nullable:true)
-        city(nullable:true)
-        state(nullable:true)
-        postcode(nullable:true)
-        country(nullable:true)
-    }
-
-    boolean isEmpty() {
-        return [street, postBox, city, state, postcode, country].every {!it}
-        //return !(street || postBox || city || state || postcode || country)
-    }
-
-    List<String> nonEmptyAddressElements(includePostal) {
-        def fields = ['street','city','state','postcode']
-        if (includePostal) {fields << 'postBox'}
-        List<String> elements = []
-        fields.each {
-            if (this."${it}") {
-                elements << this."${it}"
-            }
-        }
-        return elements
-    }
-
-    String buildAddress() {
-        return nonEmptyAddressElements(false).join(" ")
-    }
-
-    def String toString() {
-        return nonEmptyAddressElements(true).join(" ")
-    }
-
-    def boolean equals(Object obj) {
-        return obj instanceof Address &&
-                street == obj.street &&
-                postBox == obj.postBox &&
-                city == obj.city &&
-                state == obj.state &&
-                postcode == obj.postcode &&
-                country == obj.country
-    }
-}
+//class Address implements Serializable {
+//    static final long serialVersionUID = 1L;//1681261914339207268L;
+//
+//    String street           // includes number eg 186 Tinaroo Creek Road
+//    String postBox          // eg PO Box 2104
+//    String city
+//    String state            // full name eg Queensland
+//    String postcode
+//    String country
+//
+//    static transients = ['empty']
+//
+//    static constraints = {
+//        street(nullable:true)
+//        postBox(nullable:true)
+//        city(nullable:true)
+//        state(nullable:true)
+//        postcode(nullable:true)
+//        country(nullable:true)
+//    }
+//
+//    boolean isEmpty() {
+//        return [street, postBox, city, state, postcode, country].every {!it}
+//        //return !(street || postBox || city || state || postcode || country)
+//    }
+//
+//    List<String> nonEmptyAddressElements(includePostal) {
+//        def fields = ['street','city','state','postcode']
+//        if (includePostal) {fields << 'postBox'}
+//        List<String> elements = []
+//        fields.each {
+//            if (this."${it}") {
+//                elements << this."${it}"
+//            }
+//        }
+//        return elements
+//    }
+//
+//    String buildAddress() {
+//        return nonEmptyAddressElements(false).join(" ")
+//    }
+//
+//    def String toString() {
+//        return nonEmptyAddressElements(true).join(" ")
+//    }
+//
+//    def boolean equals(Object obj) {
+//        return obj instanceof Address &&
+//                street == obj.street &&
+//                postBox == obj.postBox &&
+//                city == obj.city &&
+//                state == obj.state &&
+//                postcode == obj.postcode &&
+//                country == obj.country
+//    }
+//}
 
 /**
  * Standardised form of an image reference.
@@ -752,29 +752,29 @@ class Address implements Serializable {
  *
  * Used 'in-line' in ProviderGroup, ie does not create a separate table.
  */
-class Image implements Serializable {
-    static final long serialVersionUID = 1L;
-
-    String file
-    String caption
-    String attribution
-    String copyright
-
-    static constraints = {
-        file(blank:false)
-        caption(nullable:true)
-        attribution(nullable:true)
-        copyright(nullable:true)
-    }
-
-    def String toString() {
-        return ([file,caption,attribution,copyright].findAll {it}).join(", ")
-    }
-
-    def boolean equals(Object obj) {
-        return obj instanceof Image && file == obj.file && caption == obj.caption &&
-                attribution == obj.attribution && copyright == obj.copyright
-    }
-
-
-}
+//class Image implements Serializable {
+//    static final long serialVersionUID = 1L;
+//
+//    String file
+//    String caption
+//    String attribution
+//    String copyright
+//
+//    static constraints = {
+//        file(blank:false)
+//        caption(nullable:true)
+//        attribution(nullable:true)
+//        copyright(nullable:true)
+//    }
+//
+//    def String toString() {
+//        return ([file,caption,attribution,copyright].findAll {it}).join(", ")
+//    }
+//
+//    def boolean equals(Object obj) {
+//        return obj instanceof Image && file == obj.file && caption == obj.caption &&
+//                attribution == obj.attribution && copyright == obj.copyright
+//    }
+//
+//
+//}

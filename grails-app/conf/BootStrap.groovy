@@ -6,13 +6,13 @@ import grails.converters.JSON
 import au.org.ala.custom.marshalling.DomainClassWithUidMarshaller
 
 class BootStrap {
-
+    def grailsApplication
     def dataLoaderService
     def authenticateService
 
     def init = { servletContext ->
         // custom marshaller to put UID into the JSON representation of associations
-        JSON.registerObjectMarshaller( new DomainClassWithUidMarshaller(false), 2)
+        JSON.registerObjectMarshaller( new DomainClassWithUidMarshaller(false, grailsApplication), 2)
     }
 
     def destroy = {
@@ -44,7 +44,7 @@ class BootStrap {
             amh.imageRef = new Image(file: 'SHU-3562_small.jpg',
                     caption:"Baby Crocodile from the Australian Museum's Surviving Australia exhibition",
                     attribution:'Carl Bento',
-                    copyright:'© Australian Museum')
+                    copyright:'ï¿½ Australian Museum')
         }
         ProviderGroup adt = ProviderGroup.findByName('Antarctic Division Herbarium')
 
@@ -52,7 +52,7 @@ class BootStrap {
                 address: new Address(street: 'Acton', postBox: 'GPO Box 1700', city: 'Canberra', state: 'ACT', postcode: '2601'),
                 latitude: -35.762000, longitude: 149.114000, institutionType: 'university',
                 logoRef: new Image(file: 'ANURGB_REV.gif'),
-                imageRef: new Image(file: 'student_hub.jpg', copyright: '© ANU'),
+                imageRef: new Image(file: 'student_hub.jpg', copyright: 'ï¿½ ANU'),
                 groupType: ProviderGroup.GROUP_TYPE_INSTITUTION,
                 userLastModified: 'bootstrap').save(flush:true)
         if (anu?.hasErrors) {

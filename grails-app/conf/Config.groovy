@@ -79,9 +79,9 @@ if (!biocache.bounding.box) {
 /******************************************************************************\
  *  RELOADABLE CONFIG
 \******************************************************************************/
-reloadable.cfgPollingFrequency = 1000 * 60 * 60 // 1 hour
-reloadable.cfgPollingRetryAttempts = 5
-reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
+//reloadable.cfgPollingFrequency = 1000 * 60 * 60 // 1 hour
+//reloadable.cfgPollingRetryAttempts = 5
+//reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
 /******************************************************************************\
  *  SECURITY
 \******************************************************************************/

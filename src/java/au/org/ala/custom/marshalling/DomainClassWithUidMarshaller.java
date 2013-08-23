@@ -2,6 +2,7 @@ package au.org.ala.custom.marshalling;
 
 import au.org.ala.collectory.ProviderGroup;
 import grails.converters.JSON;
+import org.codehaus.groovy.grails.commons.GrailsApplication;
 import org.codehaus.groovy.grails.commons.GrailsDomainClass;
 import org.codehaus.groovy.grails.commons.GrailsDomainClassProperty;
 import org.codehaus.groovy.grails.support.proxy.ProxyHandler;
@@ -18,12 +19,12 @@ import org.codehaus.groovy.grails.web.json.JSONWriter;
  */
 public class DomainClassWithUidMarshaller extends DomainClassMarshaller {
 
-    public DomainClassWithUidMarshaller(boolean includeVersion) {
-        super(includeVersion);
+    public DomainClassWithUidMarshaller(boolean includeVersion, GrailsApplication application) {
+        super(includeVersion, application);
     }
 
-    public DomainClassWithUidMarshaller(boolean includeVersion, ProxyHandler proxyHandler) {
-        super(includeVersion, proxyHandler);
+    public DomainClassWithUidMarshaller(boolean includeVersion, ProxyHandler proxyHandler, GrailsApplication application) {
+        super(includeVersion, proxyHandler, application);
     }
 
     @Override

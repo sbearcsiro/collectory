@@ -79,6 +79,8 @@ class CollectionCommand implements Serializable {
     // operational fields
     List<ContactFor> deletedContacts = []
 
+    static transients = ['image']
+
     static constraints = {
         guid(nullable:true, maxSize:45)
         name(blank:false, maxSize:128)

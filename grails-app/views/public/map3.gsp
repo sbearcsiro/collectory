@@ -7,7 +7,8 @@
         <title>Natural History Collections | Atlas of Living Australia</title>
         <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.core.js"></script>
         <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.tabs.js"></script>
-        <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>
+        %{--<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>--}%
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
         <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
         <g:javascript library="jquery.ba-bbq.min" />
         <g:javascript src="OpenLayers/OpenLayers.js" />

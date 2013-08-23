@@ -65,7 +65,7 @@ class DataResource extends ProviderGroup implements Serializable {
         contentTypes(nullable:true, maxSize:2048)
     }
 
-    static transients = ProviderGroup.transients + ['creativeCommons']
+    static transients =  ['creativeCommons']
 
     static resourceTypeList = ["records", "website", "document", "uploads"]
     static creativeCommonsLicenses = ["CC BY", "CC BY-NC", "CC BY-SA", "CC BY-NC-SA"]

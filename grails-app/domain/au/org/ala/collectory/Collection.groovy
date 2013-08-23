@@ -69,8 +69,7 @@ class Collection extends ProviderGroup implements Serializable {
     // maps to exactly one providerMap
     static hasOne = [providerMap: ProviderMap]
 
-    static transients = ProviderGroup.transients + ['listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup',
-            'mappable','inexactlyMapped','attributionList']
+    static transients =  ['listOfCollectionCodesForLookup', 'listOfinstitutionCodesForLookup','mappable','inexactlyMapped','attributionList']
 
     static mapping = {
         sort: 'name'

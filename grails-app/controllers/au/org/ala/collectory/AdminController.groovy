@@ -4,7 +4,7 @@ import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import au.com.bytecode.opencsv.CSVReader
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver
-import org.codehaus.groovy.grails.plugins.reloadableconfig.ConfigurationResourceListener
+//import org.codehaus.groovy.grails.plugins.reloadableconfig.ConfigurationResourceListener
 
 import grails.web.JSONBuilder
 
@@ -40,7 +40,7 @@ class AdminController {
     def reloadConfig = {
         def resolver = new PathMatchingResourcePatternResolver()
         def configurationResource = resolver.getResource(ConfigurationHolder.config.reloadable.cfgs[0])
-        new ConfigurationResourceListener().onResourceUpdate(configurationResource)
+        //new ConfigurationResourceListener().onResourceUpdate(configurationResource)
         String res = "<ul>"
         ConfigurationHolder.config.each { key, value ->
             if (value instanceof Map) {

@@ -28,7 +28,7 @@ class Institution extends ProviderGroup {
         childInstitutions(nullable:true)
     }
 
-    static transients = ProviderGroup.transients + ['summary','mappable']
+    static transients = ['summary','mappable']
 
     static mapping = {
         sort: 'name'

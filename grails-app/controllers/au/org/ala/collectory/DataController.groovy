@@ -785,7 +785,7 @@ class DataController {
      * Example payload:
      * { event: 'user annotation', id: 'ann03468', uid: 'co13' }
      */
-    def notify = {
+    def notification() {
         //println "notify"
         if (request.method != 'POST') {
             println "not allowed"

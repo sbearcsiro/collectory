@@ -22,7 +22,7 @@ class DataHub extends ProviderGroup implements Serializable {
         members(nullable:true, maxSize:4096)
     }
 
-    static transients = ProviderGroup.transients + ['collectionMember', 'institutionMember', 'dataResourceMember']
+    static transients =  ['collectionMember', 'institutionMember', 'dataResourceMember']
     
     boolean canBeMapped() {
         return false;

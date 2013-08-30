@@ -1,15 +1,3 @@
-// locations to search for config files that get merged into the main config
-// config files can either be Java properties files or ConfigSlurper scripts
-
-// grails.config.locations = [ "classpath:${appName}-config.properties",
-//                             "classpath:${appName}-config.groovy",
-//                             "file:${userHome}/.grails/${appName}-config.properties",
-//                             "file:${userHome}/.grails/${appName}-config.groovy"]
-
-// if(System.properties["${appName}.config.location"]) {
-//    grails.config.locations << "file:" + System.properties["${appName}.config.location"]
-// }
-
 /******************************************************************************\
  *  CONFIG MANAGEMENT
 \******************************************************************************/
@@ -200,12 +188,11 @@ environments {
         security.cas.contextPath = grails.context
         security.cas.bypass = true
     }
-
 }
 
-println "serverUrl = " + grails.serverURL
-println "security.cas.serverName = " + security.cas.serverName
-println "security.cas.context = " + security.cas.contextPath
+println "[collectory] serverUrl = " + grails.serverURL
+println "[collectory] security.cas.serverName = " + security.cas.serverName
+println "[collectory] security.cas.context = " + security.cas.contextPath
 
 hibernate = "off"
 
@@ -271,15 +258,6 @@ log4j = {
             ]
         }
     }
-//    production {
-//        appenders {
-//            rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat55/collectory-stacktrace.log"
-//            rollingFile name: "collectoryLog",
-//                    maxFileSize: 104857600,
-//                    file: "/var/log/tomcat55/collectory.log",
-//                    layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-//        }
-//    }
 
     root {
         // change the root logger to my log file

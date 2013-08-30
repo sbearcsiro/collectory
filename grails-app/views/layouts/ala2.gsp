@@ -1,4 +1,3 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,30 +13,29 @@
     <title><g:layoutTitle /></title>
     <link rel="stylesheet" href="${resource(dir:'css',file:'temp-style.css')}"/>
     <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-    %{--<link rel="stylesheet" href="${resource(dir:'css',file:'ala-style.css')}"/>--}%
-
-    <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
-    <link rel="icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="shortcut icon" type="image/x-icon" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/css/search.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/css/skin.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/css/sf.css" />
+    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
+    <link rel="icon" type="image/x-icon" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/images/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/search.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/skin.css" />
+    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/sf.css" />
 
     <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
 
     <script language="JavaScript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <g:javascript library="application" />
-    %{--<g:javascript library="jquery-1.6.2.min"/>--}%
-    <g:javascript library="collectory" />
+
+    <!-- Dave was here -->
+    <r:require modules="application, collectory" />
+    <!-- Dave was here end -->
+    <r:layoutResources/>
     <g:layoutHead />
-    <script type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/scripts/html5.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/scripts/superfish/superfish.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/scripts/jquery.autocomplete.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala2011/scripts/uservoice.js"></script>
+    <script type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/scripts/html5.js"></script>
+    <script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/scripts/superfish/superfish.js"></script>
+    <script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/scripts/jquery.autocomplete.js"></script>
     <script type="text/javascript">
 
         // initialise plugins
@@ -105,7 +103,7 @@
 <body class="${pageProperty(name:'body.class')}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">
 <div id="wrapper">
 
-    <hf:banner logoutUrl="${ConfigurationHolder.config.grails.serverURL}/public/logout"/>
+    <hf:banner logoutUrl="${grailsApplication.config.grails.serverURL}/public/logout"/>
 
     <hf:menu/>
 
@@ -130,5 +128,8 @@
                 ' Many functions will still work but layout and image transparency will be disrupted.</div>'));
     }
 </script>
+<!-- JS resources-->
+<r:layoutResources/>
+
 </body>
 </html>

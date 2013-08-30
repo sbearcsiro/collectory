@@ -19,21 +19,21 @@ if(!grails.config.locations || !(grails.config.locations instanceof List)) {
     grails.config.locations = []
 }
 if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
-    println "Including configuration file specified in environment: " + System.getenv(ENV_NAME);
+    println "[collectory] Including configuration file specified in environment: " + System.getenv(ENV_NAME);
     grails.config.locations = ["file:" + System.getenv(ENV_NAME)]
 } else if(System.getProperty(ENV_NAME) && new File(System.getProperty(ENV_NAME)).exists()) {
-    println "Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
+    println "[collectory] Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
     grails.config.locations = ["file:" + System.getProperty(ENV_NAME)]
 } else if(new File(default_config).exists()) {
-    println "Including default configuration file: " + default_config;
+    println "[collectory] Including default configuration file: " + default_config;
     def loc = ["file:" + default_config]
-    println ">> loc = " + loc
+    println "[collectory]  loc = " + loc
     grails.config.locations = loc
     println "grails.config.locations = " + grails.config.locations
 } else {
-    println "No external configuration file defined."
+    println "[collectory] No external configuration file defined."
 }
-println "(*) grails.config.locations = ${grails.config.locations}"
+println "[collectory] (*) grails.config.locations = ${grails.config.locations}"
 
 /******************************************************************************\
  *  SKINNING
@@ -62,6 +62,10 @@ if (!ala.baseURL) {
 if (!headerAndFooter.baseURL) {
     headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 }
+if(!biocacheServicesUrl){
+    biocacheServicesUrl = "http://biocache.ala.org.au/ws"
+}
+
 /******************************************************************************\
  *  BIOCACHE URLS
 \******************************************************************************/
@@ -267,15 +271,15 @@ log4j = {
             ]
         }
     }
-    production {
-        appenders {
-            rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat55/collectory-stacktrace.log"
-            rollingFile name: "collectoryLog",
-                    maxFileSize: 104857600,
-                    file: "/var/log/tomcat55/collectory.log",
-                    layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-        }
-    }
+//    production {
+//        appenders {
+//            rollingFile name: "stacktrace", maxFileSize: 1024, file: "/var/log/tomcat55/collectory-stacktrace.log"
+//            rollingFile name: "collectoryLog",
+//                    maxFileSize: 104857600,
+//                    file: "/var/log/tomcat55/collectory.log",
+//                    layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+//        }
+//    }
 
     root {
         // change the root logger to my log file
@@ -286,59 +290,67 @@ log4j = {
         additivity = true
     }
 
-    // example for sending stacktraces to my tomcatLog file
-    //error tomcatLog:'StackTrace'
-
-/* normal logging */
-    /*debug  'au.org.ala.collectory',
-            'org.jasic.cas',
-            'org.jasic.cas.client',
-            'org.ala.cas.client'*/
-
-//          'org.mortbay.log'
-
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-           'org.codehaus.groovy.grails.web.pages', //  GSP
-           'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-	       'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-	       'org.codehaus.groovy.grails.web.mapping', // URL mapping
-	       'org.codehaus.groovy.grails.commons', // core / classloading
-	       'org.codehaus.groovy.grails.plugins', // plugins
-	       'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.springframework',
-           'org.hibernate',
-           'net.sf.ehcache.hibernate',
-           'org.codehaus.groovy.grails.plugins.orm.auditable'
+            'org.codehaus.groovy.grails.web.pages', //  GSP
+            'org.codehaus.groovy.grails.web.sitemesh', //  layouts
+            'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
+            'org.codehaus.groovy.grails.web.mapping', // URL mapping
+            'org.codehaus.groovy.grails.commons', // core / classloading
+            'org.codehaus.groovy.grails.plugins', // plugins
+            'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
+            'org.springframework',
+            'org.hibernate',
+            'net.sf.ehcache.hibernate',
+            'org.codehaus.groovy.grails.plugins.orm.auditable',
+            'org.mortbay.log', 'org.springframework.webflow',
+            'grails.app',
+            'org.apache',
+            'org',
+            'com',
+            'au',
+            'grails.app',
+            'net',
+            'grails.util.GrailsUtil',
+            'grails.app.service.org.grails.plugin.resource',
+            'grails.app.service.org.grails.plugin.resource.ResourceTagLib',
+            'grails.app',
+            'grails.plugin.springcache',
+            'au.org.ala.cas.client',
+            'grails.spring.BeanBuilder',
+            'grails.plugin.webxml'
+            'org.codehaus.groovy.grails.plugins.orm.auditable'
 
     warn   'org.mortbay.log', 'org.springframework.webflow'
 
     info   'grails.app.controller'
 
     debug 'grails.app.controllers.au.org.ala'
-
-/* debug logging
-    debug  'org.springframework.webflow',
-           'org.springframework',
-           'au.org.ala.collectory',
-           'grails.app.controller',
-           'org.codehaus.groovy.grails.commons', // core / classloading
-           'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-           'org.mortbay.log',
-           'net.sf.ehcache.hibernate'
-
-    error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
-	       'org.codehaus.groovy.grails.web.pages', //  GSP
-	       'org.codehaus.groovy.grails.web.sitemesh', //  layouts
-	       'org.codehaus.groovy.grails.web.mapping.filter', // URL mapping
-	       'org.codehaus.groovy.grails.web.mapping', // URL mapping
-	       'org.codehaus.groovy.grails.plugins', // plugins
-           'org.springframework',
-           'org.hibernate'
- */
-    
 }
 
 
      
 
 //log4j.logger.org.springframework.security='off,stdout'
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line 
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
+    }
+}
+remove this line */

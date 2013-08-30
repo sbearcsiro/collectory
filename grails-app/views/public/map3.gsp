@@ -8,11 +8,9 @@
         <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.core.js"></script>
         <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.tabs.js"></script>
         %{--<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>--}%
-        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
         <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
-        <g:javascript library="jquery.ba-bbq.min" />
-        <g:javascript src="OpenLayers/OpenLayers.js" />
-        <script type="text/javascript" src="${resource(dir:'js', file:'map.js')}"></script>
+        <r:require modules="bbq,openlayers,map"/>
 
         <script type="text/javascript">
           var altMap = true;
@@ -22,7 +20,7 @@
           });
         </script>
     </head>
-    <body id="page-collections-map" onload="initMap('${ConfigurationHolder.config.grails.serverURL}')">
+    <body id="page-collections-map" onload="initMap('${grailsApplication.config.grails.serverURL}')">
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->

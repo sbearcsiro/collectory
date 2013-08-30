@@ -52,40 +52,33 @@ function initMap(serverUrl) {
 
     // create the map
     map = new OpenLayers.Map('map_canvas', {
-        maxResolution: 2468,
-        /*maxExtent: new OpenLayers.Bounds(-10037508.34, -10037508.34, 10037508.34, 10037508.34),*/
-        controls: []
+        //maxResolution: 2468,
+        controls: [],
+        projection: 'EPSG:3857',
+        layers: [
+            new OpenLayers.Layer.Google(
+                "Google Physical",
+                {type: google.maps.MapTypeId.TERRAIN}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Streets", // the default
+                {numZoomLevels: 20}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Hybrid",
+                {type: google.maps.MapTypeId.HYBRID, numZoomLevels: 20}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Satellite",
+                {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+            )
+        ]
     });
 
     // restrict mouse wheel chaos
     map.addControl(new OpenLayers.Control.Navigation({zoomWheelEnabled:false}));
     map.addControl(new OpenLayers.Control.ZoomPanel());
     map.addControl(new OpenLayers.Control.PanPanel());
-
-    // create Google base layers
-    var gmap = new OpenLayers.Layer.Google(
-            "Google Streets",
-            {'sphericalMercator': true,
-              numZoomLevels: 24,
-              maxExtent: extent
-            });
-    map.addLayer(gmap);
-    var gsat = new OpenLayers.Layer.Google(
-            "Google Satellite",
-            {type: G_SATELLITE_MAP,
-            'sphericalMercator': true,
-             numZoomLevels: 24,
-             maxExtent: extent
-            });
-    map.addLayer(gsat);
-    var ghyb = new OpenLayers.Layer.Google(
-            "Google Hybrid",
-            {type: G_HYBRID_MAP,
-            'sphericalMercator': true,
-             numZoomLevels: 24,
-             maxExtent: extent
-            });
-    map.addLayer(ghyb);
 
     // zoom map
     map.zoomToMaxExtent();

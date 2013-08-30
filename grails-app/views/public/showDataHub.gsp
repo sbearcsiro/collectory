@@ -7,6 +7,9 @@
     <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
     <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
     <script type="text/javascript">
+      biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
+      biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+
       $(document).ready(function() {
         $("a#lsid").fancybox({
                     'hideOnContentClick' : false,

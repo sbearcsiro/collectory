@@ -38,22 +38,22 @@ class Collection extends ProviderGroup implements Serializable {
 
     // Geographic Coverage
     String states               // states and territories that are covered by the collection - see state vocab
-	String geographicDescription// a free text description of where the data relates to
-	BigDecimal eastCoordinate = ProviderGroup.NO_INFO_AVAILABLE
+    String geographicDescription// a free text description of where the data relates to
+    BigDecimal eastCoordinate = ProviderGroup.NO_INFO_AVAILABLE
                                 // furthest point East for this collection in decimal degrees
-	BigDecimal westCoordinate = ProviderGroup.NO_INFO_AVAILABLE
+    BigDecimal westCoordinate = ProviderGroup.NO_INFO_AVAILABLE
                                 // furthest point West for this collection in decimal degrees
-	BigDecimal northCoordinate = ProviderGroup.NO_INFO_AVAILABLE
+    BigDecimal northCoordinate = ProviderGroup.NO_INFO_AVAILABLE
                                 // furthest point North for this collection in decimal degrees
-	BigDecimal southCoordinate = ProviderGroup.NO_INFO_AVAILABLE
+    BigDecimal southCoordinate = ProviderGroup.NO_INFO_AVAILABLE
                                 // furthest point South for this collection in decimal degrees
 
-	//Temporal Coverage - Time period the collection covers	single_date	The single date that the collection covers
-	String startDate            // the start date of the period the collection covers
-	String endDate	            // the end date of the period the collection covers
+    //Temporal Coverage - Time period the collection covers	single_date	The single date that the collection covers
+    String startDate            // the start date of the period the collection covers
+    String endDate	            // the end date of the period the collection covers
 
-	//Taxonomic - Taxonomic coverage
-	String kingdomCoverage      // the higher taxonomy that the collection covers - see kingdom_coverage vocab
+    //Taxonomic - Taxonomic coverage
+    String kingdomCoverage      // the higher taxonomy that the collection covers - see kingdom_coverage vocab
                                 // a space-separated string that can contain any number of these values:
                                 // Animalia Archaebacteria Eubacteria Fungi Plantae Protista
     String scientificNames      // as JSON array eg ["Insecta", "Arachnida"]

@@ -4,9 +4,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
     <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
-    <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
-    <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
     <script type="text/javascript">
+      biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
+      biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
       $(document).ready(function() {
         $("a#lsid").fancybox({
                     'hideOnContentClick' : false,
@@ -25,8 +25,7 @@
       });
     </script>
     <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
-    <g:javascript library="jquery.jsonp-2.1.4.min"/>
-    <g:javascript library="charts"/>
+    <r:require modules="fancybox, jquery_jsonp, charts"/>
   </head>
   <body class="two-column-right">
     <div id="content">

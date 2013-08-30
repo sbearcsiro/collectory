@@ -14,16 +14,16 @@ hibernate {
 }
 // environment specific settings
 environments {
-	development {
-		dataSource {
+  development {
+    dataSource {
 //            logSql = "true"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-			dbCreate = "update" // one of 'create', 'create-drop','update'
+            dbCreate = "update" // one of 'create', 'create-drop','update'
             url = "jdbc:mysql://localhost:3306/collectory?autoReconnect=true&connectTimeout=0"
             username = "root"
             password = "password"
-//			url = "jdbc:hsqldb:mem:devDB"
-		}
+            logSql = true
+    }
 	}
 	test {
 		dataSource {

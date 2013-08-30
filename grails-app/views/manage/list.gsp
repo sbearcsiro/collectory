@@ -4,8 +4,7 @@
         <title>ALA Metadata Management</title>
 	    <meta name="layout" content="main" />
         <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" type="text/css" media="screen"/>
-        <g:javascript library="collectory"/>
-        <g:javascript library="jquery-ui-1.8.16.custom.min"/>
+        <r:require modules="collectory, jquery_ui_custom" />
     </head>
     
     <body>
@@ -198,7 +197,7 @@
                 <span class="mainLink">Search for collections</span>
 
                 <p class="mainText">Enter a part of the name of a collection or its acronym, eg insects, fungi, ANIC</p>
-                <g:form action="search">
+                <g:form controller="collection" action="searchList" method="get">
                     <g:textField class="mainText" name="term"/><g:submitButton style="margin-left:20px;" name="search"
                                                                                value="Search"/>
                 </g:form>

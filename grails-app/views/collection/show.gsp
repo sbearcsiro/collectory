@@ -6,6 +6,7 @@
   <g:set var="entityName" value="${message(code: 'collection.label', default: 'Collection')}"/>
   <title><g:message code="default.show.label" args="[entityName]"/></title>
   <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.3&sensor=false"></script>
+  <r:require module="collectory"/>
 </head>
 <body>
 <style>

@@ -1,4 +1,3 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -13,13 +12,13 @@
 <link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
 <link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
 
-<script language="JavaScript" type="text/javascript" src="${ConfigurationHolder.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
-<link rel="EditURI" type="application/rsd+xml" title="RSD" href="${ConfigurationHolder.config.ala.baseURL}/xmlrpc.php?rsd" />
-<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="${ConfigurationHolder.config.ala.baseURL}/wp-includes/wlwmanifest.xml" />
-<link rel='index' title='Atlas of Living Australia' href='${ConfigurationHolder.config.ala.baseURL}' />
+<script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala/scripts/jquery-1.4.2.min.js"></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="${grailsApplication.config.ala.baseURL}/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="${grailsApplication.config.ala.baseURL}/wp-includes/wlwmanifest.xml" />
+<link rel='index' title='Atlas of Living Australia' href='${grailsApplication.config.ala.baseURL}' />
 
-<g:javascript library="application" />
-<g:javascript library="collectory" />
+<r:require modules="application, collectory"/>
+<r:layoutResources/>
 <g:layoutHead />
 </head>
  
@@ -28,8 +27,8 @@
 <div id="page">
  
 	<div id="header">
-		<h1 id="blog-title"><a href="${ConfigurationHolder.config.ala.baseURL}">Atlas of Living Australia</a>
-		    <span id="blog-url">&lt;${ConfigurationHolder.config.ala.baseURL}&gt;</span></h1>
+		<h1 id="blog-title"><a href="${grailsApplication.config.ala.baseURL}">Atlas of Living Australia</a>
+		    <span id="blog-url">&lt;${grailsApplication.config.ala.baseURL}&gt;</span></h1>
 		<h2 id="blog-description">A biodiversity data management system for Australia</h2>
 
 
@@ -38,31 +37,25 @@
 <div id="content" class="clearfix">
 
     <div class="login-info">
-        <cl:loginoutLink2011 showUser="true" fixedAppUrl="${ConfigurationHolder.config.grails.serverURL}/manage"/>
+        <cl:loginoutLink2011 showUser="true" fixedAppUrl="${grailsApplication.config.grails.serverURL}/manage"/>
     </div>
     
 	<div id="content-full-width" class="clearfix"  style="clear:both;">
- 
-
-
 			<div id="post-2"  class="post">
-
 				<g:layoutBody />
-
 			</div>
-
 	  </div>
 </div><!-- end content -->
 	
 <div id="footer">
 	
 	<div id="legal">
-		<p><a href="${ConfigurationHolder.config.ala.baseURL}">Atlas of Living Australia</a> &copy; 2010 </p>
+		<p><a href="${grailsApplication.config.ala.baseURL}">Atlas of Living Australia</a> &copy; 2010 </p>
 	</div>
 	   <div id="webdemar">
-		<p> <a href="${ConfigurationHolder.config.ala.baseURL}">ala site</a> |
+		<p> <a href="${grailsApplication.config.ala.baseURL}">ala site</a> |
 		    <cl:emailLink email="support@ala.org.au">support</cl:emailLink> |
-            <a href="${ConfigurationHolder.config.ala.baseURL}/about/media-centre/terms-of-use/">terms of use</a>
+            <a href="${grailsApplication.config.ala.baseURL}/about/media-centre/terms-of-use/">terms of use</a>
         </p>
 	</div>
 		
@@ -80,5 +73,6 @@
     pageTracker._initData();
     pageTracker._trackPageview();
 </script>
+<r:layoutResources/>
 </body>
 </html>

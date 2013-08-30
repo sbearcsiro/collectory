@@ -4,8 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
     <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
-    <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
-    <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
     <script type="text/javascript">
       $(document).ready(function() {
         $("a#lsid").fancybox({
@@ -25,6 +23,7 @@
       });
     </script>
     <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+    <r:require modules="fancybox"/>
   </head>
   <body class="two-column-right">
     <div id="content">

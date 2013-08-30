@@ -1,8 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.DataResource; org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.Institution"%>
+<%@ page contentType="text/html;charset=UTF-8" import="au.org.ala.collectory.DataResource; au.org.ala.collectory.Institution"%>
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
+    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
     <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
     <script type="text/javascript">
       biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
@@ -65,8 +65,11 @@
           </div>
         </div>
       </div><!--close header-->
-      <div id="column-one">
-      <div class="section">
+
+
+
+      <div class="row-fluid">
+      <div class="span8">
         <g:if test="${instance.pubDescription}">
           <h2>Description</h2>
           <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
@@ -102,10 +105,8 @@
         <cl:lastUpdated date="${instance.lastUpdated}"/>
 
       </div><!--close section-->
-    </div><!--close column-one-->
 
-    <div id="column-two">
-      <div class="section sidebar">
+      <div class="span4">
         <g:if test="${fieldValue(bean: instance, field: 'imageRef') && fieldValue(bean: instance, field: 'imageRef.file')}">
           <div class="section">
             <img alt="${fieldValue(bean: instance, field: "imageRef.file")}"
@@ -168,15 +169,13 @@
         </g:if>
       </div>
 
-
-    </div><!--close column-two-->
-
   </div><!--close content-->
-  <script type="text/javascript">
+  <r:script type="text/javascript">
       // configure the charts
       var facetChartOptions = {
+          backgroundColor: "#fffef7",
           /* base url of the collectory */
-          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          collectionsUrl: "${grailsApplication.config.grails.serverURL}",
           /* base url of the biocache ws*/
           biocacheServicesUrl: biocacheServicesUrl,
           /* base url of the biocache webapp*/
@@ -189,8 +188,9 @@
               'biogeographic_region','state_conservation','occurrence_year']
       }
       var taxonomyChartOptions = {
+          backgroundColor: "#fffef7",
           /* base url of the collectory */
-          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          collectionsUrl: "${grailsApplication.config.grails.serverURL}",
           /* base url of the biocache ws*/
           biocacheServicesUrl: biocacheServicesUrl,
           /* base url of the biocache webapp*/
@@ -202,55 +202,54 @@
           rank: "${instance.startingRankHint()}"
       }
 
-/************************************************************\
-* Actions when page is loaded
-\************************************************************/
-function onLoadCallback() {
+    /************************************************************\
+    * Actions when page is loaded
+    \************************************************************/
+    function onLoadCallback() {
 
-  // stats
-  loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+      // stats
+      loadDownloadStats("${instance.uid}","${instance.name}", "1002");
 
-  // records
-  $.ajax({
-    url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + buildQueryString("${instance.descendantUids().join(',')}"),
-    dataType: 'jsonp',
-    timeout: 20000,
-    complete: function(jqXHR, textStatus) {
-        if (textStatus == 'timeout') {
-            noData();
-            alert('Sorry - the request was taking too long so it has been cancelled.');
+      // records
+      $.ajax({
+        url: urlConcat(biocacheServicesUrl, "/occurrences/search.json?pageSize=0&q=") + buildQueryString("${instance.descendantUids().join(',')}"),
+        dataType: 'jsonp',
+        timeout: 20000,
+        complete: function(jqXHR, textStatus) {
+            if (textStatus == 'timeout') {
+                noData();
+                alert('Sorry - the request was taking too long so it has been cancelled.');
+            }
+            if (textStatus == 'error') {
+                noData();
+                alert('Sorry - the records breakdowns are not available due to an error.');
+            }
+        },
+        success: function(data) {
+            // check for errors
+            if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+                noData();
+            } else {
+                setNumbers(data.totalRecords);
+                // draw the charts
+                drawFacetCharts(data, facetChartOptions);
+            }
         }
-        if (textStatus == 'error') {
-            noData();
-            alert('Sorry - the records breakdowns are not available due to an error.');
-        }
-    },
-    success: function(data) {
-        // check for errors
-        if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
-            noData();
-        }
-        else {
-            setNumbers(data.totalRecords);
-            // draw the charts
-            drawFacetCharts(data, facetChartOptions);
-        }
+      });
+
+      // taxon chart
+      loadTaxonomyChart(taxonomyChartOptions);
     }
-  });
+    /************************************************************\
+    *
+    \************************************************************/
+    // define biocache server
+    biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
+    biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
 
-  // taxon chart
-  loadTaxonomyChart(taxonomyChartOptions);
-}
-/************************************************************\
-*
-\************************************************************/
-// define biocache server
-biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
-biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(onLoadCallback);
 
-google.load("visualization", "1", {packages:["corechart"]});
-google.setOnLoadCallback(onLoadCallback);
-
-</script>
+    </r:script>
   </body>
 </html>

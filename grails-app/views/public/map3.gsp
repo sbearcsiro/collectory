@@ -1,17 +1,14 @@
-<%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.CollectionLocation" %>
+<%@ page import="au.org.ala.collectory.CollectionLocation" %>
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
+        <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Natural History Collections | Atlas of Living Australia</title>
-        <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.core.js"></script>
-        <script language="JavaScript" type="text/javascript" src="http://www.ala.org.au/wp-content/themes/ala/scripts/ui.tabs.js"></script>
         %{--<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>--}%
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
         <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
-        <r:require modules="bbq,openlayers,map"/>
-
+        <r:require modules="bigbuttons,bbq,openlayers,map"/>
         <script type="text/javascript">
           var altMap = true;
           $(document).ready(function() {
@@ -37,17 +34,8 @@
         </div><!--close section-->
       </div><!--close header-->
 
-      <div id="nav-tabs">
-          <ul class="ui-tabs-nav narrow">
-              <li><a href="#map">Map</a></li>
-              <li><a href="#list">List</a></li>
-          </ul>
-      </div>
-      <div style="clear:both;"></div>
-
-      <div class="map-alt"><!-- wrap map and list-->
-
-        <div id="column-one" class="fudge">
+      <div class="row-fluid"><!-- wrap map and list-->
+        <div id="column-one" class="fudge span3">
           <div class="section" style="padding-bottom:0;">
             <p style="padding-bottom:0;padding-left:10px;padding-top:10px;">Click a button to only show those organisms.</p>
           </div>
@@ -75,10 +63,18 @@
           </div>
         </div><!--close column-one-->
 
-        <div id="map">
+      %{--<div id="nav-tabs">--}%
+          %{--<ul class="ui-tabs-nav narrow">--}%
+              %{--<li><a href="#map">Map</a></li>--}%
+              %{--<li><a href="#list">List</a></li>--}%
+          %{--</ul>--}%
+      %{--</div>--}%
+
+
+        <div id="map" class="span9">
           <div id="column-two" class="map-column">
             <div class="section">
-              <p style="width:588px;padding-bottom:8px;padding-left:30px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
+              <p style="width:100%;padding-bottom:8px;padding-left:30px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
               <div id="map-container">
                 <div id="map_canvas"></div>
               </div>
@@ -87,7 +83,7 @@
           </div><!--close column-two-->
         </div><!--close map-->
 
-        <div id="list">
+        <div id="list" class="span9">
           <div id="column-two" class="list-column">
             <div class="nameList section" id="names">
               <p><span id="numFilteredCollections">No collections are selected</span>. Click on a collection name to see more details including the digitised specimen records for the collection.

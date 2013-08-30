@@ -1,135 +1,102 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="app.version" content="${g.meta(name:'app.version')}"/>
-    <meta name="app.build" content="${g.meta(name:'app.build')}"/>
-    <g:if test="${instance}">
+   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+   <meta name="app.version" content="${g.meta(name:'app.version')}"/>
+   <meta name="app.build" content="${g.meta(name:'app.build')}"/>
+   <g:if test="${instance}">
         <meta name="description" content="The Atlas of Living Australia's description of the ${instance?.name}. ${instance?.makeAbstract(200)}"/>
-    </g:if>
-    <g:else>
+   </g:if>
+   <g:else>
         <meta name="description" content="Explore Australia's Natural History Collections."/>
-    </g:else>
-    <title><g:layoutTitle /></title>
-    <link rel="stylesheet" href="${resource(dir:'css',file:'temp-style.css')}"/>
-    <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/style2010.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/style2011.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/wp-styles.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/buttons.css" type="text/css" media="screen" />
-    <link rel="icon" type="image/x-icon" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="shortcut icon" type="image/x-icon" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/images/favicon.ico" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/jquery.autocomplete.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/search.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/skin.css" />
-    <link rel="stylesheet" type="text/css" media="screen" href="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/css/sf.css" />
-
-    <link rel="stylesheet" href="${resource(dir:'css',file:'public.css')}"/>
-
-    <script language="JavaScript" type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-
-    <!-- Dave was here -->
-    <r:require modules="application, collectory" />
-    <!-- Dave was here end -->
-    <r:layoutResources/>
-    <g:layoutHead />
-    <script type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/scripts/html5.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/scripts/superfish/superfish.js"></script>
-    <script language="JavaScript" type="text/javascript" src="${grailsApplication.config.ala.baseURL}/wp-content/themes/ala2011/scripts/jquery.autocomplete.js"></script>
-    <script type="text/javascript">
-
+   </g:else>
+   <title><g:layoutTitle /></title>
+   <r:require modules="jquery, bootstrap, application, collectory" />
+   <r:script disposition='head'>
         // initialise plugins
-
         jQuery(function(){
-            jQuery('ul.sf').superfish( {
-                delay:500,
-                autoArrows:false,
-                dropShadows:false
+            // autocomplete on navbar search input
+            jQuery("form#search-form-2011 input#search-2011, form#search-inpage input#search, input#search-2013").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
+                extraParams: {limit: 100},
+                dataType: 'jsonp',
+                parse: function(data) {
+                    var rows = new Array();
+                    data = data.autoCompleteList;
+                    for(var i=0; i<data.length; i++) {
+                        rows[i] = {
+                            data:data[i],
+                            value: data[i].matchedNames[0],
+                            result: data[i].matchedNames[0]
+                        };
+                    }
+                    return rows;
+                },
+                matchSubset: false,
+                formatItem: function(row, i, n) {
+                    return row.matchedNames[0];
+                },
+                cacheLength: 10,
+                minChars: 3,
+                scroll: false,
+                max: 10,
+                selectFirst: false
             });
 
-            jQuery("form#search-form-2011 input#search-2011").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-                extraParams: {limit: 100},
-                dataType: 'jsonp',
-                parse: function(data) {
-                    var rows = new Array();
-                    data = data.autoCompleteList;
-                    for(var i=0; i<data.length; i++){
-                        rows[i] = {
-                            data:data[i],
-                            value: data[i].matchedNames[0],
-                            result: data[i].matchedNames[0]
-                        };
-                    }
-                    return rows;
-                },
-                matchSubset: false,
-                formatItem: function(row, i, n) {
-                    return row.matchedNames[0];
-                },
-                cacheLength: 10,
-                minChars: 3,
-                scroll: false,
-                max: 10,
-                selectFirst: false
-            });
-            jQuery("form#search-inpage input#search").autocomplete('http://bie.ala.org.au/search/auto.jsonp', {
-                extraParams: {limit: 100},
-                dataType: 'jsonp',
-                parse: function(data) {
-                    var rows = new Array();
-                    data = data.autoCompleteList;
-                    for(var i=0; i<data.length; i++){
-                        rows[i] = {
-                            data:data[i],
-                            value: data[i].matchedNames[0],
-                            result: data[i].matchedNames[0]
-                        };
-                    }
-                    return rows;
-                },
-                matchSubset: false,
-                formatItem: function(row, i, n) {
-                    return row.matchedNames[0];
-                },
-                cacheLength: 10,
-                minChars: 3,
-                scroll: false,
-                max: 10,
-                selectFirst: false
+            // Mobile/desktop toggle
+            // TODO: set a cookie so user's choice is remembered across pages
+            var responsiveCssFile = $("#responsiveCss").attr("href"); // remember set href
+            $(".toggleResponsive").click(function(e) {
+                e.preventDefault();
+                $(this).find("i").toggleClass("icon-resize-small icon-resize-full");
+                var currentHref = $("#responsiveCss").attr("href");
+                if (currentHref) {
+                    $("#responsiveCss").attr("href", ""); // set to desktop (fixed)
+                    $(this).find("span").html("Mobile");
+                } else {
+                    $("#responsiveCss").attr("href", responsiveCssFile); // set to mobile (responsive)
+                    $(this).find("span").html("Desktop");
+                }
             });
         });
-    </script>
+    </r:script>
+    <r:layoutResources/>
+    <g:layoutHead />
 </head>
 <body class="${pageProperty(name:'body.class')}" id="${pageProperty(name:'body.id')}" onload="${pageProperty(name:'body.onload')}">
-<div id="wrapper">
 
-    <hf:banner logoutUrl="${grailsApplication.config.grails.serverURL}/public/logout"/>
+    <hf:banner logoutUrl="${grailsApplication.config.grails.serverURL}/logout/logout"/>
 
     <hf:menu/>
 
-    <g:layoutBody />
+    <div class="container" id="main-content">
+        <g:layoutBody />
+    </div><!--/.container-->
+
+    <div class="container hidden-desktop">
+        <%-- Borrowed from http://marcusasplund.com/optout/ --%>
+        <a class="btn btn-small toggleResponsive"><i class="icon-resize-full"></i> <span>Desktop</span> version</a>
+        %{--<a class="btn btn-small toggleResponsive"><i class="icon-resize-full"></i> Desktop version</a>--}%
+    </div>
 
     <hf:footer/>
 
-</div>
-<script type="text/javascript">
-    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-    var pageTracker = _gat._getTracker("UA-4355440-1");
-    pageTracker._initData();
-    pageTracker._trackPageview();
-</script>
-<script type="text/javascript">
-    // show warning if using IE6
-    if ($.browser.msie && $.browser.version.slice(0,1) == '6') {
-        $('#header').prepend($('<div style="text-align:center;color:red;">WARNING: This page is not compatible with IE6.' +
-                ' Many functions will still work but layout and image transparency will be disrupted.</div>'));
-    }
-</script>
-<!-- JS resources-->
-<r:layoutResources/>
+    <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <r:script>
+        var pageTracker = _gat._getTracker("UA-4355440-1");
+        pageTracker._initData();
+        pageTracker._trackPageview();
 
+        // show warning if using IE6
+        if ($.browser.msie && $.browser.version.slice(0,1) == '6') {
+            $('#header').prepend($('<div style="text-align:center;color:red;">WARNING: This page is not compatible with IE6.' +
+                    ' Many functions will still work but layout and image transparency will be disrupted.</div>'));
+        }
+    </r:script>
+
+    <!-- JS resources-->
+    <r:layoutResources/>
 </body>
 </html>

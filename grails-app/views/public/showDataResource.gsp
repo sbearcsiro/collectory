@@ -70,7 +70,9 @@
             </div>
           </div>
         </div><!--close header-->
-        <div id="column-one">
+
+      <div class="row-fluid">
+        <div id="span8">
           <div class="section">
             <g:if test="${instance.pubDescription || instance.techDescription || instance.focus}">
                 <h2>Description</h2>
@@ -158,7 +160,7 @@
           <cl:lastUpdated date="${instance.lastUpdated}"/>
         </div><!--close column-one-->
 
-        <div id="column-two">
+        <div id="span4">
           <div class="section sidebar">
             <g:if test="${fieldValue(bean: instance, field: 'imageRef') && fieldValue(bean: instance, field: 'imageRef.file')}">
               <div class="section">
@@ -249,144 +251,144 @@
           </div>
         </div>
       </div>
+    </div>
+  <r:script type="text/javascript">
+      // configure the charts
+      var facetChartOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${grailsApplication.config.grails.serverURL}",
+          /* base url of the biocache ws*/
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
+          /* a uid or list of uids to chart - either this or query must be present */
+          instanceUid: "${instance.uid}",
+          /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
+          charts: ['country','state','species_group','assertions','type_status',
+              'biogeographic_region','state_conservation','occurrence_year']
+      }
+      var taxonomyChartOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${grailsApplication.config.grails.serverURL}",
+          /* base url of the biocache ws*/
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
+          /* support drill down into chart - default is false */
+          drillDown: true,
+          /* a uid or list of uids to chart - either this or query must be present */
+          instanceUid: "${instance.uid}",
+          //query: "notomys",
+          //rank: "kingdom",
+          /* threshold value to use for automagic rank selection - defaults to 55 */
+          threshold: 25
+      }
+      var taxonomyTreeOptions = {
+          /* base url of the collectory */
+          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          /* base url of the biocache ws*/
+          biocacheServicesUrl: biocacheServicesUrl,
+          /* base url of the biocache webapp*/
+          biocacheWebappUrl: biocacheWebappUrl,
+          /* the id of the div to create the charts in - defaults is 'charts' */
+          targetDivId: "tree",
+          /* a uid or list of uids to chart - either this or query must be present */
+          instanceUid: "${instance.uid}"
+          /* a query to set the scope of the records */
+          //query: "notomys"
+      }
 
-      <script type="text/javascript">
-          // configure the charts
-          var facetChartOptions = {
-              /* base url of the collectory */
-              collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-              /* base url of the biocache ws*/
-              biocacheServicesUrl: biocacheServicesUrl,
-              /* base url of the biocache webapp*/
-              biocacheWebappUrl: biocacheWebappUrl,
-              /* a uid or list of uids to chart - either this or query must be present */
-              instanceUid: "${instance.uid}",
-              /* the list of charts to be drawn (these are specified in the one call because a single request can get the data for all of them) */
-              charts: ['country','state','species_group','assertions','type_status',
-                  'biogeographic_region','state_conservation','occurrence_year']
-          }
-          var taxonomyChartOptions = {
-              /* base url of the collectory */
-              collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-              /* base url of the biocache ws*/
-              biocacheServicesUrl: biocacheServicesUrl,
-              /* base url of the biocache webapp*/
-              biocacheWebappUrl: biocacheWebappUrl,
-              /* support drill down into chart - default is false */
-              drillDown: true,
-              /* a uid or list of uids to chart - either this or query must be present */
-              instanceUid: "${instance.uid}",
-              //query: "notomys",
-              //rank: "kingdom",
-              /* threshold value to use for automagic rank selection - defaults to 55 */
-              threshold: 25
-          }
-          var taxonomyTreeOptions = {
-              /* base url of the collectory */
-              collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
-              /* base url of the biocache ws*/
-              biocacheServicesUrl: biocacheServicesUrl,
-              /* base url of the biocache webapp*/
-              biocacheWebappUrl: biocacheWebappUrl,
-              /* the id of the div to create the charts in - defaults is 'charts' */
-              targetDivId: "tree",
-              /* a uid or list of uids to chart - either this or query must be present */
-              instanceUid: "${instance.uid}"
-              /* a query to set the scope of the records */
-              //query: "notomys"
-          }
+      /************************************************************\
+    *
+    \************************************************************/
+    var queryString = '';
+    var decadeUrl = '';
 
-          /************************************************************\
-        *
-        \************************************************************/
-        var queryString = '';
-        var decadeUrl = '';
+    $('img#mapLegend').each(function(i, n) {
+      // if legend doesn't load, then it must be a point map
+      $(this).error(function() {
+        $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
+      });
+      // IE hack as IE doesn't trigger the error handler
+      /*if ($.browser.msie && !n.complete) {
+        $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
+      }*/
+    });
+    /************************************************************\
+    *
+    \************************************************************/
+    function onLoadCallback() {
+      // stats
+      if (${instance.resourceType == 'website'}) {
+          loadDownloadStats("${instance.uid}","${instance.name}", "2000");
+      } else if (${instance.resourceType == 'records'}) {
+          loadDownloadStats("${instance.uid}","${instance.name}", "1002");
+      }
 
-        $('img#mapLegend').each(function(i, n) {
-          // if legend doesn't load, then it must be a point map
-          $(this).error(function() {
-            $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
-          });
-          // IE hack as IE doesn't trigger the error handler
-          /*if ($.browser.msie && !n.complete) {
-            $(this).attr('src',"${resource(dir:'images/map',file:'single-occurrences.png')}");
-          }*/
-        });
-        /************************************************************\
-        *
-        \************************************************************/
-        function onLoadCallback() {
-          // stats
-          if (${instance.resourceType == 'website'}) {
-              loadDownloadStats("${instance.uid}","${instance.name}", "2000");
-          } else if (${instance.resourceType == 'records'}) {
-              loadDownloadStats("${instance.uid}","${instance.name}", "1002");
-          }
-
-          // species pages
-          $.ajax({
-              url: bieUrl + "search.json?q=*&fq=uid:${instance.uid}",
-              dataType: 'jsonp',
-              success: function(data) {
-                  var pages = data.searchResults.totalRecords;
-                  if (pages) {
-                      var $contrib = $('#pagesContributed');
-                      $contrib.append($('<h2>Contribution to the Atlas</h2><p>This resource has contributed to <strong>' +
-                          pages + '</strong> pages of taxa. ' +
-                          '<a href="' + bieUrl + 'search?q=*&fq=uid:' + "${instance.uid}" + '">View a list</a></p>'));
-                  }
+      // species pages
+      $.ajax({
+          url: bieUrl + "search.json?q=*&fq=uid:${instance.uid}",
+          dataType: 'jsonp',
+          success: function(data) {
+              var pages = data.searchResults.totalRecords;
+              if (pages) {
+                  var $contrib = $('#pagesContributed');
+                  $contrib.append($('<h2>Contribution to the Atlas</h2><p>This resource has contributed to <strong>' +
+                      pages + '</strong> pages of taxa. ' +
+                      '<a href="' + bieUrl + 'search?q=*&fq=uid:' + "${instance.uid}" + '">View a list</a></p>'));
               }
+          }
+      });
+
+      // records
+      if (${instance.resourceType == 'records'}) {
+          // summary biocache data
+          $.ajax({
+            url: biocacheServicesUrl + "/occurrences/search.json?pageSize=0&q=data_resource_uid:${instance.uid}",
+            dataType: 'jsonp',
+            timeout: 30000,
+            complete: function(jqXHR, textStatus) {
+                if (textStatus == 'timeout') {
+                    noData();
+                    alert('Sorry - the request was taking too long so it has been cancelled.');
+                }
+                if (textStatus == 'error') {
+                    noData();
+                    alert('Sorry - the records breakdowns are not available due to an error.');
+                }
+            },
+            success: function(data) {
+                // check for errors
+                if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+                    noData();
+                }
+                else {
+                    setNumbers(data.totalRecords);
+                    facetChartOptions.response = data;
+                    // draw the charts
+                    drawFacetCharts(data, facetChartOptions);
+                }
+            }
           });
 
-          // records
-          if (${instance.resourceType == 'records'}) {
-              // summary biocache data
-              $.ajax({
-                url: biocacheServicesUrl + "/occurrences/search.json?pageSize=0&q=data_resource_uid:${instance.uid}",
-                dataType: 'jsonp',
-                timeout: 30000,
-                complete: function(jqXHR, textStatus) {
-                    if (textStatus == 'timeout') {
-                        noData();
-                        alert('Sorry - the request was taking too long so it has been cancelled.');
-                    }
-                    if (textStatus == 'error') {
-                        noData();
-                        alert('Sorry - the records breakdowns are not available due to an error.');
-                    }
-                },
-                success: function(data) {
-                    // check for errors
-                    if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
-                        noData();
-                    }
-                    else {
-                        setNumbers(data.totalRecords);
-                        facetChartOptions.response = data;
-                        // draw the charts
-                        drawFacetCharts(data, facetChartOptions);
-                    }
-                }
-              });
+          // taxon chart
+          loadTaxonomyChart(taxonomyChartOptions);
 
-              // taxon chart
-              loadTaxonomyChart(taxonomyChartOptions);
+          // tree
+          initTaxonTree(taxonomyTreeOptions);
+      }
+    }
+    /************************************************************\
+    *
+    \************************************************************/
+    // define biocache server
+    biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
+    biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+    bieUrl = "${grailsApplication.config.bie.baseURL}";
 
-              // tree
-              initTaxonTree(taxonomyTreeOptions);
-          }
-        }
-        /************************************************************\
-        *
-        \************************************************************/
-        // define biocache server
-        biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
-        biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
-        bieUrl = "${ConfigurationHolder.config.bie.baseURL}";
+    google.load("visualization", "1", {packages:["corechart"]});
+    google.setOnLoadCallback(onLoadCallback);
 
-        google.load("visualization", "1", {packages:["corechart"]});
-        google.setOnLoadCallback(onLoadCallback);
-
-      </script>
-    </body>
+  </r:script>
+</body>
 </html>

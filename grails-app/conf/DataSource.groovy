@@ -22,7 +22,7 @@ environments {
             url = "jdbc:mysql://localhost:3306/collectory?autoReconnect=true&connectTimeout=0"
             username = "root"
             password = "password"
-            logSql = true
+            //logSql = true
     }
 	}
 	test {

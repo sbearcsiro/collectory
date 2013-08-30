@@ -196,8 +196,8 @@ function contactCurator(email, firstName, uid, instUid, name) {
     content = content + "After consulting the website, please respond to this email with any feedback and edits that you would like made to your Collections and Institution pages before Monday the 25th of October 2010.\n\n";
     content = content + "Regards,\n";
     content = content + "The Atlas of Living Australia\n\n";
-    content = content + "Dr. Peter Neville\n";
-    content = content + "Research Projects Officer | Atlas of Living Australia\n";
+    content = content + "Miles Nicholls\n";
+    content = content + "Data Manager| Atlas of Living Australia\n";
     content = content + "CSIRO\n";
 
     var objWin = window.open ('mailto:' + email + '?subject=' + subject + '&body=' + encodeURI(content));
@@ -232,7 +232,7 @@ function loadDownloadStats(uid, name, eventType) {
             var stats;
             if (eventType == '2000') { // images
                 stats = "<p class='short-bot'>Number of images viewed from the " + name + " through the Atlas of Living Australia.</p>";
-                stats += "<table class='counts'>";
+                stats += "<table class='table counts'>";
                 stats += "<tr><td>This month:</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.thisMonth.numberOfEventItems) + "</span></td></tr>";
                 stats += "<tr><td>Last 3 months:</td><td style='text-align: right;'><span class='number'>" +
@@ -242,7 +242,7 @@ function loadDownloadStats(uid, name, eventType) {
                 stats += "</table>";
             } else {  // eventType == '1002' - records
                 stats = "<p class='short-bot'>Number of occurrence records downloaded from the " + name + " through the Atlas of Living Australia.</p>";
-                stats += "<table class='counts'>";
+                stats += "<table class='table counts'>";
                 stats += "<tr><td>This month:</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.thisMonth.numberOfEventItems) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.thisMonth.numberOfEvents) + "</span> " + pluralise('download',data.thisMonth.numberOfEvents) + ".</td></tr>";
@@ -254,11 +254,7 @@ function loadDownloadStats(uid, name, eventType) {
                         addCommas(data.lastYear.numberOfEvents) + "</span> " + pluralise('download',data.lastYear.numberOfEvents) + ".</td></tr>";
                 stats += "</table>";
             }
-
             $('div#usage').html(stats);
-
-            //drawVisualization(data, eventType);
-
         }
       }
     });
@@ -279,7 +275,7 @@ function loadDownloadStats(uid, name, eventType) {
                 } else {
                     var stats;
                     stats = "<p class='short-bot'>Breakdown by reason of occurrence record downloads from last 12 months:</p>";
-                    stats += "<table class='usageByReasonBreakdown'>";
+                    stats += "<table class='table usageByReasonBreakdown'>";
 
                     stats += "<tr><td>Conservation management/planning:</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["conservation management/planning"].records) + "</span></td><td>from <span class='number'>" +

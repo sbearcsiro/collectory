@@ -18,7 +18,7 @@
           });
         </script>
     </head>
-    <body id="page-collections-map" onload="initMap('${ConfigurationHolder.config.grails.serverURL}')">
+    <body id="page-collections-map" onload="initMap('${grailsApplication.config.grails.serverURL}')">
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->
@@ -41,10 +41,9 @@
               <li><a href="#list">List</a></li>
           </ul>
       </div>
-      <div style="clear:both;"></div>
 
-      <div><!-- wrap map and list-->
-        <div id="column-one" class="fudge">
+      <div class="row-fluid"><!-- wrap map and list-->
+        <div id="span6" class="fudge">
           <div class="section">
             <p style="padding:15px 10px 0 10px">Show these collections:</p>
             <ul id="map-collections">
@@ -66,8 +65,8 @@
             </div>
           </div><!--close section-->
         </div><!--close column-one-->
-        <div id="map">
-          <div id="column-two" class="map-column">
+        <div id="map" class="span6">
+          <div class="map-column">
             <div class="section">
               <p style="width:588px;padding-bottom:8px;padding-left:30px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
               <div id="map-container">
@@ -77,9 +76,8 @@
             </div><!--close section-->
           </div><!--close column-two-->
         </div><!--close map-->
-
-        <div id="list">
-          <div id="column-two" class="list-column">
+        <div id="list" class="span6">
+          <div class="list-column">
             <div class="nameList section" id="names">
               <p>Collections are shown grouped by their institution. Click on a collection name to see more details including the digitised specimen records for the collection.
                 Click on the institution name to learn more about the institution.</p>
@@ -89,9 +87,7 @@
             </div><!--close nameList-->
           </div><!--close column-one-->
         </div><!--close list-->
-
       </div><!--close map/list div-->
-
     </div><!--close content-->
   </body>
 </html>

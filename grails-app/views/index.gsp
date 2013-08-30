@@ -1,109 +1,52 @@
-<%@ page import="au.org.ala.collectory.ProviderGroup" %>
+<!doctype html>
 <html>
-    <head>
-        <title>ALA Collections Management</title>
-	<meta name="layout" content="main" />
+<head>
+    <meta name="layout" content="main"/>
+    <meta name="section" content="home"/>
+    <title>ALA Web Theme - Home</title>
+</head>
+<body>
+%{--<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>--}%
+<div class="row-fluid">
+    <div class="span3 well" id="status" role="complementary">
+        <h3>Application Status</h3>
+        <ul>
+            <li>App version: <g:meta name="app.version"/></li>
+            <li>Grails version: <g:meta name="app.grails.version"/></li>
+            %{-- Might need to edit the following line to be ${org.codehaus.groovy.runtime.InvokerHelper.getVersion()} for Grails < 2.1.5 --}%
+            <li>Groovy version: ${GroovySystem.getVersion()}</li>
+            <li>JVM version: ${System.getProperty('java.version')}</li>
+            <li>Reloading active: ${grails.util.Environment.reloadingAgentEnabled}</li>
+            <li>Controllers: ${grailsApplication.controllerClasses.size()}</li>
+            <li>Domains: ${grailsApplication.domainClasses.size()}</li>
+            <li>Services: ${grailsApplication.serviceClasses.size()}</li>
+            <li>Tag Libraries: ${grailsApplication.tagLibClasses.size()}</li>
+        </ul>
+        <h3>Installed Plugins</h3>
+        <ul>
+            <g:each var="plugin" in="${applicationContext.getBean('pluginManager').allPlugins}">
+                <li>${plugin.name} - ${plugin.version}</li>
+            </g:each>
+        </ul>
+    </div>
+    <div class="span9" id="page-body" role="main">
+        <h1>Welcome to Grails</h1>
+        <p>Congratulations, you have successfully started your first Grails application! At the moment
+        this is the default page, feel free to modify it to either redirect to a controller or display whatever
+        content you may choose. Below is a list of controllers that are currently deployed in this application,
+        click on each to execute its default action:</p>
 
-    </head>
-    
-    <body>
-      <div style="float:right;">
-        <g:link class="mainLink" controller="public" action="map">View public site</g:link>
-        <!--img src="${resource(dir:'images/ala',file:'ala-logo-small-white.gif')}"/-->
-      </div>
-      <div id="welcome">
-        <h3>Natural History Collections Management</h3> <p>Information about Australian biodiversity collections can be added and updated here.</p>
-      </div>
-
-      <g:isNotLoggedIn>
-        <div class="homeCell">
-          <h4 class="inline">Please log in</h4>
-            <span class="buttons" style="float: right;">
-              <g:link controller="login">&nbsp;Log in&nbsp;</g:link>
-            </span>
-          <p>You must log in to manage collection records</p>
+        <div id="controller-list" role="navigation">
+            <h2>Available Controllers:</h2>
+            <ul>
+                <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
+                    <li class="controller"><g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link></li>
+                </g:each>
+            </ul>
         </div>
-      </g:isNotLoggedIn>
+    </div>
+</div>
 
-      <div class="homeCell">
-        <g:link class="mainLink" controller="collection" action="list">View all collections</g:link>
-        <p class="mainText">Browse all current collections and update collection descriptions.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="collection" action="myList" id="68">View my collections</g:link>
-        <p class="mainText">Browse my collections and update collection descriptions.</p>
-      </div>
-
-      <div class="homeCell">
-        <span class="mainLink">Search for collections</span>
-        <p class="mainText">Enter a part of the name of a collection or its acronym, eg insects, fungi, ANIC</p>
-        <g:form controller="collection" action="searchList">
-          <g:textField class="mainText" name="term"/><g:submitButton style="margin-left:20px;" name="search" value="Search"/>
-        </g:form>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="collection" action="create">Add a collection</g:link>
-        <p class="mainText">Describe a collection that is not currently listed.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="institution" action="list">View all institutions</g:link>
-        <p class="mainText">Browse the institutions that hold collections.</p>
-      </div>
-
-    <g:ifAllGranted role="${ProviderGroup.ROLE_ADMIN}">
-      <br/><br/><p>These actions are only available to system admins.</p>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="reports" action="list">View reports</g:link>
-        <p class="mainText">Browse summaries of Registry contents and usage.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="contact" action="list">Manage contacts</g:link>
-        <p class="mainText">View and edit all known contacts for collections and institutions.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="logon" action="list">Manage logons</g:link>
-        <p class="mainText">Create and maintain user accounts.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="role" action="list">Manage roles</g:link>
-        <p class="mainText">Define who can do what by role.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="secRequestMap" action="list">Manage url security</g:link>
-        <p class="mainText">Restrict access to specific urls.</p>
-      </div>
-
-      <div class="homeCell">
-        <g:link class="mainLink" controller="collection" action="loadSupplementary">Load supplementary data</g:link>
-        <p class="mainText">Only if you know what you are doing.</p>
-        <p class="mainText"><g:link controller="collection" action="loadSupplementary" params="[override:true]">with override</g:link></p>
-      </div>
-    </g:ifAllGranted>
-      <!--div class="homeCell">
-        <h4 class="inline">Add an institution</h4>
-          <p></p>
-          <span class="buttons" >
-            <g:link controller="institution" action="list">Show institutions</g:link>
-          </span>
-      </div>
-
-      <div class="homeCell">
-        <h4 class="inline">Add a contact person</h4>
-          <p></p>
-          <span class="buttons" >
-            <g:link controller="contact" action="create">Add a contact</g:link>
-          </span>
-      </div-->
-
-      
-
-    </body>
+</div>
+</body>
 </html>

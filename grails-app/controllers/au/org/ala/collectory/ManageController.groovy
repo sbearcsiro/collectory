@@ -52,12 +52,10 @@ class ManageController {
         } else {
             [instance: instance, changes: getChanges(instance.uid)]
         }
-
     }
 
     def getChanges(uid) {
         // get audit records
         return AuditLogEvent.findAllByUri(uid,[sort:'lastUpdated',order:'desc',max:20])
     }
-
 }

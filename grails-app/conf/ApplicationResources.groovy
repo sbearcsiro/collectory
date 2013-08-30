@@ -37,4 +37,19 @@ modules = {
     map {
         resource url: 'js/map.js'
     }
+    datasets {
+        resource url:'js/datasets.js'
+    }
+    jquery_json {
+        resource url:'js/jquery.json-2.2.min.js'
+    }
+    rotate {
+        resource url:'js/jQueryRotateCompressed.2.1.js'
+    }
+    jquery {
+        resource url:'js/jquery.min.js'
+    }
+    bigbuttons {
+        resource url:'css/temp-style.css'
+    }
 }

@@ -16,6 +16,5 @@
     <g:each var="i" in="${institutions}">
       <p>${i.name} (${i.acronym})</p>
     </g:each>
-
   </body>
 </html>

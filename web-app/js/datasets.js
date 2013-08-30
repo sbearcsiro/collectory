@@ -106,9 +106,9 @@ function appendResource(value) {
     $rowA.find('img').tooltip($.extend({},tooltipOptions,{position:'center left'}));
 
     // row B
-    $rowB.append('<span><strong class="resultsLabel">Type of resource: </strong>' + value.resourceType + '</span>');  // resource type
-    $rowB.append('<span><strong class="resultsLabel">License: </strong>' + (value.licenseType == null ? '' : value.licenseType) + '</span>'); // license type
-    $rowB.append('<span><strong class="resultsLabel">License version: </strong>' + (value.licenseVersion == null ? '' : value.licenseVersion) + '</span>'); // license version
+    $rowB.append('<span class="span4"><strong class="resultsLabel">Type of resource: </strong>' + value.resourceType + '</span>');  // resource type
+    $rowB.append('<span class="span4"><strong class="resultsLabel">License: </strong>' + (value.licenseType == null ? '' : value.licenseType) + '</span>'); // license type
+    $rowB.append('<span class="span4"><strong class="resultsLabel">License version: </strong>' + (value.licenseVersion == null ? '' : value.licenseVersion) + '</span>'); // license version
     if (value.resourceType == 'records') {
         $rowB.append('<span><a title="View occurrence records for this data set" href="' + biocacheUrl + '/occurrences/search?q=data_resource_uid:' + value.uid + '">View records</a></span>'); // records link
     }
@@ -328,28 +328,28 @@ function showPaginator() {
     }
     var currentPage = Math.floor(offset / pageSize()) + 1;
     var maxPage = Math.ceil(total / pageSize());
-    var $pago = $("<ul></ul>");
+    var $pago = $("<div class='pagination'></div>");
     // add prev
     if (offset > 0) {
-        $pago.append('<li id="prevPage"><a href="javascript:prevPage();">« Previous</a></li>');
+        $pago.append('<a href="javascript:prevPage();">« Previous</a></li>');
     }
     else {
-        $pago.append('<li id="prevPage">« Previous</li>');
+        $pago.append('« Previous</span>');
     }
-    for (var i = 1; i <= maxPage; i++) {
+    for (var i = 1; i <= maxPage && i<20; i++) {
         if (i == currentPage) {
-            $pago.append('<li class="currentPage">' + i + '</li>');
+            $pago.append('<span class="currentPage">' + i + '</span>');
         }
         else {
-            $pago.append('<li><a href="javascript:gotoPage(' + i + ');">' + i + '</a></li>');
+            $pago.append('<a href="javascript:gotoPage(' + i + ');">' + i + '</a>');
         }
     }
     // add next
     if ((offset + pageSize()) < total) {
-        $pago.append('<li id="nextPage"><a href="javascript:nextPage();">Next »</a></li>');
+        $pago.append('<a href="javascript:nextPage();">Next »</a>');
     }
     else {
-        $pago.append('<li id="nextPage">Next »</li>');
+        $pago.append('Next »');
     }
 
     $('div#navLinks').html($pago);

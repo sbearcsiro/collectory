@@ -16,7 +16,6 @@ grails.project.dependency.resolution = {
         grailsPlugins()
         grailsHome()
         grailsCentral()
-
         // uncomment the below to enable remote dependency resolution
         // from public Maven repositories
         mavenLocal()
@@ -24,7 +23,7 @@ grails.project.dependency.resolution = {
         //mavenRepo "http://snapshots.repository.codehaus.org"
         //mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo "http://maven.ala.org.au/repository/"
     }
     dependencies {
         runtime 'mysql:mysql-connector-java:5.1.5'
@@ -39,5 +38,6 @@ grails.project.dependency.resolution = {
         runtime ":cache-headers:1.1.5"
         runtime ":richui:0.8"
         runtime ":tiny-mce:3.4.4"
+        runtime ":ala-web-theme:0.1.10"
     }
 }

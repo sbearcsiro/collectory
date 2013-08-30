@@ -12,7 +12,7 @@ import au.org.ala.collectory.resources.PP
 
 class CollectoryTagLib {
 
-    def authService, metadataService
+    def authService, metadataService, grailsApplication
 
     static namespace = 'cl'
 
@@ -1381,6 +1381,7 @@ class CollectoryTagLib {
      * @attr atBase true if the page is the base page of the root (no link is added)
      */
     def breadcrumbTrail = {attrs ->
+
         def hereLink = ""
         def topLevelLink = ""
         switch (attrs.home) {
@@ -1389,7 +1390,7 @@ class CollectoryTagLib {
                     "List" :
                     link(controller:'public', action:'dataSets') {"List"}
                 topLevelLink =
-                    "<a href='${ConfigurationHolder.config.ala.baseURL}/data-sets/'>Data sets</a> "
+                    "<a href='${grailsApplication.config.ala.baseURL}/data-sets/'>Data sets</a> "
                 break
             case 'dashboard':
                 hereLink = attrs.atBase == 'true' ?
@@ -1403,8 +1404,8 @@ class CollectoryTagLib {
                     link(controller:'public', action:'map') {"Collections"}
                 topLevelLink = ""
         }
-        out << "<a href='${ConfigurationHolder.config.ala.baseURL}'>Home</a> " +
-                topLevelLink + hereLink
+        out << "<a href='${grailsApplication.config.ala.baseURL}'>Home</a> <span class=\"icon icon-arrow-right\"></span> " +
+                topLevelLink + " <span class=\"icon icon-arrow-right\"></span>  " +  hereLink
     }
 
     def pageOptionsLink = {attrs, body ->

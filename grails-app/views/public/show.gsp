@@ -41,15 +41,17 @@
           </div>
 
           <cl:pageOptionsPopup instance="${instance}"/>
-          <div class="section full-width">
-            <div class="hrgroup col-8">
+          <div class="row-fluid">
+            <div class="span8">
               <cl:h1 value="${instance.name}"/>
               <g:set var="inst" value="${instance.getInstitution()}"/>
               <g:if test="${inst}">
                 <h3><g:link action="show" id="${inst.uid}">${inst.name}</g:link></h3>
               </g:if>
-              <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
-              <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
+              <span style="display:none;">
+                  <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
+                  <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
+              </span>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
                       <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
@@ -61,7 +63,7 @@
                   </div>
               </div>
             </div>
-            <div class="aside col-4 center">
+            <div class="span4">
               <!-- institution logo -->
               <g:if test="${inst?.logoRef?.file}">
                 <g:link action="showInstitution" id="${inst.id}">

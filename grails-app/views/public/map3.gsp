@@ -41,25 +41,25 @@
           </div>
           <div class="section filter-buttons">
             <div class="all selected" id="all" onclick="toggleButton(this);return false;">
-              <h2><a href="">All collections<span id="allButtonTotal">Show all collections.</span></a></h2>
+              <h2><a href="">All collections<span id="allButtonTotal">Show all <collections></collections></span></a></h2>
             </div>
             <div class="fauna" id="fauna" onclick="toggleButton(this);return false;">
-              <h2><a href="">Fauna<span>Mammals, birds, reptiles, fish, amphibians and invertebrates.</span></a></h2>
+              <h2><a href="">Fauna<span style="display:none;">Mammals, birds, reptiles, fish, amphibians and invertebrates.</span></a></h2>
             </div>
             <div class="insects" id="entomology" onclick="toggleButton(this);return false;">
-              <h2><a href="">Insects<span>Insects, spiders, mites and some other arthropods.</span></a></h2>
+              <h2><a href="">Insects<span style="display:none;">Insects, spiders, mites and some other arthropods.</span></a></h2>
             </div>
             <div class="microbes" id="microbes" onclick="toggleButton(this);return false;">
-              <h2><a href="">Microorganisms<span>Protists, bacteria, viruses, microfungi and microalgae.</span></a></h2>
+              <h2><a href="">Microorganisms<span style="display:none;">Protists, bacteria, viruses, microfungi and microalgae.</span></a></h2>
             </div>
             <div class="plants" id="plants" onclick="toggleButton(this);return false;">
-              <h2><a href="">Plants<span>Vascular plants, algae, fungi, lichens and bryophytes.</span></a></h2>
+              <h2><a href="">Plants<span style="display:none;">Vascular plants, algae, fungi, lichens and bryophytes.</span></a></h2>
             </div>
           </div><!--close section-->
           <!--div class="section" style="margin-top:5px;margin-bottom:5px;"><p style="margin-left:8px;padding-bottom:0;color:#666">Note that fauna includes insects.</p></div-->
-          <div style="width:265px;margin-left:40px;">
-            <p class="collectionsCount"><span id='numFeatures'></span></p>
-            <p class="collectionsCount"><span id='numVisible'></span> <span id="numUnMappable"></span></p>
+          <div>
+            <h4 class="collectionsCount"><span id='numFeatures'></span></h4>
+            <h4 class="collectionsCount"><span id='numVisible'></span> <span id="numUnMappable"></span></h4>
           </div>
         </div><!--close column-one-->
 
@@ -83,7 +83,7 @@
           </div><!--close column-two-->
         </div><!--close map-->
 
-        <div id="list" class="span9">
+        <div id="list" style="display:none;" class="span9">
           <div id="column-two" class="list-column">
             <div class="nameList section" id="names">
               <p><span id="numFilteredCollections">No collections are selected</span>. Click on a collection name to see more details including the digitised specimen records for the collection.

@@ -1390,7 +1390,7 @@ class CollectoryTagLib {
                     "List" :
                     link(controller:'public', action:'dataSets') {"List"}
                 topLevelLink =
-                    "<a href='${grailsApplication.config.ala.baseURL}/data-sets/'>Data sets</a> "
+                    "<a href='${grailsApplication.config.ala.baseURL}/data-sets/'>Data sets</a> <span class=\"icon icon-arrow-right\"></span>"
                 break
             case 'dashboard':
                 hereLink = attrs.atBase == 'true' ?
@@ -1405,7 +1405,7 @@ class CollectoryTagLib {
                 topLevelLink = ""
         }
         out << "<a href='${grailsApplication.config.ala.baseURL}'>Home</a> <span class=\"icon icon-arrow-right\"></span> " +
-                topLevelLink + " <span class=\"icon icon-arrow-right\"></span>  " +  hereLink
+                topLevelLink +  hereLink
     }
 
     def pageOptionsLink = {attrs, body ->

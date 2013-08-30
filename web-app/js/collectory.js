@@ -233,11 +233,11 @@ function loadDownloadStats(uid, name, eventType) {
             if (eventType == '2000') { // images
                 stats = "<p class='short-bot'>Number of images viewed from the " + name + " through the Atlas of Living Australia.</p>";
                 stats += "<table class='table counts'>";
-                stats += "<tr><td>This month:</td><td style='text-align: right;'><span class='number'>" +
+                stats += "<tr><td>This month</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.thisMonth.numberOfEventItems) + "</span></td></tr>";
-                stats += "<tr><td>Last 3 months:</td><td style='text-align: right;'><span class='number'>" +
+                stats += "<tr><td>Last 3 months</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.last3Months.numberOfEventItems) + "</span></td></tr>";
-                stats += "<tr><td>Last 12 months:</td><td style='text-align: right;'><span class='number'>" +
+                stats += "<tr><td>Last 12 months</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.numberOfEventItems) + "</span></td></tr>";
                 stats += "</table>";
             } else {  // eventType == '1002' - records
@@ -277,32 +277,32 @@ function loadDownloadStats(uid, name, eventType) {
                     stats = "<p class='short-bot'>Breakdown by reason of occurrence record downloads from last 12 months:</p>";
                     stats += "<table class='table usageByReasonBreakdown'>";
 
-                    stats += "<tr><td>Conservation management/planning:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Conservation management/planning</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["conservation management/planning"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["conservation management/planning"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["conservation management/planning"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Biosecurity management/planning:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Biosecurity management/planning</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["biosecurity management, planning"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["biosecurity management, planning"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["biosecurity management, planning"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Environmental impact/site assessment:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Environmental impact/site assessment</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["environmental impact, site assessment"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["environmental impact, site assessment"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["environmental impact, site assessment"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Education:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Education</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["education"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["education"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["education"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Scientific research:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Scientific research</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["scientific research"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["scientific research"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["scientific research"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Collection management:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Collection management</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["collection management"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["collection management"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["collection management"].events) + ".</td></tr>";
@@ -312,22 +312,22 @@ function loadDownloadStats(uid, name, eventType) {
                         addCommas(data.lastYear.reasonBreakdown["ecological research"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["ecological research"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Systematic research:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Systematic research</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["systematic research"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["systematic research"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["systematic research"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Other scientific research:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Other scientific research</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["other scientific research"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["other scientific research"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["other scientific research"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Other:</td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Other</td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["other"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["other"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["other"].events) + ".</td></tr>";
 
-                    stats += "<tr><td>Testing:</td></td><td style='text-align: right;'><span class='number'>" +
+                    stats += "<tr><td>Testing</td></td><td style='text-align: right;'><span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["testing"].records) + "</span></td><td>from <span class='number'>" +
                         addCommas(data.lastYear.reasonBreakdown["testing"].events) +
                         "</span> " + pluralise('download',data.lastYear.reasonBreakdown["testing"].events) + ".</td></tr>";

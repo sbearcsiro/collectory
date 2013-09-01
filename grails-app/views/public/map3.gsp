@@ -35,9 +35,9 @@
       </div><!--close header-->
 
       <div class="row-fluid"><!-- wrap map and list-->
-        <div id="column-one" class="fudge span3">
-          <div class="section" style="padding-bottom:0;">
-            <p style="padding-bottom:0;padding-left:10px;padding-top:10px;">Click a button to only show those organisms.</p>
+        <div class="span4">
+          <div class="section">
+            <p>Click a button to only show those organisms.</p>
           </div>
           <div class="section filter-buttons">
             <div class="all selected" id="all" onclick="toggleButton(this);return false;">
@@ -59,7 +59,9 @@
           <!--div class="section" style="margin-top:5px;margin-bottom:5px;"><p style="margin-left:8px;padding-bottom:0;color:#666">Note that fauna includes insects.</p></div-->
           <div>
             <h4 class="collectionsCount"><span id='numFeatures'></span></h4>
-            <h4 class="collectionsCount"><span id='numVisible'></span> <span id="numUnMappable"></span></h4>
+            <h4 class="collectionsCount"><span id='numVisible'></span>
+                <br/><span id="numUnMappable"></span>
+            </h4>
           </div>
         </div><!--close column-one-->
 
@@ -70,11 +72,10 @@
           %{--</ul>--}%
       %{--</div>--}%
 
-
-        <div id="map" class="span9">
-          <div id="column-two" class="map-column">
+        <div id="map" class="span8">
+          <div  class="map-column">
             <div class="section">
-              <p style="width:100%;padding-bottom:8px;padding-left:30px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
+              <p style="width:100%;padding-bottom:8px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
               <div id="map-container">
                 <div id="map_canvas"></div>
               </div>
@@ -83,8 +84,8 @@
           </div><!--close column-two-->
         </div><!--close map-->
 
-        <div id="list" style="display:none;" class="span9">
-          <div id="column-two" class="list-column">
+        <div id="list" style="display:none;" class="span8">
+          <div  class="list-column">
             <div class="nameList section" id="names">
               <p><span id="numFilteredCollections">No collections are selected</span>. Click on a collection name to see more details including the digitised specimen records for the collection.
               Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>.</p>

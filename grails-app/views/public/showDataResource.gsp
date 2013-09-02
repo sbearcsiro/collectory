@@ -33,8 +33,11 @@
 <div id="content">
 <div id="header" class="collectory">
     <!--Breadcrumbs-->
-    <div id="breadcrumb"><cl:breadcrumbTrail home="dataSets"/>
-    <cl:pageOptionsLink>${fieldValue(bean: instance, field: 'name')}</cl:pageOptionsLink>
+    <div id="breadcrumb">
+        <ol class="breadcrumb">
+            <li><cl:breadcrumbTrail home="dataSets"/> <span class=" icon icon-arrow-right"></span></li>
+            <li><cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink></li>
+        </ol>
     </div>
     <cl:pageOptionsPopup instance="${instance}"/>
     <div class="row-fluid">

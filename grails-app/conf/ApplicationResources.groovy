@@ -3,7 +3,9 @@ modules = {
         resource url:'js/application.js'
     }
     collectory {
+        dependsOn 'bootstrap'
         resource url:'js/collectory.js'
+        resource url:'css/temp-style.css'
     }
     charts {
         resource url:'js/charts.js'

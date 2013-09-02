@@ -36,10 +36,13 @@
   <body class="two-column-right">
     <div id="content">
       <div id="header" class="collectory">
-        <!--Breadcrumbs-->
-        <div id="breadcrumb"><cl:breadcrumbTrail/>
-          <cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink>
-        </div>
+          <!--Breadcrumbs-->
+          <div id="breadcrumb">
+              <ol class="breadcrumb">
+                  <li><cl:breadcrumbTrail/> <span class=" icon icon-arrow-right"></span></li>
+                  <li><cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink></li>
+              </ol>
+          </div>
         <cl:pageOptionsPopup instance="${instance}"/>
         <div class="section full-width">
           <div class="hrgroup col-8">

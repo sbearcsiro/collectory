@@ -139,12 +139,23 @@ div > div#map-container {
     filter:alpha(opacity=100);
 }
 
+.filter-buttons h2 {
+    line-height: normal;
+}
+
+.filter-buttons h2 a {
+    font-size:20px;
+    font-weight: normal;
+}
+
 .filter-buttons h2 a span {
     padding-top:.3em;
     display:block;
     color:#000;
-    font-size:.6em;
+    font-size:13px;
+    font-weight: normal;
     line-height:1.2em;
+    width: 75%;
 }
 
 .filter-buttons a {
@@ -172,22 +183,27 @@ div > div#map-container {
 
 .filter-buttons .all a {
     background: transparent url(../images/ala/all_button_bgwd.png) no-repeat;
+    background-size: 100%;
 }
 
 .filter-buttons .fauna a {
     background: transparent url(../images/ala/fauna_button_bgwd.png) no-repeat;
+    background-size: 100%;
 }
 
 .filter-buttons .insects a {
     background: transparent url(../images/ala/insects_button_bgwd.png) no-repeat;
+    background-size: 100%;
 }
 
 .filter-buttons .microbes a {
     background: transparent url(../images/ala/microbes_button_bgwd.png) no-repeat;
+    background-size: 100%;
 }
 
 .filter-buttons .plants a {
     background: transparent url(../images/ala/plants_button_bgwd.png) no-repeat;
+    background-size: 100%;
 }
 
 .filter-buttons h2 a:hover, .filter-buttons h2 a:active, .filter-buttons h2 a:hover span, .filter-buttons h2 a:active span {
@@ -203,6 +219,39 @@ div > div#map-container {
     -moz-box-shadow: 4px 4px 0px #dd3102;
     -webkit-box-shadow: 4px 4px 0px #dd3102;
     box-shadow: 4px 4px 0px #016071;
+}
+
+ul.nav-tabs {
+    margin-bottom: 0;
+}
+
+.nav-tabs li a {
+    background-color: #f0f0e8;
+    border: 1px solid #ddd;
+    margin-right: 3px;
+    padding-left: 15px;
+    padding-right: 15px;
+    line-height: 16px;
+    font-weight: bold;
+}
+
+.tab-content {
+    border-bottom: 1px solid #DDD;
+    border-right: 1px solid #DDD;
+    border-left: 1px solid #DDD;
+    padding: 15px;
+}
+
+#collectionTypesFooter {
+    margin-top: 20px;
+    margin-left: 4px;
+}
+
+.breadcrumb > li > .icon {
+    color: #555555;
+    opacity: 0.6;
+    filter: alpha(opacity=60);
+    margin: 1px 4px 0;
 }
 
 /*#resultsReturned {*/

@@ -77,9 +77,15 @@ if (!biocache.bounding.box) {
 /******************************************************************************\
  *  SECURITY
 \******************************************************************************/
-if (!security.cas.urlPattern) {
-    security.cas.urlPattern = "/admin.*,/collection.*,/institution.*,/contact.*,/reports.*," +
+if (!security.cas.uriFilterPattern) {
+    security.cas.uriFilterPattern = "/admin.*,/collection.*,/institution.*,/contact.*,/reports.*," +
             "/providerCode.*,/providerMap.*,/dataProvider.*,/dataResource.*,/dataHub.*,/manage/.*"
+}
+if (!security.cas.uriExclusionFilterPattern) {
+    security.cas.uriExclusionFilterPattern = "/images.*,/css.*,/js.*,/less.*"
+}
+if (!security.cas.authenticateOnlyIfLoggedInPattern) {
+    security.cas.authenticateOnlyIfLoggedInPattern = ""
 }
 if (!security.cas.loginUrl) {
     security.cas.loginUrl = "https://auth.ala.org.au/cas/login"
@@ -87,9 +93,14 @@ if (!security.cas.loginUrl) {
 if (!security.cas.logoutUrl) {
     security.cas.logoutUrl = "https://auth.ala.org.au/cas/logout"
 }
+if (!security.cas.casServerUrlPrefix) {
+    security.cas.casServerUrlPrefix = "https://auth.ala.org.au/cas"
+}
+
 if (!security.apikey.serviceUrl) {
     security.apikey.serviceUrl = "http://auth.ala.org.au/apikey/ws/check?apikey="
 }
+
 /******************************************************************************\
  *  TEMPLATES
  \******************************************************************************/
@@ -161,13 +172,13 @@ environments {
     production {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
         grails.context = ''
-        security.cas.serverName = grails.serverURL
+        security.cas.appServerName = grails.serverURL
         security.cas.contextPath = grails.context
     }
     testserver {
         grails.serverURL = "http://testweb1.ala.org.au:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://testweb1.ala.org.au:8080"
+        security.cas.appServerName = "http://testweb1.ala.org.au:8080"
         security.cas.contextPath = grails.context
     }
     development {
@@ -176,7 +187,7 @@ environments {
         grails.serverURL = "http://devt.ala.org.au:8080/Collectory"
         //grails.serverURL = "http://152.83.199.239:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.serverName = "http://devt.ala.org.au:8080"
+        security.cas.appServerName = "http://devt.ala.org.au:8080"
         //security.cas.serverName = "http://152.83.199.239:8080"
         security.cas.contextPath = grails.context
         security.cas.bypass = false

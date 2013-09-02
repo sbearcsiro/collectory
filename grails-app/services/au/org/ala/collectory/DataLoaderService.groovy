@@ -171,11 +171,11 @@ class DataLoaderService {
                     updateResource dr, params
                     if (!dr.hasErrors() && dr.save(flush: true)) {
                         inserts++
-                        println "Created data resource ${dr.name}"
+                        log.info "Created data resource ${dr.name}"
                     } else {
                         failures++
-                        println "Failed to create data resource ${params.name}"
-                        dr.errors.each { println it }
+                        log.error "Failed to create data resource ${params.name}"
+                        dr.errors.each { log.error it }
                     }
                 } else {
                     /* disable
@@ -260,7 +260,7 @@ class DataLoaderService {
         imp.providerGroup.each {
             if (it.groupType == 'Institution') {
                 def originalId = it.id
-                println ">>processing ${it.name} original id = ${it.id}"
+                log.info ">>processing ${it.name} original id = ${it.id}"
 
                 Institution ins = new Institution()
                 ins.name = it.name
@@ -285,7 +285,7 @@ class DataLoaderService {
 
                 ins.validate()
                 if (ins.hasErrors()) {
-                    ins.errors.each {println it}
+                    ins.errors.each {log.info it}
                 } else {
                     ins.save(flush:true)
                     // store in map until we load child collections
@@ -294,7 +294,7 @@ class DataLoaderService {
                     // add contacts
                     List contactFors = contactMap.get(originalId) as List
                     if (contactFors?.size()) {
-                        println "found ${contactFors.size()} contacts for ${ins.name}"
+                        log.info "found ${contactFors.size()} contacts for ${ins.name}"
                     }
                     contactFors.each{
                         ContactFor cf = new ContactFor(userLastModified: "Imported (previous update by ${it.userLastModified})")
@@ -310,7 +310,7 @@ class DataLoaderService {
 
                             cf.validate()
                             if (cf.hasErrors()) {
-                                cf.errors.each {println it}
+                                cf.errors.each {log.info it}
                             } else {
                                 cf.save(flush:true)
                             }
@@ -334,7 +334,7 @@ class DataLoaderService {
         imp.providerGroup.each {
             if (it.groupType == 'Collection') {
                 def originalId = it.id
-                println ">>processing ${it.name} original id = ${it.id}"
+                log.info ">>processing ${it.name} original id = ${it.id}"
 
                 Collection col = new Collection()
                 col.name = it.name
@@ -377,12 +377,12 @@ class DataLoaderService {
                     col.geographicDescription = load(scope.geographicDescription)
                     col.subCollections = load(scope.subCollections)
                 } else {
-                    println "warning: no scope for ${col.name}"
+                    log.info "warning: no scope for ${col.name}"
                 }
 
                 col.validate()
                 if (col.hasErrors()) {
-                    col.errors.each {println it}
+                    col.errors.each {log.info it}
                 } else {
                     col.save(flush:true)
                     // store in map until we load provider maps
@@ -392,22 +392,22 @@ class DataLoaderService {
                     List insts = it.parents
                     switch (insts.size()) {
                         case 0:
-                            println "No institution for ${col.name}"
+                            log.info "No institution for ${col.name}"
                             break
                         case 1:
                             Institution inst = institutionMap.get(insts[0].id) as Institution
                             if (inst) {
                                 col.institution = inst
                             }
-                            println "added ${col.institution.name} as instn for ${col.name}"
+                            log.info "added ${col.institution.name} as instn for ${col.name}"
                             break
-                        default: println "Multiple parents for collection ${col.name}"
+                        default: log.info "Multiple parents for collection ${col.name}"
                     }
 
                     // add contacts
                     List contactFors = contactMap.get(originalId) as List
                     if (contactFors?.size()) {
-                        println "found ${contactFors.size()} contacts for ${col.name}"
+                        log.info "found ${contactFors.size()} contacts for ${col.name}"
                     }
                     contactFors.each{
                         ContactFor cf = new ContactFor(userLastModified: "Imported (previous update by ${it.userLastModified})")
@@ -423,7 +423,7 @@ class DataLoaderService {
 
                             cf.validate()
                             if (cf.hasErrors()) {
-                                cf.errors.each {println it}
+                                cf.errors.each {log.info it}
                             } else {
                                 cf.save(flush:true)
                             }
@@ -456,20 +456,20 @@ class DataLoaderService {
                 }
                 pm.validate()
                 if (pm.hasErrors()) {
-                    pm.errors.each {println it}
+                    pm.errors.each {log.info it}
                 } else {
                     pm.save()
                 }
 
             } else {
-                println "failed to find collection with id = ${it.providerGroup?.id}"
+                log.info "failed to find collection with id = ${it.providerGroup?.id}"
             }
         }
 
-        println "Imported ${Institution.count()} institutions."
-        println "Imported ${Collection.count()} collections."
-        println "Linked ${ContactFor.count()} contacts for entities."
-        println "Linked ${ProviderMap.count()} provider maps for collections."
+        log.info "Imported ${Institution.count()} institutions."
+        log.info "Imported ${Collection.count()} collections."
+        log.info "Linked ${ContactFor.count()} contacts for entities."
+        log.info "Linked ${ProviderMap.count()} provider maps for collections."
     }
 
     private Object load(Object it) {
@@ -622,17 +622,17 @@ class DataLoaderService {
                         if (loc) {
                             pg.longitude = new BigDecimal(loc.lon)
                             pg.latitude = new BigDecimal(loc.lat)
-                            println ">Long: ${pg.longitude} Lat: ${pg.latitude}"
+                            log.info ">Long: ${pg.longitude} Lat: ${pg.latitude}"
                         }
                     } catch (NumberFormatException e) {
-                        println "Unable to build lon/lat for ${params.address} - ${e.getMessage()}"
+                        log.error "Unable to build lon/lat for ${params.address} - ${e.getMessage()}"
                     } catch (IOException e) {
-                        println "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
+                        log.error "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
                     }
                     pg.keywords = '["microbial"]'
                     pg.save(flush:true)
                     if (pg.hasErrors()) {
-                        println pg.name + "- " + pg.errors
+                        log.info pg.name + "- " + pg.errors
                     } else {
                         parseName(params)
                         Contact c = Contact.findByFirstNameAndLastName(params.firstName, params.lastName)
@@ -642,13 +642,13 @@ class DataLoaderService {
                             c.save(flush:true)
                         }
                         if (c.hasErrors()) {
-                            println c.lastName + "- " + c.errors
+                            log.error c.lastName + "- " + c.errors
                         } else {
                             pg.addToContacts(c, "Curator", true, true, "AMRRN loader")
                             pg.save(flush:true)
                         }
                     }
-                    println "${pg.name} ${pg.longitude} ${pg.latitude}" 
+                    log.info "${pg.name} ${pg.longitude} ${pg.latitude}"
                 } else {
                     // update existing rough'n'ready
                     pg.address = new Address(parseAddress(params.address))
@@ -657,12 +657,12 @@ class DataLoaderService {
                         if (loc) {
                             pg.longitude = new BigDecimal(loc.lon)
                             pg.latitude = new BigDecimal(loc.lat)
-                            println ">Long: ${pg.longitude} Lat: ${pg.latitude}"
+                            log.info ">Long: ${pg.longitude} Lat: ${pg.latitude}"
                         }
                     } catch (NumberFormatException e) {
-                        println "Unable to build lon/lat for ${params.address} - ${e.getMessage()}"
+                        log.error "Unable to build lon/lat for ${params.address} - ${e.getMessage()}"
                     } catch (IOException e) {
-                        println "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
+                        log.error "Unable to get lon/lat for ${params.address} - ${e.getMessage()}"
                     }
                     pg.scope?.keywords = '["microbial"]'
                     pg.scope?.userLastModified = "AMRRN loader"
@@ -671,7 +671,7 @@ class DataLoaderService {
                     pg.dateLastModified = new Date()
                     pg.save(flush:true)
                     if (pg.hasErrors()) {
-                        println pg.name + "- " + pg.errors
+                        log.error pg.name + "- " + pg.errors
                     }
                 }
             }
@@ -757,7 +757,7 @@ class DataLoaderService {
                     def institution = Institution.findByName(institutionName)
                     if (institution) {
                         // update it with these richer details
-                        println "updating existing institution ${institution.name} with collection-level data"
+                        log.info "updating existing institution ${institution.name} with collection-level data"
                         institution.properties["guid","name","acronym","notes","websiteUrl","longitude","latitude",
                                 "altitude","techDescription","pubDescription"] = params
                         institution.address = new Address()
@@ -779,7 +779,7 @@ class DataLoaderService {
                         if (!provider.acronym) {
                             String code = institutionCodeLoaderService.lookupInstitutionCode(provider.name)
                             if (code) {
-                                println "Using code ${code} for institution ${provider.name}"
+                                log.info "Using code ${code} for institution ${provider.name}"
                                 provider.acronym = code
                                 // TODO: provider.providerCodes = code
                             }
@@ -832,10 +832,10 @@ class DataLoaderService {
 
                 }
 
-                println ">> Loading ${provider?.name} as ${provider.groupType}"
+                log.info ">> Loading ${provider?.name} as ${provider.groupType}"
                 if (!provider.validate()) {
                     provider.errors.each {
-                        println it
+                        log.error it
                     }
                 }
 
@@ -868,13 +868,13 @@ class DataLoaderService {
                         institution = ProviderGroup.findByName(institutionName)
                         if (institution != null) {
                             // update if blank
-                            println ">> Updating institution ${institutionName} with type and uri and adding to collection ${provider.name}"
+                            log.info ">> Updating institution ${institutionName} with type and uri and adding to collection ${provider.name}"
                             if (!institution.institutionType)
                                 institution.institutionType = massageInstitutionType(params.institutionType)
                             if (!institution.websiteUrl)
                                 institution.websiteUrl = params.institutionUri
                         } else {
-                            println ">> Creating institution ${institutionName} for collection ${provider.name}"
+                            log.info ">> Creating institution ${institutionName} for collection ${provider.name}"
                             institution = new Institution(uid: idGeneratorService.getNextInstitutionId())
                             institution.name = institutionName
                             // fudge the institution guid for now
@@ -884,7 +884,7 @@ class DataLoaderService {
                             // use AFD museum list to look up acronyms
                             String code = institutionCodeLoaderService.lookupInstitutionCode(institution.name)
                             if (code) {
-                                println "Using code ${code} for institution ${institution.name}"
+                                log.info "Using code ${code} for institution ${institution.name}"
                                 institution.acronym = code
                             }
                             institution.isALAPartner = isALAPartner(institution.name)
@@ -913,8 +913,8 @@ class DataLoaderService {
     }
 
     void showErrors(String label, Object errors) {
-        println label
-        errors.each {println it.toString()}
+        log.info label
+        errors.each {log.info it.toString()}
     }
 
     int parseInt(String s) {
@@ -972,7 +972,7 @@ class DataLoaderService {
             if (type =~ "museum") return "museum"
             if (type =~ "university") return "university"
             if (type =~ "herbarium") return "herbarium"
-            println "Failed to massage institution type: ${bciType}"
+            log.info "Failed to massage institution type: ${bciType}"
         }
         return null
     }

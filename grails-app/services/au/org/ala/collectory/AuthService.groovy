@@ -102,7 +102,6 @@ class AuthService {
             return JSON.parse(conn.content.text as String)
         } else {
             log.info "Rejected change using key ${key}"
-            println "Rejected change using key ${key}"
             return [valid:false]
         }
     }

@@ -81,24 +81,32 @@ if (!security.cas.uriFilterPattern) {
     security.cas.uriFilterPattern = "/admin.*,/collection.*,/institution.*,/contact.*,/reports.*," +
             "/providerCode.*,/providerMap.*,/dataProvider.*,/dataResource.*,/dataHub.*,/manage/.*"
 }
-if (!security.cas.uriExclusionFilterPattern) {
-    security.cas.uriExclusionFilterPattern = "/images.*,/css.*,/js.*,/less.*"
-}
-if (!security.cas.authenticateOnlyIfLoggedInPattern) {
-    security.cas.authenticateOnlyIfLoggedInPattern = ""
-}
 if (!security.cas.loginUrl) {
     security.cas.loginUrl = "https://auth.ala.org.au/cas/login"
 }
 if (!security.cas.logoutUrl) {
     security.cas.logoutUrl = "https://auth.ala.org.au/cas/logout"
 }
-if (!security.cas.casServerUrlPrefix) {
-    security.cas.casServerUrlPrefix = "https://auth.ala.org.au/cas"
-}
-
 if (!security.apikey.serviceUrl) {
     security.apikey.serviceUrl = "http://auth.ala.org.au/apikey/ws/check?apikey="
+}
+if(!security.cas.appServerName){
+    security.cas.appServerName = "http://devt.ala.org.au:8080"
+}
+if(!security.cas.casServerName){
+    security.cas.casServerName = "https://auth.ala.org.au"
+}
+if(!security.cas.uriExclusionFilterPattern){
+    security.cas.uriExclusionFilterPattern = '/images.*,/css.*,/js.*,/less.*'
+}
+if(!security.cas.authenticateOnlyIfLoggedInPattern){
+    security.cas.authenticateOnlyIfLoggedInPattern = "" // pattern for pages that can optionally display info about the logged-in user
+}
+if(!security.cas.casServerUrlPrefix){
+    security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
+}
+if(!security.cas.bypass){
+    security.cas.bypass = false
 }
 
 /******************************************************************************\
@@ -172,38 +180,30 @@ environments {
     production {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
         grails.context = ''
-        security.cas.appServerName = grails.serverURL
+        security.cas.serverName = grails.serverURL
         security.cas.contextPath = grails.context
     }
     testserver {
         grails.serverURL = "http://testweb1.ala.org.au:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.appServerName = "http://testweb1.ala.org.au:8080"
+        security.cas.serverName = "http://testweb1.ala.org.au:8080"
         security.cas.contextPath = grails.context
     }
     development {
-        //grails.serverURL = "http://woodfired.ala.org.au:8080/Collectory"
-        //grails.serverURL = "http://mark1-be.nexus.csiro.au:8080/Collectory"
         grails.serverURL = "http://devt.ala.org.au:8080/Collectory"
-        //grails.serverURL = "http://152.83.199.239:8080/Collectory"
         grails.context = '/Collectory'
-        security.cas.appServerName = "http://devt.ala.org.au:8080"
-        //security.cas.serverName = "http://152.83.199.239:8080"
+        security.cas.serverName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = grails.context
         security.cas.bypass = false
-    }
-    test {
-        grails.serverURL = "http://localhost:8080/${appName}"
-        grails.context = ''
-        security.cas.serverName = ''
-        security.cas.contextPath = grails.context
-        security.cas.bypass = true
     }
 }
 
 println "[collectory] serverUrl = " + grails.serverURL
 println "[collectory] security.cas.serverName = " + security.cas.serverName
 println "[collectory] security.cas.context = " + security.cas.contextPath
+println "[collectory] security.cas.appServerName = " + security.cas.appServerName
+println "[collectory] security.cas.casServerName = " + security.cas.casServerName
+println "[collectory] security.cas.uriFilterPattern = " + security.cas.uriFilterPattern
 
 hibernate = "off"
 
@@ -306,8 +306,9 @@ log4j = {
             'grails.plugin.springcache',
             'au.org.ala.cas.client',
             'grails.spring.BeanBuilder',
-            'grails.plugin.webxml'
-            'org.codehaus.groovy.grails.plugins.orm.auditable'
+            'grails.plugin.webxml',
+            'org.codehaus.groovy.grails.plugins.orm.auditable',
+            'grails-cache-headers'
 
     warn   'org.mortbay.log', 'org.springframework.webflow'
 
@@ -316,8 +317,6 @@ log4j = {
     debug 'grails.app.controllers.au.org.ala'
 }
 
-
-     
 
 //log4j.logger.org.springframework.security='off,stdout'
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements

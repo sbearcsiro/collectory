@@ -10,7 +10,7 @@
       var altMap = true;
       $(document).ready(function() {
         $('#nav-tabs > ul').tabs();
-        loadResources("${grailsApplication.config.grails.serverURL}","${grailsApplication.config.biocache.records.url}");
+        loadResources("${grailsApplication.config.grails.serverURL}","${grailsApplication.config.biocache.baseURL}");
         $('select#per-page').change(onPageSizeChange);
         $('select#sort').change(onSortChange);
         $('select#dir').change(onDirChange);
@@ -57,35 +57,35 @@
           </div>
 
           <div id="data-set-list" class="span9">
-            <div class="row-fluid">
-                <div id="downloads">
-                    <a href="#" id="downloadLink" class="btn"
-                       title="Download metadata for datasets as a CSV file">Download</a>
+            <div class="well">
+                <div class="row-fluid">
+                      <a href="#" id="downloadLink" class="btn"
+                           title="Download metadata for datasets as a CSV file">
+                            <i class="icon-download"></i>
+                            Download</a>
+                      <span id="resultsReturned">Showing <strong></strong>&nbsp;data sets.</span>
+                      <input type="text" name="dr-search" id="dr-search"/>
+                      <span title="Only show data sets which contain the search term" id="dr-search-link" class="btn">Search</span>
+                      <span id="reset"><a href="javascript:reset()" title="Remove all filters and sorting options" class="btn">Reset list</a></span>
                 </div>
-                <div id="listHeader">
-                  <span id="resultsReturned">Showing <strong></strong>&nbsp;data sets.</span>
-                  <input type="text" name="dr-search" id="dr-search"/> <span title="Only show data sets which contain the search term" id="dr-search-link" class="link">Search</span>
-                  <span id="reset"><a href="javascript:reset()" title="Remove all filters and sorting options" class="btn">Reset list</a></span>
-                </div>
+
+                <div id="searchControls">
+                  <div id="sortWidgets" class="row-fluid">
+                      <div class="span4">
+                          <label for="per-page">Results per page</label>
+                          <g:select id="per-page" name="per-page" from="${[10,20,50,100,500]}" value="${pageSize ?: 20}"/>
+                      </div>
+                      <div class="span4">
+                          <label for="sort">Sort by</label>
+                          <g:select id="sort" name="sort" from="${['name','type','license']}"/>
+                      </div>
+                      <div class="span4">
+                          <label for="dir">Sort order</label>
+                          <g:select id="dir" name="dir" from="${['ascending','descending']}"/>
+                      </div>
+                  </div>
+                </div><!--drop downs-->
             </div>
-
-            <div id="searchControls">
-
-              <div id="sortWidgets" class="row-fluid">
-                  <div class="span4">
-                      <label for="per-page">Results per page</label>
-                      <g:select id="per-page" name="per-page" from="${[10,20,50,100,500]}" value="${pageSize ?: 20}"/>
-                  </div>
-                  <div class="span4">
-                      <label for="sort">Sort by</label>
-                      <g:select id="sort" name="sort" from="${['name','type','license']}"/>
-                  </div>
-                  <div class="span4">
-                      <label for="dir">Sort order</label>
-                      <g:select id="dir" name="dir" from="${['ascending','descending']}"/>
-                  </div>
-              </div>
-            </div><!--drop downs-->
 
             <div id="results">
               <div id="loading">Loading ..</div>

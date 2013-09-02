@@ -261,27 +261,40 @@ ul.nav-tabs {
     background-image: none !important;
 }
 
-/*#resultsReturned {*/
-    /*font-size: 13px !important;*/
-/*}*/
+#resultsReturned {
+    font-size: 13px !important;
+}
 
-/*p.rowA, p.rowB {*/
-    /*padding-bottom: 0 !important;*/
-/*}*/
+p.rowA {
+    border-top: 1px solid silver;
+    padding-top:8px;
+}
 
-/*p.rowB {*/
-    /*border-bottom: none !important;*/
-/*}*/
+p.rowA, p.rowB {
+    padding-bottom: 0 !important;
+}
 
-/*.rowC p {*/
-    /*overflow: hidden;*/
-    /*background-color: #f8f8f8;*/
-    /*padding-bottom: 1px !important;*/
-/*}*/
+p.rowB {
+    border-bottom: none !important;
+    padding-left:20px;
+}
 
-/*.rowA img {*/
-    /*vertical-align: middle;*/
-/*}*/
+.rowB .viewRecords {
+    padding-left:10px;
+}
+
+.rowC p {
+    overflow: hidden;
+    background-color: #f8f8f8;
+    padding-bottom: 1px !important;
+    padding-left:20px;
+}
+
+.rowA img {
+    vertical-align: middle;
+}
+
+.resultsLabel { margin-left:10px; }
 
 /*div.result {*/
     /*border-bottom: 1px solid silver;*/
@@ -320,11 +333,11 @@ ul.nav-tabs {
     /**border-bottom: none !important; *//* IE 7 */
 /*}*/
 
-/*.link {*/
+.link {
     /*text-decoration: underline;*/
     /*color: #3A5C83 !important;*/
-    /*cursor: pointer;*/
-/*}*/
+    cursor: pointer;
+}
 
 /*.under {*/
     /*text-decoration: underline;*/
@@ -406,18 +419,18 @@ ul.nav-tabs {
 /*}*/
 
 /* tooltip styling. by default the element to be styled is .tooltip  */
-/*.tooltip {*/
-	/*display:none;*/
-	/*background-color: #ffb;*/
-    /*border:1px solid #cc9;*/
-	/*font-size:12px;*/
-	/*padding:3px;*/
-	/*color:#333;*/
-    /*z-index: 11;*/
-    /*-moz-box-shadow: 5px 5px 9px #666;*/
-    /*-webkit-box-shadow: 5px 5px 9px #666;*/
-    /*box-shadow: 5px 5px 9px #666;*/
-/*}*/
+.tooltip {
+	display:none;
+	background-color: #ffb;
+    border:1px solid #cc9;
+	font-size:12px;
+	padding:3px;
+	color:#333;
+    z-index: 11;
+    -moz-box-shadow: 5px 5px 9px #666;
+    -webkit-box-shadow: 5px 5px 9px #666;
+    box-shadow: 5px 5px 9px #666;
+}
 
 /*.tooltip2 {*/
     /*background-color:#ffa;*/

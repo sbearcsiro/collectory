@@ -16,7 +16,6 @@ hibernate {
 environments {
   development {
     dataSource {
-//            logSql = "true"
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             dbCreate = "update" // one of 'create', 'create-drop','update'
             url = "jdbc:mysql://localhost:3306/collectory?autoReconnect=true&connectTimeout=0"
@@ -26,20 +25,13 @@ environments {
     }
 	}
 	test {
-		dataSource {
-			dbCreate = "create"
-			url = "jdbc:hsqldb:mem:testDb"
-            driverClassName = "org.hsqldb.jdbcDriver"
-            username = "sa"
-            password = ""
-		}
-	}
-	testserver {
         dataSource {
             dialect = org.hibernate.dialect.MySQL5InnoDBDialect
             dbCreate = "update"
-            url = "jdbc:mysql://alatstweb1-cbr.vm.csiro.au:3306/collectory?autoReconnect=true&connectTimeout=0"
+            url = "jdbc:mysql://localhost:3306/collectory?autoReconnect=true&connectTimeout=0"
             logSql = false
+            username = "root"
+            password = "password"
             properties {
                 maxActive = 50
                 maxIdle = 25

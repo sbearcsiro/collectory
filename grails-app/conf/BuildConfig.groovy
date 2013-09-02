@@ -33,7 +33,7 @@ grails.project.dependency.resolution = {
         runtime ":hibernate:$grailsVersion"
         runtime ":jquery:1.7.1"
         runtime ":resources:1.1.6"
-        runtime ":tomcat:$grailsVersion"
+        build ":tomcat:$grailsVersion"
         runtime ":audit-logging:0.5.4"
         runtime ":cache-headers:1.1.5"
         runtime ":richui:0.8"

@@ -183,11 +183,13 @@ environments {
         security.cas.serverName = grails.serverURL
         security.cas.contextPath = grails.context
     }
-    testserver {
-        grails.serverURL = "http://testweb1.ala.org.au:8080/Collectory"
-        grails.context = '/Collectory'
-        security.cas.serverName = "http://testweb1.ala.org.au:8080"
+    test {
+        //deployed on ala-testweb1.vm.csiro.au
+        grails.serverURL = "http://http://testweb1.ala.org.au/collectory"
+        grails.context = '/collectory'
+        security.cas.serverName = "http://testweb1.ala.org.au/"
         security.cas.contextPath = grails.context
+        security.cas.appServerName = "http://testweb1.ala.org.au"
     }
     development {
         grails.serverURL = "http://devt.ala.org.au:8080/Collectory"

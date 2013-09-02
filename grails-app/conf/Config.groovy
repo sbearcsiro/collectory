@@ -185,7 +185,7 @@ environments {
     }
     test {
         //deployed on ala-testweb1.vm.csiro.au
-        grails.serverURL = "http://http://testweb1.ala.org.au/collectory"
+        grails.serverURL = "http://testweb1.ala.org.au/collectory"
         grails.context = '/collectory'
         security.cas.serverName = "http://testweb1.ala.org.au/"
         security.cas.contextPath = grails.context

@@ -3,18 +3,11 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Natural History Collections | Atlas of Living Australia</title>
-        %{--<script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>--}%
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
-        <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
         <r:require modules="bigbuttons,bbq,openlayers,map"/>
         <script type="text/javascript">
           var altMap = true;
-          $(document).ready(function() {
-            $('#nav-tabs > ul').tabs();
-            <!-- calling initMap() here rather than in onload() causes instability -->
-          });
         </script>
     </head>
     <body id="page-collections-map" onload="initMap('${grailsApplication.config.grails.serverURL}')">

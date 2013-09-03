@@ -543,7 +543,7 @@ function displayFacet(facet, list) {
     return $div;
 }
 function moreLink() {
-    var $more = $('<li class="link">+ show more</li>');
+    var $more = $('<li class="link"><i class="icon-hand-right"></i> show more</li>');
     $more.click(function() {
         // make following items visible and add a 'less' link
         $(this).parent().find('li').css('display','list-item');
@@ -555,7 +555,7 @@ function moreLink() {
     return $more
 }
 function lessLink() {
-    var $less = $('<li class="link">+ show less</li>');
+    var $less = $('<li class="link"><i class="icon-hand-right"></i> show less</li>');
     $less.click(function() {
         // make items > 5 hidden and add a 'more' link
         $(this).parent().find('li:gt(4)').css('display','none');

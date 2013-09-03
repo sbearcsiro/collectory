@@ -173,6 +173,10 @@ p.rowA {
     padding-top:8px;
 }
 
+p.rowA img {
+    cursor: pointer;
+}
+
 p.rowA, p.rowB {
     padding-bottom: 0 !important;
 }
@@ -253,4 +257,9 @@ p.rowB {
     width: 100%;
     height: 100%;
     overflow: auto;
+}
+
+ul.facets {
+    list-style: none;
+    padding: 0;
 }

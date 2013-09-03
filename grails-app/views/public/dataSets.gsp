@@ -24,7 +24,7 @@
         <!--Breadcrumbs-->
         <div id="breadcrumb">
             <ol class="breadcrumb">
-                <cl:breadcrumbTrail home="dataSets" atBase="true"/>
+                <li><cl:breadcrumbTrail home="dataSets" atBase="true"/></li>
             </ol>
         </div>
         <div class="full-width">

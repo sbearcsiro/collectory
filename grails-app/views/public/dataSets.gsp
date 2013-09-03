@@ -46,7 +46,7 @@
       </noscript>
 
       <div class="collectory-content row-fluid">
-          <div id="sidebarBoxXXX" class="span3 facets">
+          <div id="sidebarBoxXXX" class="span3 facets well well-small">
             <div class="sidebar-header">
               <h3>Refine Results</h3>
             </div>

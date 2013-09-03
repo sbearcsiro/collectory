@@ -1,4 +1,4 @@
-<%@ page import="java.text.DecimalFormat; java.text.SimpleDateFormat" %>
+<%@ page import="au.org.ala.collectory.CollectoryTagLib; java.text.DecimalFormat; java.text.SimpleDateFormat" %>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -10,6 +10,7 @@
         biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
         biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
         $(document).ready(function () {
+            <g:if test="${instance.guid}">
             $("a#lsid").fancybox({
                 'hideOnContentClick': false,
                 'titleShow': false,
@@ -17,6 +18,7 @@
                 'width': 600,
                 'height': 180
             });
+            </g:if>
             $("a.current").fancybox({
                 'hideOnContentClick': false,
                 'titleShow': false,
@@ -52,9 +54,10 @@
             </g:if>
             <cl:valueOrOtherwise value="${instance.acronym}"><span
                     class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
-            <span class="lsid"><a href="#lsidText" id="lsid" class="local"
+            <g:if test="${instance.guid}">
+                <span class="lsid"><a href="#lsidText" id="lsid" class="local"
                                   title="Life Science Identifier (pop-up)">LSID</a></span>
-
+            </g:if>
             <div style="display:none; text-align: left;">
                 <div id="lsidText" style="text-align: left;">
                     <b><a class="external_icon" href="http://lsids.sourceforge.net/"
@@ -190,29 +193,36 @@
             </div>
         </g:if>
 
-        <div class="section">
-            <h3>Location</h3>
-        <!-- use parent location if the collection is blank -->
-            <g:set var="address" value="${instance.address}"/>
-            <g:if test="${address == null || address.isEmpty()}">
-                <g:if test="${instance.dataProvider}">
-                    <g:set var="address" value="${instance.dataProvider?.address}"/>
-                </g:if>
-            </g:if>
-
-            <g:if test="${!address?.isEmpty()}">
-                <p>
-                    <cl:valueOrOtherwise value="${address?.street}">${address?.street}<br/></cl:valueOrOtherwise>
-                    <cl:valueOrOtherwise value="${address?.city}">${address?.city}<br/></cl:valueOrOtherwise>
-                    <cl:valueOrOtherwise value="${address?.state}">${address?.state}</cl:valueOrOtherwise>
-                    <cl:valueOrOtherwise value="${address?.postcode}">${address?.postcode}<br/></cl:valueOrOtherwise>
-                    <cl:valueOrOtherwise value="${address?.country}">${address?.country}<br/></cl:valueOrOtherwise>
-                </p>
-            </g:if>
-
-            <g:if test="${instance.email}"><cl:emailLink>${fieldValue(bean: instance, field: "email")}</cl:emailLink><br/></g:if>
-            <cl:ifNotBlank value='${fieldValue(bean: instance, field: "phone")}'/>
+        <div id="dataAccessWrapper" style="display:none;">
+            <g:render template="dataAccess" model="[instance:instance]"/>
         </div>
+
+        <!-- use parent location if the collection is blank -->
+        <g:set var="address" value="${instance.address}"/>
+        <g:if test="${address == null || address.isEmpty()}">
+            <g:if test="${instance.dataProvider}">
+                <g:set var="address" value="${instance.dataProvider?.address}"/>
+            </g:if>
+        </g:if>
+
+        <g:if test="${address != null && !address?.isEmpty()}">
+            <div class="section">
+                <h3>Location</h3>
+
+                <g:if test="${!address?.isEmpty()}">
+                    <p>
+                        <cl:valueOrOtherwise value="${address?.street}">${address?.street}<br/></cl:valueOrOtherwise>
+                        <cl:valueOrOtherwise value="${address?.city}">${address?.city}<br/></cl:valueOrOtherwise>
+                        <cl:valueOrOtherwise value="${address?.state}">${address?.state}</cl:valueOrOtherwise>
+                        <cl:valueOrOtherwise value="${address?.postcode}">${address?.postcode}<br/></cl:valueOrOtherwise>
+                        <cl:valueOrOtherwise value="${address?.country}">${address?.country}<br/></cl:valueOrOtherwise>
+                    </p>
+                </g:if>
+
+                <g:if test="${instance.email}"><cl:emailLink>${fieldValue(bean: instance, field: "email")}</cl:emailLink><br/></g:if>
+                <cl:ifNotBlank value='${fieldValue(bean: instance, field: "phone")}'/>
+            </div>
+        </g:if>
 
     <!-- contacts -->
         <g:set var="contacts" value="${instance.getPublicContactsPrimaryFirst()}"/>
@@ -382,12 +392,15 @@
                 // check for errors
                 if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
                     noData();
-                }
-                else {
+                } else {
                     setNumbers(data.totalRecords);
                     facetChartOptions.response = data;
                     // draw the charts
                     drawFacetCharts(data, facetChartOptions);
+                    drawFacetCharts(data, facetChartOptions);
+                    if(data.totalRecords > 0){
+                        $('#dataAccessWrapper').css({display:'block'});
+                    }
                 }
             }
           });

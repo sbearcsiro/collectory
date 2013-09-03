@@ -119,7 +119,7 @@
                       <p>The eastern most extent of the collection is: <cl:showDecimal value='${instance.eastCoordinate}' degree='true'/></p>
                     </g:if>
                     <g:if test="${instance.northCoordinate != -1}">
-                      <p>The northtern most extent of the collection is: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></p>
+                      <p>The northern most extent of the collection is: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></p>
                     </g:if>
                     <g:if test="${instance.southCoordinate != -1}">
                       <p>The southern most extent of the collection is: <cl:showDecimal value='${instance.southCoordinate}' degree='true'/></p>
@@ -164,6 +164,10 @@
                       <cl:valueOrOtherwise value="${instance.imageRef?.copyright}"><p class="caption">${fieldValue(bean: instance, field: "imageRef.copyright")}</p></cl:valueOrOtherwise>
                     </div>
                   </g:if>
+
+                  <div id="dataAccessWrapper" style="display:none;">
+                      <g:render template="dataAccess" model="[instance:instance]"/>
+                  </div>
 
                   <div class="section">
                     <h3>Location</h3>
@@ -380,11 +384,13 @@ function onLoadCallback() {
         // check for errors
         if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
             noBiocacheData();
-        }
-        else {
+        } else {
             setNumbers(data.totalRecords, ${instance.numRecords});
             // draw the charts
             drawFacetCharts(data, facetChartOptions);
+            if(data.totalRecords > 0){
+                $('#dataAccessWrapper').css({display:'block'});
+            }
         }
     }
   });

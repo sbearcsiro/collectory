@@ -53,6 +53,13 @@ if (!headerAndFooter.baseURL) {
 if(!biocacheServicesUrl){
     biocacheServicesUrl = "http://biocache.ala.org.au/ws"
 }
+if(!alertUrl){
+    alertUrl = "http://alerts.ala.org.au/"
+}
+if(!alertResourceName){
+    alertResourceName = "Atlas"
+}
+
 /******************************************************************************\
  *  BIOCACHE URLS
 \******************************************************************************/

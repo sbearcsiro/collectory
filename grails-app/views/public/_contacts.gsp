@@ -6,8 +6,8 @@
         <p>
             <span class="contactName">${cf?.contact?.buildName()}</span><br/>
             <g:if test="${cf?.role}">${cf?.role}<br/></g:if>
-            <cl:ifNotBlank tagName="span" prefix="phone: " value='${fieldValue(bean: cf, field: "contact.phone")}'/><br/>
-            <cl:ifNotBlank tagName="span" prefix="fax: " value='${fieldValue(bean: cf, field: "contact.fax")}'/><br/>
+            <g:if test="${cf?.contact?.phone}">phone: ${cf?.contact?.phone}<br/></g:if>
+            <g:if test="${cf?.contact?.fax}">phone: ${cf?.contact?.fax}<br/></g:if>
             <cl:emailLink email="${cf?.contact?.email}">email this contact</cl:emailLink>
         </p>
       </div>

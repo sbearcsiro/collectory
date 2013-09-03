@@ -135,6 +135,10 @@
                     </div>
                 </g:if>
 
+                <div id="dataAccessWrapper" style="display:none;">
+                    <g:render template="dataAccess" model="[instance:instance]"/>
+                </div>
+
                 <div class="section">
                     <h3>Location</h3>
                     <g:if test="${instance.address != null && !instance.address.isEmpty()}">
@@ -261,6 +265,9 @@
                 setNumbers(data.totalRecords);
                 // draw the charts
                 drawFacetCharts(data, facetChartOptions);
+                if(data.totalRecords > 0){
+                    $('#dataAccessWrapper').css({display:'block'});
+                }
             }
         }
       });

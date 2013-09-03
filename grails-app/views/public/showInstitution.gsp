@@ -267,6 +267,7 @@
                 drawFacetCharts(data, facetChartOptions);
                 if(data.totalRecords > 0){
                     $('#dataAccessWrapper').css({display:'block'});
+                    $('#totalRecordCountLink').html(data.totalRecords + ' records');
                 }
             }
         }

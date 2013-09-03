@@ -31,7 +31,7 @@
     <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
     <r:require modules="fancybox, jquery_jsonp, jstree, jquery_ui_custom, charts, datadumper"/>
 </head>
-<body>
+<body class="nav-datasets">
 <div id="content">
 <div id="header" class="collectory">
     <!--Breadcrumbs-->
@@ -400,6 +400,7 @@
                     drawFacetCharts(data, facetChartOptions);
                     if(data.totalRecords > 0){
                         $('#dataAccessWrapper').css({display:'block'});
+                        $('#totalRecordCountLink').html(data.totalRecords + ' records');
                     }
                 }
             }

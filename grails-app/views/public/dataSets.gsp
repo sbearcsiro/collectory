@@ -18,7 +18,7 @@
     </script>
   </head>
 
-  <body id="page-datasets">
+  <body id="page-datasets" class="nav-datasets">
     <div id="content">
         <div id="header">
         <!--Breadcrumbs-->

@@ -38,6 +38,6 @@ grails.project.dependency.resolution = {
         runtime ":cache-headers:1.1.5"
         runtime ":richui:0.8"
         runtime ":tiny-mce:3.4.4"
-        runtime ":ala-web-theme:0.1.11"
+        runtime ":ala-web-theme:0.1.12"
     }
 }

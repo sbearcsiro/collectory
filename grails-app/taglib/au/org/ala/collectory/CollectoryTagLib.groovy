@@ -24,13 +24,47 @@ class CollectoryTagLib {
         }
     }
 
+    def getFacetForEntity(entity){
+        if(entity.ENTITY_TYPE == 'DataResource')
+            'data_resource_uid'
+        else if (entity.ENTITY_TYPE == 'DataProvider')
+            'data_provider_uid'
+        else if (entity.ENTITY_TYPE == 'Institution')
+            'institution_uid'
+        else if (entity.ENTITY_TYPE == 'Collection')
+            'collection_uid'
+        else if (entity.ENTITY_TYPE == 'DataHub')
+            'data_hub_uid'
+        else
+             ''
+    }
+
+    def createNewRecordsAlertsLink = { attrs ->
+       createAlertsLink(attrs, '/webservice/createBiocacheNewRecordsAlert')
+    }
+
+    def createNewAnnotationsAlertsLink = { attrs ->
+       createAlertsLink(attrs, '/webservice/createBiocacheNewAnnotationsAlert')
+    }
+
+    def createAlertsLink(attrs, urlPath) {
+       def link = grailsApplication.config.alertUrl + urlPath
+       link += '?webserviceQuery=' + grailsApplication.config.biocache.baseURL + 'occurrences/search?q=' + attrs.query
+       link += '&uiQuery=' + grailsApplication.config.biocacheServicesUrl + 'occurrences/search?q=' + attrs.query
+       link += '&queryDisplayName=' + attrs.displayName
+       link += '&baseUrlForWS=' + grailsApplication.config.biocacheServicesUrl
+       link += '&baseUrlForUI=' + grailsApplication.config.biocache.baseURL
+       link += '&resourceName=' + grailsApplication.config.alertResourceName
+       out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"
+    }
+
     /**
      * Generate the link the login link for the banner.
      *
      * Will be to log in or out based on current auth status.
      */
     def loginoutLink = {
-        def requestUri = ConfigurationHolder.config.security.cas.serverName + request.forwardURI
+        def requestUri = grailsApplication.config.security.cas.serverName + request.forwardURI
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             // currently logged in
             out << "<li class='nav-logout nav-right'><a id='${AuthenticationCookieUtils.getUserName(request)}' href='https://auth.ala.org.au/cas/logout?url=${requestUri}'><span>Log out</span></a></li>"
@@ -50,14 +84,14 @@ class CollectoryTagLib {
      * @attr fixedAppUrl if supplied will be used for logout instead of the current page
      */
     def loginoutLink2011 = { attrs ->
-        def requestUri = ConfigurationHolder.config.security.cas.serverName + request.forwardURI
+        def requestUri = grailsApplication.config.security.cas.serverName + request.forwardURI
         if (AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             // currently logged in
             if (attrs.showUser) {
                 out << "<span id='logged-in'>Logged in as ${loggedInUsername()}</span>"
             }
             out << link(controller: 'public', action: 'logout',
-                    params: [casUrl: ConfigurationHolder.config.security.cas.logoutUrl,
+                    params: [casUrl: grailsApplication.config.security.cas.logoutUrl,
                     appUrl: attrs.fixedAppUrl ?: requestUri]) {'Logout'}
         } else {
             // currently logged out
@@ -90,7 +124,7 @@ class CollectoryTagLib {
      */
     def ifAllGranted = { attrs, body ->
         def granted = true
-        if (ConfigurationHolder.config.security.cas.bypass) {
+        if (grailsApplication.config.security.cas.bypass) {
             granted = true
         } else {
             def roles = attrs.role.toString().tokenize(',')
@@ -112,7 +146,7 @@ class CollectoryTagLib {
      * @attr role the role to check
      */
     def ifGranted = { attrs, body ->
-        if (ConfigurationHolder.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
+        if (grailsApplication.config.security.cas.bypass || request.isUserInRole(attrs.role)) {
             out << body()
         }
     }
@@ -124,7 +158,7 @@ class CollectoryTagLib {
      * @attr role the role to check
      */
     def ifNotGranted = { attrs, body ->
-        if (!ConfigurationHolder.config.security.cas.bypass && !request.isUserInRole(attrs.role)) {
+        if (!grailsApplication.config.security.cas.bypass && !request.isUserInRole(attrs.role)) {
             out << body()
         }
     }
@@ -155,7 +189,7 @@ class CollectoryTagLib {
     }
 
     def loggedInUsername = {
-        if (ConfigurationHolder.config.security.cas.bypass) {
+        if (grailsApplication.config.security.cas.bypass) {
             out << 'cas bypassed'
         }
         else if (request.getUserPrincipal()) {
@@ -167,7 +201,7 @@ class CollectoryTagLib {
     }
 
     private boolean isAdmin() {
-        return ConfigurationHolder.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
+        return grailsApplication.config.security.cas.bypass || request?.isUserInRole(ProviderGroup.ROLE_ADMIN)
     }
 
     /**

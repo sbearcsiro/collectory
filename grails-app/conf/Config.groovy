@@ -53,7 +53,6 @@ if (!headerAndFooter.baseURL) {
 if(!biocacheServicesUrl){
     biocacheServicesUrl = "http://biocache.ala.org.au/ws"
 }
-
 /******************************************************************************\
  *  BIOCACHE URLS
 \******************************************************************************/
@@ -63,11 +62,9 @@ if (!biocache.occurrences.json) {
 if (!biocache.breakdown.taxa) {
     biocache.breakdown.taxa = "ws/breakdown/{entity}/{uid}"
 }
-
 if (!biocache.bounding.box) {
     biocache.bounding.box = "ws/mapping/bounds"
 }
-
 /******************************************************************************\
  *  RELOADABLE CONFIG
 \******************************************************************************/
@@ -108,7 +105,6 @@ if(!security.cas.casServerUrlPrefix){
 if(!security.cas.bypass){
     security.cas.bypass = false
 }
-
 /******************************************************************************\
  *  TEMPLATES
  \******************************************************************************/
@@ -181,7 +177,9 @@ environments {
         grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
         grails.context = ''
         security.cas.serverName = grails.serverURL
+        security.cas.serverName = "http://collections.ala.org.au/"
         security.cas.contextPath = grails.context
+        security.cas.appServerName = "http://collections.ala.org.au"
     }
     test {
         //deployed on ala-testweb1.vm.csiro.au
@@ -192,8 +190,8 @@ environments {
         security.cas.appServerName = "http://testweb1.ala.org.au"
     }
     development {
-        grails.serverURL = "http://devt.ala.org.au:8080/Collectory"
-        grails.context = '/Collectory'
+        grails.serverURL = "http://devt.ala.org.au:8080/collectory"
+        grails.context = '/collectory'
         security.cas.serverName = "http://devt.ala.org.au:8080"
         security.cas.contextPath = grails.context
         security.cas.bypass = false
@@ -310,7 +308,10 @@ log4j = {
             'grails.spring.BeanBuilder',
             'grails.plugin.webxml',
             'org.codehaus.groovy.grails.plugins.orm.auditable',
-            'grails-cache-headers'
+            'grails-cache-headers',
+            'EhcachePageFragmentCachingFilter',
+            'CacheHeadersGrailsPlugin',
+            'grails.plugin.cache.ehcache'
 
     warn   'org.mortbay.log', 'org.springframework.webflow'
 

@@ -338,7 +338,7 @@ function showPaginator() {
     }
     for (var i = 1; i <= maxPage && i<20; i++) {
         if (i == currentPage) {
-            $pago.append('<span class="currentPage">' + i + '</span>');
+            $pago.append('<span class="currentPage disabled">' + i + '</span>');
         }
         else {
             $pago.append('<a href="javascript:gotoPage(' + i + ');">' + i + '</a>');

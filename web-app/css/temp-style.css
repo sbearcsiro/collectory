@@ -285,7 +285,7 @@ p.rowB {
 
 .rowC p {
     overflow: hidden;
-    background-color: #f8f8f8;
+    /*background-color: #f8f8f8;*/
     padding-bottom: 1px !important;
     padding-left:20px;
 }
@@ -337,6 +337,10 @@ p.rowB {
     /*text-decoration: underline;*/
     /*color: #3A5C83 !important;*/
     cursor: pointer;
+}
+
+span.currentPage {
+
 }
 
 /*.under {*/

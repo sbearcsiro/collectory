@@ -23,7 +23,9 @@
         <div id="header">
         <!--Breadcrumbs-->
         <div id="breadcrumb">
-            <cl:breadcrumbTrail home="dataSets" atBase="true"/>
+            <ol class="breadcrumb">
+                <cl:breadcrumbTrail home="dataSets" atBase="true"/>
+            </ol>
         </div>
         <div class="full-width">
           <g:if test="${flash.message}">
@@ -59,16 +61,22 @@
           <div id="data-set-list" class="span9">
             <div class="well">
                 <div class="row-fluid">
+                      <div class="pull-left">
+                          <span id="resultsReturned">Showing <strong></strong>&nbsp;data sets.</span>
+                          <div class="input-append">
+                              <input type="text" name="dr-search" id="dr-search"/>
+                              <a href="javascript:void(0);" title="Only show data sets which contain the search term" id="dr-search-link" class="btn">Search</a>
+                              <a href="javascript:void(0);" id="reset"><a href="javascript:reset()" title="Remove all filters and sorting options" class="btn">Reset list</a></a>
+                          </div>
+                     </div>
+                    <div class="pull-right">
                       <a href="#" id="downloadLink" class="btn"
                            title="Download metadata for datasets as a CSV file">
                             <i class="icon-download"></i>
                             Download</a>
-                      <span id="resultsReturned">Showing <strong></strong>&nbsp;data sets.</span>
-                      <input type="text" name="dr-search" id="dr-search"/>
-                      <span title="Only show data sets which contain the search term" id="dr-search-link" class="btn">Search</span>
-                      <span id="reset"><a href="javascript:reset()" title="Remove all filters and sorting options" class="btn">Reset list</a></span>
+                    </div>
                 </div>
-
+                <hr/>
                 <div id="searchControls">
                   <div id="sortWidgets" class="row-fluid">
                       <div class="span4">

@@ -7,8 +7,8 @@
         <a href="${grailsApplication.config.biocache.baseURL}occurrences/search?q=${facet}:${instance.uid}" class="btn"><i class="icon icon-list"></i> View records</a>
         <a href="${grailsApplication.config.biocacheServicesUrl}/occurrences/download?q=${facet}:${instance.uid}" class="btn"><i class="icon icon-download"></i> Download records</a>
         <cl:createNewRecordsAlertsLink query="${facet}:${instance.uid}" displayName="${instance.name}"
-            linkText="New data alert" altText="Create an email alert for new records for ${instance.name}"/>
+            linkText="Alert me about new records" altText="Create an email alert for new records for ${instance.name}"/>
         <cl:createNewAnnotationsAlertsLink query="${facet}:${instance.uid}" displayName="${instance.name}"
-            linkText="Annotations alert" altText="Create an email alert for new annotations for ${instance.name}"/>
+            linkText="Alert me about annotations" altText="Create an email alert for new annotations for ${instance.name}"/>
     </div>
 </div>

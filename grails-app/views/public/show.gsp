@@ -79,6 +79,7 @@
             <ul class="nav nav-tabs" id="overviewTabs">
                 <li><a id="tab1" href="#overviewTab" data-toggle="tab">Overview</a></li>
                 <li><a id="tab2" href="#recordsTab" data-toggle="tab">Records</a></li>
+                <li id="imagesTabEl" style="display:none;"><a id="tab3" href="#imagesTab" data-toggle="tab">Images</a></li>
             </ul>
         </div>
 
@@ -295,6 +296,26 @@
                   </div>
               </div>
             </div>
+            <div id="imagesTab" class="tab-pane">
+               <style type="text/css">
+                   #imagesList { margin:0; }
+                   #imagesList .imgCon { display: inline-block;
+                    margin-right: 8px;
+                    text-align: center;
+                    line-height: 1.3em;
+                    background-color: #DDD;
+                    color: #DDD;
+                    padding: 5px;
+                    margin-bottom: 8px;
+                   }
+                   #imagesList .imgCon img { max-height:150px; }
+               </style>
+               <h2>Images from this collection</h2>
+               <div id="imagesSpiel">
+               </div>
+               <div id="imagesList">
+               </div>
+            </div>
         </div>
       </div>
       <script type="text/javascript">
@@ -302,7 +323,7 @@
       var facetChartOptions = {
           backgroundColor: "#fffef7",
           /* base url of the collectory */
-          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          collectionsUrl: "${grailsApplication.config.grails.serverURL}",
           /* base url of the biocache ws*/
           biocacheServicesUrl: biocacheServicesUrl,
           /* base url of the biocache webapp*/
@@ -318,7 +339,7 @@
       var taxonomyChartOptions = {
           backgroundColor: "#fffef7",
           /* base url of the collectory */
-          collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+          collectionsUrl: "${grailsApplication.config.grails.serverURL}",
           /* base url of the biocache */
           biocacheServicesUrl: biocacheServicesUrl,
           /* base url of the biocache webapp*/
@@ -382,10 +403,10 @@ function onLoadCallback() {
     },
     success: function(data) {
         // check for errors
-        if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+        if (data.length == 0 || data.totalRecords === undefined || data.totalRecords == 0) {
             noBiocacheData();
         } else {
-            setNumbers(data.totalRecords, ${instance.numRecords});
+            setPercentAgeNumbers(data.totalRecords, ${instance.numRecords});
             // draw the charts
             drawFacetCharts(data, facetChartOptions);
             if(data.totalRecords > 0){
@@ -396,9 +417,53 @@ function onLoadCallback() {
     }
   });
 
+  // images
+  var wsBase = "/occurrences/search.json";
+  var uiBase = "/occurrences/search";
+  var imagesQueryUrl = "?facets=type_status&fq=multimedia%3AImage&pageSize=100&q=" + buildQueryString("${instance.uid}");
+  $.ajax({
+    url: urlConcat(biocacheServicesUrl, wsBase + imagesQueryUrl),
+    dataType: 'jsonp',
+    timeout: 20000,
+    complete: function(jqXHR, textStatus) {
+        if (textStatus == 'timeout') {
+            noBiocacheData();
+        }
+        if (textStatus == 'error') {
+            noBiocacheData();
+        }
+    },
+    success: function(data) {
+        // check for errors
+        if (data.length == 0 || data.totalRecords == undefined || data.totalRecords == 0) {
+            //noBiocacheData();
+        } else {
+            if(data.totalRecords > 0){
+                $('#imagesTabEl').css({display:'block'});
+                //$('#imagesTab').css({display:'block'});
+                var description = ""
+                $.each(data.facetResults[0].fieldResult, function(idx, facet){
+                    if(idx>0){
+                        description += ', '
+                    }
+                    var queryUrl = biocacheWebappUrl + uiBase + imagesQueryUrl + '&fq=' + data.facetResults[0].fieldName + ':' + facet.label;
+                    description += '<a href="' + queryUrl + '">' + (facet.count + ' ' + facet.label) + '</a>';
+                })
+                $('#imagesSpiel').html('<p><a href="'+biocacheWebappUrl + uiBase + imagesQueryUrl +'">' + data.totalRecords + ' images</a> have been made available from the ${instance.name}. <br/> Of these images there: ' + description + '.</p>');
+                $.each(data.occurrences, function(idx, item){
+                    var imageText = item.scientificName;
+                    if(item.typeStatus !== undefined){
+                       imageText = item.typeStatus + " - " + imageText;
+                    }
+                    $('#imagesList').append('<div class="imgCon"><a href="'+biocacheWebappUrl + '/occurrences/' + item.uuid + '"><img src="' + item.smallImageUrl+'"/><br/>'+ imageText + '</a></div>');
+                })
+            }
+        }
+    }
+  });
+
   // taxon chart
   loadTaxonomyChart(taxonomyChartOptions);
-
 }
 /************************************************************\
 * Handle biocache records response
@@ -428,7 +493,7 @@ function noBiocacheData() {
 /************************************************************\
 * Set total and percent biocache record numbers
 \************************************************************/
-function setNumbers(totalBiocacheRecords, totalRecords) {
+function setPercentAgeNumbers(totalBiocacheRecords, totalRecords) {
   var recordsClause = "";
   switch (totalBiocacheRecords) {
     case 0: recordsClause = "No records"; break;
@@ -438,6 +503,7 @@ function setNumbers(totalBiocacheRecords, totalRecords) {
   $('#numBiocacheRecords').html(recordsClause);
 
   if (totalRecords > 0) {
+
     var percent = totalBiocacheRecords/totalRecords * 100;
     if (percent > 100 && ${instance.isInexactlyMapped()}) {
       // don't show greater than 100 if the mapping is not exact as the estimated num records may be correct

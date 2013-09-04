@@ -442,14 +442,17 @@ function onLoadCallback() {
                 $('#imagesTabEl').css({display:'block'});
                 //$('#imagesTab').css({display:'block'});
                 var description = ""
-                $.each(data.facetResults[0].fieldResult, function(idx, facet){
-                    if(idx>0){
-                        description += ', '
-                    }
-                    var queryUrl = biocacheWebappUrl + uiBase + imagesQueryUrl + '&fq=' + data.facetResults[0].fieldName + ':' + facet.label;
-                    description += '<a href="' + queryUrl + '">' + (facet.count + ' ' + facet.label) + '</a>';
-                })
-                $('#imagesSpiel').html('<p><a href="'+biocacheWebappUrl + uiBase + imagesQueryUrl +'">' + data.totalRecords + ' images</a> have been made available from the ${instance.name}. <br/> Of these images there: ' + description + '.</p>');
+                if(data.facetResults.length>0 && data.facetResults[0].fieldResult !== undefined){
+                    description = "Of these images there: ";
+                    $.each(data.facetResults[0].fieldResult, function(idx, facet){
+                        if(idx>0){
+                            description += ', '
+                        }
+                        var queryUrl = biocacheWebappUrl + uiBase + imagesQueryUrl + '&fq=' + data.facetResults[0].fieldName + ':' + facet.label;
+                        description += '<a href="' + queryUrl + '">' + (facet.count + ' ' + facet.label) + '</a>';
+                    })
+                }
+                $('#imagesSpiel').html('<p><a href="'+biocacheWebappUrl + uiBase + imagesQueryUrl +'">' + data.totalRecords + ' images</a> have been made available from the ${instance.name}. <br/> ' + description + '.</p>');
                 $.each(data.occurrences, function(idx, item){
                     var imageText = item.scientificName;
                     if(item.typeStatus !== undefined){

@@ -4,11 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="min" />
         <title><g:message code="collection.base.label" default="Edit taxonomy hints" /></title>
-        %{--<link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
-        <g:javascript library="jquery-ui-1.8.14.custom.min"/>--}%
-        <g:javascript library="jquery.jstree"/>
-        <g:javascript library="jquery.tools.min"/>
-        <g:javascript library="debug"/>
+        <r:require modules="jstree, jquery_tools, debug"/>
     </head>
     <body>
         <div class="title-bar">

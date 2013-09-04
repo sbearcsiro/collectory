@@ -56,4 +56,13 @@ modules = {
     bigbuttons {
         resource url:'css/temp-style.css'
     }
+    debug {
+        resource url:'js/debug.js'
+    }
+    change {
+        resource url:'js/change.js'
+    }
+    json2 {
+        resource url:'js/json2.js'
+    }
 }

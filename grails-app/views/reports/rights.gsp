@@ -5,8 +5,7 @@
         <meta name="layout" content="main" />
         <title>Registry database reports</title>
         <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
-        <g:javascript library="jquery-1.5.1.min"/>
-        <g:javascript library="jquery-ui-1.8.14.custom.min"/>
+        <r:require modules="jquery, jquery_ui_custom"/>
     </head>
     <body>
         <div class="nav">

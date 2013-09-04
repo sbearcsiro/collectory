@@ -6,12 +6,7 @@
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
         <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" type="text/css" media="screen"/>
-        <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
-        <g:javascript library="jquery-ui-1.8.16.custom.min"/>
-        <g:javascript library="jQueryRotateCompressed.2.1"/>
-        <g:javascript library="change"/>
-        %{--<g:javascript library="datadumper"/>--}%
-        <g:javascript library="json2"/>
+        <r:require modules="fancybox, jquery_ui_custom, rotate, change, json2"/>
         <script type="text/javascript" src="${resource(dir:'js/tinymce/jscripts/tiny_mce', file:'jquery.tinymce.js')}" ></script >
         <script type="text/javascript" >
           $(document).ready(function() {

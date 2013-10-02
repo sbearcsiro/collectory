@@ -288,11 +288,12 @@
                     </g:if>
                   </div>
                   <div class="span4">
-                    <div id="progress">
-                      <img id="progressBar" src="${resource(dir:'images', file:'percentImage.png')}" alt="0%"
-                              class="no-radius percentImage1" style='background-position: -120px 0;'/>
+                    <div id="progress" class="well">
+                        <div class="progress">
+                          <div id="progressBar" class="bar bar-success" style="width: 0%;"></div>
+                        </div>
+                        <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
                     </div>
-                    <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
                   </div>
               </div>
             </div>
@@ -598,8 +599,7 @@ function drawTaxonChart2(dataTable) {
 /************************************************************\
 * Draw % digitised bar (progress bar)
 \************************************************************/
-function setProgress(percentage)
-{
+function setProgress(percentage){
   var captionText = "";
   if (${instance.numRecords < 1}) {
     captionText = "There is no estimate of the total number<br/>of ${nouns} in this collection.";
@@ -610,18 +610,16 @@ function setProgress(percentage)
     if (percentage < 0.1) {displayPercent = percentage.toFixed(2)}
     if (percentage > 20) {displayPercent = percentage.toFixed(0)}
     if (percentage > 100) {displayPercent = "over 100"}
-    captionText = "Records for " + displayPercent + "% of ${nouns} are<br/>available for viewing in the Atlas.";
+    captionText = "Approximately, records for " + displayPercent + "% of ${nouns} are available for viewing in the Atlas.";
   }
   $('#speedoCaption').html(captionText);
-
   if (percentage > 100) {
     $('#progressBar').removeClass('percentImage1');
     $('#progressBar').addClass('percentImage4');
     percentage = 101;
   }
-  var percentageWidth = eachPercent * percentage;
-  var newProgress = eval(initial)+eval(percentageWidth)+'px';
-  $('#progressBar').css('backgroundPosition',newProgress+' 0');
+  //var newProgress = eval(initial)+eval(percentageWidth)+'px';
+  $('#progressBar').css('width', percentage +'%');
 }
 /************************************************************\
 * Load charts

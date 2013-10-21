@@ -60,6 +60,13 @@ if(!alertResourceName){
     alertResourceName = "Atlas"
 }
 
+if(!biocacheAlertsWsUrl){
+    biocacheAlertsWsUrl = "http://biocache.ala.org.au/ws"
+}
+if(!biocacheAlertsUrl){
+    biocacheAlertsUrl = "http://biocache.ala.org.au"
+}
+
 /******************************************************************************\
  *  BIOCACHE URLS
 \******************************************************************************/

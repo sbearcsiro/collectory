@@ -49,11 +49,11 @@ class CollectoryTagLib {
 
     def createAlertsLink(attrs, urlPath) {
        def link = grailsApplication.config.alertUrl + urlPath
-       link += '?webserviceQuery=' + grailsApplication.config.biocache.baseURL + 'occurrences/search?q=' + attrs.query
-       link += '&uiQuery=' + grailsApplication.config.biocacheServicesUrl + 'occurrences/search?q=' + attrs.query
+       link += '?webserviceQuery=/occurrences/search?q=' + attrs.query
+       link += '&uiQuery=/occurrences/search?q=' + attrs.query
        link += '&queryDisplayName=' + attrs.displayName
-       link += '&baseUrlForWS=' + grailsApplication.config.biocacheServicesUrl
-       link += '&baseUrlForUI=' + grailsApplication.config.biocache.baseURL
+       link += '&baseUrlForWS=' + grailsApplication.config.biocacheAlertsWsUrl
+       link += '&baseUrlForUI=' + grailsApplication.config.biocacheAlertsUrl
        link += '&resourceName=' + grailsApplication.config.alertResourceName
        out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"
     }

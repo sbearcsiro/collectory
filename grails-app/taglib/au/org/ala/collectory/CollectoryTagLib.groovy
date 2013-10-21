@@ -52,7 +52,7 @@ class CollectoryTagLib {
        link += '?webserviceQuery=/occurrences/search?q=' + attrs.query
        link += '&uiQuery=/occurrences/search?q=' + attrs.query
        link += '&queryDisplayName=' + attrs.displayName
-       link += '&baseUrlForWS=' + grailsApplication.config.biocacheAlertsWsUrl
+       link += '&baseUrlForWS=' + grailsApplication.config.biocacheAlertsUrl
        link += '&baseUrlForUI=' + grailsApplication.config.biocacheAlertsUrl
        link += '&resourceName=' + grailsApplication.config.alertResourceName
        out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"

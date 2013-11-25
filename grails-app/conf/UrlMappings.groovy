@@ -6,10 +6,17 @@ class UrlMappings {
 		  }
 	  }
 
-        // temporary mock notification service
-        "/ws/notify" (controller:'data', action:'notify')
+     "/data/$directory/$file" {
+        controller = 'data'
+        action = 'serveFile'
+        constraints {
+            directory(inList:['taxa','collection','institution','dataProvider','dataResource','tempDataResource','dataHub','network'])
+        }
+     }
 
-      
+      // temporary mock notification service
+      "/ws/notify" (controller:'data', action:'notify')
+
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
       "/admin/export/$table" (controller:'admin',action:'export')
 

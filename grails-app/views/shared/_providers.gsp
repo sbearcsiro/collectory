@@ -31,5 +31,9 @@
     </g:if>
   </ul>
   <div style="clear:both;"></div>
-  <div><p style="padding-top: 20px;">To change the relationship with record providers please go to the data resource and edit its record consumers.</p></div>
+  <div>
+      <p>To change the relationship with record providers please go to the
+      <g:link controller="dataResource" action="list">data resource(s)</g:link>
+        and edit its <strong>record consumers</strong>.</p>
+  </div>
 </div>

@@ -18,7 +18,7 @@
     <div class="dialog emulate-public">
       <h2>Current contacts</h2>
       <g:each var="cf" in="${command.getContacts()}">
-        <div class="show-section">
+        <div class="show-section well">
           <!-- Name -->
           <div><span class="contactName">${cf.contact.buildName()}</span></div>
           <table class="shy">
@@ -34,7 +34,7 @@
             </td>
             <td style="padding-bottom:20px;">
               <span class="contactButton buttonRight">
-                <g:link class="edit-small" controller="contact" action='edit' id="${cf.contact.id}"
+                <g:link class="edit-small btn" controller="contact" action='edit' id="${cf.contact.id}"
                         params='[returnTo: "/${command.urlForm()}/edit/${command.id}?page=/shared/showContacts"]'>
                   ${message(code: 'default.button.editContact.label', default: "Edit the contact's details")}
                 </g:link>
@@ -47,13 +47,13 @@
                 <ul class="detailList">
                   <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined">Role is ${cf.role}</cl:valueOrOtherwise></li>
                   <li><cl:valueOrOtherwise value="${cf.administrator}" otherwise="Not allowed to edit"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Editor</cl:valueOrOtherwise></li>
-                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise=""><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Notify</cl:valueOrOtherwise></li>
+                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise="Dont notify"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Notify</cl:valueOrOtherwise></li>
                   <cl:valueOrOtherwise value="${cf.primaryContact}"><li><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Primary contact</li></cl:valueOrOtherwise>
                 </ul>
             </td>
             <td>
               <span class="contactButton buttonRight">
-                <g:link class="edit-small" action='editRole' id="${cf.id}"
+                <g:link class="edit-small btn" action='editRole' id="${cf.id}"
                   params='[returnTo: "/${command.urlForm()}/edit/${command.id}?page=/shared/showContacts"]'>
                   Edit the contact's role in this ${entityNameLower}
                 </g:link>
@@ -63,7 +63,7 @@
             <!-- remove -->
             <tr><td></td><td>
               <span class="contactButton">
-                <g:link class="removeSmallAction" action='removeContact' id="${command.id}" onclick="return confirm('Remove ${cf.contact?.buildName()} as a contact for this ${entityNameLower}?');"
+                <g:link class="removeSmallAction btn btn-danger" action='removeContact' id="${command.id}" onclick="return confirm('Remove ${cf.contact?.buildName()} as a contact for this ${entityNameLower}?');"
                         params='[idToRemove: "${cf.id}"]'>Remove the contact for this ${entityNameLower}</g:link>
               </span>
             </td></tr>
@@ -81,7 +81,7 @@
             <tr><td>
               <g:select name="addContact" from="${Contact.listOrderByLastName()}" optionKey="id" noSelection="${['null':'Select one to add']}" />
             </td><td>
-              <input type="submit" onclick="return anySelected('addContact','You must select a contact to add.');" class="addAction" value="Add existing contact"/>
+              <input type="submit" onclick="return anySelected('addContact','You must select a contact to add.');" class="addAction btn" value="Add existing contact"/>
             </td></tr>
           </table>
         </g:form>
@@ -91,7 +91,7 @@
           <tr><td>Create a new contact and add them to this ${entityNameLower}:</td>
           <td>
           <span class="button">
-            <g:link class="addAction" controller="contact" action='create' params='[returnTo:"/${command.urlForm()}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>
+            <g:link class="addAction btn" controller="contact" action='create' params='[returnTo:"/${command.urlForm()}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>
           </span>
           </td></tr>
         </table>

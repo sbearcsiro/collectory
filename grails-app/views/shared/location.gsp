@@ -169,7 +169,7 @@
         <!-- lookup lat/lng -->
         <tr>
           <td></td><td colspan="2">
-            <input type="button" class="classicButton" onclick="return codeAddress();" value="Lookup"/> Click to load lat/long based on street address.<div style="width:100%;"></div>
+            <input type="button" class="classicButton btn" onclick="return codeAddress();" value="Lookup"/> Click to load lat/long based on street address.<div style="width:100%;"></div>
           </td>
         </tr>
 
@@ -190,8 +190,8 @@
       </table>
     </div>
     <div class="buttons">
-      <span class="button"><input type="submit" name="_action_updateLocation" value="Update" class="save"></span>
-      <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+      <span class="button"><input type="submit" name="_action_updateLocation" value="Update" class="save btn"></span>
+      <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
     </div>
   </g:form>
 </div>

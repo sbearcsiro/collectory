@@ -31,13 +31,13 @@
                         <tbody>
 
                         <!-- geographic range -->
-                        <tr><td colspan="3"><h4>Geographic range</h4></td></tr>
+                        <tr><td colspan="3"><h3>Geographic range</h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
                               <label for="geographicDescription">Geographic description</label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'geographicDescription', 'errors')}">
-                                <g:textField name="geographicDescription" value="${command?.geographicDescription}" />
+                                <g:textField name="geographicDescription" class="input-xxlarge" value="${command?.geographicDescription}" />
                                 <cl:helpText code="collection.geographicDescription"/>
                             </td>
                             <cl:helpTD/>
@@ -103,7 +103,7 @@
                         </tr>
 
                         <!-- taxonomic range -->
-                        <tr><td colspan="3"><h4>Taxonomic range</h4></td></tr>
+                        <tr><td colspan="3"><h3>Taxonomic range</h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="checkbox">
                               <label for="kingdomCoverage">Kingdom coverage</label>
@@ -128,7 +128,7 @@
                         </tr>
 
                         <!-- stats -->
-                        <tr><td colspan="3"><h4>Statistics</h4></td></tr>
+                        <tr><td colspan="3"><h3>Statistics</h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
                               <label for="numRecords"><g:message code="collection.numRecords.label" default="Number of specimens" /></label>

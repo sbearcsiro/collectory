@@ -1875,7 +1875,7 @@ class CollectoryTagLib {
                 }
                 if (pp.paramName == "termsForUniqueKey") {
                     // handle terms specially
-                    out << """<tr class='labile' id="${it.name}" style="${hidden}"><td class='be-careful' colspan='2'>
+                    out << """<tr class='labile' id="${it.name}" style="${hidden}"><td class='be-careful text-error' colspan='2'>
                         Don't change the following terms unless you know what you are doing. Incorrect values can cause major devastation.</td></tr>
                         <tr class="prop labile" style="${hidden}" id="${it.name}">
                         <td valign="top" class="name"

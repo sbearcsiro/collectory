@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-        <h1>Editing: ${command.name}</h1>
+            <h1>Editing: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -24,16 +24,16 @@
                 <g:hiddenField name="id" value="${command?.id}" />
                 <g:hiddenField name="uid" value="${command?.uid}" />
                 <g:hiddenField name="version" value="${command.version}" />
-                <div class="dialog">
+                <div class="span12">
                     <table>
                         <tbody>
 
                         <!-- status -->
                         <tr class="prop">
-                            <td valign="top" class="name">
+                            <td valign="top" class="name span4">
                               <label for="status"><g:message code="dataResource.status.label" default="Status" /></label>
                             </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'status', 'errors')}">
+                            <td valign="top" class="value span8 ${hasErrors(bean: command, field: 'status', 'errors')}">
                                 <g:select name="status"
                                         from="${DataResource.statusList}"
                                         value="${command.status}"/>
@@ -131,12 +131,12 @@
                         </tr>
 
                         <!-- harvest parameters -->
-                        <tr><td colspan="3"><b>Connection parameters</b></td></tr>
+                        <tr><td colspan="3"><h3>Connection parameters</h3></td></tr>
                         <cl:connectionParameters bean="command" connectionParameters="${command.connectionParameters}"/>
 
                         <g:if test="${command.resourceType == 'records'}">
                             <!-- darwin core defaults -->
-                            <tr><td colspan="3"><b>Default values for DwC fields</b></td></tr>
+                            <tr><td colspan="3"><h3>Default values for DwC fields</h3></td></tr>
                             <tr><td colspan="3">Make sure you confirm all defaults with the data provider.</td></tr>
                             <g:set var="dwc" value="${command.defaultDarwinCoreValues ? JSON.parse(command.defaultDarwinCoreValues) : [:]}"/>
                             <!-- add fields for each of the important terms -->
@@ -180,7 +180,7 @@
                                     <g:select name="otherKey" from="${DarwinCoreFields.getLessImportant().collect({it.name})}"/>
                                 </td>
                                 <td valign="top" class="value">
-                                    <button id="more-terms" type="button">Add new term</button>
+                                    <button id="more-terms" type="button" class="btn">Add new term</button>
                                 </td>
                             </tr>
 
@@ -191,8 +191,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateContribution" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" name="_action_updateContribution" value="Update" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

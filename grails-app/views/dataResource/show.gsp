@@ -243,16 +243,20 @@
 
             </div>
             <div class="buttons">
+
+              <div class="pull-right">
+                <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
+                <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
+                <span class="button"><cl:jsonDataLink uid="${instance.uid}"/></span>
+              </div>
               <g:form>
                 <g:hiddenField name="id" value="${instance?.id}"/>
                 <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
                   <span><g:actionSubmit class="delete btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
                 </cl:ifGranted>
-                <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
-                <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
-                <span class="button"><cl:jsonDataLink uid="${instance.uid}"/></span>
               </g:form>
             </div>
+
         </div>
     </body>
 </html>

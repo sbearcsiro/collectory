@@ -27,40 +27,42 @@
                 <g:hiddenField name="consumers" value="${command.listConsumers().findAll{it[0..1] == source}.join(',')}" />
                 <g:set var="list" value="${(source == 'co' ? Collection.list([sort:'name']) : Institution.list([sort:'name']))}"/>
                 <g:set var="type" value="${(source == 'co') ? 'collection' : 'institution'}"/>
-                <div class="dialog">
-                    <div>
-                        <p style="padding-top:10px;">Drag a ${type} to the consumers box to add it as a record consumer. Or just click the ${type} to add it.<br/>
-                        Drag or click a record comsumer to remove it.</p>
-                    </div>
-                    <div id="not-selected" class="container">
-                        <h1>${source == 'co' ? 'Collections' : 'Institutions'}:</h1>
-                        <ul>
-                            <g:each in="${list}" var="c">
-                                <g:if test="${!(c.uid in command.listConsumers())}">
-                                    <li id="${c.uid}" class="draggable">${c.name}</li>
-                                </g:if>
-                            </g:each>
-                        </ul>
-                    </div>
-                    <div id="selected" class="container">
-                        <h1>Record consumers.</h1>
-                        <g:if test="${!command.listConsumers().findAll{it[0..1] == source}}">
-                            <p>Drag consumers to here.</p>
-                        </g:if>
-                        <ul>
-                            <g:each in="${list}" var="c">
-                                <g:if test="${c.uid in command.listConsumers()}">
-                                    <li id="${c.uid}" class="draggable">${c.name}</li>
-                                </g:if>
-                            </g:each>
-                        </ul>
-                    </div>
+                <div>
+                    <p style="padding-top:10px;">Drag a ${type} to the consumers box to add it as a record consumer. Or just click the ${type} to add it.<br/>
+                    Drag or click a record comsumer to remove it.</p>
                 </div>
-                
-                <div style="clear:both;"></div>
-                <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateConsumers" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div id="not-selected" class="container">
+                            <h1>${source == 'co' ? 'Collections' : 'Institutions'}:</h1>
+                            <ul>
+                                <g:each in="${list}" var="c">
+                                    <g:if test="${!(c.uid in command.listConsumers())}">
+                                        <li id="${c.uid}" class="draggable">${c.name}</li>
+                                    </g:if>
+                                </g:each>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="span6 well">
+                        <div id="selected" class="container">
+                            <h1>Record consumers.</h1>
+                            <g:if test="${!command.listConsumers().findAll{it[0..1] == source}}">
+                                <p>Drag consumers to here.</p>
+                            </g:if>
+                            <ul>
+                                <g:each in="${list}" var="c">
+                                    <g:if test="${c.uid in command.listConsumers()}">
+                                        <li id="${c.uid}" class="draggable">${c.name}</li>
+                                    </g:if>
+                                </g:each>
+                            </ul>
+                        </div>
+                        <div class="buttons">
+                            <span class="button"><input type="submit" name="_action_updateConsumers" value="Update" class="save btn"></span>
+                            <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                        </div>
+                    </div>
                 </div>
             </g:form>
         </div>

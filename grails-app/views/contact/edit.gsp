@@ -9,9 +9,11 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1><g:message code="default.edit.label" args="[entityName]" /></h1>
@@ -27,12 +29,11 @@
                 <g:hiddenField name="id" value="${contactInstance?.id}" />
                 <g:hiddenField name="version" value="${contactInstance?.version}" />
                 <g:hiddenField name="returnTo" value="${returnTo}" />
-                <div class="dialog">
+                <div class="span12">
                     <table>
                         <tbody>
-                        
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td valign="top" class="name span2">
                                   <label for="title"><g:message code="contact.title.label" default="Title" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: contactInstance, field: 'title', 'errors')}">
@@ -45,7 +46,7 @@
                                   <label for="firstName"><g:message code="contact.firstName.label" default="First Name" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: contactInstance, field: 'firstName', 'errors')}">
-                                    <g:textArea name="firstName" cols="40" rows="5" value="${contactInstance?.firstName}" />
+                                    <g:textField name="firstName" class="input-xlarge" value="${contactInstance?.firstName}" />
                                 </td>
                             </tr>
                         
@@ -54,7 +55,7 @@
                                   <label for="lastName"><g:message code="contact.lastName.label" default="Last Name" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: contactInstance, field: 'lastName', 'errors')}">
-                                    <g:textArea name="lastName" cols="40" rows="5" value="${contactInstance?.lastName}" />
+                                    <g:textField name="lastName" class="input-xlarge" value="${contactInstance?.lastName}" />
                                 </td>
                             </tr>
                         
@@ -90,7 +91,7 @@
                                   <label for="fax"><g:message code="contact.fax.label" default="Fax" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: contactInstance, field: 'fax', 'errors')}">
-                                    <g:textField name="fax" maxlength="45" value="${contactInstance?.fax}" />
+                                    <g:textField name="fax"  maxlength="45" value="${contactInstance?.fax}" />
                                 </td>
                             </tr>
                         
@@ -99,7 +100,7 @@
                                   <label for="notes"><g:message code="contact.notes.label" default="Notes" /></label>
                                 </td>
                                 <td valign="top" class="value ${hasErrors(bean: contactInstance, field: 'notes', 'errors')}">
-                                    <g:textArea name="notes" cols="40" rows="5" value="${contactInstance?.notes}" />
+                                    <g:textArea name="notes" class="input-xxlarge" cols="40" rows="5" value="${contactInstance?.notes}" />
                                 </td>
                             </tr>
                         
@@ -117,7 +118,7 @@
                 </div>
                 <div class="buttons">
                     <span class="button"><g:actionSubmit class="save btn" action="update" value="${message(code: 'default.button.update.label', default: 'Update')}" /></span>
-                    <span class="button"><g:actionSubmit class="delete btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
+                    <span class="button"><g:actionSubmit class="delete btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');" /></span>
                 </div>
             </g:form>
         </div>

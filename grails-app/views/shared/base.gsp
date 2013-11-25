@@ -28,15 +28,15 @@
             <g:form method="post" name="baseForm" action="base">
                 <g:hiddenField name="id" value="${command?.id}" />
                 <g:hiddenField name="version" value="${command.version}" />
-                <div class="dialog">
+                <div class="span12">
                     <table>
                         <tbody>
                           <tr class="prop">
-                              <td valign="top" class="name">
+                              <td valign="top" class="name span2">
                                 <label for="guid"><g:message code="collection.guid.label" default="Guid" /></label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'guid', 'errors')}">
-                                <g:textField name="guid" maxlength="45" value="${command?.guid}" />
+                                <g:textField name="guid" maxlength="45" value="${command?.guid}" class="input-xlarge"/>
                                 <cl:helpText code="${entityNameLower}.guid"/>
                               </td>
                               <cl:helpTD/>
@@ -49,7 +49,7 @@
                                 </label>
                               </td>
                               <td id="previous" valign="top" class="value ${hasErrors(bean: command, field: 'name', 'errors')}">
-                                <g:textField name="name" maxlength="128" value="${command?.name}" />
+                                <g:textField name="name" maxlength="128" value="${command?.name}" class="input-xlarge"/>
                                 <cl:helpText code="${entityNameLower}.name"/>
                               </td>
                             <cl:helpTD/>
@@ -60,7 +60,7 @@
                                 <label for="acronym"><g:message code="collection.acronym.label" default="Acronym" /></label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'acronym', 'errors')}">
-                                  <g:textField name="acronym" maxlength="45" value="${command?.acronym}" />
+                                  <g:textField name="acronym" maxlength="45" value="${command?.acronym}" class="input-xlarge"/>
                                   <cl:helpText code="providerGroup.acronym"/>
                               </td>
                             <cl:helpTD/>
@@ -74,7 +74,7 @@
                                 <td valign="top" class="value ${hasErrors(bean: command, field: 'resourceType', 'errors')}">
                                     <g:select name="resourceType"
                                             from="${DataResource.resourceTypeList}"
-                                            value="${command.resourceType}"/>
+                                            value="${command.resourceType}" class="input-xlarge"/>
                                     <cl:helpText code="providerGroup.resourceType"/>
                                     <cl:helpTD/>
                                 </td>
@@ -92,7 +92,7 @@
                                     from="${Institution.list([sort:'name'])}"
                                     optionKey="id"
                                     noSelection="${['null':'Select an institution']}"
-                                    value="${command.institution?.id}"/>
+                                    value="${command.institution?.id}" class="input-xlarge"/>
                               <cl:helpText code="collection.institution"/>
                               <cl:helpTD/>
                             </td>
@@ -110,7 +110,7 @@
                                       from="${DataProvider.list([sort:'name'])}"
                                       optionKey="id"
                                       noSelection="${['null':'Select a data provider']}"
-                                      value="${command.dataProvider?.id}"/>
+                                      value="${command.dataProvider?.id}" class="input-xlarge"/>
                               <cl:helpText code="dataResource.dataProvider"/>
                               <cl:helpTD/>
                             </td>
@@ -175,7 +175,7 @@
                               <label for="notes"><g:message code="providerGroup.notes.label" default="Notes" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'notes', 'errors')}">
-                                <g:textArea name="notes" cols="40" rows="${cl.textAreaHeight(text:command.notes)}" value="${command?.notes}" />
+                                <g:textArea name="notes" cols="40" class="input-xxlarge" rows="${cl.textAreaHeight(text:command.notes)}" value="${command?.notes}" />
                                 <cl:helpText code="collection.notes"/>
                               </td>
                               <cl:helpTD/>

@@ -1,7 +1,11 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <div class="show-section  well">
   <h2>Record consumers</h2>
-  <p>These institutions and collections hold specimens related to the records sourced from this ${ProviderGroup.textFormOfEntityType(instance.uid)}.</p>
+  <p>These institutions and collections hold specimens related to the records sourced from this ${ProviderGroup.textFormOfEntityType(instance.uid)}.
+  <br/>
+    Adding relationships here allows data processing to correctly attribute records down to the collection using collection codes and
+    institution codes associated with the institution.
+  </p>
   <ul class="fancy">
     <g:each in="${instance.listConsumers()}" var="con">
       <g:set var="pg" value="${ProviderGroup._get(con)}"/>
@@ -12,6 +16,8 @@
     </g:each>
   </ul>
   <div style="clear:both;"></div>
-  <div><span class="buttons long"><g:link class="edit" action='editConsumers' params="[source:'co']" id="${instance.uid}">Add/remove collections&nbsp;</g:link></span></div>
-  <div><span class="buttons long"><g:link class="edit" action='editConsumers' params="[source:'in']" id="${instance.uid}">Add/remove institutions</g:link></span></div>
+  <div>
+      <span class="buttons long"><g:link class="edit btn" action='editConsumers' params="[source:'co']" id="${instance.uid}">Add/remove collections&nbsp;</g:link></span>
+      <span class="buttons long"><g:link class="edit btn" action='editConsumers' params="[source:'in']" id="${instance.uid}">Add/remove institutions</g:link></span>
+  </div>
 </div>

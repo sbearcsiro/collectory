@@ -10,9 +10,11 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="create" action="create" params="${[consumer: consumer, provider: provider, returnTo: returnTo]}"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li></li><span class="menuButton"><g:link class="create" action="create" params="${[consumer: consumer, provider: provider, returnTo: returnTo]}"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
             <g:if test="${returnTo}"><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></g:if>
+            </ul>
         </div>
         <div class="body">
           <g:set var="filter" value="${consumer ? consumer : provider}"/>

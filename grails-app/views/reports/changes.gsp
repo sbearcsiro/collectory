@@ -23,13 +23,14 @@
                         <g:hiddenField name="offset" value="${offset}"/>
                         <label for="who">Who: <g:textField name="who" value="${who}"/></label>
                         <label for="what">What: <g:textField name="what" value="${what}"/></label>
-                        <g:submitButton class="submit" name="filter" value="Search"/>
-                        <g:submitButton class="submit" name="reset" value="Reset"/>
-                        <g:submitButton name="next" value="Next 100»"/>
+                        <g:submitButton class="submit btn " name="filter" value="Search"/>
+                        <g:submitButton class="submit btn" name="reset" value="Reset"/>
+                        <g:submitButton name="next "  class="btn" value="Next 100»"/>
                     </fieldset>
                   </g:form>
               </div>
-              <table>
+              <br/>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="23%"/><col width="25%"/><col width="12%"/><col width="40%"/></colgroup>
                 <tr class="reportHeaderRow"><td>When</td><td>Who</td><td>Did</td><td>What</td></tr>
                 <g:each var='ch' in="${changes}">

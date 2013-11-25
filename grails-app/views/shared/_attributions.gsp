@@ -1,5 +1,5 @@
 <!-- Attributions -->
-<div class="show-section">
+<div class="show-section   well">
   <h2>Attributions</h2>
   <ul class="fancy">
     <g:each in="${instance.getAttributionList()}" var="att">

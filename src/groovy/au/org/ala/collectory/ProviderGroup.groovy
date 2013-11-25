@@ -77,6 +77,7 @@ abstract class ProviderGroup implements Serializable {
     static transients = ['primaryInstitution', 'primaryContact', 'memberOf', 'networkTypes', 'mappable','ALAPartner',
         'primaryPublicContact','publicContactsPrimaryFirst','contactsPrimaryFirst', 'authorised']
 
+    //to be externalised or managed in a DB table or file
     static networkTypes = ["CHAH", "CHAFC", "CHAEC", "CHACM", "CAMD"]
 
     static statesList = ['Australian Capital Territory', 'New South Wales', 'Queensland', 'Northern Territory', 'Western Australia', 'South Australia', 'Tasmania', 'Victoria']

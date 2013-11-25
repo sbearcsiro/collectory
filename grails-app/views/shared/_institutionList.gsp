@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <div class="list">
-    <table>
+    <table class="table table-striped table-bordered">
       <colgroup>
         <g:if test="${showALAPartner == 'true'}">
           <col width="50%"/><col width="10%"/><col width="12%"/><col width="30%"/>
@@ -11,17 +11,12 @@
       </colgroup>
         <thead>
             <tr>
-
                 <g:sortableColumn property="name" title="${message(code: 'institution.name.label', default: 'Name')}" />
-
                 <g:sortableColumn property="acronym" title="${message(code: 'institution.acronym.label', default: 'Acronym')}" />
-
                 <g:if test="${showALAPartner == 'true'}">
                   <g:sortableColumn property="isALAPartner" title="${message(code: 'institution.isALAPartner.label', default: 'ALA Partner')}" />
                 </g:if>
-
                 <g:sortableColumn property="institutionType" title="${message(code: 'institution.institutionType.label', default: 'Type')}" />
-
             </tr>
         </thead>
         <tbody>

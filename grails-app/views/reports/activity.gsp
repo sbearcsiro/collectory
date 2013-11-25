@@ -7,8 +7,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1>User activity report</h1>
@@ -16,10 +18,9 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <h3>User activity</h3>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="30%"/><col width="70%"/></colgroup>
-
-                <tr class="reportGroupTitle"><td colspan="2">User activity</td></tr>
                 <tr><td>Curator views</td><td>${reports.curatorViews}</td></tr>
                 <tr><td>Curator previews</td><td>${reports.curatorPreviews}</td></tr>
                 <tr><td>Curator edits</td><td>${reports.curatorEdits}</td></tr>

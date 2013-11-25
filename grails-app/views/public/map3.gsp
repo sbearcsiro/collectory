@@ -10,7 +10,7 @@
           var altMap = true;
         </script>
     </head>
-    <body id="page-collections-map" onload="initMap('${grailsApplication.config.grails.serverURL}')">
+    <body id="page-collections-map" onload="initMap('${grailsApplication.config.grails.serverURL}', ${grailsApplication.config.grails.centreMapLat?:'-28.2'}, ${grailsApplication.config.grails.centreMapLon?:'134'})">
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->
@@ -30,16 +30,6 @@
           </div><!--close hrgroup-->
         </div><!--close section-->
       </div><!--close header-->
-
-      %{--<div class="row-fluid"><!-- tabs -->--}%
-        %{--<div class="span12 tabbable tabs-below">--}%
-          %{--<ul class="nav nav-tabs" id="home-tabs">--}%
-            %{--<li class="active"><a href="#map" data-toggle="tab">Map</a></li>--}%
-            %{--<li><a href="#list" data-toggle="tab">List</a></li>--}%
-          %{--</ul>--}%
-        %{--</div>--}%
-      %{--</div>--}%
-
 
       <div class="row-fluid"><!-- wrap map and list-->
         <div class="span4">
@@ -83,7 +73,8 @@
               <div class="tab-pane active" id="map">
               <div  class="map-column">
                 <div class="section">
-                  <p style="width:100%;padding-bottom:8px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
+                  <p style="width:100%;padding-bottom:8px;">Click on a map pin to see the collections at that location.
+                  Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
                   <div id="map-container">
                     <div id="map_canvas"></div>
                   </div>

@@ -9,17 +9,19 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="create" action="create" params="[returnTo: returnTo]"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create" params="[returnTo: returnTo]"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
             <g:if test="${returnTo}"><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></g:if>
+            </ul>
         </div>
-        <div class="body">
+        <div class="body content">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="list">
-                <table>
+                <table class="table table-bordered table-striped">
                     <thead>
                         <tr>
                         
@@ -39,7 +41,7 @@
                     </thead>
                     <tbody>
                     <g:each in="${providerMapInstanceList}" status="i" var="providerMapInstance">
-                        <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
+                        <tr>
                         
                             <td><g:link action="show" id="${providerMapInstance.id}" params="[returnTo: returnTo]">${fieldValue(bean: providerMapInstance, field: "id")}</g:link></td>
                         
@@ -58,7 +60,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="paginateButtons">
+            <div class="pagination">
                 <g:paginate total="${providerMapInstanceTotal}" />
             </div>
         </div>

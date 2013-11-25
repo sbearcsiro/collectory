@@ -5,13 +5,16 @@
 	<meta name="layout" content="main" />
 
     </head>
-    
     <body>
       <div class="nav">
-          <span class="menuButton"><cl:homeLink/></span>
+          <ul>
+          <li><span class="menuButton"><cl:homeLink/></span></li>
+          <li><span class="menuButton">Reports</span></li>
+          </ul>
       </div>
       <div id="welcome">
-        <h3>Natural History Collections Reports</h3> <p>Information about the quantity, quality and usage of the ALA's biodiversity collections.</p>
+        <h1>Natural History Collections Reports</h1>
+        <p>Information about the quantity, quality and usage of the ALA's biodiversity collections.</p>
       </div>
 
       <cl:isNotLoggedIn>
@@ -29,14 +32,10 @@
 
       <div class="dashCell">
         <div class='header'>
-          <div>
-            <p class="dashCellTitle">General</p>
-          </div>
-          <div class="stats">
+          <h2>General</h2>
+          <div class="lead">
             <span class="total">${Collection.count()}</span> collections<br/>
-            <span class="total">${DataResource.count()}</span> data resources
-          </div>
-          <div class="stats">
+            <span class="total">${DataResource.count()}</span> data resources<br/>
             <span class="total">${Institution.count()}</span> institutions<br/>
             <span class="total">${DataProvider.count()}</span> data providers
           </div>
@@ -52,14 +51,7 @@
       </div>
 
       <div class="dashCell">
-        <div class='header'>
-          <div>
-            <p class="dashCellTitle">Collections</p>
-          </div>
-          <div class="stats">
-            <span class="total">${Collection.count()}</span> total collections
-          </div>
-        </div>
+        <h2>Collections</h2>
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="collections">List all collections</g:link>
           <span class="linkText">- lists collections with permalinks and some attributes</span></p>
@@ -79,14 +71,7 @@
       </div>
 
       <div class="dashCell">
-        <div class='header'>
-          <div>
-            <p class="dashCellTitle">Institutions</p>
-          </div>
-          <div class="stats">
-            <span class="total">${Institution.count()}</span> total institutions
-          </div>
-        </div>
+      <h2>Institutions</h2>
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="institutions">List all institutions</g:link>
           <span class="linkText">- lists institutions with permalinks and some attributes</span></p>
@@ -94,17 +79,7 @@
       </div>
 
       <div class="dashCell">
-        <div class='header'>
-          <div>
-            <p class="dashCellTitle">Data providers & resources</p>
-          </div>
-          <div class="stats">
-            <span class="total">${DataProvider.count()}</span> total data providers
-          </div>
-          <div class="stats">
-            <span class="total">${DataResource.count()}</span> total data resources
-          </div>
-        </div>
+        <h2>Data providers & resources</h2>
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="providers">List all data providers and resources</g:link>
           <span class="linkText">- list of all data providers, data resources and data hubs</span></p>
@@ -120,14 +95,7 @@
       </div>
 
       <div class="dashCell">
-        <div class='header'>
-          <div>
-            <p class="dashCellTitle">Contacts</p>
-          </div>
-          <div class="stats">
-            <span class="total">${Contact.count()}</span> total contacts
-          </div>
-        </div>
+        <h2>Contacts</h2>
         <div style="clear:both;">
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="contacts">List all contacts</g:link></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="duplicateContacts">Show duplicate contacts</g:link></p>

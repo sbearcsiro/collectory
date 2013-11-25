@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
-<div class="show-section">
+<div class="show-section  well">
   <h2>Record consumers</h2>
   <p>These institutions and collections hold specimens related to the records sourced from this ${ProviderGroup.textFormOfEntityType(instance.uid)}.</p>
   <ul class="fancy">

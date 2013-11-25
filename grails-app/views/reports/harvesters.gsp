@@ -25,7 +25,7 @@
                 <span id="toggle"><a class="button" href='javascript:showEmpty();'>Show resources with no mobilisation values.</a></span>
                 <span id="toggleAll"><a class="button" href='javascript:hideAll();'>Show all connection parameters.</a></span>
               </p>
-              <table class="reports">
+              <table class="reports table table-striped table-bordered">
                 <colgroup width="3"></colgroup>
                 <colgroup width="250"></colgroup>
                 <colgroup span="5" class="center"></colgroup>

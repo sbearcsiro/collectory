@@ -17,11 +17,20 @@
 }
 </style>
 <div class="nav">
+
+    <p class="pull-right">
+    <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
+    <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
+    <span class="button"><cl:jsonDataLink uid="${instance.uid}"/></span>
+    </p>
+
   <g:form url="mailto:${instance.getPrimaryContact()?.contact?.email}?subject=Request to review web pages presenting information about the ${instance.name}.&body=${contactEmailBody}">
-  <span class="menuButton"><cl:homeLink/></span>
-  <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]"/></g:link></span>
-  <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]"/></g:link></span>
-  <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span>
+  <ul>
+  <li><span class="menuButton"><cl:homeLink/></span></li>
+  <li><span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]"/></g:link></span></li>
+  <li><span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]"/></g:link></span></li>
+  <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]"/></g:link></span></li>
+  </ul>
   <!--span class="buttons"><input type="submit" class="special" value="Contact the curator"/></span-->
   </g:form>
 </div>
@@ -31,7 +40,7 @@
   </g:if>
   <div class="dialog emulate-public">
     <!-- base attributes -->
-    <div class="show-section titleBlock">
+    <div class="show-section well titleBlock">
       <!-- Name --><!-- Acronym -->
       <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
@@ -40,13 +49,13 @@
       <cl:partner test="${instance.institution?.isALAPartner}"/><br/>
 
       <!-- GUID    -->
-      <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+      <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
       <!-- UID    -->
-      <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+      <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
       <!-- Web site -->
-      <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+      <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
       <!-- Networks -->
       <g:if test="${instance.networkMembership}">
@@ -59,35 +68,35 @@
       </g:if>
 
       <!-- last edit -->
-      <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+      <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
       <cl:editButton uid="${instance.uid}" page="/shared/base" notAuthorisedMessage="Not authorised to edit."/>
     </div>
 
     <!-- collection description -->
-    <div class="show-section">
+    <div class="show-section well">
       <!-- Pub Desc -->
       <h2>Description</h2>
-      <div class="source">[Public description]</div><div style="clear:both;"></div>
+      <div class="label">Public description</div><div style="clear:both;"></div>
       <cl:formattedText body="${instance.pubDescription}"/>
 
       <!-- Tech Desc -->
-      <div class="source">[Technical description]</div><div style="clear:both;"></div>
+      <div class="label">Technical description</div><div style="clear:both;"></div>
       <cl:formattedText body="${instance.techDescription}"/>
-      <div class="source">[Start/End dates]</div><div style="clear:both;"></div>
+      <div class="label">Start/End dates</div><div style="clear:both;"></div>
       <g:if test="${instance.startDate || instance.endDate}">
           <p><cl:temporalSpanText start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/></p>
       </g:if>
       
       <!-- Collection types -->
-      <p><span class="category">Collection types include:</span>
+      <p><span class="label">Collection types include:</span>
       <cl:JSONListAsStrings json='${instance.collectionType}'/>.</p>
 
       <!-- Active -->
-      <p><span class="category">Activity status is:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
+      <p><span class="label">Activity status is:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
 
       <!-- Keywords -->
-      <p><span class="category">Keywords:</span> are not directly displayed but are used for searching and filtering.
+      <p><span class="label">Keywords:</span> are not directly displayed but are used for searching and filtering.
         These keywords have been added for this collection: <cl:valueOrOtherwise value="${instance.listKeywords().join(', ')}" otherwise="none"/>.
         <g:if test="${!instance.listKeywords().contains('fauna')}">
           (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']">Add fauna</g:link>)
@@ -117,27 +126,27 @@
     <g:render template="/shared/location" model="[instance: instance]"/>
 
     <!-- collection scope -->
-    <div class="show-section">
+    <div class="show-section well">
       <h2>Geographic range</h2>
       <table>
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Geo descrip -->
         <tr class="prop">
-          <td valign="top" class="name"><g:message code="geographicDescription.label" default="Geographic Description"/></td>
+          <td valign="top" class="label"><g:message code="geographicDescription.label" default="Geographic Description"/></td>
           <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: instance, field: "geographicDescription")}</cl:formattedText></td>
         </tr>
 
         <!-- States -->
         <tr class="prop">
-          <td valign="top" class="name"><g:message code="states.label" default="States covered"/></td>
+          <td valign="top" class="label"><g:message code="states.label" default="States covered"/></td>
           <td valign="top" class="value">${fieldValue(bean: instance, field: "states")}</td>
         </tr>
 
         <!-- Extent -->
         <tr class="prop">
-          <td valign="top" class="name">Specimens were collected<br/> within these bounds</td>
+          <td valign="top" class="label">Specimens were collected<br/> within these bounds</td>
           <td valign="top" class="value">
-            <table class="shy">
+            <table class="table table-bordered">
               <colgroup><col width="30%"/><col width="40%"/><col width="30%"/></colgroup>
               <tr><td></td><td>North: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></td><td></td></tr>
               <tr><td>West: <cl:showDecimal value='${instance.westCoordinate}' degree='true'/></td>
@@ -153,19 +162,19 @@
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Focus   -->
         <tr class="prop">
-          <td valign="top" class="name"><g:message code="focus.label" default="Collection focus"/></td>
+          <td valign="top" class="label"><g:message code="focus.label" default="Collection focus"/></td>
           <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText></td>
         </tr>
 
         <!-- Kingdom cover-->
         <tr class="prop">
-          <td valign="top" class="name"><g:message code="kingdomCoverage.label" default="Kingdom Coverage"/></td>
+          <td valign="top" class="label"><g:message code="kingdomCoverage.label" default="Kingdom Coverage"/></td>
           <td valign="top" class="checkbox"><cl:checkBoxList readonly="true" name="kingdomCoverage" from="${Collection.kingdoms}" value="${instance?.kingdomCoverage}" /></td>
         </tr>
 
         <!-- sci names -->
         <tr class="prop">
-          <td valign="top" class="name"><g:message code="scientificNames.label" default="Scientific Names"/></td>
+          <td valign="top" class="label"><g:message code="scientificNames.label" default="Scientific Names"/></td>
           <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: instance, field: "scientificNames")}'/></td>
         </tr>
       </table>
@@ -175,24 +184,25 @@
       <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
         <p>The estimated number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> within <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
       </g:if>
+
       <g:if test="${fieldValue(bean: instance, field: 'numRecordsDigitised') != '-1'}">
         <p>Of these ${fieldValue(bean: instance, field: "numRecordsDigitised")} are digitised.
         This represents <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> of the collection.</p>
       </g:if>
 
-      <!-- actual biocache records -->
-      <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.
-      <cl:recordsLink collection="${instance}">Click to view these records.</cl:recordsLink>
-      </p>
+      %{--<!-- actual biocache records -->--}%
+      %{--<p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.--}%
+      %{--<cl:recordsLink collection="${instance}">Click to view these records.</cl:recordsLink>--}%
+      %{--</p>--}%
 
-      <div id="speedo">
-        <div id="progress">
-          <img id="progressBar" src="${resource(dir:'images', file:'percentImage.png')}" alt="0%"
-                  class="no-radius percentImage1" style='background-position: -120px 0;margin-left:35px;'/>
-          <!--cl:progressBar percent="0.0"/-->
-        </div>
-        <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
-      </div>
+      %{--<div id="speedo">--}%
+        %{--<div id="progress">--}%
+          %{--<img id="progressBar" src="${resource(dir:'images', file:'percentImage.png')}" alt="0%"--}%
+                  %{--class="no-radius percentImage1" style='background-position: -120px 0;margin-left:35px;'/>--}%
+          %{--<!--cl:progressBar percent="0.0"/-->--}%
+        %{--</div>--}%
+        %{--<p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>--}%
+      %{--</div>--}%
 
       <p style="margin-top:20px;">The mapping of records to this collection is based on the provider codes shown in the 'Provider codes' section.</p>
       <cl:warnIfInexactMapping collection="${instance}"/>
@@ -204,7 +214,7 @@
     <g:render template="/shared/contacts" model="[contacts: contacts, instance: instance]"/>
 
     <!-- Provider codes -->
-    <div class="show-section">
+    <div class="show-section well">
       <h2>Provider codes</h2>
       <p>These codes control the mapping of online records to this collection.</p>
       <p>Institution codes: ${instance.getListOfInstitutionCodesForLookup().join(", ")}</p>
@@ -241,7 +251,7 @@
     <g:form>
       <g:hiddenField name="id" value="${instance?.id}"/>
       <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
-        <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
+        <span class="button"><g:actionSubmit class="delete btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
       </cl:ifGranted>
       <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
       <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>

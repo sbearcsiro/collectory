@@ -1,5 +1,5 @@
 <g:if test="${changes}">
-  <div class="show-section">
+  <div class="show-section   well">
     <h2>Change history</h2>
     <p>Click an item to view full change details.</p>
     <ul class=simple>

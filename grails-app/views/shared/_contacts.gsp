@@ -1,5 +1,5 @@
 <!-- Contacts -->
- <div class="show-section">
+ <div class="show-section well">
  <h2>Contacts</h2>
  <ul class="fancy">
    <g:each in="${contacts}" var="c">

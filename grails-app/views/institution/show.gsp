@@ -18,9 +18,17 @@
     }
     </style>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+
+            <p class="pull-right">
+            <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
+            <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
+            <span class="button"><cl:jsonDataLink uid="${instance.uid}"/></span>
+            </p>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <g:if test="${flash.message}">
@@ -28,7 +36,7 @@
             </g:if>
             <div class="dialog emulate-public">
               <!-- base attributes -->
-              <div class="show-section titleBlock">
+              <div class="show-section titleBlock well">
                 <!-- Name --><!-- Acronym -->
                 <g:if test="${instance.name.size() > 50}">
                   <h1 style="display:inline;font-size:1.7em;">${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
@@ -47,13 +55,13 @@
                   </g:each>
                 </g:if>
                 <!-- GUID    -->
-                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${(fieldValue(bean: instance, field: "guid"))?:'Not supplied'}'/></p>
 
                 <!-- UID    -->
-                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -66,28 +74,28 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base"/>
               </div>
 
               <!-- description -->
-              <div class="show-section">
+              <div class="show-section well">
                 <!-- Pub Desc -->
                 <h2>Description</h2>
-                <div class="source">[Public description]</div><div style="clear:both;"></div>
+                <div class="label">Public description</div><div style="clear:both;"></div>
                 <cl:formattedText body="${instance.pubDescription}"/>
 
                 <!-- Tech Desc -->
-                <div class="source">[Technical description]</div><div style="clear:both;"></div>
+                <div class="label">Technical description</div><div style="clear:both;"></div>
                 <cl:formattedText body="${instance.techDescription}"/>
 
                 <!-- Contribution -->
-                <div class="source">[Contribution]</div><div style="clear:both;"></div>
+                <div class="label">Contribution</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
                 <!-- Institution type -->
-                <p>Institution type is: ${fieldValue(bean: instance, field: "institutionType")}</p>
+                <p><span class="label">Institution type:</span> ${fieldValue(bean: instance, field: "institutionType")}</p>
 
                 <!-- Collections -->
                 <h2>Collections</h2>
@@ -125,11 +133,13 @@
               <g:form>
                 <g:hiddenField name="id" value="${instance?.id}"/>
                 <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
-                  <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
+                  <span class="button"><g:actionSubmit class="delete btn" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
                 </cl:ifGranted>
-                <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
-                <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
-                <span class="button"><cl:jsonDataLink uid="${instance.uid}"/></span>
+                <span class="pull-right">
+                <span class="button btn"><cl:viewPublicLink uid="${instance?.uid}"/></span>
+                <span class="button btn"><cl:jsonSummaryLink uid="${instance.uid}"/></span>
+                <span class="button btn"><cl:jsonDataLink uid="${instance.uid}"/></span>
+               </span>
              </g:form>
             </div>
         </div>

@@ -15,7 +15,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="60%"/><col width="40%"/></colgroup>
 
                 <tr class="reportGroupTitle"><td colspan="2">CHAFC Members (${chafc.size()})</td>

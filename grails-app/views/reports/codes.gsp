@@ -7,8 +7,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1>Provider codes report</h1>
@@ -16,7 +18,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
 
                 <tr class="reportGroupTitle"><td>Codes</td><td colspan="2">${Collection.count()} collections shown.</td></tr>

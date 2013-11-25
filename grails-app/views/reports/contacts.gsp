@@ -17,7 +17,7 @@
             </g:if>
             <div class="dialog">
               <div id="full">
-                <table>
+                <table class="table table-striped table-bordered">
                   <colgroup><col width="80%"/><col width="10%"/><col width="10%"/></colgroup>
                   <tr><td>Columns show whether the contact has an email address and a phone number.</td>
                     <td colspan="2"><a href="#"

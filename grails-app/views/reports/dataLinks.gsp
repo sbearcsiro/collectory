@@ -18,7 +18,7 @@
             <div class="dialog">
               <p>This list shows which data resources/providers provide data record for which collections/institutions.</p>
               <p>(P) = data provider, (R) = data resource, (I) = institution, (C) = collection.</p>
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="45%"/><col width="10%"/><col width="45%"/></colgroup>
                 <tr class="reportHeaderRow"><td>Provider</td><td></td><td>Consumer</td></tr>
                 <g:each var='link' in="${links}">

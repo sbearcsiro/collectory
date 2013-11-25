@@ -1,6 +1,6 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <div class="list">
-    <table>
+    <table class="table table-striped table-bordered">
       <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
         <thead>
             <tr>

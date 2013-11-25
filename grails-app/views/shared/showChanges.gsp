@@ -25,7 +25,7 @@
         <div>
           <g:if test="${ch.eventName == 'UPDATE'}">
             <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} changed the <strong>${ch.propertyName}</strong> field</p>
-            <table class="textChanges">
+            <table class="textChanges table table-striped table-bordered">
               <tr>
                 <td>to:</td><td><cl:cleanString class="changeTo" value="${ch.newValue}" field="${ch.propertyName}"/></td>
               </tr><tr>
@@ -36,7 +36,7 @@
           <g:elseif test="${ch.eventName == 'INSERT' && cl.shortClassName(className:ch.className) == 'ContactFor'}">
             <g:set var="cf" value="${ContactFor.get(ch.persistedObjectId)}"/>
             <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} added a contact</p>
-            <table class="textChanges">
+            <table class="textChanges table table-striped table-bordered">
               <tr>
                 <td>id:${ch.persistedObjectId}</td><td>${cf ? cf.contact?.buildName() : 'name missing - may have been deleted'}</td>
               </tr>
@@ -44,7 +44,7 @@
           </g:elseif>
           <g:elseif test="${ch.eventName == 'DELETE' && cl.shortClassName(className:ch.className) == 'ContactFor'}">
             <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} removed a contact</p>
-            <table class="textChanges">
+            <table class="textChanges table table-striped table-bordered">
               <tr>
                 <td>id:${ch.persistedObjectId}</td><td>name not available - has been deleted</td>
               </tr>
@@ -52,7 +52,7 @@
           </g:elseif>
           <g:elseif test="${ch.eventName == 'INSERT' && ch.uri == instance.uid}">
             <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} created this ${entityNameLower}.</p>
-            <table class="textChanges">
+            <table class="textChanges table table-striped table-bordered">
               <tr>
                 <td colspan="2">${instance.name}</td>
               </tr>
@@ -64,7 +64,7 @@
     <div class="buttons">
       <g:form>
         <g:hiddenField name="id" value="${instance.id}"/>
-        <span class="button"><g:link class="returnAction" controller="${instance.urlForm()}" action='show' id="${instance.uid}">Return to ${instance.name}</g:link></span>
+        <span class="button"><g:link class="returnAction btn" controller="${instance.urlForm()}" action='show' id="${instance.uid}">Return to ${instance.name}</g:link></span>
       </g:form>
     </div>
 </div>

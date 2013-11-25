@@ -11,7 +11,7 @@
       <div class="floating-content manage">
     
         <div style="float:right;">
-            <g:link class="mainLink" controller="public" action="map">View public site</g:link>
+            <g:link class="mainLink btn" controller="public" action="map">View public site</g:link>
         </div>
         <h1>ALA Metadata Management</h1>
 
@@ -60,7 +60,7 @@
         </g:if>
         <g:else>
             <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
-                <p style="font-style: italic;margin: 10px;color: black;">You are authorised to edit all entities because you are admin.</p>
+                <p><strong><em>You are authorised to edit all entities because you are admin.</em></strong></p>
             </cl:ifGranted>
             <cl:ifNotGranted role="ROLE_COLLECTION_ADMIN">
                 <p style="font-style: italic;margin: 10px;color: black;">You are not authorised to edit any entities.</p>
@@ -140,48 +140,9 @@
                 <li>The collection will become public as soon as you create it.</li>
                 <li>Only ALA administrators can delete collections. Please contact the ALA if you believe a collection should be removed.</li>
             </ul>
-            <p style="margin:15px 0 0 10px;"><span id="create" class="link under">Create a new collection</span></p>
 
-            <div id="dialog-form" title="Create new collection">
-                <p class="validateTips">A name is required.</p>
+            <span id="create" class="link under btn">Create a new collection</span>
 
-                <form>
-                    <fieldset>
-                        <label for="name">Name</label>
-                        <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all"/>
-                        <label for="addAsContact">Add me as a contact and editor</label>
-                        <input type=checkbox name="addAsContact" id="addAsContact" class="text ui-widget-content ui-corner-all" checked="checked"/>
-                        <g:if test="${!user}">
-                            <div id="contactDetails" style="overflow: hidden;">
-                                <label for="title">Title</label>
-                                <select name="title" class="ui-widget-content ui-corner-all" id="title" style="width:98%">
-                                    <option value=""></option>
-                                    <option value="Dr">Dr</option>
-                                    <option value="Prof">Prof</option>
-                                    <option value="Mr">Mr</option>
-                                    <option value="Ms">Ms</option>
-                                    <option value="Mrs">Mrs</option>
-                                    <option value="Assoc Prof">Assoc Prof</option>
-                                    <option value="Assist Prof">Assist Prof</option>
-                                </select>
-                                <label for="firstName">First name</label>
-                                <input type="text" name="firstName" id="firstName" class="text ui-widget-content ui-corner-all"/>
-
-                                <label for="lastName">Last name</label>
-                                <input type="text" name="lastName" id="lastName" class="text ui-widget-content ui-corner-all"/>
-
-                                <label for="phone">Phone</label>
-                                <input type="text" name="phone" id="phone" class="text ui-widget-content ui-corner-all"/>
-
-                                <label for="publish">Publish</label>
-                                <input type=checkbox name="publish" id="publish" checked="checked" class="ui-widget-content ui-corner-all"/>
-                            </div>
-                        </g:if>
-                        <label for="role">Role for this collection</label>
-                        <input type="text" name="role" id="role" class="text ui-widget-content ui-corner-all"/>
-                    </fieldset>
-                </form>
-            </div>
         </cl:ifGranted>
 
         <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
@@ -198,8 +159,10 @@
 
                 <p class="mainText">Enter a part of the name of a collection or its acronym, eg insects, fungi, ANIC</p>
                 <g:form controller="collection" action="searchList" method="get">
-                    <g:textField class="mainText" name="term"/><g:submitButton style="margin-left:20px;" name="search"
-                                                                               value="Search"/>
+                    <div class="input-append">
+                        <g:textField class="mainText" name="term" placeholder="Search for collection"/>
+                        <g:submitButton class="btn" name="search" value="Search"/>
+                    </div>
                 </g:form>
             </div>
 

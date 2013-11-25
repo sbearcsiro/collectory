@@ -8,12 +8,14 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
-        <div class="body">
+        <div class="body content">
             <h1><g:message code="collection.searchList.label" args="${criteria}" default="Collections" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -21,7 +23,7 @@
             <g:render template="collectionList"
                     model="[collectionInstanceList: providerGroupInstanceList]"
                     params="[term: '${term}']"/>
-            <div class="paginateButtons">
+            <div class="pagination">
                 <g:paginate controller="collection" action="searchList" params="${[term:term]}" total="${providerGroupInstanceTotal}" />
             </div>
         </div>

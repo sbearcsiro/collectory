@@ -2,8 +2,7 @@
 <html>
     <head>
         <title>ALA Metadata Management</title>
-	<meta name="layout" content="main" />
-
+	    <meta name="layout" content="main" />
     </head>
     
     <body>
@@ -22,12 +21,12 @@
         <div style="width:400px;">
             <h2 style="margin-top:30px;">Please log in</h2>
             <span id="login-button">
-                <a href="http://auth.ala.org.au/cas/login?service=${ConfigurationHolder.config.security.cas.serverName}${request.forwardURI}">&nbsp;Log in&nbsp;</a>
+                <a href="http://auth.ala.org.au/cas/login?service=${grailsApplication.config.security.cas.serverName}${request.forwardURI}">&nbsp;Log in&nbsp;</a>
             </span>
 
             <p>You must log in to manage metadata</p>
         </div>
-        <div style="margin-top:25px;">
+        <div class="well">
             <h3>About access accounts</h3>
             <h4>What do I need to edit my metadata?</h4>
             <p>You will need:</p>

@@ -124,11 +124,11 @@ class DataController {
     }
 
     def addLocation(relativeUri) {
-        response.addHeader 'location', ConfigurationHolder.config.grails.serverURL + relativeUri
+        response.addHeader 'location', grailsApplication.config.grails.serverURL + relativeUri
     }
 
     def addContentLocation(relativeUri) {
-        response.addHeader 'content-location', ConfigurationHolder.config.grails.serverURL + relativeUri
+        response.addHeader 'content-location', grailsApplication.config.grails.serverURL + relativeUri
     }
 
     def created = {clazz, uid ->
@@ -234,6 +234,43 @@ class DataController {
     def brief = {[name: it.name, uri: it.buildUri(), uid: it.uid]}
     def summary = {[name: it.name, uri: it.buildUri(), uid: it.uid, logo: it.buildLogoUrl()]}
 
+    def index() {
+        def root = params.root
+        def path = getPath(request.forwardURI, params.path)
+
+        def basePath = grailsApplication.config.grails?.plugins?.fileserver?.paths?.get(root)
+        File file = basePath ? fileService.loadFile(basePath, path) : null
+
+        if (file) {
+            log.debug("$root/$path, sending file: $file.absolutePath")
+            response.outputStream << file.bytes
+        } else {
+            log.debug("$root/$path, file not found - dir: $basePath, file: $path")
+            response.status = 404
+        }
+    }
+
+    def serveFile = {
+
+        def dirpath =  "/" + params.directory + "/"
+        def idx = request.forwardURI.lastIndexOf(dirpath) + dirpath.length()
+
+        def fullFileName = request.forwardURI.substring(idx)
+        println "Full file name: $fullFileName"
+        println "Directory: $params.directory Filename: $params.file, Extension: $request.format"
+        def file = new File(grailsApplication.config.repository.location.images + File.separator + params.directory, fullFileName)
+        if(file.exists()){
+            if(fullFileName.endsWith(".json")){
+                response.setContentType("application/json")
+            }
+            response.outputStream << file.bytes
+           // return null
+
+        } else {
+            response.status = 404
+           // return null
+        }
+    }
 
     /**
      * Return JSON representation of specified entity

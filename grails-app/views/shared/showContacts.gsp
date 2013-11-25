@@ -42,7 +42,7 @@
             </td></tr>
 
             <!-- role -->
-            <tr><td colspan="2"><span class="category">In this collection:</span></td></tr>
+            <tr><td colspan="2"><span class="label">In this collection:</span></td></tr>
             <tr><td>
                 <ul class="detailList">
                   <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined">Role is ${cf.role}</cl:valueOrOtherwise></li>

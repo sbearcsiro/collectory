@@ -31,7 +31,6 @@
                 <div class="dialog">
                     <table>
                         <tbody>
-
                           <tr class="prop">
                               <td valign="top" class="name">
                                 <label for="guid"><g:message code="collection.guid.label" default="Guid" /></label>
@@ -187,8 +186,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateBase" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" name="_action_updateBase" value="Update" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

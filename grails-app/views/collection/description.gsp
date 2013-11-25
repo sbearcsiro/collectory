@@ -5,7 +5,7 @@
         <meta name="layout" content="main" />
         <title><g:message code="collection.base.label" default="Edit collection metadata" /></title>
     </head>
-    <body>
+    <body id="content">
         <div class="nav">
           <g:if test="${mode == 'create'}">
             <h1>Creating a new collection</h1>
@@ -27,16 +27,16 @@
                 <g:hiddenField name="id" value="${command?.id}" />
                 <g:hiddenField name="version" value="${command.version}" />
                 <div class="dialog">
-                    <table>
+                    <table class="span12">
                         <tbody>
 
                         <!-- public description -->
                         <tr class="prop">
-                            <td valign="top" class="name">
+                            <td valign="top" class="name span2">
                               <label for="pubDescription"><g:message code="providerGroup.pubDescription.label" default="Public Description" /></label>
                             </td>
-                            <td valign="top" class="value ${hasErrors(bean: command, field: 'pubDescription', 'errors')}">
-                                <g:textArea name="pubDescription" cols="40" rows="${cl.textAreaHeight(text:command.pubDescription)}" value="${command.pubDescription}" />
+                            <td valign="top" class="value span8 ${hasErrors(bean: command, field: 'pubDescription', 'errors')}">
+                                <g:textArea name="pubDescription" class="span8" rows="${cl.textAreaHeight(text:command.pubDescription)}" value="${command.pubDescription}" />
                                 <cl:helpText code="collection.pubDescription"/>
                               </td>
                               <cl:helpTD/>
@@ -48,7 +48,7 @@
                               <label for="techDescription"><g:message code="providerGroup.techDescription.label" default="Technical Description" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'techDescription', 'errors')}">
-                                <g:textArea name="techDescription" cols="40" rows="${cl.textAreaHeight(text:command.techDescription)}" value="${command?.techDescription}" />
+                                <g:textArea name="techDescription"  class="span8" rows="${cl.textAreaHeight(text:command.techDescription)}" value="${command?.techDescription}" />
                                 <cl:helpText code="collection.techDescription"/>
                               </td>
                               <cl:helpTD/>
@@ -60,7 +60,7 @@
                               <label for="focus"><g:message code="providerGroup.focus.label" default="Focus" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'focus', 'errors')}">
-                                <g:textArea name="focus" cols="40" rows="${cl.textAreaHeight(text:command.focus)}" value="${command?.focus}" />
+                                <g:textArea name="focus" class="span8" rows="${cl.textAreaHeight(text:command.focus)}" value="${command?.focus}" />
                                 <cl:helpText code="collection.focus"/>
                             </td>
                           <cl:helpTD/>
@@ -71,7 +71,7 @@
                             <td valign="top" class="name">
                               <label for="collectionType"><g:message code="collection.collectionType.label" default="Collection Type" /></label>
                             </td>
-                            <td valign="top" class="checkbox ${hasErrors(bean: command, field: 'collectionType', 'errors')}">
+                            <td valign="top" class="span8 checkbox ${hasErrors(bean: command, field: 'collectionType', 'errors')}">
                                 <cl:checkboxSelect name="collectionType" from="${command.collectionTypes}" value="${command.listCollectionTypes()}" multiple="yes" valueMessagePrefix="collection.collectionType" noSelection="['': '']" />
                                 <cl:helpText code="collection.collectionType"/>
                             </td>
@@ -154,14 +154,13 @@
                               </td>
                               <cl:helpTD/>
                         </tr>
-
                         </tbody>
                     </table>
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" class="btn" name="_action_updateDescription" value="Update" class="save"></span>
+                    <span class="button"><input type="submit"  class="btn"name="_action_cancel" value="Cancel" class="cancel"></span>
                 </div>
             </g:form>
         </div>

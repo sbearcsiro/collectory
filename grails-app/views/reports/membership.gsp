@@ -16,7 +16,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="50%"/><col width="10%"/></colgroup>
 
                 <tr class="reportGroupTitle"><td>ALA Partner Institutions (${reports.partners.size()})</td>

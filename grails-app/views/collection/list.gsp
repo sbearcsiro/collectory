@@ -8,9 +8,11 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="myList"><g:message code="default.myList.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1 class="inline"><g:message code="default.list.label" args="[entityName]" />
@@ -19,7 +21,7 @@
             <g:if test="${flash.message}"><div class="message">${flash.message}</div></g:if>
             <g:if test="${message}"><div class="message">${message}</div></g:if>
             <div class="list">
-                <table>
+                <table class="table table-striped table-bordered">
                   <colgroup><col width="45%"/><col width="10%"/><col width="35%"/><col width="10%"/></colgroup>
                     <thead>
                         <tr>

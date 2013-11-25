@@ -9,10 +9,12 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create" params="${[returnTo: returnTo]}"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
-            <g:if test="${returnTo}"><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></g:if>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create" params="${[returnTo: returnTo]}"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            <g:if test="${returnTo}"><li><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></li></g:if>
+            </ul>
         </div>
         <div class="body">
             <h1><g:message code="default.show.label" args="[entityName]" /></h1>

@@ -8,8 +8,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
@@ -18,7 +20,7 @@
             </g:if>
 
             <div class="list">
-                <table>
+                <table class="table table-bordered table-striped">
                   <colgroup><col width="75%"/><col width="10%"/><col width="15%"/></colgroup>
                     <thead>
                         <tr>

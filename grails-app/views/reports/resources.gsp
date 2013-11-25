@@ -17,7 +17,7 @@
     </g:if>
 
     <div class="drs">
-        <table>
+        <table class="table table-striped table-bordered">
             <colgroup><col width="53%"/><col width="7%"/><col width="40%"/></colgroup>
             <tr class="reportGroupTitle"><td>All resources (${DataResource.count()})</td><td>UID</td><td>Public archive</td></tr>
             <g:each var='c' in="${DataResource.list([sort: 'name'])}">

@@ -7,8 +7,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <ul>
         </div>
         <div class="body">
             <h1>Collection types</h1>
@@ -18,7 +20,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <col width="49%"/><col width="7%"/><col width="7%"/><col width="7%"/><col width="20%"/><col width="10%"/>
 
                 <tr class="reportGroupTitle"><th>Collection</th><th>preserved</th><th>cellcultures</th><th>living</th><th>other</th><th>noun</th></tr>

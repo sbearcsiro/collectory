@@ -24,7 +24,7 @@
                 <span id="toggle"><a class="button" href='javascript:showEmpty();'>Show resources with no license or permissions documents.</a></span>
                 <span id="toggleAll"><a class="button" href='javascript:hideAll();'>Show all details.</a></span>
               </p>
-              <table class="reports">
+              <table class="reports table table-striped table-bordered">
                 <colgroup width="3"></colgroup>
                 <colgroup width="240"></colgroup>
                 <colgroup span="5" class="center"></colgroup>

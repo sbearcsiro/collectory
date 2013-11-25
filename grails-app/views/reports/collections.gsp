@@ -7,8 +7,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1>Collections report</h1>
@@ -29,7 +31,7 @@
                     <g:link controller="reports" action="collections" params="[simple:'true']">Show collection names only.</g:link></p>
                 </g:else>
 
-              <table>
+              <table class="table table-striped table-bordered">
                 <g:if test="${simple != 'true'}">
                     <colgroup><col width="60%"/><col width="20%"/><col width="10%"/><col width="10%"/></colgroup>
                 </g:if>

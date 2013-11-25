@@ -41,7 +41,9 @@ var maxCollections = 0;
 * initialise the map
 * note this must be called from body.onload() not jQuery document.ready() as the latter is too early
 \************************************************************/
-function initMap(serverUrl) {
+function initMap(serverUrl, centreLat, centreLon) {
+
+    centrePoint = new OpenLayers.LonLat(centreLat, centreLon);
 
     // serverUrl is the base url for the site eg http://collections.ala.org.au in production
     // cannot use relative url as the context path varies with environment
@@ -158,7 +160,6 @@ function initMap(serverUrl) {
 
     // initial data load
     reloadData();
-
 }
 
 /************************************************************\

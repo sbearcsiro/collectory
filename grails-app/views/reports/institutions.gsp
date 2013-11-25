@@ -29,7 +29,7 @@
                     <g:link controller="reports" action="institutions" params="[simple:'true']">Show institution names only.</g:link></p>
                 </g:else>
 
-              <table>
+              <table class="table table-striped table-bordered">
                 <g:if test="${simple != 'true'}">
                     <colgroup><col width="60%"/><col width="20%"/><col width="10%"/><col width="10%"/></colgroup>
                 </g:if>

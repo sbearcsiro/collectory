@@ -17,7 +17,7 @@
             </g:if>
 
             <div id="dps">
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="80%"/><col width="10%"/><col width="10%"/></colgroup>
                 <tr class="reportGroupTitle"><td>All providers (${DataProvider.count()})</td><td>UID</td><td>Resources</td></tr>
                 <g:each var='c' in="${DataProvider.list([sort: 'name'])}">

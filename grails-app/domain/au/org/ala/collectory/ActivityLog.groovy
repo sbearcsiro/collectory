@@ -5,8 +5,6 @@ package au.org.ala.collectory
  */
 class ActivityLog implements Serializable {
 
-    
-
     Date timestamp                              // time of the event
     String user                                 // username
     String entityUid                            // id of the affected record if any

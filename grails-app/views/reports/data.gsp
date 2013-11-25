@@ -16,7 +16,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
 
                 <tr class="reportGroupTitle"><td colspan="3">Totals</td></tr>
@@ -26,8 +26,10 @@
                 <tr><td>Data resources</td><td>${reports.totalDataResources}</td><td></td></tr>
                 <tr><td>Data hubs</td><td>${reports.totalDataHubs}</td><td></td></tr>
                 <tr><td>Contacts</td><td>${reports.totalContacts}</td><td></td></tr>
+              </table>
 
-                <tr class="reportGroupTitle"><td colspan="3">Collection data quality</td></tr>
+              <h3>Collection data quality</h3>
+              <table class="table table-striped table-bordered">
                 <tr><cl:totalAndPercent label="Collections with no collection type" without="${reports.collectionsWithType}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Collections with no focus" without="${reports.collectionsWithFocus}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Collections with no description" without="${reports.collectionsWithDescriptions}" total="${reports.totalCollections}"/></tr>
@@ -37,7 +39,10 @@
                 <tr><cl:totalAndPercent label="Collections with no size" without="${reports.collectionsWithNumRecords}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Collections with no digitised size" without="${reports.collectionsWithNumRecordsDigitised}" total="${reports.totalCollections}"/></tr>
 
-                <tr class="reportGroupTitle"><td colspan="3">Contact summary</td></tr>
+              </table>
+
+              <h3>Contact summary</h3>
+              <table class="table table-striped table-bordered">
                 <tr><cl:totalAndPercent label="Collections with no contacts" with="${reports.collectionsWithoutContacts}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Collections with no email contacts" with="${reports.collectionsWithoutEmailContacts}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Institutions with no contacts" with="${reports.institutionsWithoutContacts}" total="${reports.totalInstitutions}"/></tr>

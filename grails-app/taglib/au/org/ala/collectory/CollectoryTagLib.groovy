@@ -1,5 +1,7 @@
 package au.org.ala.collectory
 
+import groovy.xml.MarkupBuilder
+
 import java.text.NumberFormat
 import java.text.DecimalFormat
 import org.codehaus.groovy.grails.web.util.StreamCharBuffer
@@ -529,7 +531,7 @@ class CollectoryTagLib {
      * Inserts a help button in a <td> element which will toggle the visibility of a help div in the previous <td> element.
      */
     def helpTD = {
-        out << '<td><img class="helpButton" alt="help" src="' + resource(dir:'images/skin', file:'help.gif') + '" onclick="toggleHelp(this);"/></td>'
+        //out << '<td><img class="helpButton" alt="help" src="' + resource(dir:'images/skin', file:'help.gif') + '" onclick="toggleHelp(this);"/></td>'
     }
 
     /**
@@ -602,19 +604,19 @@ class CollectoryTagLib {
             // check collection's membership
             ProviderGroup.networkTypes.each {
                 if (pg.isMemberOf(it)) {
-                    out << "<span class='category'>Member of</span> ${it}"
+                    out << "<span class='label'>Member of ${it} </span> <br/>"
                     // this will be tidied up when hubs are entities
                     if (it == "CHAH") {
-                        out << "<img class='follow' style='padding-left:25px;' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif") + "'/>"
+                        out << "<img class='img-polaroid' style='padding-left:25px;' src='" + resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif") + "'/>"
                     }
                     if (it == "CHAEC") {
-                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png") + "'/>"
+                        out << "<img class='img-polaroid' src='" + resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png") + "'/>"
                     }
                     if (it == "CHAFC") {
-                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chafc.png") + "'/>"
+                        out << "<img class='img-polaroid' src='" + resource(absolute:"true", dir:"data/network/",file:"chafc.png") + "'/>"
                     }
                     if (it == "CHACM") {
-                        out << "<img class='follow' src='" + resource(absolute:"true", dir:"data/network/",file:"chacm.png") + "'/>"
+                        out << "<img class='img-polaroid' src='" + resource(absolute:"true", dir:"data/network/",file:"chacm.png") + "'/>"
                     }
                     out << "<br/>"
                 }
@@ -647,13 +649,28 @@ class CollectoryTagLib {
          <td>${cl.percentIfKnown(dividend:count, divisor:attrs.total)}</td>"""
     }
 
+//    /**
+//     * Inserts a hidden div holding the specified help text.
+//     */
+//    def helpText = { attrs ->
+//        def _default = attrs.default ? attrs.default : ""
+//        def id = attrs.id ? "id='${attrs.id}' " : ""
+//        out << '<div ' + id + 'class="fieldHelp" style="display:none">' + message(code:attrs.code, default: _default) + '</div>'
+//    }
+
     /**
-     * Inserts a hidden div holding the specified help text.
+     * @attr title
+     * @attr printable Is this being printed?
+     * body content should contain the help text
      */
-    def helpText = { attrs ->
+    def helpText = { attrs, body ->
         def _default = attrs.default ? attrs.default : ""
-        def id = attrs.id ? "id='${attrs.id}' " : ""
-        out << '<div ' + id + 'class="fieldHelp" style="display:none">' + message(code:attrs.code, default: _default) + '</div>'
+        def mb = new MarkupBuilder(out)
+        mb.a(href:'#', class:'helphover', 'data-original-title':message(code:attrs.code, default: _default), 'data-content':message(code:attrs.code, default: _default)) {
+            i(class:'icon-question-sign') {
+                mkp.yieldUnescaped("&nbsp;")
+            }
+        }
     }
 
     /**
@@ -738,9 +755,9 @@ class CollectoryTagLib {
 
     def subCollectionDisplay = { attrs ->
         if (attrs.sub?.description) {
-            out << "<span class='subName'>" + attrs.sub?.name + "</span>" + " - " + attrs.sub?.description
+            out << "<strong>" + attrs.sub?.name + "</strong>" + " - " + attrs.sub?.description
         } else {
-            out << "<span class='subName'>" + attrs.sub?.name + "</span>"
+            out << "<strong>" + attrs.sub?.name + "</strong>"
         }
     }
 
@@ -762,7 +779,7 @@ class CollectoryTagLib {
      * Takes the values as java list or JSON string and sets up checkboxes.
      */
     def checkboxSelect = {attrs ->
-        out << "<table class='shy CheckBoxList CheckBoxArray'><tr>"
+        out << "<table class='span8'><tr>"
         //log.info "attrs.value=${attrs.value}"
         attrs.from.eachWithIndex { it, index ->
             def checked
@@ -1546,7 +1563,7 @@ class CollectoryTagLib {
         if (isAuthorisedToEdit(attrs.uid, request.getUserPrincipal()?.attributes?.email)) {
             def paramsMap
             // anchor class
-            paramsMap = [class:'edit']
+            paramsMap = [class:'edit btn']
             // action
             paramsMap << [action: (attrs.containsKey('action')) ? attrs.remove('action').toString() : 'edit']
             // optional controller
@@ -1666,18 +1683,18 @@ class CollectoryTagLib {
     }
 
     def viewPublicLink = { attrs, body ->
-        out << link(class:"preview", controller:"public", action:'show', id:attrs.uid) { "<img class='ala' alt='ala' src='${resource(dir:"images", file:"favicon.gif")}'/>View public page" }
+        out << link(class:"preview", controller:"public", action:'show', id:attrs.uid) { "<img class='ala' alt='ala' src='${resource(dir:"images", file:"favicon.gif")}'/> View public page" }
     }
 
     def jsonSummaryLink = { attrs, body ->
         // have to use this method rather than 'link' so we can specify the accept format as json
-        out << "<a class='json' href='${resource(dir:"lookup",file:"summary/${attrs.uid}.json")}'><img class='json' alt='summary' src='${resource(dir:"images", file:"json.png")}'/>View summary</a>"
+        out << "<a class='json' href='${resource(dir:"lookup",file:"summary/${attrs.uid}.json")}'><img class='json' alt='summary' src='${resource(dir:"images", file:"json.png")}'/> View summary</a>"
     }
 
     def jsonDataLink = { attrs, body ->
         def uri = "${ConfigurationHolder.config.grails.serverURL}/ws/${ProviderGroup.urlFormFromUid(attrs.uid)}/${attrs.uid}.json"
         // have to use this method rather than 'link' so we can specify the accept format as json
-        out << "<a class='json' href='${uri}'><img class='json' alt='json' src='${resource(dir:"images", file:"json.png")}'/>View raw data</a>"
+        out << "<a class='json' href='${uri}'><img class='json' alt='json' src='${resource(dir:"images", file:"json.png")}'/> View raw data</a>"
     }
 
     def viewLink = {attrs, body ->
@@ -2003,7 +2020,7 @@ class CollectoryTagLib {
                 obj = obj[attrs.key]
             }
             def list = obj.collect {it.toString()}
-            out << '<p><span class="category">Range:</span> ' + list.join(', ') + '</p>'
+            out << '<p><span class="label">Range:</span> ' + list.join(', ') + '</p>'
         }
     }
 

@@ -1,5 +1,5 @@
 <%@ page import="au.org.ala.collectory.Collection; au.org.ala.collectory.DataHub; au.org.ala.collectory.DataResource; au.org.ala.collectory.DataProvider; au.org.ala.collectory.Institution" %>
-<div class="show-section">
+<div class="show-section  well">
   <g:if test="${instance instanceof Collection}">
     <g:set var="dir" value="data/collection"/>
   </g:if>
@@ -17,12 +17,12 @@
   </g:elseif>
   <h2>${title}</h2>
   <g:if test="${fieldValue(bean: image, field: 'file')}">
-    <img class="showImage" alt="${fieldValue(bean: image, field: "file")}"
+    <img class="showImage img-polaroid" alt="${fieldValue(bean: image, field: "file")}"
         src="${resource(absolute: "true", dir: dir, file: image.file)}"/>
-    <p class="caption">${fieldValue(bean: image, field: "file")}</p>
-    <cl:formattedText pClass="caption">${fieldValue(bean: image, field: "caption")}</cl:formattedText>
-    <p class="caption">${fieldValue(bean: image, field: "attribution")}</p>
-    <p class="caption">${fieldValue(bean: image, field: "copyright")}</p>
+    <p class="caption"><span class="label">File name:</span> ${fieldValue(bean: image, field: "file")}</p>
+    <cl:formattedText pClass="caption"><span class="label">Caption:</span> ${fieldValue(bean: image, field: "caption")}</cl:formattedText>
+    <p class="caption"><span class="label">Attribution:</span> ${fieldValue(bean: image, field: "attribution")}</p>
+    <p class="caption"><span class="label">Copyright:</span> ${fieldValue(bean: image, field: "copyright")}</p>
   </g:if>
 
   <div style="clear:both;"></div>

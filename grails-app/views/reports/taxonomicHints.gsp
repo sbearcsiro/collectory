@@ -16,7 +16,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <col width="55%"/><col width ="5%"/><col width="40%"/>
 
                 <tr class="reportGroupTitle"><th>Collection</th><th>Acronym</th><th>Taxonomic hint</th></tr>

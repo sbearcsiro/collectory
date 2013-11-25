@@ -665,8 +665,9 @@ class CollectoryTagLib {
      */
     def helpText = { attrs, body ->
         def _default = attrs.default ? attrs.default : ""
+        def helpTitle = message(code:attrs.code+".title", default: '')
         def mb = new MarkupBuilder(out)
-        mb.a(href:'#', class:'helphover', 'data-original-title':message(code:attrs.code, default: _default), 'data-content':message(code:attrs.code, default: _default)) {
+        mb.a(href:'#', class:'helphover', 'data-original-title':helpTitle, 'data-content':message(code:attrs.code, default: _default)) {
             i(class:'icon-question-sign') {
                 mkp.yieldUnescaped("&nbsp;")
             }

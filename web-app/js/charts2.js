@@ -942,12 +942,12 @@ var taxonomyChart = {
             dataType: 'jsonp',
             timeout: 30000,
             complete: function(jqXHR, textStatus) {
-                if (textStatus == 'timeout') {
-                    alert('Sorry - the request was taking too long so it has been cancelled.');
-                }
-                if (textStatus == 'error') {
-                    alert('Sorry - the chart cannot be redrawn due to an error.');
-                }
+//                if (textStatus == 'timeout') {
+//                    alert('Sorry - the request was taking too long so it has been cancelled.');
+//                }
+//                if (textStatus == 'error') {
+//                    alert('Sorry - the chart cannot be redrawn due to an error.');
+//                }
                 if (textStatus != 'success') {
                     thisChart.cleanUp();
                 }

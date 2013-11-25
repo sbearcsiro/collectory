@@ -5,7 +5,7 @@
         <meta name="layout" content="main" />
         <title><g:message code="collection.base.label" default="Edit collection metadata" /></title>
     </head>
-    <body id="content">
+    <body id="body-wrapper">
         <div class="nav">
           <g:if test="${mode == 'create'}">
             <h1>Creating a new collection</h1>

@@ -6,7 +6,7 @@
 // the map
 var map;
 
-// the spherical mercator projection
+// the WGS projection
 var proj = new OpenLayers.Projection("EPSG:4326");
 
 // projection options for interpreting GeoJSON data
@@ -41,16 +41,16 @@ var maxCollections = 0;
 * initialise the map
 * note this must be called from body.onload() not jQuery document.ready() as the latter is too early
 \************************************************************/
-function initMap(serverUrl, centreLat, centreLon) {
+function initMap(mapOptions) {
 
-    centrePoint = new OpenLayers.LonLat(centreLat, centreLon);
+    centrePoint = new OpenLayers.LonLat(mapOptions.centreLon, mapOptions.centreLat);
 
     // serverUrl is the base url for the site eg http://collections.ala.org.au in production
     // cannot use relative url as the context path varies with environment
-    baseUrl = serverUrl;
-    var featureGraphicUrl = baseUrl + "/images/map/orange-dot.png";
-    var clusterGraphicUrl = baseUrl + "/images/map/orange-dot-multiple.png";
-    featuresUrl = baseUrl + "/public/mapFeatures";
+    baseUrl = mapOptions.serverUrl;
+    var featureGraphicUrl = mapOptions.serverUrl + "/images/map/orange-dot.png";
+    var clusterGraphicUrl = mapOptions.serverUrl + "/images/map/orange-dot-multiple.png";
+    featuresUrl = mapOptions.serverUrl + "/public/mapFeatures";
 
     // create the map
     map = new OpenLayers.Map('map_canvas', {
@@ -59,12 +59,12 @@ function initMap(serverUrl, centreLat, centreLon) {
         projection: 'EPSG:3857',
         layers: [
             new OpenLayers.Layer.Google(
-                "Google Physical",
-                {type: google.maps.MapTypeId.TERRAIN}
-            ),
-            new OpenLayers.Layer.Google(
                 "Google Streets", // the default
                 {numZoomLevels: 20}
+            ),
+            new OpenLayers.Layer.Google(
+                "Google Physical",
+                {type: google.maps.MapTypeId.TERRAIN}
             ),
             new OpenLayers.Layer.Google(
                 "Google Hybrid",

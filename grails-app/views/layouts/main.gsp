@@ -57,6 +57,8 @@
                     $(this).find("span").html("Desktop");
                 }
             });
+
+            $('.helphover').popover({animation: true, trigger:'hover'});
         });
     </r:script>
     <r:layoutResources/>

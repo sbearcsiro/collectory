@@ -4,13 +4,18 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <title>Natural History Collections | Atlas of Living Australia</title>
-        <script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3&amp;sensor=false"></script>
+        <script src="https://maps.google.com/maps/api/js?v=3&sensor=true"></script>
         <r:require modules="bigbuttons,bbq,openlayers,map"/>
         <script type="text/javascript">
           var altMap = true;
+          var COLLECTIONS_MAP_OPTIONS = {
+              serverUrl: "${grailsApplication.config.grails.serverURL}",
+              centreLat:${grailsApplication.config.grails.centreMapLat?:'-28.2'},
+              centreLon:${grailsApplication.config.grails.centreMapLon?:'134'}
+          }
         </script>
     </head>
-    <body id="page-collections-map" onload="initMap('${grailsApplication.config.grails.serverURL}', ${grailsApplication.config.grails.centreMapLat?:'-28.2'}, ${grailsApplication.config.grails.centreMapLon?:'134'})">
+    <body id="page-collections-map" onload="initMap(COLLECTIONS_MAP_OPTIONS)">
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->

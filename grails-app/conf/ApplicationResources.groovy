@@ -35,7 +35,7 @@ modules = {
         resource url: 'js/jquery.ba-bbq.min.js'
     }
     openlayers {
-        resource url: 'http://openlayers.org/dev/OpenLayers.js'
+        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers.js'
         resource url: 'js/OpenLayers/theme/default/style.css'
     }
     map {

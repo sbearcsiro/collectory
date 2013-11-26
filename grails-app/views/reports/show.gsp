@@ -7,7 +7,9 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1>Reports</h1>

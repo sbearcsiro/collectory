@@ -7,8 +7,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1>Collection taxonomic hints (used to constrain name matching)</h1>

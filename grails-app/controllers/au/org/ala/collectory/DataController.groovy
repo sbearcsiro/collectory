@@ -251,13 +251,9 @@ class DataController {
     }
 
     def serveFile = {
-
         def dirpath =  "/" + params.directory + "/"
         def idx = request.forwardURI.lastIndexOf(dirpath) + dirpath.length()
-
         def fullFileName = request.forwardURI.substring(idx)
-        println "Full file name: $fullFileName"
-        println "Directory: $params.directory Filename: $params.file, Extension: $request.format"
         def file = new File(grailsApplication.config.repository.location.images + File.separator + params.directory, fullFileName)
         if(file.exists()){
             if(fullFileName.endsWith(".json")){
@@ -265,7 +261,6 @@ class DataController {
             }
             response.outputStream << file.bytes
            // return null
-
         } else {
             response.status = 404
            // return null

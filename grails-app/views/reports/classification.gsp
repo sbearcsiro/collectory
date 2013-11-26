@@ -19,7 +19,7 @@
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <table>
+              <table class="table table-striped table-bordered">
                 <col width="55%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/>
 
                 <tr class="reportGroupTitle"><th>Collection</th><th>Acronym</th><th>Herbaria</th><th>Fauna</th><th>Ento</th><th>Microbes</th></tr>

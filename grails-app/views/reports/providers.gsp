@@ -7,8 +7,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list">Reports</g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1>Data providers report</h1>
@@ -31,7 +33,7 @@
             </div>
 
             <div class="drs">
-              <table>
+              <table class="table table-striped table-bordered">
                 <colgroup><col width="53%"/><col width="7%"/><col width="30%"/><col width="10%"/></colgroup>
                 <tr class="reportGroupTitle"><td>All resources (${DataResource.count()})</td><td>UID</td><td>Provider</td><td>Institution</td></tr>
                 <g:each var='c' in="${DataResource.list([sort: 'name'])}">

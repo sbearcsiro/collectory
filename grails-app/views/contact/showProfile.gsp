@@ -94,8 +94,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateProfile" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancelProfile" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" name="_action_updateProfile" value="Update" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancelProfile" value="Cancel" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

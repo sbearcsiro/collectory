@@ -15,14 +15,24 @@
   <g:elseif test="${instance instanceof DataHub}">
     <g:set var="dir" value="data/dataHub"/>
   </g:elseif>
-  <h2>${title}</h2>
+
+  <h2>${title?:'Not title provided'}</h2>
+
   <g:if test="${fieldValue(bean: image, field: 'file')}">
-    <img class="showImage img-polaroid" alt="${fieldValue(bean: image, field: "file")}"
-        src="${resource(absolute: "true", dir: dir, file: image.file)}"/>
-    <p class="caption"><span class="label">File name:</span> ${fieldValue(bean: image, field: "file")}</p>
-    <cl:formattedText pClass="caption"><span class="label">Caption:</span> ${fieldValue(bean: image, field: "caption")}</cl:formattedText>
-    <p class="caption"><span class="label">Attribution:</span> ${fieldValue(bean: image, field: "attribution")}</p>
-    <p class="caption"><span class="label">Copyright:</span> ${fieldValue(bean: image, field: "copyright")}</p>
+
+    <div class="media">
+      <a class="pull-left" href="#">
+        <img class="showImage img-polaroid" alt="${fieldValue(bean: image, field: "file")}"
+            src="${resource(absolute: "true", dir: dir, file: image.file)}"/>
+      </a>
+      <div class="media-body">
+        <span class="category">File name:</span> ${fieldValue(bean: image, field: "file")} </br/>
+        <span class="category">Caption:</span> ${fieldValue(bean: image, field: "caption")} <br/>
+        <span class="category">Attribution:</span> ${fieldValue(bean: image, field: "attribution")}<br/>
+        <span class="category">Copyright:</span> ${fieldValue(bean: image, field: "copyright")}<br/>
+      </div>
+    </div>
+
   </g:if>
 
   <div style="clear:both;"></div>

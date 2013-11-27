@@ -264,8 +264,8 @@
             /* this expands lists of urls into an array of text inputs */
 
             // create a delete element that removes the element before it and itself
-            var deleteImageUrl = "${resource(dir:'/images/ala',file:'delete.png')}";
-            var $deleteLink = $('<img src="' + deleteImageUrl + '" alt="delete"/>')
+            %{--var deleteImageUrl = "${resource(dir:'/images/ala',file:'delete.png')}";--}%
+            var $deleteLink = $('<span class="delete btn btn-danger"><i class="icon icon-remove icon-white"></i> Remove</span>')
                     .click(function() {
                         $(this).prev().remove();
                         $(this).remove();
@@ -288,7 +288,7 @@
                             $(obj).clone()
                                 .val(url.trim())
                                 .css('width','93%')
-                                .insertAfter($(obj).parent().children('input,img').last())
+                                .insertAfter($(obj).parent().children('input,span').last())
                                 .after($deleteLink.clone(true));
                         }
                     });
@@ -297,8 +297,8 @@
 
             /* this injects 'add another' functionality to urls */
             $.each(urlInputs, function(i, obj) {
-                $('<span class="link under">Add another</span>')
-                        .insertAfter($(obj).parent().children('input,img').last())
+                $('<span class="clearfix link under btn">Add another</span>')
+                        .insertAfter($(obj).parent().children('input,span').last())
                         .click(function() {
                             // clone the original input
                             var $clone = $(obj).clone();

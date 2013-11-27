@@ -42,13 +42,13 @@
                 <cl:partner test="${instance.isALAPartner}"/><br/>
 
                 <!-- GUID    -->
-                <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
-                <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -61,7 +61,7 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base"/>
               </div>
@@ -70,27 +70,31 @@
               <div class="show-section well">
                 <!-- Pub Desc -->
                 <h2>Description</h2>
-                <div class="source">[Public description]</div><div style="clear:both;"></div>
-                <cl:formattedText body="${instance.pubDescription}"/>
+                <span class="category">Public description</span><br/>
+                <cl:formattedText body="${instance.pubDescription?:'Not provided'}"/>
 
                 <!-- Tech Desc -->
-                <div class="source">[Technical description]</div><div style="clear:both;"></div>
-                <cl:formattedText body="${instance.techDescription}"/>
+                <span class="category">Technical description</span><br/>
+                <cl:formattedText body="${instance.techDescription?:'Not provided'}"/>
 
                 <!-- Contribution -->
-                <div class="source">[Contribution]</div><div style="clear:both;"></div>
-                <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
+                <span class="category">Contribution</span><br/>
+                <cl:formattedText body="${instance.focus?:'Not provided'}"/>
 
+                <cl:editButton uid="${instance.uid}" page="description"/>
+              </div>
+
+              <div class="well">
                 <!-- Resources -->
                 <h2>Data resources</h2>
                 <ul class='fancy'>
                   <g:each in="${instance.getResources().sort{it.name}}" var="c">
                       <li><g:link controller="dataResource" action="show" id="${c.uid}">${c?.name}</g:link></li>
                   </g:each>
-                  <li><g:link controller="dataResource" action="create" params='[dataProviderUid: "${instance.uid}"]'>create a new data resource for this provider</g:link></li>
                 </ul>
-
-                <cl:editButton uid="${instance.uid}" page="description"/>
+                <p>
+                    <g:link controller="dataResource"  class="btn" action="create" params='[dataProviderUid: "${instance.uid}"]'>create a new data resource for this provider</g:link>
+                </p>
               </div>
 
               <!-- images -->

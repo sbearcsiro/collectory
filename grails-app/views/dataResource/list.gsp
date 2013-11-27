@@ -13,7 +13,7 @@
             <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
             </ul>
         </div>
-        <div class="body">
+        <div class="body content">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -53,7 +53,7 @@
                 </table>
             </div>
 
-            <div class="paginateButtons">
+            <div class="pagination">
                 <g:paginate action="list" total="${instanceTotal}" />
             </div>
         </div>

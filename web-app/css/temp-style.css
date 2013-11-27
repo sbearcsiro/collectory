@@ -269,3 +269,5 @@ ul.facets {
     max-width:80%;
 }
 
+.category { font-weight:bold; min-width: 120px; }
+.category-large { font-weight:bold; min-width: 180px;  }

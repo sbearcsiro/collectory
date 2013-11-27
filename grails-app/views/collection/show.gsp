@@ -41,6 +41,7 @@
   <div class="dialog emulate-public">
     <!-- base attributes -->
     <div class="show-section well titleBlock">
+
       <!-- Name --><!-- Acronym -->
       <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
@@ -49,13 +50,13 @@
       <cl:partner test="${instance.institution?.isALAPartner}"/><br/>
 
       <!-- GUID    -->
-      <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+      <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
       <!-- UID    -->
-      <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+      <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
       <!-- Web site -->
-      <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+      <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
       <!-- Networks -->
       <g:if test="${instance.networkMembership}">
@@ -68,7 +69,7 @@
       </g:if>
 
       <!-- last edit -->
-      <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+      <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
       <cl:editButton uid="${instance.uid}" page="/shared/base" notAuthorisedMessage="Not authorised to edit."/>
     </div>
@@ -77,26 +78,27 @@
     <div class="show-section well">
       <!-- Pub Desc -->
       <h2>Description</h2>
-      <div class="label">Public description</div><div style="clear:both;"></div>
+
+      <span class="category">Public description</span><br/>
       <cl:formattedText body="${instance.pubDescription}"/>
 
       <!-- Tech Desc -->
-      <div class="label">Technical description</div><div style="clear:both;"></div>
+      <span class="category">Technical description</span><br/>
       <cl:formattedText body="${instance.techDescription}"/>
-      <div class="label">Start/End dates</div><div style="clear:both;"></div>
+      <span class="category">Start/End dates</span>
       <g:if test="${instance.startDate || instance.endDate}">
           <p><cl:temporalSpanText start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/></p>
       </g:if>
       
       <!-- Collection types -->
-      <p><span class="label">Collection types include:</span>
+      <p><span class="category">Collection types include:</span>
       <cl:JSONListAsStrings json='${instance.collectionType}'/>.</p>
 
       <!-- Active -->
-      <p><span class="label">Activity status is:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
+      <p><span class="category">Activity status is:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
 
       <!-- Keywords -->
-      <p><span class="label">Keywords:</span> are not directly displayed but are used for searching and filtering.
+      <p><span class="category">Keywords:</span> are not directly displayed but are used for searching and filtering.
         These keywords have been added for this collection: <cl:valueOrOtherwise value="${instance.listKeywords().join(', ')}" otherwise="none"/>.
         <g:if test="${!instance.listKeywords().contains('fauna')}">
           (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']">Add fauna</g:link>)
@@ -132,19 +134,19 @@
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Geo descrip -->
         <tr class="prop">
-          <td valign="top" class="label"><g:message code="geographicDescription.label" default="Geographic Description"/></td>
+          <td valign="top" class="category"><g:message code="geographicDescription.label" default="Geographic Description"/></td>
           <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: instance, field: "geographicDescription")}</cl:formattedText></td>
         </tr>
 
         <!-- States -->
         <tr class="prop">
-          <td valign="top" class="label"><g:message code="states.label" default="States covered"/></td>
+          <td valign="top" class="category"><g:message code="states.label" default="States covered"/></td>
           <td valign="top" class="value">${fieldValue(bean: instance, field: "states")}</td>
         </tr>
 
         <!-- Extent -->
         <tr class="prop">
-          <td valign="top" class="label">Specimens were collected<br/> within these bounds</td>
+          <td valign="top" class="category">Specimens were collected<br/> within these bounds</td>
           <td valign="top" class="value">
             <table class="table table-bordered">
               <colgroup><col width="30%"/><col width="40%"/><col width="30%"/></colgroup>
@@ -162,19 +164,19 @@
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Focus   -->
         <tr class="prop">
-          <td valign="top" class="label"><g:message code="focus.label" default="Collection focus"/></td>
+          <td valign="top" class="category"><g:message code="focus.label" default="Collection focus"/></td>
           <td valign="top" class="value"><cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText></td>
         </tr>
 
         <!-- Kingdom cover-->
         <tr class="prop">
-          <td valign="top" class="label"><g:message code="kingdomCoverage.label" default="Kingdom Coverage"/></td>
+          <td valign="top" class="category"><g:message code="kingdomCoverage.label" default="Kingdom Coverage"/></td>
           <td valign="top" class="checkbox"><cl:checkBoxList readonly="true" name="kingdomCoverage" from="${Collection.kingdoms}" value="${instance?.kingdomCoverage}" /></td>
         </tr>
 
         <!-- sci names -->
         <tr class="prop">
-          <td valign="top" class="label"><g:message code="scientificNames.label" default="Scientific Names"/></td>
+          <td valign="top" class="category"><g:message code="scientificNames.label" default="Scientific Names"/></td>
           <td valign="top" class="value"><cl:JSONListAsStrings json='${fieldValue(bean: instance, field: "scientificNames")}'/></td>
         </tr>
       </table>

@@ -1,5 +1,6 @@
 package au.org.ala.collectory
 
+import groovy.json.JsonSlurper
 import groovy.xml.MarkupBuilder
 
 import java.text.NumberFormat
@@ -805,7 +806,13 @@ class CollectoryTagLib {
             out << attrs.value
         }
     }
-    
+
+    def formatJsonList = { attrs ->
+       def js = new JsonSlurper()
+       def list = js.parseText(attrs.value.toString())
+       out << list.join(", ")
+    }
+
     /**
      * Formats free text so:
      *  line feeds are honoured
@@ -1739,10 +1746,10 @@ class CollectoryTagLib {
                 out << imageHtml
             }
             else if (image) {
-                out << "${display.display} ${attrs.version} Australia (${license}) ${imageHtml}"
+                out << "${display.display?:'No licence specified'} ${attrs.version?:''} Australia (${license}) ${imageHtml}"
             }
             else {
-                out << "${display.display} ${attrs.version} Australia (${license})"
+                out << "${display.display?:'No licence specified'} ${attrs.version?:''} Australia (${license})"
             }
         }
     }
@@ -1752,7 +1759,7 @@ class CollectoryTagLib {
         if (attrs.connectionParameters?.toString()) {
 
             // create a table to display them
-            out << "<table class='valueTable'><colgroup><col width='30%'/><col width='70%'/></colgroup>"
+            out << "<dl class='dl-horizontal'>"
 
             // parse the storage string
             def cp = JSON.parse(attrs.connectionParameters.toString())
@@ -1761,7 +1768,7 @@ class CollectoryTagLib {
             def profile = metadataService.getConnectionProfile(cp.protocol)
 
             // display the protocol
-            out << "<tr><td>Protocol:</td><td>${profile.display}</td></tr>"
+            out << "<dt>Protocol:</dt><dd>${profile.display}</dd>"
 
             // display each of the protocol's parameters
             profile.params.each {pp ->
@@ -1778,9 +1785,9 @@ class CollectoryTagLib {
                     // encode any control characters
                     value = encodeControlChars(cp."${pp.paramName}")
                 }
-                out << "<tr><td>${pp.display}:</td><td>" + (value ?: '') + "</td></tr>"
+                out << "<dt>${pp.display}:</dt><dd>" + (value ?: '') + "</dd>"
             }
-            out << "</table>"
+            out << "</dl>"
         }
         else {
             out << "none"
@@ -1847,7 +1854,7 @@ class CollectoryTagLib {
             boolean selected = (it.name == cp?.protocol)
             String hidden = selected ? '' : "display:none;"
 
-            it.params.each {ppName ->
+            it.params.each { ppName ->
 
                 def pp = metadataService.getConnectionParameter(ppName)
 
@@ -1875,8 +1882,12 @@ class CollectoryTagLib {
                 }
                 if (pp.paramName == "termsForUniqueKey") {
                     // handle terms specially
-                    out << """<tr class='labile' id="${it.name}" style="${hidden}"><td class='be-careful text-error' colspan='2'>
-                        Don't change the following terms unless you know what you are doing. Incorrect values can cause major devastation.</td></tr>
+                    out << """<tr class='labile' id="${it.name}" style="${hidden}">
+                                  <td class='be-careful' colspan='2'>
+                                        <span class='label label-important'>Don't change the following terms unless you know what you are doing.
+                                        Incorrect values can cause major devastation.</span>
+                                  </td>
+                               </tr>
                         <tr class="prop labile" style="${hidden}" id="${it.name}">
                         <td valign="top" class="name"
                           <label for="termsForUniqueKey">${pp.display}</label>
@@ -1885,8 +1896,20 @@ class CollectoryTagLib {
                             textField(attributes) +
                             helpText(code:'dataResource.termsForUniqueKey') +
                         "</td>" +  helpTD() + "</tr>"
-                }
-                else {
+//                } else if (pp.paramName == "url") {
+//                    out << """<tr class="prop labile" style="${hidden}" id="${it.name}">
+//                        <td valign="top" class="name"
+//                          <label for="${pp.paramName}">${pp.display}</label>
+//                        </td>
+//                        <td valign="top" class="value">
+//                            <div class="inputForUrl">
+//                               """+  textField(attributes) + """
+//                               <div class="additionalInputs"></div>
+//                               <div class="addAnotherInputs"></div>
+//                            </div>
+//                        </td>" +  helpTD() + "</tr>"
+//
+                } else {
                     // all others
                     def widget
                     switch (pp.type) {

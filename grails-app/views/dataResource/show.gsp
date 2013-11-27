@@ -52,20 +52,20 @@
 
                 <!-- Institution -->
                 <g:if test="${instance.institution}">
-                  <p><span class="label">Source of records:</span> <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
+                  <p><span class="category">Source of records: </span> <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
                 </g:if>
 
                 <!-- GUID    -->
-                <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category">LSID: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
-                <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category">UID: </span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- type -->
-                <p><span class="label">Resource type:</span> ${fieldValue(bean: instance, field: "resourceType")}</p>
+                <p><span class="category">Resource type: </span> ${fieldValue(bean: instance, field: "resourceType")}</p>
 
                 <!-- Web site -->
-                <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category">Website: </span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -78,7 +78,7 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category">Last change: </span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base" notAuthorisedMessage="You are not authorised to edit this resource."/>
               </div>
@@ -88,25 +88,25 @@
                 <h2>Description</h2>
 
                 <!-- Pub Desc -->
-                <div class="label">Public description:</div><div style="clear:both;"></div>
-                <cl:formattedText body="${instance.pubDescription}"/>
+                <span class="category">Public description</span><br/>
+                <cl:formattedText body="${instance.pubDescription?:'Not provided'}"/>
 
                 <!-- Tech Desc -->
-                <div class="label">Technical description:</div><div style="clear:both;"></div>
-                <cl:formattedText body="${instance.techDescription}"/>
+                <span class="category">Technical description</span><br/>
+                <cl:formattedText body="${instance.techDescription?:'Not provided'}"/>
 
                 <!-- Focus -->
-                <div class="label">Focus:</div><div style="clear:both;"></div>
-                <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
+                <span class="category">Focus</span><br/>
+                <cl:formattedText>${instance.focus?:'Not provided'}</cl:formattedText>
 
                 <!-- generalisations -->
-                <p><span class="label">Data generalisations:</span> ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
+                <p><span class="category">Data generalisations: </span> ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
 
                 <!-- info withheld -->
-                <p><span class="label">Information withheld:</span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
+                <p><span class="category">Information withheld: </span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
                 <!-- content types -->
-                <p><span class="label">Content types:</span> ${fieldValue(bean: instance, field: "contentTypes")}</p>
+                 <p><span class="category">Content types: </span> <cl:formatJsonList value="${fieldValue(bean: instance, field: "contentTypes")}"/></p>
 
                 <cl:editButton uid="${instance.uid}" page="description"/>
               </div>
@@ -126,49 +126,52 @@
                 <h2>Data mobilisation</h2>
 
                 <!-- contributor -->
-                <p><span class="label">Atlas contributor:</span><cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
+                <p><span class="category">Atlas contributor: </span><cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
 
                 <!-- status -->
-                <p><span class="label">Status:</span> ${fieldValue(bean: instance, field: "status")}</p>
+                <p><span class="category">Status: </span> ${fieldValue(bean: instance, field: "status")}</p>
 
                 <!-- provenance -->
-                <p><span class="label">Provenance:</span> ${fieldValue(bean: instance, field: "provenance")}</p>
+                <p><span class="category">Provenance: </span> ${fieldValue(bean: instance, field: "provenance")}</p>
 
                 <!-- last checked -->
-                <p><span class="label">Last checked:</span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
+                <p><span class="category">Last checked: </span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
 
                 <!-- data currency -->
-                <p><span class="label">Data currency:</span> ${fieldValue(bean: instance, field: "dataCurrency")}</p>
+                <p><span class="category">Data currency: </span> ${fieldValue(bean: instance, field: "dataCurrency")}</p>
 
                 <!-- harvest frequency -->
-                <p><span class="label">Harvest frequency:</span>
+                <p><span class="category">Harvest frequency: </span>
                     <g:if test="${instance.harvestFrequency}">
                         Every ${instance.harvestFrequency} days.</p>
                     </g:if>
                     <g:else>Manual</g:else>
 
                 <!-- mobilisation notes -->
-                <p><span class="label">Mobilisation notes:</span> ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
+                <p><span class="category">Mobilisation notes: </span> ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
 
                 <!-- harvesting notes -->
-                <p><span class="label">Harvesting notes:</span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
+                <p><span class="category">Harvesting notes: </span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
 
                 <!-- public archive available -->
-                <p><span class="label">Public archive available:</span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
+                <p><span class="category">Public archive available: </span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
 
                 <!-- connection parameters -->
-                <p><span class="label">Connection parameters:</span> <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
+                <h3>Connection parameters</h3>
+
+                <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
 
                 <g:if test="${instance.resourceType == 'records'}">
                     <!-- darwin core defaults -->
                     <g:set var="dwc" value="${instance.defaultDarwinCoreValues ? JSON.parse(instance.defaultDarwinCoreValues) : [:]}"/>
-                    <p><span class="label">Default values for DwC fields:</span>
-                        <g:if test="${!dwc}">none</g:if></p>
-                        <table class="valueTable"><colgroup><col width="30%"><col width="70%"></colgroup><tbody>
+                    <h4>Default values for DwC fields</h4>
+                        <g:if test="${!dwc}">none</g:if>
+                        <dl class="dl-horizontal">
                         <g:each in="${dwc.entrySet()}" var="dwct">
-                            <tr><td>${dwct.key}:</td><td>${dwct.value}</td></tr>
+                            <dt>${dwct.key}:</dt><dd>${dwct.value}</dd>
                         </g:each>
-                        </tbody></table>
+                        </dl>
+
                 </g:if>
 
                 <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
@@ -181,19 +184,19 @@
                 <h2>Citation and rights</h2>
 
                 <!-- citation -->
-                <p><span class="label">Citation:</span> ${fieldValue(bean: instance, field: "citation")}</p>
+                <p><span class="category">Citation: </span> ${fieldValue(bean: instance, field: "citation")}</p>
 
                 <!-- rights -->
-                <p><span class="label">Rights:</span> ${fieldValue(bean: instance, field: "rights")}</p>
+                <p><span class="category">Rights: </span> ${fieldValue(bean: instance, field: "rights")}</p>
 
                 <!-- license -->
-                <p><span class="label">License type:</span> <cl:displayLicenseType type="${instance.licenseType}"/></p>
+                <p><span class="category">License type: </span> <cl:displayLicenseType type="${instance.licenseType}"/></p>
 
                 <!-- license version -->
-                <p><span class="label">License version:</span> ${fieldValue(bean: instance, field: "licenseVersion")}</p>
+                <p><span class="category">License version: </span> ${fieldValue(bean: instance, field: "licenseVersion")}</p>
 
                 <!-- permissions document -->
-                <p><span class="label">Permissions document:</span>
+                <p><span class="category">Permissions document: </span>
                     <g:if test="${instance.permissionsDocument?.startsWith('http://') || instance.permissionsDocument?.startsWith('https://')}">
                         <g:link class="external_icon" target="_blank" url="${instance.permissionsDocument}">${fieldValue(bean: instance, field: "permissionsDocument")}</g:link>
                     </g:if>
@@ -203,16 +206,16 @@
                 </p>
 
                 <!-- permissions document type -->
-                <p><span class="label">Permissions document type:</span> ${fieldValue(bean: instance, field: "permissionsDocumentType")}</p>
+                <p><span class="category">Permissions document type: </span> ${fieldValue(bean: instance, field: "permissionsDocumentType")}</p>
 
                 <!-- DPA flags -->
                 <g:if test="${instance.permissionsDocumentType == 'Data Provider Agreement'}">
-                    <p><span class="label">Risk assessment completed:</span><cl:tickOrCross test="${instance.riskAssessment}">yes|no</cl:tickOrCross></p>
-                    <p><span class="label">Document filed:</span><cl:tickOrCross test="${instance.filed}">yes|no</cl:tickOrCross></p>
+                    <p><span class="category">Risk assessment completed: </span><cl:tickOrCross test="${instance.riskAssessment}">yes|no</cl:tickOrCross></p>
+                    <p><span class="category">Document filed: </span><cl:tickOrCross test="${instance.filed}">yes|no</cl:tickOrCross></p>
                 </g:if>
 
                 <!-- download limit -->
-                <p><span class="label">Download limit:</span> ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
+                <p><span class="category">Download limit: </span> ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
 
                 <cl:editButton uid="${instance.uid}" page="rights"/>
               </div>

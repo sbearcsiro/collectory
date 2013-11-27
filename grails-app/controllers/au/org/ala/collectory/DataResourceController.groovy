@@ -57,6 +57,10 @@ class DataResourceController extends ProviderGroupController {
         }
     }
 
+    boolean isCollectionOrArray(object) {
+        [Collection, Object[]].any { it.isAssignableFrom(object.getClass()) }
+    }
+
     def updateContribution = {
         def pg = get(params.id)
 
@@ -75,8 +79,7 @@ class DataResourceController extends ProviderGroupController {
             else if (params."${pp.paramName}") {
                 if (pp.paramName == 'termsForUniqueKey') {
                     cp."${pp.paramName}" = params."${pp.paramName}".tokenize(', ')
-                }
-                else if (pp.type == 'delimiter') {
+                } else if (pp.type == 'delimiter') {
                     def str = params."${pp.paramName}"
                     str = str.replaceAll('HT', PP.HT_CHAR)
                     str = str.replaceAll('LF', PP.LF_CHAR)
@@ -84,8 +87,19 @@ class DataResourceController extends ProviderGroupController {
                     str = str.replaceAll('FF', PP.FF_CHAR)
                     str = str.replaceAll('CR', PP.CR_CHAR)
                     cp."${pp.paramName}" = str
-                }
-                else {
+                } else if(pp.paramName == 'url') {
+                    if(isCollectionOrArray(params.url)){
+                        def normalised = []
+                        params.url.each {
+                           if(it.trim().length() > 0){
+                             normalised << it.trim()
+                           }
+                        }
+                        cp.url = normalised.toSet()
+                    } else {
+                        cp.url = params.url
+                    }
+                } else {
                     cp."${pp.paramName}" = params."${pp.paramName}"
                 }
             }

@@ -101,7 +101,7 @@
     <div class="buttons">
       <g:form>
         <g:hiddenField name="id" value="${command.id}"/>
-        <span class="button"><g:link class="returnAction" controller="${command.urlForm()}" action='show' id="${command.id}">Return to ${command.name}</g:link></span>
+        <span class="button"><g:link class="returnAction btn" controller="${command.urlForm()}" action='show' id="${command.id}">Return to ${command.name}</g:link></span>
       </g:form>
     </div>
   </div>

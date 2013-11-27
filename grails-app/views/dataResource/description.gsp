@@ -31,7 +31,7 @@
                               <label for="pubDescription"><g:message code="providerGroup.pubDescription.label" default="Public Description" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'pubDescription', 'errors')}">
-                                <g:textArea name="pubDescription" cols="40" rows="${cl.textAreaHeight(text:command.pubDescription)}" value="${command.pubDescription}" />
+                                <g:textArea name="pubDescription" class="input-xxlarge"  rows="${cl.textAreaHeight(text:command.pubDescription)}" value="${command.pubDescription}" />
                                 <cl:helpText code="providerGroup.pubDescription"/>
                               </td>
                               <cl:helpTD/>
@@ -43,7 +43,7 @@
                               <label for="techDescription"><g:message code="providerGroup.techDescription.label" default="Technical Description" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'techDescription', 'errors')}">
-                                <g:textArea name="techDescription" cols="40" rows="${cl.textAreaHeight(text:command.techDescription)}" value="${command?.techDescription}" />
+                                <g:textArea name="techDescription" class="input-xxlarge"  rows="${cl.textAreaHeight(text:command.techDescription)}" value="${command?.techDescription}" />
                                 <cl:helpText code="providerGroup.techDescription"/>
                               </td>
                               <cl:helpTD/>
@@ -55,7 +55,7 @@
                               <label for="focus"><g:message code="providerGroup.focus.label" default="Focus" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'focus', 'errors')}">
-                                <g:textArea name="focus" cols="40" rows="${cl.textAreaHeight(text:command.focus)}" value="${command?.focus}" />
+                                <g:textArea name="focus" class="input-xxlarge"  rows="${cl.textAreaHeight(text:command.focus)}" value="${command?.focus}" />
                                 <cl:helpText code="providerGroup.focus"/>
                             </td>
                           <cl:helpTD/>
@@ -67,7 +67,7 @@
                               <label for="dataGeneralizations"><g:message code="dataResource.dataGeneralizations.label" default="Data Generalisations" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'dataGeneralizations', 'errors')}">
-                                <g:textArea name="dataGeneralizations" cols="40" rows="${cl.textAreaHeight(text:command.dataGeneralizations)}" value="${command?.dataGeneralizations}" />
+                                <g:textArea name="dataGeneralizations" class="input-xxlarge" rows="${cl.textAreaHeight(text:command.dataGeneralizations)}" value="${command?.dataGeneralizations}" />
                                 <cl:helpText code="dataResource.dataGeneralizations"/>
                               </td>
                               <cl:helpTD/>
@@ -79,7 +79,7 @@
                               <label for="informationWithheld"><g:message code="dataResource.informationWithheld.label" default="Information withheld" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'informationWithheld', 'errors')}">
-                                <g:textArea name="informationWithheld" cols="40" rows="${cl.textAreaHeight(text:command.informationWithheld)}" value="${command?.informationWithheld}" />
+                                <g:textArea name="informationWithheld" class="input-xxlarge" rows="${cl.textAreaHeight(text:command.informationWithheld)}" value="${command?.informationWithheld}" />
                                 <cl:helpText code="dataResource.informationWithheld"/>
                               </td>
                               <cl:helpTD/>
@@ -92,22 +92,26 @@
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'contentTypes', 'errors')}">
                                 <g:hiddenField name="contentTypes" value="${command.contentTypes}"/>
-                                <p>Click content types to add them to the selected set.</p>
-                                <div class="source-box">
-                                    <p>Available</p>
-                                    <ul>
-                                        <g:each var="ct" in="${DataResource.contentTypesList}">
-                                            <li class='free'>${ct}</li>
-                                        </g:each>
-                                    </ul>
-                                </div>
-                                <div class="sink-box">
-                                    <p>Selected</p>
-                                    <ul>
-                                        <li class="msg">Click items in the left list to add them as content types for this resource.</li>
-                                    </ul>
-                                </div>
+                                <p>Click content types to add them to the selected set.
                                 <cl:helpText code="dataResource.informationWithheld"/>
+                                </p>
+
+                                <div class="row-fluid">
+                                    <div class="source-box span6">
+                                        <h4>Available</h4>
+                                        <ul>
+                                            <g:each var="ct" in="${DataResource.contentTypesList}">
+                                                <li class='free'>${ct}</li>
+                                            </g:each>
+                                        </ul>
+                                    </div>
+                                    <div class="sink-box span6 well well-small">
+                                        <h4>Selected</h4>
+                                        <ul>
+                                            <li class="msg">Click items in the left list to add them as content types for this resource.</li>
+                                        </ul>
+                                    </div>
+                                </div>
                               </td>
                               <cl:helpTD/>
                         </tr>
@@ -117,8 +121,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

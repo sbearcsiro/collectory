@@ -8,11 +8,12 @@
     </head>
     
     <body>
-      <div class="floating-content manage content">
+      <div class="content">
 
-        <div style="float:right;">
+        <div class="pull-right">
             <g:link class="mainLink btn" controller="public" action="map">View public site</g:link>
         </div>
+
         <h1>ALA Metadata Management</h1>
 
         <g:if test="${flash.message}">
@@ -49,7 +50,7 @@
                         </div>
                     </g:if>
 
-                    <h2 style="margin-top:0px; padding-top:0px;">Your metadata</h2>
+                    <h2>Your metadata</h2>
                     <p>The institutions, collections and data resources that you are authorised to access are listed below.
                     Be aware that all changes are immediately reflected in the ALA website and any hubs or other websites
                     that use ALA web services.</p>
@@ -236,6 +237,12 @@
                         <g:link class="mainLink" controller="admin" action="export">Export all data as JSON</g:link>
                         <p class="mainText">All tables exported verbatim as JSON.</p>
                     </div>
+
+                    <div class="homeCell">
+                        <g:link class="mainLink" controller="auditLogEvent" action="list" params="[max:1000]">View audit events</g:link>
+                        <p class="mainText">All audit events</p>
+                    </div>
+
                   </div>
                 </cl:ifGranted>
                 </div>
@@ -324,53 +331,53 @@
                 return isUnique;
             }
 
-            $('#dialog-form').dialog({
-                autoOpen: false,
-                width: 350,
-                modal: true,
-                buttons: {
-                    "Create collection": function() {
-                        var bValid = true;
-                        $allFields.removeClass( "ui-state-error" );
+            %{--$('#dialog-form').dialog({--}%
+                %{--autoOpen: false,--}%
+                %{--width: 350,--}%
+                %{--modal: true,--}%
+                %{--buttons: {--}%
+                    %{--"Create collection": function() {--}%
+                        %{--var bValid = true;--}%
+                        %{--$allFields.removeClass( "ui-state-error" );--}%
 
-                        bValid = bValid && checkLength( $name, "name", 3, 1024 );
+                        %{--bValid = bValid && checkLength( $name, "name", 3, 1024 );--}%
 
-                        if ($('#addAsContact').is(':checked')) {
-                            bValid = bValid && checkLength( $role, "role", 3, 45 );
-                        }
-                        
-                        bValid = bValid && checkRegexp( $name, /^[a-z]([0-9a-z_ ])+$/i, "Name may consist of a-z, 0-9, underscores, begin with a letter." );
+                        %{--if ($('#addAsContact').is(':checked')) {--}%
+                            %{--bValid = bValid && checkLength( $role, "role", 3, 45 );--}%
+                        %{--}--}%
+                        %{----}%
+                        %{--bValid = bValid && checkRegexp( $name, /^[a-z]([0-9a-z_ ])+$/i, "Name may consist of a-z, 0-9, underscores, begin with a letter." );--}%
 
-                        bValid = bValid && checkUnique($name);
+                        %{--bValid = bValid && checkUnique($name);--}%
 
-                        if ( bValid ) {
-                            var fieldValues = "";
-                            if ($('#addAsContact').is(':checked')) {
-                                fieldValues = "&addUserAsContact=true";
-                                fieldValues += "&role=" + ($role.val() ? $role.val() : 'editor');
-                                if (!hasContact) {
-                                    if ($title.val()) fieldValues += "&title=" + $title.val();
-                                    if ($firstName.val()) fieldValues += "&firstName=" + $firstName.val();
-                                    if ($lastName.val()) fieldValues += "&lastName=" + $lastName.val();
-                                    if ($phone.val()) fieldValues += "&phone=" + $phone.val();
-                                    if ($('#publish').is(':checked')) fieldValues += "&publish=true";
-                                }
-                            }
-                            //alert(fieldValues);
-                             // redirect to create collection
-                            document.location.href =
-                               "${ConfigurationHolder.config.grails.serverURL}/collection/create?name=" +
-                                       $name.val() + fieldValues;
-                        }
-                    },
-                    Cancel: function() {
-                        $( this ).dialog( "close" );
-                    }
-                },
-                close: function() {
-                    $allFields.val( "" ).removeClass( "ui-state-error" );
-                }
-            });
+                        %{--if ( bValid ) {--}%
+                            %{--var fieldValues = "";--}%
+                            %{--if ($('#addAsContact').is(':checked')) {--}%
+                                %{--fieldValues = "&addUserAsContact=true";--}%
+                                %{--fieldValues += "&role=" + ($role.val() ? $role.val() : 'editor');--}%
+                                %{--if (!hasContact) {--}%
+                                    %{--if ($title.val()) fieldValues += "&title=" + $title.val();--}%
+                                    %{--if ($firstName.val()) fieldValues += "&firstName=" + $firstName.val();--}%
+                                    %{--if ($lastName.val()) fieldValues += "&lastName=" + $lastName.val();--}%
+                                    %{--if ($phone.val()) fieldValues += "&phone=" + $phone.val();--}%
+                                    %{--if ($('#publish').is(':checked')) fieldValues += "&publish=true";--}%
+                                %{--}--}%
+                            %{--}--}%
+                            %{--//alert(fieldValues);--}%
+                             %{--// redirect to create collection--}%
+                            %{--document.location.href =--}%
+                               %{--"${ConfigurationHolder.config.grails.serverURL}/collection/create?name=" +--}%
+                                       %{--$name.val() + fieldValues;--}%
+                        %{--}--}%
+                    %{--},--}%
+                    %{--Cancel: function() {--}%
+                        %{--$( this ).dialog( "close" );--}%
+                    %{--}--}%
+                %{--},--}%
+                %{--close: function() {--}%
+                    %{--$allFields.val( "" ).removeClass( "ui-state-error" );--}%
+                %{--}--}%
+            %{--});--}%
             $('#create').click(function() {
                 $( "#dialog-form" ).dialog( "open" );
             });

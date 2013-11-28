@@ -173,6 +173,7 @@
                                     </tr>
                                 </g:if>
                             </g:each>
+
                             <!-- add a blank field so other DwC terms can be added -->
                             <tr id="add-another"><td colspan="3">Choose another DwC term and click button to add a new field.</td></tr>
                             <tr class="prop">

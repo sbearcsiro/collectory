@@ -49,7 +49,7 @@
                                 </label>
                               </td>
                               <td id="previous" valign="top" class="value ${hasErrors(bean: command, field: 'name', 'errors')}">
-                                <g:textField name="name" maxlength="128" value="${command?.name}" class="input-xlarge"/>
+                                <g:textField name="name" class="input-xxlarge" value="${command?.name}"/>
                                 <cl:helpText code="${entityNameLower}.name"/>
                               </td>
                             <cl:helpTD/>
@@ -163,7 +163,7 @@
                               <label for="websiteUrl"><g:message code="providerGroup.websiteUrl.label" default="Website Url" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'websiteUrl', 'errors')}">
-                                <g:textField name="websiteUrl" maxLength="256" value="${command?.websiteUrl}" />
+                                <g:textField name="websiteUrl" class="input-xxlarge" value="${command?.websiteUrl}" />
                                 <cl:helpText code="providerGroup.websiteUrl"/>
                                 <cl:helpTD/>
                             </td>

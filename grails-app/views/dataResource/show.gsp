@@ -38,8 +38,6 @@
             <div class="message">${flash.message}</div>
             </g:if>
 
-
-
             <div class="dialog emulate-public">
               <!-- base attributes -->
               <div class="show-section well titleBlock">
@@ -47,7 +45,10 @@
                 <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
                 <!-- Data Provider --><!-- ALA Partner -->
-                <h2 style="display:inline"><g:link controller="dataProvider" action="show" id="${instance.dataProvider?.id}">${instance.dataProvider?.name}</g:link></h2>
+                <g:if test="${instance.dataProvider}">
+                    <h2 style="display:inline"><g:link controller="dataProvider" action="show" id="${instance.dataProvider?.id}">${instance.dataProvider?.name}</g:link></h2>
+                </g:if>
+
                 <cl:partner test="${instance.dataProvider?.isALAPartner}"/><br/>
 
                 <!-- Institution -->
@@ -177,6 +178,11 @@
                 <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
                   <div><span class="buttons"><g:link class="edit btn" action='edit' params="[page:'contribution']" id="${instance.uid}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
                 </cl:ifGranted>
+              </div>
+
+              <div class="well">
+                  <h3>File upload</h3>
+                  <g:link controller="dataResource" action="upload" class="btn" id="${instance.uid}"><i class="icon-upload"></i> Upload a data file</g:link>
               </div>
 
               <!-- rights -->

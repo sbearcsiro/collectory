@@ -808,9 +808,11 @@ class CollectoryTagLib {
     }
 
     def formatJsonList = { attrs ->
-       def js = new JsonSlurper()
-       def list = js.parseText(attrs.value.toString())
-       out << list.join(", ")
+       if(attrs.value){
+           def js = new JsonSlurper()
+           def list = js.parseText(attrs.value?.toString())
+           out << list.join(", ")
+       }
     }
 
     /**
@@ -1896,19 +1898,6 @@ class CollectoryTagLib {
                             textField(attributes) +
                             helpText(code:'dataResource.termsForUniqueKey') +
                         "</td>" +  helpTD() + "</tr>"
-//                } else if (pp.paramName == "url") {
-//                    out << """<tr class="prop labile" style="${hidden}" id="${it.name}">
-//                        <td valign="top" class="name"
-//                          <label for="${pp.paramName}">${pp.display}</label>
-//                        </td>
-//                        <td valign="top" class="value">
-//                            <div class="inputForUrl">
-//                               """+  textField(attributes) + """
-//                               <div class="additionalInputs"></div>
-//                               <div class="addAnotherInputs"></div>
-//                            </div>
-//                        </td>" +  helpTD() + "</tr>"
-//
                 } else {
                     // all others
                     def widget
@@ -2044,7 +2033,13 @@ class CollectoryTagLib {
                 obj = obj[attrs.key]
             }
             def list = obj.collect {it.toString()}
-            out << '<p><span class="label">Range:</span> ' + list.join(', ') + '</p>'
+            out << '<p><span class="category">Range:</span> '
+            if(list){
+                out <<  list.join(', ')
+            } else {
+                out <<  'Not specified'
+            }
+            out <<  '</p>'
         }
     }
 

@@ -65,4 +65,8 @@ modules = {
     json2 {
         resource url:'js/json2.js'
     }
+    fileupload {
+        resource url:[dir:'js', file:'bootstrap-fileupload.min.js']
+        resource url:[dir:'css', file:'bootstrap-fileupload.min.css']
+    }
 }

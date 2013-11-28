@@ -3,6 +3,7 @@ package au.org.ala.collectory
 import grails.converters.JSON
 
 import grails.converters.XML
+import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.servlet.HttpHeaders
 import java.text.DateFormat
@@ -260,10 +261,23 @@ class DataController {
                 response.setContentType("application/json")
             }
             response.outputStream << file.bytes
-           // return null
         } else {
             response.status = 404
-           // return null
+        }
+    }
+
+    def fileDownload = {
+        def dirpath =  "/" + params.directory + "/"
+        def idx = request.forwardURI.lastIndexOf(dirpath) + dirpath.length()
+        def fullFileName = request.forwardURI.substring(idx)
+        def file = new File(grailsApplication.config.uploadFilePath + File.separator + params.directory, fullFileName)
+        if(file.exists()){
+            //set the content type
+            response.setContentType("application/octet-stream")
+            response.setHeader("Content-disposition", "attachment;filename=" + file.getName())
+            response.outputStream << file.bytes
+        } else {
+            response.status = 404
         }
     }
 
@@ -279,8 +293,7 @@ class DataController {
     def getEntity = {
         if (params.entity == 'tempDataResource') {
             forward(controller: 'tempDataResource', action: 'getEntity')
-        }
-        else {
+        } else {
             def urlForm = params.entity
             def clazz = capitalise(urlForm)
             if (params.pg) {
@@ -288,8 +301,15 @@ class DataController {
                 addContentLocation "/ws/${urlForm}/${params.pg.uid}"
                 def eTag = (params.pg.uid + ":" + params.pg.lastUpdated).encodeAsMD5()
 
-                cacheAwareRender crudService."read${clazz}"(params.pg), params.pg.lastUpdated, eTag
+                def entityInJson = crudService."read${clazz}"(params.pg)
 
+                println "BEFORE ########" + entityInJson.metaClass
+
+                entityInJson = convertAnyLocalPaths(entityInJson)
+
+                println "AFTER ########" +entityInJson.metaClass
+
+                cacheAwareRender entityInJson, params.pg.lastUpdated, eTag
             } else {
                 // return list of entities
                 addContentLocation "/ws/${urlForm}"
@@ -897,7 +917,20 @@ class DataController {
         if (pg.entityType() != DataResource.ENTITY_TYPE) {
             badRequest "must be a data resource"
         } else {
-            renderJson pg.connectionParameters
+            response.setContentType("application/json")
+            render convertAnyLocalPaths(pg.connectionParameters)
+        }
+    }
+
+    def convertAnyLocalPaths(obj){
+        def oldPath = "file:///" + grailsApplication.config.uploadFilePath
+        def newPath = grailsApplication.config.grails.serverURL + grailsApplication.config.uploadExternalUrlPath
+        if(obj in String){
+           obj.replaceAll(newPath, oldPath)
+        } else if(obj in JSON){
+           def fixed = obj.toString().replaceAll(oldPath, newPath)
+           println "FIXED ######## " + fixed
+           fixed
         }
     }
 

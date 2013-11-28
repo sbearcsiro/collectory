@@ -1,6 +1,9 @@
 package au.org.ala.collectory
 
 import grails.converters.JSON
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurper
+import org.apache.commons.io.FileUtils
 import org.springframework.web.multipart.MultipartFile
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
@@ -495,6 +498,54 @@ abstract class ProviderGroupController {
             }
         }
     }
+
+    def upload = {
+        def pg = get(params.id)
+        if (!pg) {
+            flash.message = "${message(code: 'default.not.found.message', args: [message(code: "${entityNameLower}.label", default: entityNameLower), params.id])}"
+            redirect(action: "upload")
+        } else {
+            // are they allowed to edit
+            if (authService.isAuthorisedToEdit(pg.uid)) {
+                render(view:'upload', model:[instance: pg, connectionProfiles:metadataService.getConnectionProfilesWithFileUpload()])
+            } else {
+                render("You are not authorised to access this page.")
+            }
+        }
+    }
+
+    def uploadDataFile = {
+
+        //get the UID
+        def dataResource = get(params.id)
+
+        def f = request.getFile('myFile')
+        if (f.empty) {
+            flash.message = 'file cannot be empty'
+            render(view: 'upload')
+            return
+        }
+
+        def fileId = System.currentTimeMillis()
+        def uploadDirPath = grailsApplication.config.uploadFilePath + fileId
+        log.debug "Creating upload directory " + uploadDirPath
+        def uploadDir = new File(uploadDirPath)
+        FileUtils.forceMkdir(uploadDir)
+
+        log.debug "Transferring file to directory...."
+        def newFile = new File(uploadDirPath + File.separatorChar + f.getFileItem().getName())
+        f.transferTo(newFile)
+
+        //update the connection profile stuff
+        def connParams = (new JsonSlurper()).parseText(dataResource.connectionParameters?:'{}')
+        connParams.url = 'file:///' + newFile.getPath()
+        connParams.protocol = params.protocol
+        dataResource.connectionParameters = (new JsonOutput()).toJson(connParams)
+        dataResource.save(flush:true)
+
+        redirect([controller: 'dataResource', action: 'show', id: dataResource.uid])
+    }
+
 
     /**
      * Get the instance for this entity based on either uid or DB id.

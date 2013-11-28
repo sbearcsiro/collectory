@@ -14,6 +14,12 @@ class UrlMappings {
         }
      }
 
+     "/upload/$directory/$file" {
+        controller = 'data'
+        action = 'fileDownload'
+        constraints {}
+     }
+
       // temporary mock notification service
       "/ws/notify" (controller:'data', action:'notify')
 

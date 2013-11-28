@@ -34,7 +34,7 @@ grails.project.dependency.resolution = {
         runtime ":jquery:1.7.1"
         runtime ":resources:1.1.6"
         build ":tomcat:$grailsVersion"
-        runtime ":audit-logging:0.5.4"
+        runtime ":audit-logging:0.5.5.3"
         runtime ":cache-headers:1.1.5"
         runtime ":richui:0.8"
         runtime ":tiny-mce:3.4.4"

@@ -39,10 +39,10 @@ if (!bie.searchPath) {
     bie.searchPath = "/search"
 }
 if (!biocache.baseURL) {
-     biocache.baseURL = "http://biocache.ala.org.au/"
+    biocache.baseURL = "http://biocache.ala.org.au/"
 }
 if (!spatial.baseURL) {
-     spatial.baseURL = "http://spatial.ala.org.au/"
+    spatial.baseURL = "http://spatial.ala.org.au/"
 }
 if (!ala.baseURL) {
     ala.baseURL = "http://www.ala.org.au"
@@ -59,14 +59,18 @@ if(!alertUrl){
 if(!alertResourceName){
     alertResourceName = "Atlas"
 }
-
 if(!biocacheAlertsWsUrl){
     biocacheAlertsWsUrl = "http://biocache.ala.org.au/ws"
 }
 if(!biocacheAlertsUrl){
     biocacheAlertsUrl = "http://biocache.ala.org.au"
 }
-
+if(!uploadFilePath){
+    uploadFilePath = "/data/collectory/upload/"
+}
+if(!uploadExternalUrlPath){
+    uploadExternalUrlPath = "/upload/"
+}
 /******************************************************************************\
  *  BIOCACHE URLS
 \******************************************************************************/
@@ -79,12 +83,6 @@ if (!biocache.breakdown.taxa) {
 if (!biocache.bounding.box) {
     biocache.bounding.box = "ws/mapping/bounds"
 }
-/******************************************************************************\
- *  RELOADABLE CONFIG
-\******************************************************************************/
-//reloadable.cfgPollingFrequency = 1000 * 60 * 60 // 1 hour
-//reloadable.cfgPollingRetryAttempts = 5
-//reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
 /******************************************************************************\
  *  SECURITY
 \******************************************************************************/
@@ -119,6 +117,13 @@ if(!security.cas.casServerUrlPrefix){
 if(!security.cas.bypass){
     security.cas.bypass = false
 }
+if(!security.cas.demoUser){
+    security.cas.demoUser = 'Demo user'
+}
+if(!security.cas.demoUserRoles){
+    security.cas.demoUserRoles = 'ROLE_COLLECTION_EDITOR,ROLE_ADMIN'
+}
+
 /******************************************************************************\
  *  TEMPLATES
  \******************************************************************************/
@@ -134,6 +139,19 @@ if (!citation.rights.template) {
 if (!resource.publicArchive.url.template) {
     resource.publicArchive.url.template = "${biocache.baseURL}archives/@UID@/@UID@_ror_dwca.zip"
 }
+
+/******************************************************************************\
+ *  ADDITIONAL CONFIG
+ \******************************************************************************/
+
+if(!centreMapLon){
+    centreMapLon = 134
+}
+if(!centreMapLat){
+    centreMapLat = -28.2
+}
+
+
 
 /******* standard grails **********/
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination

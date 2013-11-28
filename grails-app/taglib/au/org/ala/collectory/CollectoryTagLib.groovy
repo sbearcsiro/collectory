@@ -186,7 +186,7 @@ class CollectoryTagLib {
     }
 
     def isNotLoggedIn = {attrs, body ->
-        if (!AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
+        if (!grailsApplication.config.security.cas.bypass && !AuthenticationCookieUtils.cookieExists(request, AuthenticationCookieUtils.ALA_AUTH_COOKIE)) {
             out << body()
         }
     }

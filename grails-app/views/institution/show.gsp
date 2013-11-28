@@ -55,13 +55,13 @@
                   </g:each>
                 </g:if>
                 <!-- GUID    -->
-                <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${(fieldValue(bean: instance, field: "guid"))?:'Not supplied'}'/></p>
+                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${(fieldValue(bean: instance, field: "guid"))?:'Not supplied'}'/></p>
 
                 <!-- UID    -->
-                <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -74,7 +74,7 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base"/>
               </div>
@@ -83,19 +83,19 @@
               <div class="show-section well">
                 <!-- Pub Desc -->
                 <h2>Description</h2>
-                <div class="label">Public description</div><div style="clear:both;"></div>
+                <div class="category">Public description</div><div style="clear:both;"></div>
                 <cl:formattedText body="${instance.pubDescription}"/>
 
                 <!-- Tech Desc -->
-                <div class="label">Technical description</div><div style="clear:both;"></div>
+                <div class="category">Technical description</div><div style="clear:both;"></div>
                 <cl:formattedText body="${instance.techDescription}"/>
 
                 <!-- Contribution -->
-                <div class="label">Contribution</div><div style="clear:both;"></div>
+                <div class="category">Contribution</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
                 <!-- Institution type -->
-                <p><span class="label">Institution type:</span> ${fieldValue(bean: instance, field: "institutionType")}</p>
+                <p><span class="category">Institution type:</span> ${fieldValue(bean: instance, field: "institutionType")}</p>
 
                 <!-- Collections -->
                 <h2>Collections</h2>
@@ -103,8 +103,10 @@
                   <g:each in="${instance.listCollections().sort{it.name}}" var="c">
                       <li><g:link controller="collection" action="show" id="${c.uid}">${c?.name}</g:link></li>
                   </g:each>
-                  <li><g:link controller="collection" action="create" params='[institutionUid: "${instance.uid}"]'>create a new collection for this institution</g:link></li>
                 </ul>
+                <p>
+                    <g:link controller="collection" action="create" class="btn" params='[institutionUid: "${instance.uid}"]'>create a new collection for this institution</g:link>
+                </p>
 
                 <cl:editButton uid="${instance.uid}" page="description"/>
               </div>

@@ -65,6 +65,10 @@
                 <br/><span id="numUnMappable"></span>
             </h4>
           </div>
+
+          <div id="adminLink" class="dropdown" style="margin-top:110px;">
+              <g:link controller="manage" action="list" style="color:#DDDDDD; margin-top:80px;">Admin</g:link>
+          </div>
         </div><!--close column-one-->
 
         <div class="span8" id="map-list-col">

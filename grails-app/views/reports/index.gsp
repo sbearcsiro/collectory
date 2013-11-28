@@ -9,11 +9,11 @@
       <div class="nav">
           <ul>
           <li><span class="menuButton"><cl:homeLink/></span></li>
-          <li><span class="menuButton">Reports</span></li>
+          <li><span class="menuButton"><i class="icon-th-list"></i> Reports</span></li>
           </ul>
       </div>
       <div id="welcome">
-        <h1>Natural History Collections Reports</h1>
+        <h1>Natural History Collections reports</h1>
         <p>Information about the quantity, quality and usage of the ALA's biodiversity collections.</p>
       </div>
 
@@ -30,29 +30,30 @@
     <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
     <div class="dashboard">
 
-      <div class="dashCell">
-        <div class='header'>
-          <h2>General</h2>
-          <div class="lead">
-            <span class="total">${Collection.count()}</span> collections<br/>
-            <span class="total">${DataResource.count()}</span> data resources<br/>
-            <span class="total">${Institution.count()}</span> institutions<br/>
-            <span class="total">${DataProvider.count()}</span> data providers
-          </div>
-        </div>
-        <div style="clear:both;">
-          <p class="pageLink"><g:link class="mainLink" controller="reports" action="data">Measure metadata quality</g:link>
-          <span class="linkText">- a few measures of completeness of metadata</span></p>
-          <p class="pageLink"><g:link class="mainLink" controller="reports" action="changes">Show changes</g:link>
-          <span class="linkText">- lists the recent changes made to the collection registry.</span></p>
-          <p class="pageLink"><g:link class="mainLink" controller="reports" action="membership">View memberships</g:link>
-          <span class="linkText">- lists ALA partners as well as the members of collection networks (hubs).</span></p>
-        </div>
+
+    <div class="well pull-right">
+      <h2>General stats</h2>
+      <div class="lead">
+        <span class="total">${Collection.count()}</span> collections<br/>
+        <span class="total">${DataResource.count()}</span> data resources<br/>
+        <span class="total">${Institution.count()}</span> institutions<br/>
+        <span class="total">${DataProvider.count()}</span> data providers
       </div>
+    </div>
+
+     <h2>General reports</h2>
+    <div>
+      <p class="pageLink"><g:link class="mainLink" controller="reports" action="data">Measure metadata quality</g:link>
+      <span class="linkText">- a few measures of completeness of metadata</span></p>
+      <p class="pageLink"><g:link class="mainLink" controller="reports" action="changes">Show changes</g:link>
+      <span class="linkText">- lists the recent changes made to the collection registry.</span></p>
+      <p class="pageLink"><g:link class="mainLink" controller="reports" action="membership">View memberships</g:link>
+      <span class="linkText">- lists ALA partners as well as the members of collection networks (hubs).</span></p>
+    </div>
 
       <div class="dashCell">
         <h2>Collections</h2>
-        <div style="clear:both;">
+        <div>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="collections">List all collections</g:link>
           <span class="linkText">- lists collections with permalinks and some attributes</span></p>
           <p class="pageLink"><g:link class="mainLink" controller="reports" action="codes">List provider codes</g:link>

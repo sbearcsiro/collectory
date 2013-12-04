@@ -8,8 +8,10 @@
     </head>
     <body>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <h1><g:message code="default.list.label" args="[entityName]" /></h1>
@@ -18,7 +20,7 @@
             </g:if>
 
             <div class="list">
-                <table>
+                <table class="table table-striped table-bordered">
                   <colgroup><col width="45%"/><col width="7%"/><col width="10%"/><col width="3%"/><col width="35%"/></colgroup>
                     <thead>
                         <tr>
@@ -27,7 +29,6 @@
                             <g:sortableColumn property="uid" title="${message(code: 'providerGroup.uid.label', default: 'UID')}" />
 
                             <g:sortableColumn property="acronym" title="${message(code: 'dataHub.acronym.label', default: 'Acronym')}" />
-
 
                         </tr>
                     </thead>

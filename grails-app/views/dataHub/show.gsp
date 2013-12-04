@@ -17,9 +17,11 @@
     }
     </style>
         <div class="nav">
-            <span class="menuButton"><cl:homeLink/></span>
-            <span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span>
-            <span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span>
+            <ul>
+            <li><span class="menuButton"><cl:homeLink/></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="default.list.label" args="[entityName]" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
+            </ul>
         </div>
         <div class="body">
             <g:if test="${flash.message}">
@@ -27,18 +29,18 @@
             </g:if>
             <div class="dialog emulate-public">
               <!-- base attributes -->
-              <div class="show-section titleBlock">
+              <div class="show-section well">
                 <!-- Name --><!-- Acronym -->
                 <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
                 <!-- GUID    -->
-                <p><span class="label">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
-                <p><span class="label">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="label">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -51,13 +53,13 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="label">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'/shared/base']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <div><span class="buttons"><g:link class="edit btn" action='edit' params="[page:'/shared/base']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
               <!-- description -->
-              <div class="show-section">
+              <div class="show-section well">
                 <h2>Description</h2>
 
                 <!-- Pub Desc -->
@@ -72,11 +74,11 @@
                 <div class="source">[Contribution]</div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <div><span class="buttons"><g:link class="edit btn" action='edit' params="[page:'description']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
               <!-- members -->
-              <div class="show-section">
+              <div class="show-section well">
                 <h2>Members</h2>
                 <g:if test="${instance.listMemberInstitutions()}">
                     <h3>Institutions</h3>
@@ -103,7 +105,7 @@
                     </ul>
                 </g:if>
 
-                <div><span class="buttons"><g:link class="edit" action='edit' params="[page:'members']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
+                <div><span class="buttons"><g:link class="edit btn" action='edit' params="[page:'members']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
             </div>
 
               <!-- images -->
@@ -127,7 +129,7 @@
               <g:form>
                 <g:hiddenField name="id" value="${instance?.id}"/>
                 <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
-                  <span class="button"><g:actionSubmit class="delete" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
+                  <span class="button"><g:actionSubmit class="delete btn btn-danger" action="delete" value="${message(code: 'default.button.delete.label', default: 'Delete')}" onclick="return confirm('${message(code: 'default.button.delete.confirm.message', default: 'Are you sure?')}');"/></span>
                 </cl:ifGranted>
                 <span class="button"><cl:viewPublicLink uid="${instance?.uid}"/></span>
                 <span class="button"><cl:jsonSummaryLink uid="${instance.uid}"/></span>

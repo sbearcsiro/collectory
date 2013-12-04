@@ -214,6 +214,11 @@
                     </div>
 
                     <div class="homeCell">
+                        <g:link class="mainLink" controller="dataHub" action="list">View all data hubs</g:link>
+                        <p class="mainText">Browse all current data hubs.</p>
+                    </div>
+
+                    <div class="homeCell">
                         <g:link class="mainLink" controller="reports" action="list">View reports</g:link>
                         <p class="mainText">Browse summaries of Registry contents and usage.</p>
                     </div>

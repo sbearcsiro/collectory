@@ -31,7 +31,7 @@
                         <label for="memberInstitutions"><g:message code="dataHub.memberInstitutions.label" default="Institutions" /></label>
                     </td>
                     <td valign="top" class="value ${hasErrors(bean: command, field: 'memberInstitutions', 'errors')}">
-                        <g:textArea name="memberInstitutions" cols="40" rows="${cl.textAreaHeight(text:command.memberInstitutions)}" value="${command.memberInstitutions}" />
+                        <g:textArea name="memberInstitutions" class="input-xxlarge"  rows="${cl.textAreaHeight(text:command.memberInstitutions)}" value="${command.memberInstitutions}" />
                         <cl:helpText code="providerGroup.memberInstitutions"/>
                     </td>
                     <cl:helpTD/>
@@ -43,7 +43,7 @@
                         <label for="memberCollections"><g:message code="dataHub.memberCollections.label" default="Collections" /></label>
                     </td>
                     <td valign="top" class="value ${hasErrors(bean: command, field: 'memberCollections', 'errors')}">
-                        <g:textArea name="memberCollections" cols="40" rows="${cl.textAreaHeight(text:command.memberCollections)}" value="${command.memberCollections}" />
+                        <g:textArea name="memberCollections" class="input-xxlarge" rows="${cl.textAreaHeight(text:command.memberCollections)}" value="${command.memberCollections}" />
                         <cl:helpText code="providerGroup.memberCollections"/>
                     </td>
                     <cl:helpTD/>
@@ -55,20 +55,19 @@
                         <label for="memberDataResources"><g:message code="dataHub.memberDataResources.label" default="Data resources" /></label>
                     </td>
                     <td valign="top" class="value ${hasErrors(bean: command, field: 'institutionMembers', 'errors')}">
-                        <g:textArea name="memberDataResources" cols="40" rows="${cl.textAreaHeight(text:command.memberDataResources)}" value="${command.memberDataResources}" />
+                        <g:textArea name="memberDataResources" class="input-xxlarge" rows="${cl.textAreaHeight(text:command.memberDataResources)}" value="${command.memberDataResources}" />
                         <cl:helpText code="providerGroup.memberDataResources"/>
                     </td>
                     <cl:helpTD/>
                 </tr>
-
 
                 </tbody>
             </table>
         </div>
 
         <div class="buttons">
-            <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save"></span>
-            <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+            <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save btn"></span>
+            <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
         </div>
     </g:form>
 </div>

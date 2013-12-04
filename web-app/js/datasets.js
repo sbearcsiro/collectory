@@ -95,7 +95,7 @@ function appendResource(value) {
     $('#results').append($div);
 
     // add three 'rows'
-    var $rowA = $('<p class="rowA"></p>').appendTo($div);
+    var $rowA = $('<h4 class="rowA"></h4>').appendTo($div);
     var $rowB = $('<p class="rowB"></p>').appendTo($div);
     var $rowC = $('<div class="rowC" style="display:none;">').appendTo($div);  // starts hidden
 

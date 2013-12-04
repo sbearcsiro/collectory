@@ -67,7 +67,7 @@ class DataResource extends ProviderGroup implements Serializable {
 
     static transients =  ['creativeCommons']
 
-    static resourceTypeList = ["records", "website", "document", "uploads"]
+    static resourceTypeList = ["records", "website", "document", "uploads", "species-list"]
     static creativeCommonsLicenses = ["CC BY", "CC BY-NC", "CC BY-SA", "CC BY-NC-SA"]
     static ccDisplayList = [
         [type:'CC BY',display:'Creative Commons Attribution'],

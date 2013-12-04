@@ -168,20 +168,20 @@ ul.nav-tabs {
     font-size: 13px !important;
 }
 
-p.rowA {
+.rowA {
     border-top: 1px solid silver;
     padding-top:8px;
 }
 
-p.rowA img {
+.rowA img {
     cursor: pointer;
 }
 
-p.rowA, p.rowB {
+.rowA, .rowB {
     padding-bottom: 0 !important;
 }
 
-p.rowB {
+.rowB {
     border-bottom: none !important;
     padding-left:20px;
 }

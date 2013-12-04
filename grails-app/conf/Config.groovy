@@ -39,7 +39,10 @@ if (!bie.searchPath) {
     bie.searchPath = "/search"
 }
 if (!biocache.baseURL) {
-    biocache.baseURL = "http://biocache.ala.org.au/"
+    biocache.baseURL = "http://biocache.ala.org.au"
+}
+if(!biocacheServicesUrl){
+    biocacheServicesUrl = "http://biocache.ala.org.au/ws"
 }
 if (!spatial.baseURL) {
     spatial.baseURL = "http://spatial.ala.org.au/"
@@ -50,20 +53,15 @@ if (!ala.baseURL) {
 if (!headerAndFooter.baseURL) {
     headerAndFooter.baseURL = "http://www2.ala.org.au/commonui"
 }
-if(!biocacheServicesUrl){
-    biocacheServicesUrl = "http://biocache.ala.org.au/ws"
-}
 if(!alertUrl){
     alertUrl = "http://alerts.ala.org.au/"
 }
+if(!speciesListToolUrl){
+    speciesListToolUrl = "http://lists.ala.org.au/speciesListItem/list/"
+}
+
 if(!alertResourceName){
     alertResourceName = "Atlas"
-}
-if(!biocacheAlertsWsUrl){
-    biocacheAlertsWsUrl = "http://biocache.ala.org.au/ws"
-}
-if(!biocacheAlertsUrl){
-    biocacheAlertsUrl = "http://biocache.ala.org.au"
 }
 if(!uploadFilePath){
     uploadFilePath = "/data/collectory/upload/"
@@ -72,17 +70,11 @@ if(!uploadExternalUrlPath){
     uploadExternalUrlPath = "/upload/"
 }
 /******************************************************************************\
- *  BIOCACHE URLS
+ *  RELOADABLE CONFIG
 \******************************************************************************/
-if (!biocache.occurrences.json) {
-    biocache.occurrences.json = "ws/occurrences/{entity}/{uid}.json?pageSize=0"
-}
-if (!biocache.breakdown.taxa) {
-    biocache.breakdown.taxa = "ws/breakdown/{entity}/{uid}"
-}
-if (!biocache.bounding.box) {
-    biocache.bounding.box = "ws/mapping/bounds"
-}
+//reloadable.cfgPollingFrequency = 1000 * 60 * 60 // 1 hour
+//reloadable.cfgPollingRetryAttempts = 5
+//reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
 /******************************************************************************\
  *  SECURITY
 \******************************************************************************/
@@ -117,13 +109,6 @@ if(!security.cas.casServerUrlPrefix){
 if(!security.cas.bypass){
     security.cas.bypass = false
 }
-if(!security.cas.demoUser){
-    security.cas.demoUser = 'Demo user'
-}
-if(!security.cas.demoUserRoles){
-    security.cas.demoUserRoles = 'ROLE_COLLECTION_EDITOR,ROLE_ADMIN'
-}
-
 /******************************************************************************\
  *  TEMPLATES
  \******************************************************************************/
@@ -137,21 +122,17 @@ if (!citation.rights.template) {
     citation.rights.template = ''
 }
 if (!resource.publicArchive.url.template) {
-    resource.publicArchive.url.template = "${biocache.baseURL}archives/@UID@/@UID@_ror_dwca.zip"
+    resource.publicArchive.url.template = "${biocache.baseURL}/archives/@UID@/@UID@_ror_dwca.zip"
 }
-
 /******************************************************************************\
  *  ADDITIONAL CONFIG
  \******************************************************************************/
-
 if(!centreMapLon){
     centreMapLon = 134
 }
 if(!centreMapLat){
     centreMapLat = -28.2
 }
-
-
 
 /******* standard grails **********/
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination

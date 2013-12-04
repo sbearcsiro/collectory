@@ -55,8 +55,8 @@ class CollectoryTagLib {
        link += '?webserviceQuery=/occurrences/search?q=' + attrs.query
        link += '&uiQuery=/occurrences/search?q=' + attrs.query
        link += '&queryDisplayName=' + attrs.displayName
-       link += '&baseUrlForWS=' + grailsApplication.config.biocacheAlertsUrl
-       link += '&baseUrlForUI=' + grailsApplication.config.biocacheAlertsUrl
+       link += '&baseUrlForWS=' + grailsApplication.config.biocacheServicesUrl
+       link += '&baseUrlForUI=' + grailsApplication.config.biocache.baseURL
        link += '&resourceName=' + grailsApplication.config.alertResourceName
        out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"
     }
@@ -951,35 +951,34 @@ class CollectoryTagLib {
      */
     def downloadRecordsLink = {attrs, body ->
         if (attrs.uid && attrs.allowed) {
-            def url = ConfigurationHolder.config.biocache.baseURL +
-                    "occurrences/download?q=*.*&fq=collection_uid=${attrs.uid}#download"
+            def url = grailsApplication.config.biocache.baseURL +
+                    "/occurrences/download?q=*.*&fq=collection_uid=${attrs.uid}#download"
             out << "<a href='${url}'>Download all records</a>"
         }
     }
 
     def downloadPublicArchive = { attrs ->
         if (attrs.uid && attrs.available) {
-            def url = ConfigurationHolder.config.resource.publicArchive.url.template.replaceAll('@UID@',attrs.uid)
+            def url = grailsApplication.config.resource.publicArchive.url.template.replaceAll('@UID@',attrs.uid)
             out << "<p><a class='downloadLink' href='${url}'>Download darwin core archive of all records</a></p>"
         }
     }
 
     def publicArchiveLink = { attrs ->
         if (attrs.uid && attrs.available) {
-            def url = ConfigurationHolder.config.resource.publicArchive.url.template.replaceAll('@UID@',attrs.uid)
+            def url = grailsApplication.config.resource.publicArchive.url.template.replaceAll('@UID@',attrs.uid)
             out << "<a href='${url}'>${url}</a>"
         }
     }
 
     private String buildRecordsUrl(uid) {
         // handle descendant institutions
-        def uidStr = uid
+        def uidStr = uid;
         if (uid.size() > 1 && uid[0..1] == 'in') {
             uidStr = Institution._get(uid)?.descendantUids()?.join(",") ?: uid
         }
-        def baseUrl = ConfigurationHolder.config.biocache.baseURL
-        def url = baseUrl + "occurrences/searchForUID?q=" + uidStr
-        if (ConfigurationHolder.config.useNewBiocache == 'true') {
+        def url = grailsApplication.config.biocache.baseURL + "/occurrences/searchForUID?q=" + uidStr
+        if (grailsApplication.config.useNewBiocache == 'true') {
             def queryStr
             // need to handle multiple uids differently
             if (uidStr.indexOf(',')) {
@@ -989,9 +988,7 @@ class CollectoryTagLib {
             else {
                 queryStr = fieldNameForSearch(uidStr) + ":" + uidStr
             }
-            url = ConfigurationHolder.config.biocache.records.url +
-                  ConfigurationHolder.config.biocache.search +
-                  "?q=" + queryStr
+            url = grailsApplication.config.biocache.baseURL + "/occurrence/search?q=" + queryStr
         }
         return url
     }
@@ -1063,7 +1060,7 @@ class CollectoryTagLib {
      */
     def recordsMapDirect = { attrs ->
         if (attrs.uid) {
-            def urlBase = ConfigurationHolder.config.biocache.baseURL + "ws/density/"
+            def urlBase = grailsApplication.config.biocacheServicesUrl + "/density/"
             def query = "?q=" + fieldNameForSearch(attrs.uid) + ":" + attrs.uid
             out <<
                 "<div class='recordsMap'>" +
@@ -1787,7 +1784,7 @@ class CollectoryTagLib {
                     // encode any control characters
                     value = encodeControlChars(cp."${pp.paramName}")
                 }
-                out << "<dt>${pp.display}:</dt><dd>" + (value ?: '') + "</dd>"
+                out << "<dt>${pp.display}:</dt><dd>" + (value ?: 'Not supplied') + "</dd>"
             }
             out << "</dl>"
         }

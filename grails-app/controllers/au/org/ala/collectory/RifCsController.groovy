@@ -19,8 +19,7 @@ class RifCsController {
             }
 
             // call biocache to get the bounding box for the occurrences in the data resource
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + ConfigurationHolder.config.biocache.bounding.box + "?q=data_resource_uid:" + res.uid + "%20AND%20geospatial_kosher:true"
+            def url = grailsApplication.config.biocacheServicesUrl + "/mapping/bounds?q=data_resource_uid:" + res.uid + "%20AND%20geospatial_kosher:true"
 
             def conn = new URL(url).openConnection()
             try {

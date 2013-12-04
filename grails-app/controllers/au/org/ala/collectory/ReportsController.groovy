@@ -233,8 +233,7 @@ class ReportsController {
         Collection.list([sort: 'name']).each {
             if (it.numRecordsDigitised > 0) {
                 // find the number of biocache records
-                def baseUrl = ConfigurationHolder.config.biocache.baseURL
-                def url = baseUrl + "ws/occurrences/collections/" + it.generatePermalink() + ".json?pageSize=0"
+                def url = grailsApplication.config.biocacheServicesUrl + "/occurrences/collections/" + it.generatePermalink() + ".json?pageSize=0"
                 def count = 0
                 def conn = new URL(url).openConnection()
                 conn.setConnectTimeout 3000
@@ -259,9 +258,7 @@ class ReportsController {
         Collection.list([sort: 'name']).each {
             def rec = new Records()
             // find the number of biocache records
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + it.uid
-
+            def url = grailsApplication.config.biocacheServicesUrl + "/occurrences/searchForUID.JSON?pageSize=0&q=" + it.uid
             def count = 0
             def conn = new URL(url).openConnection()
             conn.setConnectTimeout 3000
@@ -286,8 +283,7 @@ class ReportsController {
         DataProvider.list([sort: 'name']).each {
             def rec = new Records()
             // find the number of biocache records
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "occurrences/searchForUID.JSON?pageSize=0&q=" + it.uid
+            def url = grailsApplication.config.biocacheServicesUrl + "/occurrences/searchForUID.JSON?pageSize=0&q=" + it.uid
 
             def count = 0
             def conn = new URL(url).openConnection()

@@ -167,10 +167,10 @@
                     <g:set var="dwc" value="${instance.defaultDarwinCoreValues ? JSON.parse(instance.defaultDarwinCoreValues) : [:]}"/>
                     <h4>Default values for DwC fields</h4>
                         <g:if test="${!dwc}">none</g:if>
-                        <dl class="dl-horizontal">
-                        <g:each in="${dwc.entrySet()}" var="dwct">
-                            <dt>${dwct.key}:</dt><dd>${dwct.value}</dd>
-                        </g:each>
+                            <dl class="dl-horizontal">
+                            <g:each in="${dwc.entrySet()}" var="dwct">
+                                <dt>${dwct.key}:</dt><dd>${dwct.value?:'Not supplied'}</dd>
+                            </g:each>
                         </dl>
 
                 </g:if>

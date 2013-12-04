@@ -19,7 +19,7 @@ abstract class ProviderGroupController {
     static String entityName = "ProviderGroup"
     static String entityNameLower = "providerGroup"
 
-    def idGeneratorService, authService
+    def idGeneratorService, authService, metadataService
 
 /*
  * Access control
@@ -507,7 +507,11 @@ abstract class ProviderGroupController {
         } else {
             // are they allowed to edit
             if (authService.isAuthorisedToEdit(pg.uid)) {
-                render(view:'upload', model:[instance: pg, connectionProfiles:metadataService.getConnectionProfilesWithFileUpload()])
+                render(view:'upload', model:[
+                        instance: pg,
+                        connectionProfiles:metadataService.getConnectionProfilesWithFileUpload(),
+                        connectionParams: metadataService.getConnectionParameters()
+                ])
             } else {
                 render("You are not authorised to access this page.")
             }
@@ -538,8 +542,34 @@ abstract class ProviderGroupController {
 
         //update the connection profile stuff
         def connParams = (new JsonSlurper()).parseText(dataResource.connectionParameters?:'{}')
+        //retrieve any additional params
+        def connProfile = metadataService.getConnectionProfile(params.protocol)
+        def allConnParams = metadataService.getConnectionParameters()
+
+        connProfile.params.each { param ->
+
+            def fullParamDescription = allConnParams.get(param.name)
+
+            if(fullParamDescription.type == 'boolean'){
+                connParams[param.paramName] = Boolean.parseBoolean(params[param.paramName])
+            } else {
+                connParams[param.paramName] = params[param.paramName]
+            }
+        }
+
+        //termsForUniqueKey
+        if(params.termsForUniqueKey){
+            def origString = params.termsForUniqueKey.trim()
+            def terms = []
+            origString.split(',').each {
+               terms << it.trim()
+            }
+           connParams.termsForUniqueKey = terms
+        }
+
         connParams.url = 'file:///' + newFile.getPath()
         connParams.protocol = params.protocol
+
         dataResource.connectionParameters = (new JsonOutput()).toJson(connParams)
         dataResource.save(flush:true)
 

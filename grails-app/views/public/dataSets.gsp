@@ -4,7 +4,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title>Atlas datasets | Atlas of Living Australia</title>
-    %{--<link rel="stylesheet" type="text/css" media="screen" href="http://biocache.ala.org.au/static/css/search.css"/>--}%
     <r:require modules="datasets, jquery_json, bbq, rotate, jquery_tools"/>
     <script type="text/javascript">
       var altMap = true;

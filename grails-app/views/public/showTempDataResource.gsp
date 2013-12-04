@@ -2,23 +2,17 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
+        <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <title>${fieldValue(bean: instance, field: "name")} | Data sets | Atlas of Living Australia</title>
     </head>
     <body class="two-column-right">
       <div id="content">
         <div id="header" class="collectory">
-          <!--Breadcrumbs-->
-          <div id="breadcrumb"><cl:breadcrumbTrail home="dataSets"/>
-            ${fieldValue(bean: instance, field: "name")}
-          </div>
-          <div class="section full-width">
-            <div class="hrgroup col-8">
-              <cl:h1 value="${instance.name}"/>
-            </div>
-            <div class="aside col-4 center">
-              <!-- provider -->
-            </div>
+          <div id="breadcrumb">
+            <ol class="breadcrumb">
+                <li><cl:breadcrumbTrail/> <span class=" icon icon-arrow-right"></span></li>
+                <li><cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink></li>
+            </ol>
           </div>
         </div><!--close header-->
         <div id="column-one">

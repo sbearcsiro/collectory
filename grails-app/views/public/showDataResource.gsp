@@ -4,11 +4,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
-    <link rel="stylesheet" type="text/css"
-          href="${resource(dir: 'css/smoothness', file: 'jquery-ui-1.8.16.custom.css')}"/>
+    <link rel="stylesheet" type="text/css" href="${resource(dir: 'css/smoothness', file: 'jquery-ui-1.8.16.custom.css')}"/>
+    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+    <r:require modules="fancybox, jquery_jsonp, jstree, jquery_ui_custom, charts, datadumper"/>
     <script type="text/javascript">
-        biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
-        biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+        // define biocache server
+        bieUrl = "${grailsApplication.config.bie.baseURL}";
         $(document).ready(function () {
             <g:if test="${instance.guid}">
             $("a#lsid").fancybox({
@@ -28,8 +29,6 @@
             });
         });
     </script>
-    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
-    <r:require modules="fancybox, jquery_jsonp, jstree, jquery_ui_custom, charts, datadumper"/>
 </head>
 <body class="nav-datasets">
 <div id="content">
@@ -63,8 +62,7 @@
                     <b><a class="external_icon" href="http://lsids.sourceforge.net/"
                           target="_blank">Life Science Identifier (LSID):</a></b>
 
-                    <p><cl:guid target="_blank"
-                                                        guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                    <p><cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                     <p>LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
                     significant resources including species names, concepts, occurrences, genes or proteins,
@@ -232,16 +230,24 @@
         <g:render template="contacts" bean="${contacts}"/>
 
     <!-- web site -->
-        <g:if test="${instance.websiteUrl}">
+        <g:if test="${instance.resourceType == 'species-list'}">
+            <div class="section">
+                <h3>Species lists</h3>
+                <div class="webSite">
+                    <a class='external_icon' target="_blank"
+                       href="${grailsApplication.config.speciesListToolUrl}${instance.uid}">View this species list in species list tool</a>
+                </div>
+            </div>
+        </g:if>
+        <g:elseif test="${instance.websiteUrl}">
             <div class="section">
                 <h3>Web site</h3>
-
                 <div class="webSite">
                     <a class='external_icon' target="_blank"
                        href="${instance.websiteUrl}">Visit the data resource's website</a>
                 </div>
             </div>
-        </g:if>
+        </g:elseif>
 
     <!-- network membership -->
         <g:if test="${instance.networkMembership}">
@@ -284,6 +290,10 @@
 </div>
 </div>
 <r:script type="text/javascript">
+
+      biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
+      biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+
       // configure the charts
       var facetChartOptions = {
           /* base url of the collectory */
@@ -416,11 +426,6 @@
     /************************************************************\
     *
     \************************************************************/
-    // define biocache server
-    biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
-    biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
-    bieUrl = "${grailsApplication.config.bie.baseURL}";
-
     google.load("visualization", "1", {packages:["corechart"]});
     google.setOnLoadCallback(onLoadCallback);
 

@@ -6,8 +6,10 @@
     <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
     <g:javascript src="jquery.fancybox/fancybox/jquery.fancybox-1.3.1.pack.js" />
     <link rel="stylesheet" type="text/css" href="${resource(dir:'js/jquery.fancybox/fancybox',file:'jquery.fancybox-1.3.1.css')}" media="screen" />
+    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+    <r:require modules="fancybox, jquery_jsonp, jstree, jquery_ui_custom, charts, datadumper"/>
     <script type="text/javascript">
-      biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
+      biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
       biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
 
       $(document).ready(function() {
@@ -27,11 +29,6 @@
         });
       });
     </script>
-    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
-    <g:javascript library="jquery.ba-bbq.min"/>
-    <g:javascript library="jquery.jsonp-2.1.4.min"/>
-    <g:javascript library="charts"/>
-    <g:javascript library="datadumper"/>
   </head>
   <body class="two-column-right">
     <div id="content">
@@ -84,7 +81,7 @@
 
         <h2>Breakdown of specimen numbers</h2>
         <p>There are <span id="totalRecords">Loading...</span> records in total.
-            <a href="${ConfigurationHolder.config.biocache.baseURL}/occurrences/search?q=data_hub_uid:${instance.uid}">View all records</a>
+            <a href="${grailsApplication.config.biocache.baseURL}/occurrences/search?q=data_hub_uid:${instance.uid}">View all records</a>
             %{--&nbsp;&nbsp;&nbsp;<button type=button id="showTimings">Show timings</button>--}%
         </p>
         <div id="charts" class="section vertical-charts">
@@ -171,11 +168,11 @@ $.ajaxSetup({cache: true});
 // configure the charts
 var facetChartOptions = {
     /* base url of the collectory */
-    collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+    collectionsUrl: "${grailsApplication.config.grails.serverURL}",
     /* base url of the biocache ws*/
-    biocacheServicesUrl: "${ConfigurationHolder.config.biocache.baseURL}ws",
+    biocacheServicesUrl: "${grailsApplication.config.biocacheServicesUrl}",
     /* base url of the biocache webapp*/
-    biocacheWebappUrl: "${ConfigurationHolder.config.biocache.baseURL}",
+    biocacheWebappUrl: "${grailsApplication.config.biocache.baseURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* a uid or list of uids to chart - either this or query must be present */
@@ -194,11 +191,10 @@ var facetChartOptions = {
 }
 var taxonomyChartOptions = {
     /* base url of the collectory */
-    collectionsUrl: "${ConfigurationHolder.config.grails.serverURL}",
+    collectionsUrl: "${grailsApplication.config.grails.serverURL}",
     /* base url of the biocache ws*/
-    biocacheServicesUrl: "${ConfigurationHolder.config.biocache.baseURL}ws",
-    /* base url of the biocache webapp*/
-    biocacheWebappUrl: "${ConfigurationHolder.config.biocache.baseURL}",
+    biocacheServicesUrl: "${grailsApplication.config.biocacheServicesUrl}",
+    biocacheWebappUrl: "${grailsApplication.config.biocache.baseURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* support drill down into chart - default is false */

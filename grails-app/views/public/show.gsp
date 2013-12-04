@@ -2,10 +2,10 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="${ConfigurationHolder.config.ala.skin}" />
+        <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <script type="text/javascript">
-          biocacheServicesUrl = "${grailsApplication.config.biocache.baseURL}ws";
+          biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
           biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
           $(document).ready(function() {
             $("a#lsid").fancybox({
@@ -572,7 +572,7 @@ function drawTaxonChart2(dataTable) {
       if (scope == "genus" && rank == "species") {
         name = dataTable.getTableProperty('name') + " " + name;
       }
-      var linkUrl = "${ConfigurationHolder.config.biocache.baseURL}occurrences/searchForUID?q=${instance.uid}&fq=" +
+      var linkUrl = "${grailsApplication.config.biocacheServicesUrl}/occurrences/searchForUID?q=${instance.uid}&fq=" +
         rank + ":" + name;
       document.location.href = linkUrl;
     } else {

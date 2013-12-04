@@ -55,8 +55,8 @@
     <div id="charts"></div>
 
     <script type="text/javascript">
-        var biocacheServicesUrl = "${ConfigurationHolder.config.biocache.baseURL}ws";
-        var biocacheWebappUrl = "${ConfigurationHolder.config.biocache.baseURL}";
+        var biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
+        var biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
         var taxonomyChartOptions = { rank: "kingdom", error: "badQuery" }
         var facetChartOptions = { error: "badQuery" }
         $('#draw').click(drawChart);

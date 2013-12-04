@@ -97,8 +97,7 @@ class PublicController {
     def biocacheRecords = {
         def uid = params.uid
 
-        def baseUrl = ConfigurationHolder.config.biocache.baseURL
-        def url = baseUrl + ConfigurationHolder.config.biocache.occurrences.json + "?q=" +
+        def url = grailsApplication.config.biocacheServicesUrl + "/occurrences/search?q=" +
              uid.tokenize(',').collect({ fieldNameForSearch(it) + ":" + it}).join(' OR '.encodeAsURL())
 
         def conn = new URL(url).openConnection()
@@ -141,8 +140,6 @@ class PublicController {
 
     def getRecordsSummary(uid) {
         // lookup number of biocache records
-        //def baseUrl = ConfigurationHolder.config.biocache.baseURL
-        //def url = baseUrl + "occurrences/searchForUID.json?pageSize=0&q=" + uid
         def url = "http://ala-bie1.vm.csiro.au:8080/biocache-service/occurrences/institutions/${uid}.json?pageSize=0"
 
         def conn = new URL(url).openConnection()
@@ -269,7 +266,7 @@ class PublicController {
             render error as JSON
         } else {
             /* get decade breakdown */
-            def decadeUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/collection/decades/${instance.generatePermalink()}.json";
+            def decadeUrl = ConfigurationHolder.config.biocacheServicesUrl+ "/breakdown/collection/decades/${instance.generatePermalink()}.json";
             //println decadeUrl
             def conn = new URL(decadeUrl).openConnection()
             conn.setConnectTimeout 1500
@@ -319,8 +316,7 @@ class PublicController {
         response.addHeader("Cache-Control","no-store")
         def threshold = params.threshold ?: 20
         /* get taxon breakdown */
-        def taxonUrl = ConfigurationHolder.config.biocache.baseURL +
-                    ConfigurationHolder.config.biocache.breakdown.taxa + "?max=" + threshold
+        def taxonUrl = ConfigurationHolder.config.biocacheServicesUrl + "/breakdown/{entity}/{uid}?max=" + threshold
         taxonUrl = taxonUrl.replaceFirst(/\{uid\}/, params.id ?: '')
         taxonUrl = taxonUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
         //println "taxonUrl: " + taxonUrl
@@ -373,10 +369,9 @@ class PublicController {
         response.setHeader("Cache-Control","no-cache")
         response.addHeader("Cache-Control","no-store")
         /* get rank breakdown */
-        def rankUrl = ConfigurationHolder.config.biocache.baseURL + "breakdown/uid/namerank/${params.id}.json?name=${params.name}&rank=${params.rank}"
-        if (ConfigurationHolder.config.useNewBiocache == 'true') {
-            rankUrl = ConfigurationHolder.config.biocache.baseURL +
-                    ConfigurationHolder.config.biocache.breakdown.taxa + "?rank=${params.rank}&name=${params.name}"
+        def rankUrl = grailsApplication.config.biocacheServicesUrl + "/breakdown/uid/namerank/${params.id}.json?name=${params.name}&rank=${params.rank}"
+        if (grailsApplication.config.useNewBiocache == 'true') {
+            rankUrl = grailsApplication.config.biocacheServicesUrl + "/breakdown/{entity}/{uid}?rank=${params.rank}&name=${params.name}"
             rankUrl = rankUrl.replaceFirst(/\{uid\}/, params.id ?: '')
             rankUrl = rankUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
         }
@@ -727,8 +722,7 @@ class PublicController {
             //println instClause
             def collClause = collCodes ? buildSearchClause("coll", collCodes) : ""
             //println collClause
-            def baseUrl = ConfigurationHolder.config.biocache.baseURL
-            def url = baseUrl + "searchForUID.JSON?pageSize=0" + instClause + collClause
+            def url = ConfigurationHolder.config.biocache.baseURL + "/searchForUID.JSON?pageSize=0" + instClause + collClause
         } else {
             return ""
         }

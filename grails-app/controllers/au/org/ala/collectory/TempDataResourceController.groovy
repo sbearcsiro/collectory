@@ -160,7 +160,7 @@ class TempDataResourceController {
             addContentLocation "/ws/tempDataResource"
             def list = TempDataResource.list([sort:'name'])
             def summaries = list.collect {[name: it.name, uid: it.uid,email: it.email]}
-            renderAsJson summaries
+            render summaries as JSON
         }
     }
 

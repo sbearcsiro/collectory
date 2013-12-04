@@ -27,9 +27,7 @@
 
             <!-- drag and drop file uploads -->
             <label for="protocol">Protocol:</label>
-
-            <g:select name="protocol" from="${connectionProfiles}" value="protocol"
-                      optionValue="display" optionKey="name"/>
+            <g:select id="protocol" name="protocol" from="${connectionProfiles}" value="protocol" optionValue="display" optionKey="name"/>
 
             <label for="fileToUpload">File:</label>
 
@@ -46,12 +44,55 @@
                 </span>
                 <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
               </div>
-                <div style="clear:both">
-                  <input type="submit" id="fileToUpload" class="btn fileupload-exists btn-primary" value="Upload"/>
-                  <span class="btn cancel">Cancel</span>
-                </div>
+
+              <div id="connectionParams">
+
+              </div>
+
+
+            <div style="clear:both">
+              <input type="submit" id="fileToUpload" class="btn fileupload-exists btn-primary" value="Upload"/>
+              <span class="btn cancel">Cancel</span>
             </div>
+          </div>
         </g:uploadForm>
+
+        <div id="connectionTemplates" class="hide">
+            <g:each in="${connectionProfiles}" var="profile">
+                <div id="profile-${profile.name}">
+                    <g:each in="${profile.params.minus('LOCATION_URL')}" var="param">
+                        <!-- get param -->
+                        <g:set var="connectionParam" value="${connectionParams[param]}"/>
+                        <g:if test="${connectionParam.type == 'boolean'}">
+                            <label class="checkbox ${profile.name}">
+                                <g:checkBox id="${connectionParam.paramName}" name="${connectionParam.paramName}"/>
+                                ${connectionParam.display}
+                            </label>
+                        </g:if>
+                        <g:else>
+                            <label for="${connectionParam.paramName}">${connectionParam.display}:</label>
+                            <input type="text" id="${connectionParam.paramName}" name="${connectionParam.paramName}" value="${connectionParam.defaultValue}" />
+                        </g:else>
+                    </g:each>
+                </div>
+            </g:each>
+        </div>
+
+        <r:script>
+
+            function loadConnParams(){
+               $('#connectionParams').html('');
+               var $protocol = $('#protocol');
+               $('#connectionParams').html($('#profile-' + $protocol.val()).html());
+            }
+
+            $(function(){
+               $('#protocol').change(function(){
+                   loadConnParams();
+               });
+               loadConnParams();
+            })
+        </r:script>
 
     </body>
 </html>

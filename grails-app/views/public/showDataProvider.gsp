@@ -2,9 +2,14 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <meta name="layout" content="${ConfigurationHolder.config.ala.skin}"/>
+    <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
     <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
+    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
+    <r:require modules="fancybox"/>
     <script type="text/javascript">
+        // define biocache server
+        biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
+        biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
         $(document).ready(function () {
             $("a#lsid").fancybox({
                 'hideOnContentClick': false,
@@ -22,8 +27,6 @@
             });
         });
     </script>
-    <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
-    <r:require modules="fancybox"/>
 </head>
 
 <body class="two-column-right">
@@ -201,8 +204,6 @@
     /************************************************************\
      *
      \************************************************************/
-        // define biocache server
-    biocacheServicesUrl = "${ConfigurationHolder.config.biocache.records.url}ws";
 
     google.load("visualization", "1", {packages: ["corechart"]});
     google.setOnLoadCallback(onLoadCallback);

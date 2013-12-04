@@ -4,6 +4,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="main" />
         <title><g:message code="dataResource.base.label" default="Edit data resource metadata" /></title>
+        <style type="text/css">
+            li.free :hover { cursor: pointer; }
+            li.free { cursor: pointer; }
+        </style>
     </head>
     <body>
         <div class="nav">
@@ -126,6 +130,7 @@
                 </div>
             </g:form>
         </div>
+
         <script type="text/javascript">
             $(function() {
                 // bind click

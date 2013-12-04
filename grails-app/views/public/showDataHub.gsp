@@ -41,8 +41,8 @@
               </ol>
           </div>
         <cl:pageOptionsPopup instance="${instance}"/>
-        <div class="section full-width">
-          <div class="hrgroup col-8">
+        <div class="row-fluid">
+          <div class="span8">
             <cl:h1 value="${instance.name}"/>
             <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
             <g:if test="${instance.guid?.startsWith('urn:lsid:')}">
@@ -59,7 +59,7 @@
               </div>
             </g:if>
           </div>
-          <div class="aside col-4 center">
+          <div class="span4">
             <!-- logo -->
             <g:if test="${fieldValue(bean: instance, field: 'logoRef') && fieldValue(bean: instance, field: 'logoRef.file')}">
               <img class="institutionImage" src='${resource(absolute:"true", dir:"data/"+instance.urlForm()+"/",file:fieldValue(bean: instance, field: 'logoRef.file'))}' />
@@ -67,7 +67,10 @@
           </div>
         </div>
       </div><!--close header-->
-      <div id="column-one">
+
+      <div class="row-fluid">
+
+      <div id="column-one" class="span8">
       <div class="section">
         <g:if test="${instance.pubDescription}">
           <h2>Description</h2>
@@ -81,7 +84,7 @@
 
         <h2>Breakdown of specimen numbers</h2>
         <p>There are <span id="totalRecords">Loading...</span> records in total.
-            <a href="${grailsApplication.config.biocache.baseURL}/occurrences/search?q=data_hub_uid:${instance.uid}">View all records</a>
+            <a href="${grailsApplication.config.biocache.baseURL}/occurrences/search?q=data_hub_uid:${instance.uid}" class="btn">View all records</a>
             %{--&nbsp;&nbsp;&nbsp;<button type=button id="showTimings">Show timings</button>--}%
         </p>
         <div id="charts" class="section vertical-charts">
@@ -91,8 +94,7 @@
 
       </div><!--close section-->
     </div><!--close column-one-->
-
-    <div id="column-two">
+      <div id="column-two" class="span4">
       <div class="section sidebar">
         <g:if test="${fieldValue(bean: instance, field: 'imageRef') && fieldValue(bean: instance, field: 'imageRef.file')}">
           <div class="section">
@@ -158,6 +160,7 @@
 
     </div><!--close column-two-->
 
+      </div>
   </div><!--close content-->
 
 <script type="text/javascript">

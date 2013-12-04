@@ -91,8 +91,8 @@
                 <g:set var="hasRecords" value="false"/>
                 <ol>
                     <g:each var="c" in="${instance.getResources().sort { it.name }}">
-                        <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link><span
-                                style="color:#555;">${c?.makeAbstract(400)}</span></li>
+                        <li><g:link controller="public" action="show" id="${c.uid}">${c?.name}</g:link>
+                            <span style="color:#555;">${c?.makeAbstract(400)}</span></li>
                         <g:if test="${c.resourceType == 'records'}">
                             <g:set var="hasRecords" value="true"/>
                         </g:if>

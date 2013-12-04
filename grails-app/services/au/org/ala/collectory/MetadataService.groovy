@@ -52,7 +52,7 @@ class MetadataService {
     }
 
     def getConnectionProfilesWithFileUpload() {
-        getConnectionProfiles().values().toList().findAll({ it.supportFileUpload})
+        getConnectionProfiles().values().toList().findAll({ it.supportFileUpload })
     }
 
     private checkConnectionMetadata() {

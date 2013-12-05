@@ -3,15 +3,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Natural History Collections | Atlas of Living Australia</title>
+        <title>Natural History Collections | ${grailsApplication.config.projectName}</title>
         <script src="https://maps.google.com/maps/api/js?v=3&sensor=true"></script>
         <r:require modules="bigbuttons,bbq,openlayers,map"/>
         <script type="text/javascript">
           var altMap = true;
           var COLLECTIONS_MAP_OPTIONS = {
-              serverUrl: "${grailsApplication.config.grails.serverURL}",
-              centreLat:${grailsApplication.config.grails.centreMapLat?:'-28.2'},
-              centreLon:${grailsApplication.config.grails.centreMapLon?:'134'}
+              serverUrl:   "${grailsApplication.config.grails.serverURL}",
+              centreLat:   ${grailsApplication.config.collectionsMap.centreMapLat?:'-28.2'},
+              centreLon:   ${grailsApplication.config.collectionsMap.centreMapLon?:'134'},
+              defaultZoom: ${grailsApplication.config.collectionsMap.defaultZoom?:'4'}
           }
         </script>
     </head>
@@ -29,9 +30,10 @@
             <div class="message">${flash.message}</div>
           </g:if>
           <div class="hrgroup">
-            <h1>Australia's natural history collections</h1>
-            <p>Learn about the institution, the collections they hold and view records of specimens that have been databased. Currently only the collections of ALA partners are shown.
-              Over time this list will expand to include all natural history collections in Australia.</p>
+            <h1>${grailsApplication.config.regionName}'s natural history collections</h1>
+            <p>Learn about the institution, the collections they hold and view records of specimens that have been databased.
+                Currently only the collections of ${grailsApplication.config.projectNameShort} partners are shown.
+              Over time this list will expand to include all natural history collections in ${grailsApplication.config.regionName}.</p>
           </div><!--close hrgroup-->
         </div><!--close section-->
       </div><!--close header-->
@@ -112,7 +114,6 @@
             </div><!--close list-->
         </div><!-- /.tab-content -->
       </div><!--close map/list div-->
-
     </div><!--close content-->
     </div>
   </body>

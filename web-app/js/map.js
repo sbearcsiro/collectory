@@ -28,11 +28,13 @@ if (altMap == undefined) {
     var altMap = false;
 }
 
-var extent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34);
+//var extent = new OpenLayers.Bounds(-20037508.34, -20037508.34, 20037508.34, 20037508.34);
 
 // centre point for map of Australia - this value is transformed
 // to the map projection once the map is created.
-var centrePoint = new OpenLayers.LonLat(134, -28.2);
+var centrePoint;
+
+var defaultZoom;
 
 // represents the number in 'all' collections - used in case the total number changes on an ajax request
 var maxCollections = 0;
@@ -44,13 +46,15 @@ var maxCollections = 0;
 function initMap(mapOptions) {
 
     centrePoint = new OpenLayers.LonLat(mapOptions.centreLon, mapOptions.centreLat);
+    defaultZoom = mapOptions.defaultZoom;
 
     // serverUrl is the base url for the site eg http://collections.ala.org.au in production
     // cannot use relative url as the context path varies with environment
     baseUrl = mapOptions.serverUrl;
+    featuresUrl = mapOptions.serverUrl + "/public/mapFeatures";
+
     var featureGraphicUrl = mapOptions.serverUrl + "/images/map/orange-dot.png";
     var clusterGraphicUrl = mapOptions.serverUrl + "/images/map/orange-dot-multiple.png";
-    featuresUrl = mapOptions.serverUrl + "/public/mapFeatures";
 
     // create the map
     map = new OpenLayers.Map('map_canvas', {
@@ -89,7 +93,7 @@ function initMap(mapOptions) {
     map.addControl(new OpenLayers.Control.LayerSwitcher());
 
     // centre the map on Australia
-    map.setCenter(centrePoint.transform(proj, map.getProjectionObject()), 4);
+    map.setCenter(centrePoint.transform(proj, map.getProjectionObject()), defaultZoom);
 
     // set projection options
     proj_options = {

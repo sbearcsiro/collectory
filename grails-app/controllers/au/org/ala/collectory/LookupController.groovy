@@ -270,7 +270,7 @@ class LookupController {
             def rit = ""
             if (pg.creativeCommons) {
                 def display = DataResource.ccDisplayList.find { it.type == pg.licenseType }
-                rit = "${display.display} ${pg.licenseVersion} Australia (${pg.licenseType})"
+                rit = "${display.display} ${pg.licenseVersion} ${grailsApplication.config.regionName} (${pg.licenseType})"
             }
             if (pg.getRights()) {
                 rit = rit ? rit + " " + pg.getRights() : pg.getRights()

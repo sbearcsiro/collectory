@@ -34,10 +34,6 @@ modules = {
     bbq {
         resource url: 'js/jquery.ba-bbq.min.js'
     }
-//    openlayers {
-//        resource url: 'http://dev.openlayers.org/releases/OpenLayers-2.13.1/lib/OpenLayers.js'
-//        resource url: 'js/OpenLayers/theme/default/style.css'
-//    }
     openlayers {
         resource url: 'js/OpenLayers/OpenLayers.js'
         resource url: 'js/OpenLayers/theme/default/style.css'

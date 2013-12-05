@@ -23,7 +23,7 @@ import java.text.DateFormat
 class EmlRenderService {
 
     static transactional = true
-
+    def grailsApplication
     def ns = [eml:"eml://ecoinformatics.org/eml-2.1.1",
             xsi:"http://www.w3.org/2001/XMLSchema-instance",
             dc:"http://purl.org/dc/terms/"]
@@ -541,15 +541,15 @@ class EmlRenderService {
      */
     def ala = { withRole ->
         { it ->
-            organizationName "Atlas of Living Australia (ALA)"
+            organizationName grailsApplication.config.eml.organizationName
             address {
-                deliveryPoint "CSIRO Black Mountain Laboratories, Clunies Ross Street, ACTON"
-                city "Canberra"
-                administrativeArea "ACT"
-                postalCode "2601"
-                country "Australia"
+                deliveryPoint grailsApplication.config.eml.deliveryPoint
+                city grailsApplication.config.eml.city
+                administrativeArea grailsApplication.config.eml.administrativeArea
+                postalCode grailsApplication.config.eml.postalCode
+                country grailsApplication.config.eml.country
             }
-            electronicMailAddress "info@ala.org.au"
+            electronicMailAddress grailsApplication.config.eml.electronicMailAddress
             if (withRole) {
                 role "distributor"
             }

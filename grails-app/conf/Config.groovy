@@ -127,11 +127,44 @@ if (!resource.publicArchive.url.template) {
 /******************************************************************************\
  *  ADDITIONAL CONFIG
  \******************************************************************************/
-if(!centreMapLon){
-    centreMapLon = 134
+if(!projectNameShort){
+    projectNameShort="Atlas"
 }
-if(!centreMapLat){
-    centreMapLat = -28.2
+if(!projectName){
+    projectName="Atlas of Living Australia"
+}
+if(!regionName){
+    regionName="Australia"
+}
+if(!collectionsMap.centreMapLon){
+    collectionsMap.centreMapLon = '134'
+}
+if(!collectionsMap.centreMapLat){
+    collectionsMap.centreMapLat = '-28.2'
+}
+if(!collectionsMap.defaultZoom){
+    collectionsMap.defaultZoom = '2'
+}
+if(!eml.organizationName){
+    eml.organizationName="Atlas of Living Australia (ALA)"
+}
+if(!eml.deliveryPoint){
+    eml.deliveryPoint="CSIRO Black Mountain Laboratories, Clunies Ross Street, ACTON"
+}
+if(!eml.city){
+    eml.city="Canberra"
+}
+if(!eml.administrativeArea){
+    eml.administrativeArea="ACT"
+}
+if(!eml.postalCode){
+    eml.postalCode="2601"
+}
+if(!eml.country){
+    eml.country="Australia"
+}
+if(!eml.electronicMailAddress){
+    eml.electronicMailAddress = "info@ala.org.au"
 }
 
 /******* standard grails **********/

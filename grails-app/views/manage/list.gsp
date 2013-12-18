@@ -247,7 +247,14 @@
                         <g:link class="mainLink" controller="auditLogEvent" action="list" params="[max:1000]">View audit events</g:link>
                         <p class="mainText">All audit events</p>
                     </div>
-
+                    <div class="homeCell">
+                        <g:link class="mainLink" controller="manage" action="gbifLoadCountry">Add all GBIF resource for a country</g:link>
+                        <p class="mainText"r>All the resources for a specific country are added as data resource in the collectory</p>
+                    </div>
+                    <div class="homeCell">
+                        <g:link class="mainLink" controller="dataResource" action="gbifUpload">Upload GBIF file</g:link>
+                        <p class="mainText"r>Uploads a GBIF download as a data resource. (Assumes that a single resource is in the file)</p>
+                    </div>
                   </div>
                 </cl:ifGranted>
                 </div>

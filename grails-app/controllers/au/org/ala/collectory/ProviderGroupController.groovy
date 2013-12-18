@@ -19,7 +19,7 @@ abstract class ProviderGroupController {
     static String entityName = "ProviderGroup"
     static String entityNameLower = "providerGroup"
 
-    def idGeneratorService, authService, metadataService
+    def idGeneratorService, authService, metadataService, gbifService
 
 /*
  * Access control
@@ -497,6 +497,30 @@ abstract class ProviderGroupController {
                 redirect(action: "list")
             }
         }
+    }
+    /**
+     * Displays the form for loading a single pre-downloaded resource from GBIF. It assumes that there is a single resource
+     * in the file.
+     */
+    def gbifUpload = {
+        render(view: "gbifUpload")
+    }
+
+    /**
+     * Uploads the supplied GBIF file creating a new data resource based on the supplied EML details
+     */
+    def uploadGBIFFile ={
+        //gbifService.extractDataResourceJSON("/data/biocache-download/GBIF/0005083-131106143450413")
+        //gbifService.createGBIFResource(new File("/data/biocache-download/GBIF/0005083-131106143450413.zip"))
+        //createGBIFResourceFromMultipart
+        def f = request.getFile('myFile')
+        if (f.empty) {
+            flash.message = 'file cannot be empty'
+            render(view: 'gbifUpload')
+            return
+        }
+        def dr =gbifService.createGBIFResourceFromMultipart(f)
+        redirect([controller: 'dataResource', action: 'show', id: dr.uid])
     }
 
     def upload = {

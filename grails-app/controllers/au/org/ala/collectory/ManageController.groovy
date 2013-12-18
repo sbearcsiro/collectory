@@ -6,7 +6,7 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 class ManageController {
 
-    def authService
+    def authService , gbifService
 
     /**
      * Landing page for self-service management of entities.
@@ -24,6 +24,45 @@ class ManageController {
             redirect(action: 'list')
         }
     }
+    /**
+     * Renders the view that allows a user to load all the gbif resources for a country
+     */
+    def gbifLoadCountry = {
+        render(view: "gbifLoadCountry")
+    }
+    /**
+     * Submits the task required to load the GBIF resources for a country
+     * country - the country to load
+     * gbifUsername - the username used to instantiate a download
+     * gbifPassword - the password for the supplied gbif user
+     * @return
+     */
+    def loadAllGbifForCountry(){
+        log.debug(params)
+        if(params.gbifUsername&&params.gbifPassword){
+            Integer maxResources = params.maxResources?params.getInt("maxResources"):null
+            gbifService.loadResourcesFor(params.country,params.gbifUsername, params.gbifPassword, maxResources)
+            redirect(action: 'gbifCountryLoadStatus', params: ["country":params.country])
+        }
+        //apply an optional limit to the number of data resources
+        //gbifService.startGBIFDownload("7a4ab5e8-f762-11e1-a439-00145eb45e9a","nquimby","natasha.quimby@csiro.au","password")
+        //log.debug(gbifService.getDownloadStatus("0006020-131106143450413"))
+        //log.debug(gbifService.getListOfGbifResources("SPAIN", 200))
+        //params.country="SPAIN"
+        //log.debug(gbifService.loadResourcesFor("SPAIN", null, null, 20))
+        //redirect(action: 'gbifCountryLoadStatus', params: ["country":params.country])
+    }
+    /**
+     * Display the load status for the supplied country
+     * country - the country to supply the status for
+     * @return
+     */
+    def gbifCountryLoadStatus(){
+        def gbifSummary = gbifService.getStatusInfoFor(params.country)
+        log.debug("PARAMS: " + params)
+        [country: params.country, gbifSummary:gbifSummary]
+    }
+
 
     /**
      * Landing page for self-service management of entities.

@@ -21,12 +21,14 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenCentral()
         //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
+        mavenRepo "http://repository.codehaus.org"
         //mavenRepo "http://download.java.net/maven/2/"
         mavenRepo "http://maven.ala.org.au/repository/"
     }
     dependencies {
         runtime 'mysql:mysql-connector-java:5.1.5'
+  //      #runtime 'commons-compress:org.apache.commons:1.7
+	runtime 'ant:ant:1.6.5'
     }
 
     plugins {

@@ -2,6 +2,9 @@ modules = {
     application {
         resource url:'js/application.js'
     }
+    smoothness {
+        resource url:'css/smoothness/jquery-ui-1.8.16.custom.css'
+    }
     collectory {
         dependsOn 'bootstrap'
         resource url:'js/collectory.js'
@@ -23,7 +26,6 @@ modules = {
     jstree {
         resource url: 'js/jquery.jstree.js'
         resource url:[dir:'js/themes/classic', file:'style.css'], attrs:[media:'screen, projection, print']
-        defaultBundle false
     }
     jquery_ui_custom {
        resource url: 'js/jquery-ui-1.8.16.custom.min.js'

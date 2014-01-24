@@ -39,10 +39,10 @@ class ManageController {
      */
     def loadAllGbifForCountry(){
         log.debug(params)
-        if(params.gbifUsername&&params.gbifPassword){
-            Integer maxResources = params.maxResources?params.getInt("maxResources"):null
+        if(params.gbifUsername && params.gbifPassword){
+            Integer maxResources = params.maxResources ? params.getInt("maxResources") : null
             gbifService.loadResourcesFor(params.country,params.gbifUsername, params.gbifPassword, maxResources)
-            redirect(action: 'gbifCountryLoadStatus', params: ["country":params.country])
+            redirect(action: 'gbifCountryLoadStatus', params: [country:params.country])
         }
         //apply an optional limit to the number of data resources
         //gbifService.startGBIFDownload("7a4ab5e8-f762-11e1-a439-00145eb45e9a","nquimby","natasha.quimby@csiro.au","password")
@@ -53,6 +53,7 @@ class ManageController {
         //redirect(action: 'gbifCountryLoadStatus', params: ["country":params.country])
     }
     /**
+     *
      * Display the load status for the supplied country
      * country - the country to supply the status for
      * @return

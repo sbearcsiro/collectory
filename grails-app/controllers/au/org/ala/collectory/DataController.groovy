@@ -303,11 +303,11 @@ class DataController {
 
                 def entityInJson = crudService."read${clazz}"(params.pg)
 
-                println "BEFORE ########" + entityInJson.metaClass
+//                println "BEFORE ########" + entityInJson.metaClass
 
                 entityInJson = convertAnyLocalPaths(entityInJson)
 
-                println "AFTER ########" +entityInJson.metaClass
+//                println "AFTER ########" +entityInJson.metaClass
 
                 cacheAwareRender entityInJson, params.pg.lastUpdated, eTag
             } else {

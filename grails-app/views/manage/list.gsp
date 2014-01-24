@@ -3,8 +3,7 @@
     <head>
         <title>ALA Metadata Management</title>
 	    <meta name="layout" content="main" />
-        <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.16.custom.css')}" type="text/css" media="screen"/>
-        <r:require modules="collectory, jquery_ui_custom" />
+        <r:require modules="smoothness, collectory, jquery_ui_custom" />
     </head>
     
     <body>
@@ -167,7 +166,7 @@
                             <li>Only ALA administrators can delete collections. Please contact the ALA if you believe a collection should be removed.</li>
                         </ul>
 
-                        <span id="create" class="link under btn">Create a new collection</span>
+                        <g:link controller="collection" action="create" class="btn">Create a new collection</g:link>
                     </cl:ifGranted>
                 </div>
 

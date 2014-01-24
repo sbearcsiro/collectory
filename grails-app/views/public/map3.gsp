@@ -22,7 +22,7 @@
         <!--Breadcrumbs-->
         <div id="breadcrumb">
           <ol class="breadcrumb">
-              <li><cl:breadcrumbTrail/></li>
+              <li><cl:breadcrumbTrail /></li>
           </ol>
         </div>
         <div class="section full-width">

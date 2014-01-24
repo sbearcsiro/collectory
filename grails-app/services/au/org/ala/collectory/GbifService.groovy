@@ -68,6 +68,7 @@ class GbifService {
     def loading = false
     def loadMap=[:]
     def stopStatus = ["CANCELLED","FAILED","KILLED", "SUCCEEDED", "UNKNOWN"]
+
     /**
      * Returns the status informationfor the supplied country
      * @param country
@@ -95,7 +96,7 @@ class GbifService {
             //get a list of loads that need to be performed
             List loadList = getListOfGbifResources(country, limit)
             if(loadList){
-                final GBIFLoadSummary gls= new GBIFLoadSummary()
+                final GBIFLoadSummary gls = new GBIFLoadSummary()
                 //gls.total = loadList.size()
                 gls.startTime = new Date()
                 gls.country = country
@@ -109,11 +110,11 @@ class GbifService {
                             defer{
                                 log.debug("submitting " + l + " to be processed")
                                 //1) Start the download
-                                String downloadId =startGBIFDownload(l.gbifResourceUid,username, null, password)
+                                String downloadId = startGBIFDownload(l.gbifResourceUid,username, null, password)
                                 l.downloadId = downloadId
                                 //2) Monitor the download
                                 l.phase = "Generating Download..."
-                                String status=""
+                                String status = ""
                                 while(!stopStatus.contains(status)){
                                     //sleep for 30 seconds between checks.
                                     Thread.sleep(30000)
@@ -140,7 +141,7 @@ class GbifService {
                                 l.setLoaded()
                                 //l.dataResourceUid="dr123"
                                 //check to see if all the items have finished loading
-                                log.debug("IS LOAD STILL RUNNING: " +gls.isLoadRunning())
+                                log.debug("IS LOAD STILL RUNNING: " + gls.isLoadRunning())
                                 loading = gls.isLoadRunning()
                                 if(!loading){
                                     gls.finishTime = new Date()
@@ -148,15 +149,13 @@ class GbifService {
                             }
                         }
                     }
-                }
-                )
+                })
                 return gls
-            } else{
+            } else {
+                loading = false
                 return null
             }
-
         }
-
     }
     /**
      * Queries the GBIF search API for the list of datasets to load
@@ -170,6 +169,7 @@ class GbifService {
         log.debug(DATASET_SEARCH + " " +country)
         String url = GBIF_API + MessageFormat.format(DATASET_SEARCH, country)
         JSONObject countJson = getJSONWS(url + "&limit=1")
+        log.debug("Search URL: " + url);
         if (countJson){
             def total =countJson.getInt("count")
             def limit = (userLimit == null || userLimit>total) ? total : userLimit
@@ -192,6 +192,7 @@ class GbifService {
             log.debug("Finished collecting list " +list.size)
             return list
         } else{
+            loading = false
             return null
         }
     }
@@ -403,7 +404,7 @@ class GbifService {
     def getDownloadStatus(String downloadId){
         //http://api.gbif.org/v0.9/occurrence/download/0006020-131106143450413
         def json = getJSONWS(GBIF_API+DOWNLOAD_STATUS + downloadId)
-        return json && json?.status ? json.status:"UNKNOWN"
+        return json && json?.status ? json.status : "UNKNOWN"
 //        def http = new HTTPBuilder(GBIF_API+DOWNLOAD_STATUS + downloadId)
 //        http.request(Method.GET, ContentType.JSON){
 //            response.success = { resp, json ->
@@ -447,7 +448,7 @@ class GbifService {
      * @return The downloadId used to monitor when the download has been completed
      */
     def startGBIFDownload(String resourceId,String username, String email, String password){
-        String jsonBody =MessageFormat.format(DOWNLOAD_JSON, username, email, resourceId)
+        String jsonBody = MessageFormat.format(DOWNLOAD_JSON, username, email, resourceId)
         //String encoding = encodeAsBase64(username+":"+password);
         log.debug("JSON Body: "+ jsonBody)
         //NQ: I can't get the Grail HTTPBuilder to work correctly with different request and response data types

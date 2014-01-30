@@ -28,6 +28,7 @@ println "[collectory] (*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 if (!ala.skin) {
     ala.skin = 'ala2';
+    // ala.skin = 'generic';
 }
 /******************************************************************************\
  *  EXTERNAL SERVERS

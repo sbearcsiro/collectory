@@ -28,7 +28,13 @@ println "[collectory] (*) grails.config.locations = ${grails.config.locations}"
  \******************************************************************************/
 if (!ala.skin) {
     ala.skin = 'ala2';
-    // ala.skin = 'generic';
+//    ala.skin = 'generic';
+}
+if (!skin.orgNameLong) {
+    skin.orgNameLong = "Atlas of Living Australia"
+}
+if (!skin.orgNameShort) {
+    skin.orgNameShort = "ALA"
 }
 /******************************************************************************\
  *  EXTERNAL SERVERS

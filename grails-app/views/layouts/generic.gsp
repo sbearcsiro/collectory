@@ -1,14 +1,17 @@
+<g:set var="orgNameLong" value="${grailsApplication.config.skin.orgNameLong}"/>
+<g:set var="orgNameShort" value="${grailsApplication.config.skin.orgNameShort}"/>
 <!DOCTYPE html>
 <html>
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
    <meta name="app.version" content="${g.meta(name:'app.version')}"/>
    <meta name="app.build" content="${g.meta(name:'app.build')}"/>
+   <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
    <g:if test="${instance}">
-        <meta name="description" content="The Atlas of Living Australia's description of the ${instance?.name}. ${instance?.makeAbstract(200)}"/>
+        <meta name="description" content="${orgNameLong} description of the ${instance?.name}. ${instance?.makeAbstract(200)}"/>
    </g:if>
    <g:else>
-        <meta name="description" content="Explore Australia's Natural History Collections."/>
+        <meta name="description" content="Explore ${orgNameLong}'s Natural History Collections."/>
    </g:else>
    <title><g:layoutTitle /></title>
    <r:require modules="jquery, bootstrap, application, collectory" />
@@ -88,7 +91,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="brand" href="#">${instance?.name?:'Collectory'}</a>
+                <a class="brand" href="#">${orgNameLong}</a>
                 <div class="nav-collapse collapse">
                     <p class="navbar-text pull-right">
                         Logged in as <a href="#" class="navbar-link">Username</a>
@@ -107,17 +110,12 @@
         <g:layoutBody />
     </div><!--/.container-->
 
-    %{--<div class="container-fluid" id="main-content">--}%
-        %{--<div id="content" class="row-fluid">--}%
-            %{--<g:layoutBody />--}%
-        %{--</div>--}%
-    %{--</div><!--/#main-content-->--}%
-
     <div id="footer">
         <div class="container-fluid">
             <div class="row-fluid">
-                <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="http://www.ala.org.au/wp-content/themes/ala2011/images/creativecommons.png" width="88" height="31" alt=""></a>
-                This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external">Creative Commons Attribution 3.0 Australia License</a>. Provider content may be covered by other <a href="http://www.ala.org.au/about-the-atlas/terms-of-use/" title="Terms of Use">Terms of Use</a>.
+                <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons"><img src="http://i.creativecommons.org/l/by/3.0/88x31.png" width="88" height="31" alt=""></a>
+                This site is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/au/" title="External link to Creative Commons" class="external">Creative Commons Attribution 3.0 Australia License</a>.
+                Provider content may be covered by other <a href="#terms-of-use" title="Terms of Use">Terms of Use</a>.
             </div>
         </div>
     </div><!--/#footer -->

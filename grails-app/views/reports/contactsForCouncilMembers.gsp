@@ -1,7 +1,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="main" />
+        <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <title>Registry database reports</title>
     </head>
     <body>

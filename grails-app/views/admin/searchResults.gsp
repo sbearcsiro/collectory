@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>ALA Collections Management Search Results</title>
-	<meta name="layout" content="main" />
+	<meta name="layout" content="${grailsApplication.config.ala.skin}" />
 
     </head>
 

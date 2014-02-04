@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="layout" content="main"/>
+  <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
   <g:set var="entityName" value="${instance.ENTITY_TYPE}"/>
   <g:set var="entityNameLower" value="${instance.ENTITY_TYPE.toLowerCase()}"/>
   <title>Edit ${entityNameLower} metadata</title>

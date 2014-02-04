@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="layout" content="${layout ?: 'main'}" />
+    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
     %{--TODO At the moment this is performing a complete reload every 15 seconds while the load has not finished. Make this AJAXy--}%
     <title>Loading Resources From ${country}</title>
 

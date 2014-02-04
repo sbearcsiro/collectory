@@ -4,6 +4,7 @@
 	  <title>Grails Runtime Exception</title>
       <link rel="stylesheet" href="${resource(dir:'css',file:'style.css')}" type="text/css" media="screen"/>
       <link rel="stylesheet" href="${resource(dir:'css',file:'main.css')}" />
+      <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
       <g:javascript library="collectory" />
 	  <style type="text/css">
 	  		.error-message {

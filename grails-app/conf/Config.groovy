@@ -1,34 +1,39 @@
 /******************************************************************************\
  *  CONFIG MANAGEMENT
-\******************************************************************************/
-def ENV_NAME = "COLLECTORY_CONFIG"
-def default_config = "/data/collectory/config/${appName}-config.properties"
+ \******************************************************************************/
+def appName = 'collectory'
+def ENV_NAME = "${appName.toUpperCase()}_CONFIG"
+default_config = "/data/${appName}/config/${appName}-config.properties"
 if(!grails.config.locations || !(grails.config.locations instanceof List)) {
     grails.config.locations = []
 }
+
+// add ala skin conf (needed for version >= 0.1.10)
+grails.config.locations.add("classpath:ala-config.groovy")
+
 if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
-    println "[collectory] Including configuration file specified in environment: " + System.getenv(ENV_NAME);
-    grails.config.locations = ["file:" + System.getenv(ENV_NAME)]
+    println "[${appName}] Including configuration file specified in environment: " + System.getenv(ENV_NAME);
+    grails.config.locations.add "file:" + System.getenv(ENV_NAME)
 } else if(System.getProperty(ENV_NAME) && new File(System.getProperty(ENV_NAME)).exists()) {
-    println "[collectory] Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
-    grails.config.locations = ["file:" + System.getProperty(ENV_NAME)]
+    println "[${appName}] Including configuration file specified on command line: " + System.getProperty(ENV_NAME);
+    grails.config.locations.add "file:" + System.getProperty(ENV_NAME)
 } else if(new File(default_config).exists()) {
-    println "[collectory] Including default configuration file: " + default_config;
-    def loc = ["file:" + default_config]
-    println "[collectory]  loc = " + loc
-    grails.config.locations = loc
-    println "grails.config.locations = " + grails.config.locations
+    println "[${appName}] Including default configuration file: " + default_config;
+    grails.config.locations.add "file:" + default_config
 } else {
-    println "[collectory] No external configuration file defined."
+    println "[${appName}] No external configuration file defined."
 }
-println "[collectory] (*) grails.config.locations = ${grails.config.locations}"
+
+println "[${appName}] (*) grails.config.locations = ${grails.config.locations}"
+println "default_config = ${default_config}"
+
 
 /******************************************************************************\
  *  SKINNING
  \******************************************************************************/
 if (!ala.skin) {
-    ala.skin = 'ala2';
-//    ala.skin = 'generic';
+//    ala.skin = 'ala2';
+    ala.skin = 'generic';
 }
 if (!skin.orgNameLong) {
     skin.orgNameLong = "Atlas of Living Australia"
@@ -82,6 +87,8 @@ if(!uploadExternalUrlPath){
 //reloadable.cfgPollingFrequency = 1000 * 60 * 60 // 1 hour
 //reloadable.cfgPollingRetryAttempts = 5
 //reloadable.cfgs = ["file:/data/collectory/config/Collectory-config.properties"]
+reloadable.cfgs = ["file:/data/${appName}/config/${appName}-config.properties"]
+
 /******************************************************************************\
  *  SECURITY
 \******************************************************************************/
@@ -114,7 +121,7 @@ if(!security.cas.casServerUrlPrefix){
     security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
 }
 if(!security.cas.bypass){
-    security.cas.bypass = false
+    security.cas.bypass = true
 }
 /******************************************************************************\
  *  TEMPLATES

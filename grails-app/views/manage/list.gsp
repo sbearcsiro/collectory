@@ -2,7 +2,7 @@
 <html>
     <head>
         <title>ALA Metadata Management</title>
-	    <meta name="layout" content="main" />
+	    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <r:require modules="smoothness, collectory, jquery_ui_custom" />
     </head>
     

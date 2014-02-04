@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="main" />
+        <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <title><g:message code="collection.base.label" default="Edit collection metadata" /></title>
     </head>
     <body id="body-wrapper">

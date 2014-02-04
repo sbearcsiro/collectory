@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="ala2" />
+        <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Web Services | Natural History Collections | Atlas of Living Australia</title>
         <style type="text/css">

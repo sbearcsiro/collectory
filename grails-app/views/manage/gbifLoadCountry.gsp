@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <meta name="layout" content="${layout ?: 'main'}" />
+    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
 
     <title>Load GBIF Resources From Country</title>
 

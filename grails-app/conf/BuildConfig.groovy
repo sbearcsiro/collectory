@@ -27,8 +27,9 @@ grails.project.dependency.resolution = {
     }
     dependencies {
         runtime 'mysql:mysql-connector-java:5.1.5'
-  //      #runtime 'commons-compress:org.apache.commons:1.7
-	runtime 'ant:ant:1.6.5'
+        runtime 'net.sf.opencsv:opencsv:2.3'
+        // runtime 'commons-compress:org.apache.commons:1.7
+	    runtime 'ant:ant:1.6.5'
     }
 
     plugins {

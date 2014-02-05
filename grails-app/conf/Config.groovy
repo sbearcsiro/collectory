@@ -32,8 +32,8 @@ println "default_config = ${default_config}"
  *  SKINNING
  \******************************************************************************/
 if (!ala.skin) {
-//    ala.skin = 'ala2';
-    ala.skin = 'generic';
+    ala.skin = 'ala2';
+//    ala.skin = 'generic';
 }
 if (!skin.orgNameLong) {
     skin.orgNameLong = "Atlas of Living Australia"

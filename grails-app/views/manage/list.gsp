@@ -13,7 +13,7 @@
             <g:link class="mainLink btn" controller="public" action="map">View public site</g:link>
         </div>
 
-        <h1>ALA Metadata Management</h1>
+        <h1>Metadata Management</h1>
 
         <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>

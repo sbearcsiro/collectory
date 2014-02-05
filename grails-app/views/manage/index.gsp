@@ -1,7 +1,7 @@
 <%@ page import="org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.ProviderGroup" %>
 <html>
     <head>
-        <title>ALA Metadata Management</title>
+        <title>Metadata Management</title>
 	    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
     </head>
     

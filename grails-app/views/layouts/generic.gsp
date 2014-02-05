@@ -28,6 +28,9 @@
             border-top: 1px solid #CCC;
             font-size: 12px;
         }
+        #content .nav-tabs > li.active > a {
+            background-color: #ffffff;
+        }
    </style>
    <r:script disposition='head'>
         // initialise plugins

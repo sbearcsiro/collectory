@@ -41,6 +41,10 @@ if (!skin.orgNameLong) {
 if (!skin.orgNameShort) {
     skin.orgNameShort = "ALA"
 }
+if (!skin.includeBaseUrl) {
+    // whether crumb trail should include a home link that is external to this webabpp - ala.baseUrl is used if true
+    skin.includeBaseUrl = true
+}
 /******************************************************************************\
  *  EXTERNAL SERVERS
 \******************************************************************************/

@@ -34,6 +34,7 @@
         <div id="header" class="collectory">
           <!--Breadcrumbs-->
           <div id="breadcrumb"><cl:breadcrumbTrail/>
+            <span class="icon icon-arrow-right"></span>
             <cl:pageOptionsLink>${fieldValue(bean:instance,field:'name')}</cl:pageOptionsLink>
           </div>
           <cl:pageOptionsPopup instance="${instance}"/>

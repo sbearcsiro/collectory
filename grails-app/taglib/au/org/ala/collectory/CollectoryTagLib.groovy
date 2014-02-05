@@ -1462,8 +1462,10 @@ class CollectoryTagLib {
                     link(controller:'public', action:'map') {"Collections"}
                 topLevelLink = ""
         }
-        out << "<a href='${grailsApplication.config.ala.baseURL}'>Home</a> <span class=\"icon icon-arrow-right\"></span> " +
-                topLevelLink +  hereLink
+        if (grailsApplication.config.skin.includeBaseUrl) {
+            out << "<a href='${grailsApplication.config.ala.baseURL}'>Home</a> <span class=\"icon icon-arrow-right\"></span> "
+        }
+        out << topLevelLink +  hereLink
     }
 
     def pageOptionsLink = {attrs, body ->

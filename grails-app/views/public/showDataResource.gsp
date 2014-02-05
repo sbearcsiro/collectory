@@ -168,8 +168,10 @@
         </g:if>
         <g:if test="${instance.resourceType == 'records'}">
             <div id="recordsBreakdown" class="section vertical-charts">
-                <h3>Map of records</h3>
-                <cl:recordsMapDirect uid="${instance.uid}"/>
+                <g:if test="${!grailsApplication.config.disableOverviewMap}">
+                    <h3>Map of records</h3>
+                    <cl:recordsMapDirect uid="${instance.uid}"/>
+                </g:if>
                 <div id="tree"></div>
 
                 <div id="charts"></div>

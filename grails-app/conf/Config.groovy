@@ -127,6 +127,13 @@ if(!security.cas.casServerUrlPrefix){
 if(!security.cas.bypass){
     security.cas.bypass = false
 }
+if(!disableAlertLinks){
+    disableAlertLinks = false
+}
+if(!disableOverviewMap){
+    disableOverviewMap = false
+}
+
 /******************************************************************************\
  *  TEMPLATES
  \******************************************************************************/

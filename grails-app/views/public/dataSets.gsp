@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
-    <title>Atlas datasets | Atlas of Living Australia</title>
+    <title>Datasets | ${grailsApplication.config.projectName} </title>
     <r:require modules="datasets, jquery_json, bbq, rotate, jquery_tools"/>
     <script type="text/javascript">
       var altMap = true;
@@ -31,9 +31,13 @@
             <div class="message">${flash.message}</div>
           </g:if>
           <div>
-            <h1>Atlas data sets</h1>
-            <p style="padding-bottom:6px !important;">Much of the content in the Atlas, such as occurrence records, environmental data, images and the conservation status of species, comes from data sets provided by collecting institutions, individual collectors and community groups. These data sets are listed on this page.</p>
-            <p>Refine the list of data sets by clicking on a filter in the left hand list. Click the <img style="vertical-align:middle;" src="${resource(dir:'/images/skin',file:'ExpandArrow.png')}"/>toggle to see a description of the data set. To find out more, go to the data set's full metadata page by clicking on its name.</p>
+            <h1>${grailsApplication.config.projectName}  data sets</h1>
+            <p style="padding-bottom:6px !important;">Much of the content in the ${grailsApplication.config.projectName} , such as
+            occurrence records, environmental data, images and the conservation status of species, comes from data sets provided by
+            collecting institutions, individual collectors and community groups. These data sets are listed on this page.</p>
+            <p>Refine the list of data sets by clicking on a filter in the left hand list.
+            Click the <img style="vertical-align:middle;" src="${resource(dir:'/images/skin',file:'ExpandArrow.png')}"/>toggle to see a description of the data set.
+            To find out more, go to the data set's full metadata page by clicking on its name.</p>
           </div><!--close hrgroup-->
         </div><!--close section-->
       </div><!--close header-->

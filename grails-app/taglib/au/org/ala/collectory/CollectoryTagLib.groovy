@@ -51,14 +51,17 @@ class CollectoryTagLib {
     }
 
     def createAlertsLink(attrs, urlPath) {
-       def link = grailsApplication.config.alertUrl + urlPath
-       link += '?webserviceQuery=/occurrences/search?q=' + attrs.query
-       link += '&uiQuery=/occurrences/search?q=' + attrs.query
-       link += '&queryDisplayName=' + attrs.displayName
-       link += '&baseUrlForWS=' + grailsApplication.config.biocacheServicesUrl
-       link += '&baseUrlForUI=' + grailsApplication.config.biocache.baseURL
-       link += '&resourceName=' + grailsApplication.config.alertResourceName
-       out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"
+
+       if(!grailsApplication.config.disableAlertLinks){
+           def link = grailsApplication.config.alertUrl + urlPath
+           link += '?webserviceQuery=/occurrences/search?q=' + attrs.query
+           link += '&uiQuery=/occurrences/search?q=' + attrs.query
+           link += '&queryDisplayName=' + attrs.displayName
+           link += '&baseUrlForWS=' + grailsApplication.config.biocacheServicesUrl
+           link += '&baseUrlForUI=' + grailsApplication.config.biocache.baseURL
+           link += '&resourceName=' + grailsApplication.config.alertResourceName
+           out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"
+       }
     }
 
     /**
@@ -1445,27 +1448,23 @@ class CollectoryTagLib {
         switch (attrs.home) {
             case 'dataSets':
                 hereLink = attrs.atBase == 'true' ?
-                    "List" :
+                    "Datasets" :
                     link(controller:'public', action:'dataSets') {"List"}
-                topLevelLink =
-                    "<a href='${grailsApplication.config.ala.baseURL}/data-sets/'>Data sets</a> <span class=\"icon icon-arrow-right\"></span>"
                 break
             case 'dashboard':
                 hereLink = attrs.atBase == 'true' ?
                     "Dashboard" :
                     link(controller:'dashboard', action:'index') {"Dashboard"}
-                topLevelLink = ""
                 break
             default:
                 hereLink = attrs.atBase == 'true' ?
                     "Collections" :
                     link(controller:'public', action:'map') {"Collections"}
-                topLevelLink = ""
         }
         if (grailsApplication.config.skin.includeBaseUrl) {
             out << "<a href='${grailsApplication.config.ala.baseURL}'>Home</a> <span class=\"icon icon-arrow-right\"></span> "
         }
-        out << topLevelLink +  hereLink
+        out <<   hereLink
     }
 
     def pageOptionsLink = {attrs, body ->

@@ -12,7 +12,7 @@
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
             <li><span class="menuButton"><g:link class="create" action="create" params="[returnTo: returnTo]"><g:message code="default.new.label" args="[entityName]" /></g:link></span></li>
-            <g:if test="${returnTo}"><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></g:if>
+             <g:if test="${returnTo}"><span class="menuButton"><cl:returnLink uid="${returnTo}"/></span></g:if>
             </ul>
         </div>
         <div class="body content">

@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.collectory.Contact; org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Collection" %>
 <html>
     <head>
-        <title>ALA Metadata Management</title>
+        <title>Metadata Management | Collectory</title>
 	    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <r:require modules="smoothness, collectory, jquery_ui_custom" />
     </head>
@@ -22,14 +22,14 @@
         <div class="row-fluid">
             <div class="span3">
                 <ul id="adminNavMenu" class="nav nav-list nav-stacked nav-tabs">
+                    <li><a href="javascript:showSection('adminTools');"><i class="icon-chevron-right">&nbsp;</i> Admin tools</a></li>
                     <li><a href="javascript:showSection('yourMetadata');"><i class="icon-chevron-right">&nbsp;</i> Your metadata</a></li>
                     <li><a href="javascript:showSection('addCollection');"><i class="icon-chevron-right">&nbsp;</i> Add a new collection or data resource</a></li>
-                    <li><a href="javascript:showSection('adminTools');"><i class="icon-chevron-right">&nbsp;</i> Admin tools</a></li>
                 </ul>
             </div>
             <div class="span9">
 
-                <div id="yourMetadata" class="infoSection">
+                <div id="yourMetadata" class="infoSection hide">
                     <g:if test="${show == 'user'}">
                         <div>
                             <h2>User details</h2>
@@ -51,8 +51,8 @@
 
                     <h2>Your metadata</h2>
                     <p>The institutions, collections and data resources that you are authorised to access are listed below.
-                    Be aware that all changes are immediately reflected in the ALA website and any hubs or other websites
-                    that use ALA web services.</p>
+                    Be aware that all changes are immediately reflected in the website and any hubs or other websites
+                    that use web services.</p>
 
                     <g:if test="${entities}">
                         <table class="shy" style="margin-left: 25px;">
@@ -99,7 +99,7 @@
                             <h4>What do I need to edit my metadata?</h4>
                             <p>You need:</p>
                             <ol>
-                                <li>to be logged in using a standard ALA account</li>
+                                <li>to be logged in using a standard account</li>
                                 <li>the 'Collections Editor' role</li>
                                 <li>to be listed as a contact with editor rights for the collection, institution or dataset you want to edit.</li>
                             </ol>
@@ -163,14 +163,14 @@
                             <li>You will need to supply a name for the new collection. It will then be created and you will be
                             directed to the edit pages for the collection to supply further information.</li>
                             <li>The collection will become public as soon as you create it.</li>
-                            <li>Only ALA administrators can delete collections. Please contact the ALA if you believe a collection should be removed.</li>
+                            <li>Only ALA administrators can delete collections. Please contact the administrators if you believe a collection should be removed.</li>
                         </ul>
 
                         <g:link controller="collection" action="create" class="btn">Create a new collection</g:link>
                     </cl:ifGranted>
                 </div>
 
-                <div id="adminTools" class="hide infoSection">
+                <div id="adminTools" class="infoSection">
                 <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
                   <div>
                     <h2>Admin functions</h2>

@@ -31,6 +31,9 @@
         #content .nav-tabs > li.active > a {
             background-color: #ffffff;
         }
+        .nav {
+            margin-top: 20px;
+        }
    </style>
    <r:script disposition='head'>
         // initialise plugins

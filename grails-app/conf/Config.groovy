@@ -125,7 +125,7 @@ if(!security.cas.casServerUrlPrefix){
     security.cas.casServerUrlPrefix = 'https://auth.ala.org.au/cas'
 }
 if(!security.cas.bypass){
-    security.cas.bypass = true
+    security.cas.bypass = false
 }
 /******************************************************************************\
  *  TEMPLATES

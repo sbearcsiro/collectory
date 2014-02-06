@@ -32,8 +32,8 @@ println "default_config = ${default_config}"
  *  SKINNING
  \******************************************************************************/
 if (!ala.skin) {
-    ala.skin = 'ala2';
-//    ala.skin = 'generic';
+    ala.skin = 'ala2'
+//    ala.skin = 'generic'
 }
 if (!skin.orgNameLong) {
     skin.orgNameLong = "Atlas of Living Australia"
@@ -44,6 +44,12 @@ if (!skin.orgNameShort) {
 if (!skin.includeBaseUrl) {
     // whether crumb trail should include a home link that is external to this webabpp - ala.baseUrl is used if true
     skin.includeBaseUrl = true
+}
+if (!skin.headerUrl) {
+    skin.headerUrl = "classpath:resources/generic-header.jsp" // can be external URL
+}
+if (!skin.footerUrl) {
+    skin.footerUrl = "classpath:resources/generic-footer.jsp" // can be external URL
 }
 /******************************************************************************\
  *  EXTERNAL SERVERS

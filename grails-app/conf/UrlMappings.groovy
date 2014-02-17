@@ -20,10 +20,19 @@ class UrlMappings {
         constraints {}
      }
 
+      "/ws/upload/$directory/$file" {
+        controller = 'data'
+        action = 'fileDownload'
+        constraints {}
+      }
+
       // temporary mock notification service
       "/ws/notify" (controller:'data', action:'notify')
 
       "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
+      "/ws/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
+      "/ws/lookup/$action/$id"(controller:'lookup')
+
       "/admin/export/$table" (controller:'admin',action:'export')
 
       // data sets

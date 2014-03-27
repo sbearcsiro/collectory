@@ -10,7 +10,7 @@
     <r:require modules="fancybox, jquery_jsonp, jstree, jquery_ui_custom, charts, datadumper"/>
     <script type="text/javascript">
       biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
-      biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+      biocacheWebappUrl = "${grailsApplication.config.biocacheUiURL}";
 
       $(document).ready(function() {
         $("a#lsid").fancybox({
@@ -84,7 +84,7 @@
 
         <h2>Breakdown of specimen numbers</h2>
         <p>There are <span id="totalRecords">Loading...</span> records in total.
-            <a href="${grailsApplication.config.biocache.baseURL}/occurrences/search?q=data_hub_uid:${instance.uid}" class="btn">View all records</a>
+            <a href="${grailsApplication.config.biocacheUiURL}/occurrences/search?q=data_hub_uid:${instance.uid}" class="btn">View all records</a>
             %{--&nbsp;&nbsp;&nbsp;<button type=button id="showTimings">Show timings</button>--}%
         </p>
         <div id="charts" class="section vertical-charts">
@@ -175,7 +175,7 @@ var facetChartOptions = {
     /* base url of the biocache ws*/
     biocacheServicesUrl: "${grailsApplication.config.biocacheServicesUrl}",
     /* base url of the biocache webapp*/
-    biocacheWebappUrl: "${grailsApplication.config.biocache.baseURL}",
+    biocacheWebappUrl: "${grailsApplication.config.biocacheUiURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* a uid or list of uids to chart - either this or query must be present */
@@ -197,7 +197,7 @@ var taxonomyChartOptions = {
     collectionsUrl: "${grailsApplication.config.grails.serverURL}",
     /* base url of the biocache ws*/
     biocacheServicesUrl: "${grailsApplication.config.biocacheServicesUrl}",
-    biocacheWebappUrl: "${grailsApplication.config.biocache.baseURL}",
+    biocacheWebappUrl: "${grailsApplication.config.biocacheUiURL}",
     /* support click-thru to records subset - default is true */
     clickThru: true,
     /* support drill down into chart - default is false */

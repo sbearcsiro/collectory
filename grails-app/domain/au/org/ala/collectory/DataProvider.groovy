@@ -135,6 +135,4 @@ class DataProvider extends ProviderGroup implements Serializable {
     String entityType() {
         return ENTITY_TYPE;
     }
-
-
 }

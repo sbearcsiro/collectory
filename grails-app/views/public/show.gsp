@@ -6,7 +6,7 @@
         <title><cl:pageTitle>${fieldValue(bean: instance, field: "name")}</cl:pageTitle></title>
         <script type="text/javascript">
           biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
-          biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+          biocacheWebappUrl = "${grailsApplication.config.biocacheUiURL}";
           $(document).ready(function() {
             $("a#lsid").fancybox({
                     'hideOnContentClick' : false,

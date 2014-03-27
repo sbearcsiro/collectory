@@ -108,7 +108,7 @@ class AdminController {
 
     def search = {
         // use bie search and filter results
-        def url = grailsApplication.config.biocacheServicesUrl + "search.json?q=" + params.term.encodeAsURL() + "&fq&pageSize=1000"
+        def url = grailsApplication.config.biocacheServicesUrl + "search.json?q=" + params.term.encodeAsURL() + "&pageSize=1000"
 
         def conn = new URL(url).openConnection()
         try {

@@ -294,7 +294,7 @@
 <r:script type="text/javascript">
 
       biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
-      biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+      biocacheWebappUrl = "${grailsApplication.config.biocacheUiURL}";
 
       // configure the charts
       var facetChartOptions = {

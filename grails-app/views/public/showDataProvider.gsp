@@ -9,7 +9,7 @@
     <script type="text/javascript">
         // define biocache server
         biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
-        biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+        biocacheWebappUrl = "${grailsApplication.config.biocacheUiURL}";
         $(document).ready(function () {
             $("a#lsid").fancybox({
                 'hideOnContentClick': false,

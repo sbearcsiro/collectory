@@ -34,7 +34,7 @@ class CollectionCommand implements Serializable {
     String longitude            // decimal longitude as string
     String state
     String websiteUrl
-    Image imageRef             // the main image to represent the entity
+    au.org.ala.collectory.Image imageRef             // the main image to represent the entity
     String email
     String phone
     String notes
@@ -79,7 +79,7 @@ class CollectionCommand implements Serializable {
     // operational fields
     List<ContactFor> deletedContacts = []
 
-    static transients = ['image']
+    static transients = ['imageRef']
 
     static constraints = {
         guid(nullable:true, maxSize:45)

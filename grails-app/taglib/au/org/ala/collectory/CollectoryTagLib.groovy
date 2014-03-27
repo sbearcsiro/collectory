@@ -58,7 +58,7 @@ class CollectoryTagLib {
            link += '&uiQuery=/occurrences/search?q=' + attrs.query
            link += '&queryDisplayName=' + attrs.displayName
            link += '&baseUrlForWS=' + grailsApplication.config.biocacheServicesUrl
-           link += '&baseUrlForUI=' + grailsApplication.config.biocache.baseURL
+           link += '&baseUrlForUI=' + grailsApplication.config.biocacheUiURL
            link += '&resourceName=' + grailsApplication.config.alertResourceName
            out << "<a href=\"" + link +"\" class='btn' alt='"+attrs.altText+"'><i class='icon icon-bell'></i> "+ attrs.linkText + "</a>"
        }
@@ -980,20 +980,16 @@ class CollectoryTagLib {
         if (uid.size() > 1 && uid[0..1] == 'in') {
             uidStr = Institution._get(uid)?.descendantUids()?.join(",") ?: uid
         }
-        def url = grailsApplication.config.biocache.baseURL + "/occurrences/searchForUID?q=" + uidStr
-        if (grailsApplication.config.useNewBiocache == 'true') {
-            def queryStr
-            // need to handle multiple uids differently
-            if (uidStr.indexOf(',')) {
-                def uids = uidStr.tokenize(',')
-                queryStr = uids.collect({ fieldNameForSearch(it) + ":" + it}).join(' OR ')
-            }
-            else {
-                queryStr = fieldNameForSearch(uidStr) + ":" + uidStr
-            }
-            url = grailsApplication.config.biocache.baseURL + "/occurrence/search?q=" + queryStr
+        def queryStr
+        // need to handle multiple uids differently
+        if (uidStr.indexOf(',')) {
+            def uids = uidStr.tokenize(',')
+            queryStr = uids.collect({ fieldNameForSearch(it) + ":" + it}).join(' OR ')
         }
-        return url
+        else {
+            queryStr = fieldNameForSearch(uidStr) + ":" + uidStr
+        }
+        return  grailsApplication.config.biocacheUiURL + "/occurrence/search?q=" + queryStr
     }
 
     private String fieldNameForSearch(uid) {
@@ -1033,7 +1029,7 @@ class CollectoryTagLib {
             default: context = '/public/show/'; break
         }
         if (context) {
-            def url = ConfigurationHolder.config.grails.serverURL + context + attrs.id
+            def url = grailsApplication.config.grails.serverURL + context + attrs.id
             out << "<a href='${url}'>"
             out << ((body() != "") ? body() : context + attrs.id)
             out << "</a>"

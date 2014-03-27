@@ -41,7 +41,6 @@ abstract class ProviderGroup implements Serializable {
     // for want of somewhere appropriate to put these:
     static final String ROLE_ADMIN = 'ROLE_COLLECTION_ADMIN'
     static final String ROLE_EDITOR = 'ROLE_COLLECTION_EDITOR'
-
     // general attributes
     String guid                 // this is not the DB id but a known identifier
                                 // such as an LSID or institution code

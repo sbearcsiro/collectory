@@ -1,13 +1,10 @@
 package au.org.ala.collectory
-
-import java.text.ParseException
-import java.text.NumberFormat
+import au.com.bytecode.opencsv.CSVWriter
 import grails.converters.JSON
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
-import grails.util.GrailsUtil
-import org.codehaus.groovy.grails.commons.GrailsApplication
-import au.com.bytecode.opencsv.CSVWriter
 
+import java.text.NumberFormat
+import java.text.ParseException
 /**
  * Handles all the public pages generated from the collectory.
  *
@@ -369,13 +366,7 @@ class PublicController {
         response.setHeader("Cache-Control","no-cache")
         response.addHeader("Cache-Control","no-store")
         /* get rank breakdown */
-        def rankUrl = grailsApplication.config.biocacheServicesUrl + "/breakdown/uid/namerank/${params.id}.json?name=${params.name}&rank=${params.rank}"
-        if (grailsApplication.config.useNewBiocache == 'true') {
-            rankUrl = grailsApplication.config.biocacheServicesUrl + "/breakdown/{entity}/{uid}?rank=${params.rank}&name=${params.name}"
-            rankUrl = rankUrl.replaceFirst(/\{uid\}/, params.id ?: '')
-            rankUrl = rankUrl.replaceFirst(/\{entity\}/, wsEntityForBreakdown(params.id))
-        }
-        //println "rankUrl: " + rankUrl
+        def rankUrl = grailsApplication.config.biocacheServicesUrl + "/breakdown/{entity}/{uid}?rank=${params.rank}&name=${params.name}"
         def conn = new URL(rankUrl).openConnection()
         def dataTable = null
         def json
@@ -722,7 +713,7 @@ class PublicController {
             //println instClause
             def collClause = collCodes ? buildSearchClause("coll", collCodes) : ""
             //println collClause
-            def url = ConfigurationHolder.config.biocache.baseURL + "/searchForUID.JSON?pageSize=0" + instClause + collClause
+            def url = grailsApplication.config.biocacheUiURL + "/searchForUID.JSON?pageSize=0" + instClause + collClause
         } else {
             return ""
         }

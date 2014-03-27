@@ -22,7 +22,7 @@ class Address {
         country(nullable:true)
     }
 
-    boolean isEmpty() {
+    def isEmpty() {
         return [street, postBox, city, state, postcode, country].every {!it}
         //return !(street || postBox || city || state || postcode || country)
     }

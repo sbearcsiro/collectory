@@ -60,8 +60,8 @@ if (!bie.baseURL) {
 if (!bie.searchPath) {
     bie.searchPath = "/search"
 }
-if (!biocache.baseURL) {
-    biocache.baseURL = "http://biocache.ala.org.au"
+if (!biocacheUiURL) {
+    biocacheUiURL = "http://biocache.ala.org.au"
 }
 if(!biocacheServicesUrl){
     biocacheServicesUrl = "http://biocache.ala.org.au/ws"
@@ -153,7 +153,7 @@ if (!citation.rights.template) {
     citation.rights.template = ''
 }
 if (!resource.publicArchive.url.template) {
-    resource.publicArchive.url.template = "${biocache.baseURL}/archives/@UID@/@UID@_ror_dwca.zip"
+    resource.publicArchive.url.template = "${biocacheUiURL}/archives/@UID@/@UID@_ror_dwca.zip"
 }
 /******************************************************************************\
  *  ADDITIONAL CONFIG
@@ -199,7 +199,7 @@ if(!eml.electronicMailAddress){
 }
 
 /******* standard grails **********/
-grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
+grails.project.groupId = 'au.org.ala' // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = true
 grails.mime.types = [ html: ['text/html','application/xhtml+xml'],
@@ -313,13 +313,13 @@ log4j = {
             development {
                 console name: "stdout",
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "collectoryLog",
-                        maxFileSize: 104857600,
-                        file: "/var/log/tomcat6/collectory.log",
-                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-                rollingFile name: "stacktrace",
-                        maxFileSize: 104857600,
-                        file: "/var/log/tomcat6/collectory-stacktrace.log"
+//                rollingFile name: "collectoryLog",
+//                        maxFileSize: 104857600,
+//                        file: "/var/log/tomcat6/collectory.log",
+//                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+//                rollingFile name: "stacktrace",
+//                        maxFileSize: 104857600,
+//                        file: "/var/log/tomcat6/collectory-stacktrace.log"
             }
         }
     }
@@ -397,6 +397,7 @@ log4j = {
     debug 'grails.app.controllers.au.org.ala'
 }
 
+grails.cache.config = { }
 
 //log4j.logger.org.springframework.security='off,stdout'
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements

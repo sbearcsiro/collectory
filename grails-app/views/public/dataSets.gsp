@@ -9,7 +9,7 @@
       var altMap = true;
       $(document).ready(function() {
         $('#nav-tabs > ul').tabs();
-        loadResources("${grailsApplication.config.grails.serverURL}","${grailsApplication.config.biocache.baseURL}");
+        loadResources("${grailsApplication.config.grails.serverURL}","${grailsApplication.config.biocacheUiURL}");
         $('select#per-page').change(onPageSizeChange);
         $('select#sort').change(onSortChange);
         $('select#dir').change(onDirChange);

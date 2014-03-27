@@ -8,7 +8,7 @@
     <r:require modules="fancybox, jquery_jsonp, charts"/>
     <script type="text/javascript">
       biocacheServicesUrl = "${grailsApplication.config.biocacheServicesUrl}";
-      biocacheWebappUrl = "${grailsApplication.config.biocache.baseURL}";
+      biocacheWebappUrl = "${grailsApplication.config.biocacheUiURL}";
         $(document).ready(function () {
             $("a#lsid").fancybox({
                 'hideOnContentClick': false,

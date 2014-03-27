@@ -6,7 +6,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
         <title>Natural History Collections | Atlas of Living Australia</title>
-        <script type="text/javascript" src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${grailsApplication.config.google.maps.v2.key}"></script>
+        <script src="https://maps.google.com/maps/api/js?v=3&sensor=true"></script>
         <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
         <script type="text/javascript" src="${resource(dir:'js', file:'map.js')}"></script>
         

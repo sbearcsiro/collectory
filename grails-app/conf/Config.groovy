@@ -8,9 +8,6 @@ if(!grails.config.locations || !(grails.config.locations instanceof List)) {
     grails.config.locations = []
 }
 
-// add ala skin conf (needed for version >= 0.1.10)
-grails.config.locations.add("classpath:ala-config.groovy")
-
 if(System.getenv(ENV_NAME) && new File(System.getenv(ENV_NAME)).exists()) {
     println "[${appName}] Including configuration file specified in environment: " + System.getenv(ENV_NAME);
     grails.config.locations.add "file:" + System.getenv(ENV_NAME)
@@ -311,22 +308,25 @@ log4j = {
     appenders {
         environments {
             development {
-                console name: "stdout",
+                console name: "devLog",
                         layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-//                rollingFile name: "collectoryLog",
-//                        maxFileSize: 104857600,
-//                        file: "/var/log/tomcat6/collectory.log",
-//                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
-//                rollingFile name: "stacktrace",
-//                        maxFileSize: 104857600,
-//                        file: "/var/log/tomcat6/collectory-stacktrace.log"
+            }
+
+            production {
+                rollingFile name: "prodLog",
+                        maxFileSize: 104857600,
+                        file: "/var/log/tomcat55/collectory.log",
+                        layout: pattern(conversionPattern: "%d %-5p [%c{1}]  %m%n")
+                rollingFile name: "stacktrace",
+                        maxFileSize: 104857600,
+                        file: "/var/log/tomcat55/collectory-stacktrace.log"
             }
         }
     }
 
     environments {
         development {
-            all additivity: false, stdout: [
+            all additivity: false, devLog: [
                     'grails.app.controllers.au.org.ala.collectory',
                     'grails.app.domain.au.org.ala.collectory',
                     'grails.app.services.au.org.ala.collectory',
@@ -335,7 +335,7 @@ log4j = {
                     'grails.app.filters.au.org.ala.collectory',
                     'au.org.ala.cas.client'
             ]
-            all additivity: false, collectoryLog: [
+            all additivity: false, devLog: [
                     'grails.app.controllers.au.org.ala.collectory',
                     'grails.app.domain.au.org.ala.collectory',
                     'grails.app.services.au.org.ala.collectory',
@@ -349,10 +349,10 @@ log4j = {
 
     root {
         // change the root logger to my log file
-        error 'stdout', 'collectoryLog'
-        warn 'stdout', 'collectoryLog'
-        info 'stdout', 'collectoryLog'
-        debug 'stdout', 'collectoryLog'
+        error 'devLog', 'prodLog'
+        warn 'devLog', 'prodLog'
+        info 'devLog'
+        debug 'devLog'
         additivity = true
     }
 

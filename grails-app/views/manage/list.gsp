@@ -13,7 +13,7 @@
             <g:link class="mainLink btn" controller="public" action="map">View public site</g:link>
         </div>
 
-        <h1>Metadata Management</h1>
+        <h1>Metadata management</h1>
 
         <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -27,6 +27,7 @@
                     <li><a href="javascript:showSection('addCollection');"><i class="icon-chevron-right">&nbsp;</i> Add a new collection or data resource</a></li>
                 </ul>
             </div>
+
             <div class="span9">
 
                 <div id="yourMetadata" class="infoSection hide">
@@ -60,10 +61,10 @@
                             <g:each in="${entities}" var="ent">
                                 <tr>
                                     <td style="text-align: center;"><g:link controller="public" action="show" id="${ent.uid}">
-                                        <img alt="view" width=18 height=18 src="${resource(dir:'images/skin',file:'view.png')}"/></g:link>
+                                        <i class="icon-eye-open"></i></g:link>
                                     </td>
                                     <td style="text-align: center;">
-                                        <img class="link" onclick="edit('${ent.uid}')" alt="edit" width=14 height=14 src="${resource(dir:'images/skin',file:'edit.png')}"/>
+                                        <i class="icon-edit"></i>
                                     </td>
                                     <g:set var="name" value="${ent.uid[0..1] == 'in' ? ent.name + ' (Institution)' : ent.name}"/>
                                     <td style="padding-left: 5px;">${name}</td>

@@ -151,7 +151,11 @@ class UrlMappings {
 
       "/ws/rif-cs" (controller:'rifCs',action:'index')
 
+      "/public/resources.json"(controller:'public', action:'resources')
+
+
       "/"(controller:'public', action:'map')
+
       "500"(view:'/error')
 	}
 }

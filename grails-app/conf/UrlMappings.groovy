@@ -48,14 +48,14 @@ class UrlMappings {
           }
       }
 
-      "/ws/$entity/$uid?" (controller:'data') {
+      "/ws/$entity/$uid(.$format)?" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {
             entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
           }
       }
 
-      "/ws/$entity/summary" (controller:'data') {
+      "/ws/$entity/summary(.$format)" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
           constraints {
             entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
@@ -64,18 +64,18 @@ class UrlMappings {
       }
 
       // data resource harvesting parameters
-      "/ws/dataResource/$uid/connectionParameters" (controller:'data', action:'connectionParameters')
+      "/ws/dataResource/$uid/connectionParameters(.$format)" (controller:'data', action:'connectionParameters')
 
       // raw contact data
       //"/ws/contacts/$id?" (controller: 'data', action: 'contacts')
       "/ws/contacts/email/$email?" (controller: 'data', action: 'getContactByEmail')
 
-      "/ws/contacts/$id?" (controller:'data') {
+      "/ws/contacts/$id(.$format)?" (controller:'data') {
         action = [GET:'contacts', PUT:'updateContact', DELETE:'deleteContact', POST:'updateContact']
       }
 
       // entities that can be edited by a contact
-      "/ws/contacts/$id/authorised" (controller: 'data', action: 'authorisedForContact')
+      "/ws/contacts/$id/authorised(.$format)" (controller: 'data', action: 'authorisedForContact')
 
       // entity contacts
       "/ws/$entity/$uid/contacts/$id?" {
@@ -89,12 +89,12 @@ class UrlMappings {
       // all contacts for an entity type
       // the next 5 rules should be able to be expressed as one rule in the same format as above
       // BUT /ws/$entity/contact does not work for some reason
-      "/ws/collection/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'collection'}
-      "/ws/institution/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
-      "/ws/dataProvider/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
-      "/ws/dataResource/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
-      "/ws/tempDataResource/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'tempDataResource'}
-      "/ws/dataHub/contacts" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
+      "/ws/collection/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'collection'}
+      "/ws/institution/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
+      "/ws/dataProvider/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
+      "/ws/dataResource/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
+      "/ws/tempDataResource/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'tempDataResource'}
+      "/ws/dataHub/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
 
       // contacts to be notified on entity instance event
       "/ws/$entity/$uid/contacts/notifiable" {
@@ -115,8 +115,8 @@ class UrlMappings {
       }
         
       // entities in a data hub
-      "/ws/dataHub/$uid/institutions" (controller: 'data', action: 'institutionsForDataHub')
-      "/ws/dataHub/$uid/collections" (controller: 'data', action: 'collectionsForDataHub')
+      "/ws/dataHub/$uid/institutions(.$format)" (controller: 'data', action: 'institutionsForDataHub')
+      "/ws/dataHub/$uid/collections(.$format)" (controller: 'data', action: 'collectionsForDataHub')
 
       // citations
       "/ws/citations/$include?" (controller:'lookup', action:'citations')
@@ -132,14 +132,14 @@ class UrlMappings {
       // high-performance name lookup from uid list
       "/ws/resolveNames/$uids" (controller: 'data', action: 'resolveNames')
 
-      "/ws/collection/contacts/$uid?" (controller:'data',action:'contactsForCollections')
-      "/ws/institution/contacts/$uid?" (controller:'data',action:'contactsForInstitutions')
-      "/ws/dataProvider/contacts/$uid?" (controller:'data',action:'contactsForDataProviders')
-      "/ws/dataResource/contacts/$uid?" (controller:'data',action:'contactsForDataResources')
-      "/ws/dataHub/contacts/$uid?" (controller:'data',action:'contactsForDataHubs')
+      "/ws/collection/contacts/$uid(.$format)?" (controller:'data',action:'contactsForCollections')
+      "/ws/institution/contacts/$uid(.$format)?" (controller:'data',action:'contactsForInstitutions')
+      "/ws/dataProvider/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataProviders')
+      "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')
+      "/ws/dataHub/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataHubs')
       "/ws" (controller:'data',action:'catalogue')
-      "/showConsumers/$id" (controller:'entity',action:'showConsumers')
-      "/showProviders/$id" (controller:'entity',action:'showProviders')
+      "/showConsumers/$id(.$format)" (controller:'entity',action:'showConsumers')
+      "/showProviders/$id(.$format)" (controller:'entity',action:'showProviders')
 
       "/ws/codeMapDump" (controller:'data', action:'codeMapDump')
 
@@ -149,10 +149,9 @@ class UrlMappings {
           action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
       }*/
 
-      "/ws/rif-cs" (controller:'rifCs',action:'index')
+      "/ws/rif-cs(.$format)" (controller:'rifCs',action:'index')
 
-      "/public/resources.json"(controller:'public', action:'resources')
-
+      "/public/resources(.$format)"(controller:'public', action:'resources')
 
       "/"(controller:'public', action:'map')
 

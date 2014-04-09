@@ -1,18 +1,15 @@
 package au.org.ala.collectory
-
 import grails.converters.JSON
-
-import grails.converters.XML
-import groovy.json.JsonSlurper
+import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import org.codehaus.groovy.grails.web.servlet.HttpHeaders
+import org.xml.sax.SAXException
+
+import javax.xml.XMLConstants
+import javax.xml.transform.stream.StreamSource
+import javax.xml.validation.SchemaFactory
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import groovy.xml.MarkupBuilder
-import javax.xml.XMLConstants
-import javax.xml.validation.SchemaFactory
-import org.xml.sax.SAXException
-import javax.xml.transform.stream.StreamSource
 
 class DataController {
 
@@ -300,15 +297,9 @@ class DataController {
                 // return specified entity
                 addContentLocation "/ws/${urlForm}/${params.pg.uid}"
                 def eTag = (params.pg.uid + ":" + params.pg.lastUpdated).encodeAsMD5()
-
                 def entityInJson = crudService."read${clazz}"(params.pg)
-
-//                println "BEFORE ########" + entityInJson.metaClass
-
                 entityInJson = convertAnyLocalPaths(entityInJson)
-
-//                println "AFTER ########" +entityInJson.metaClass
-
+                response.setContentType("application/json")
                 cacheAwareRender entityInJson, params.pg.lastUpdated, eTag
             } else {
                 // return list of entities
@@ -320,7 +311,6 @@ class DataController {
                 def detail = params.summary ? summary : brief
                 def summaries = list.collect(detail)
                 def eTag = summaries.toString().encodeAsMD5()
-
                 renderAsJson summaries, last, eTag
             }
         }
@@ -504,6 +494,7 @@ class DataController {
                     render error
                 } else {
                     //render xml
+                    response.setContentType("text/xml")
                     cacheAwareRender xml, pg.lastUpdated, xml.toString().encodeAsMD5()
                 }
             } else {

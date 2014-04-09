@@ -145,6 +145,12 @@ class UrlMappings {
 
       "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
 
+      "/ws/$entity" (controller:'data', action:'getEntity')
+//      "/ws/institution/contacts/$uid(.$format)?" (controller:'data')
+//      "/ws/dataProvider/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataProviders')
+//      "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')
+//      "/ws/dataHub/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataHubs')
+
       /*"/ws/tempDataResource" (controller: 'tempDataResource') {
           action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
       }*/

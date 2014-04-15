@@ -48,12 +48,19 @@ class UrlMappings {
           }
       }
 
-      "/ws/$entity/$uid(.$format)?" (controller:'data') {
-          action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
-          constraints {
-            entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
-          }
+      "/ws/$entity" (controller:'data') {
+            action = [GET: 'list', PUT:'saveEntity',POST:'saveEntity']
+            constraints {
+                entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
+            }
       }
+
+      "/ws/$entity/$uid?" (controller:'data') {
+            action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
+            constraints {
+                entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
+            }
+        }
 
       "/ws/$entity/summary(.$format)" (controller:'data') {
           action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']

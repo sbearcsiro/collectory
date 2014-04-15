@@ -112,6 +112,9 @@ if (!security.cas.logoutUrl) {
 if (!security.apikey.serviceUrl) {
     security.apikey.serviceUrl = "http://auth.ala.org.au/apikey/ws/check?apikey="
 }
+if(!security.apikey.checkEnabled){
+    security.apikey.checkEnabled = true
+}
 if(!security.cas.appServerName){
     security.cas.appServerName = "http://devt.ala.org.au:8080"
 }

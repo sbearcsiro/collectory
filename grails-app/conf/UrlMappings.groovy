@@ -48,14 +48,7 @@ class UrlMappings {
           }
       }
 
-      "/ws/$entity" (controller:'data') {
-            action = [GET: 'list', PUT:'saveEntity',POST:'saveEntity']
-            constraints {
-                entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
-            }
-      }
-
-      "/ws/$entity/$uid?" (controller:'data') {
+      "/ws/$entity/$uid?(.$format)?" (controller:'data') {
             action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
             constraints {
                 entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
@@ -152,7 +145,7 @@ class UrlMappings {
 
       "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
 
-      "/ws/$entity" (controller:'data', action:'getEntity')
+//      "/ws/$entity" (controller:'data', action:'getEntity')
 //      "/ws/institution/contacts/$uid(.$format)?" (controller:'data')
 //      "/ws/dataProvider/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataProviders')
 //      "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')

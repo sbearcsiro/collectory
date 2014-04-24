@@ -1,19 +1,23 @@
 package au.org.ala.collectory
 
-import groovy.json.JsonBuilder
+import grails.converters.JSON
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
-import groovyx.net.http.*
-import org.apache.commons.httpclient.HttpClient
-import org.apache.commons.httpclient.methods.PostMethod
+import groovyx.net.http.ContentType
+import groovyx.net.http.HTTPBuilder
+import groovyx.net.http.Method
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
-import org.apache.http.*
+import org.apache.http.HttpException
+import org.apache.http.HttpRequest
 import org.apache.http.HttpRequestInterceptor
+import org.apache.http.HttpResponse
 import org.apache.http.auth.AuthScope
 import org.apache.http.auth.AuthState
 import org.apache.http.auth.Credentials
 import org.apache.http.auth.UsernamePasswordCredentials
+import org.apache.http.client.CredentialsProvider
+import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.client.protocol.ClientContext
 import org.apache.http.entity.StringEntity
@@ -24,59 +28,44 @@ import org.apache.http.protocol.HttpContext
 import org.apache.tools.zip.ZipFile
 import org.codehaus.groovy.grails.web.json.JSONObject
 import org.springframework.web.multipart.MultipartFile
-
 import java.text.MessageFormat
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
-
-
 /**
- * Services required to autoload GBIF data into the collectory.
+ * Services required to auto-load GBIF data into the collectory.
  *
  * @author Natasha Quimby (natasha.quimby@csiro.au)
  */
 class GbifService {
 
-    static final String CITATION_FILE="citations.txt"
-    static final String RIGHTS_FILE="rights.txt"
-    static final String EML_DIRECTORY="dataset"
-    static final String OCCURRENCE_FILE= "occurrence.txt"
-    static final String META_FILE = "/data/collectory/bootstrap/meta.xml"
-    static final String GBIF_API="http://api.gbif.org/v0.9"
-    static final String OCCURRENCE_DOWNLOAD="/occurrence/download/request" //POST request to this to start downalod //GET request to retrieve downlaod
-    static final String DOWNLOAD_STATUS="/occurrence/download/" //GET request to this
-    static final String DATASET_SEARCH="/dataset/search?publishingCountry={0}&type=OCCURRENCE" //GET request to this
-    //The request body
-    static final String DOWNLOAD_JSON ="'{'\n" +
-            "\"creator\":\"{0}\",\n" +
-            "\"notification_address\": [],  \n" +
-            "\"predicate\":\n" +
-            "  '{'\n" +
-            "\"type\":\"equals\",\n" +
-            "\"key\": \"DATASET_KEY\",\n" +
-            "\"value\": \"{2}\"    \n" +
-            "  '}'\n" +
-            "'}'"
+    def grailsApplication
 
+    static final String CITATION_FILE = "citations.txt"
+    static final String RIGHTS_FILE = "rights.txt"
+    static final String EML_DIRECTORY = "dataset"
+    static final String OCCURRENCE_FILE = "occurrence.txt"
+    static final String META_FILE = "/data/collectory/bootstrap/meta.xml"
+    static final String OCCURRENCE_DOWNLOAD = "/occurrence/download" //POST request to this to start download //GET request to retrieve download
+    static final String DOWNLOAD_STATUS = "/occurrence/download/" //GET request to this
+    static final String DATASET_SEARCH = "/dataset/search?publishingCountry={0}&type=OCCURRENCE" //GET request to this
 
     def crudService
-    def grailsApplication
-    def CONCURRENT_LOADS=10
+    def CONCURRENT_LOADS = 10
     def pool = Executors.newFixedThreadPool(CONCURRENT_LOADS)
     def loading = false
-    def loadMap=[:]
-    def stopStatus = ["CANCELLED","FAILED","KILLED", "SUCCEEDED", "UNKNOWN"]
+    def loadMap = [:]
+    def stopStatus = ["CANCELLED", "FAILED", "KILLED", "SUCCEEDED", "UNKNOWN"]
 
     /**
-     * Returns the status informationfor the supplied country
+     * Returns the status information for the supplied country
      * @param country
      * @return
      */
     def getStatusInfoFor(String country){
-        log.debug(loadMap)
-        return loadMap[(country.toUpperCase())]
+      //  log.debug("getStatusInfoFor" + loadMap)
+      return loadMap[(country.toUpperCase())]
     }
 
     /**
@@ -90,13 +79,13 @@ class GbifService {
      */
     def loadResourcesFor(String country, final String username, final String password, Integer limit) {
         country = country.toUpperCase()
+        final GBIFLoadSummary gls = new GBIFLoadSummary()
         //check to see if a load is already running. We can only have one at a time
         if (!loading){
             loading = true
             //get a list of loads that need to be performed
             List loadList = getListOfGbifResources(country, limit)
             if(loadList){
-                final GBIFLoadSummary gls = new GBIFLoadSummary()
                 //gls.total = loadList.size()
                 gls.startTime = new Date()
                 gls.country = country
@@ -106,45 +95,52 @@ class GbifService {
                 pool.submit(new Runnable(){
                     public void run(){
                         def defer = { c -> pool.submit(c as Callable) }
-                        gls.loads.each{l ->
-                            defer{
-                                log.debug("submitting " + l + " to be processed")
+                        gls.loads.each { l ->
+                            defer {
+                                log.debug("Submitting " + l + " to be processed")
                                 //1) Start the download
                                 String downloadId = startGBIFDownload(l.gbifResourceUid,username, null, password)
-                                l.downloadId = downloadId
-                                //2) Monitor the download
-                                l.phase = "Generating Download..."
-                                String status = ""
-                                while(!stopStatus.contains(status)){
-                                    //sleep for 30 seconds between checks.
-                                    Thread.sleep(30000)
-                                    status = getDownloadStatus(l.downloadId)
-                                }
-                                //3) if the status was "SUCCEEDED" then starts the download
-                                if(status == "SUCCEEDED"){
-                                    l.phase = "Downloading..."
-                                    File localTmpDir = new File(grailsApplication.config.uploadFilePath + File.separator+"tmp" + File.separator + l.downloadId)
-                                    FileUtils.forceMkdir(localTmpDir)
-                                    String tmpFileName = localTmpDir.getAbsolutePath()+File.separator+ l.downloadId
-                                    IOUtils.copy(new URL(GBIF_API+OCCURRENCE_DOWNLOAD+"/"+ l.downloadId+".zip").openStream(), new FileOutputStream(tmpFileName))
-                                    //4) Now create the data resource using the file downloaded
-                                    l.phase = "Creating GBIF Data resource..."
-                                    def dr = createGBIFResource(new File(tmpFileName))
-                                    if(dr){
-                                        l.dataResourceUid = dr.uid
-                                        l.phase = "Data Resource Created"
+                                if(downloadId){
+                                    l.downloadId = downloadId
+                                    //2) Monitor the download
+                                    l.phase = "Generating Download..."
+                                    String status = ""
+                                    while (!stopStatus.contains(status)){
+                                        //sleep for 30 seconds between checks.
+                                        Thread.sleep(3000)
+                                        status = getDownloadStatus(l.downloadId, username, password)
+                                    }
+                                    log.debug("Download status: " + status)
+                                    //3) if the status was "SUCCEEDED" then starts the download
+                                    if(status == "SUCCEEDED"){
+                                        l.phase = "Downloading..."
+                                        File localTmpDir = new File(grailsApplication.config.uploadFilePath + File.separator + "tmp" + File.separator + l.downloadId)
+                                        FileUtils.forceMkdir(localTmpDir)
+                                        String tmpFileName = localTmpDir.getAbsolutePath()+File.separator+ l.downloadId
+                                        IOUtils.copy(new URL(grailsApplication.config.gbifApiUrl + OCCURRENCE_DOWNLOAD + "/" + l.downloadId + ".zip").openStream(), new FileOutputStream(tmpFileName))
+                                        //4) Now create the data resource using the file downloaded
+                                        l.phase = "Creating GBIF Data resource..."
+                                        def dr = createGBIFResource(new File(tmpFileName))
+                                        if(dr){
+                                            l.dataResourceUid = dr.uid
+                                            l.phase = "Data Resource Created"
+                                        }
+                                    } else {
+                                        l.phase = "Download Failed: " + status
+                                    }
+                                    //Thread.sleep(5000)
+                                    l.setLoaded()
+                                    //l.dataResourceUid="dr123"
+                                    //check to see if all the items have finished loading
+                                    log.debug("IS LOAD STILL RUNNING: " + gls.isLoadRunning())
+                                    loading = gls.isLoadRunning()
+                                    if(!loading){
+                                        gls.finishTime = new Date()
                                     }
                                 } else {
-                                    l.phase = "Download Failed: " + status
-                                }
-                                //Thread.sleep(5000)
-                                l.setLoaded()
-                                //l.dataResourceUid="dr123"
-                                //check to see if all the items have finished loading
-                                log.debug("IS LOAD STILL RUNNING: " + gls.isLoadRunning())
-                                loading = gls.isLoadRunning()
-                                if(!loading){
-                                    gls.finishTime = new Date()
+                                    l.phase = "Failed. Please check your authentication credentials are valid."
+                                    loading = false
+                                    return null
                                 }
                             }
                         }
@@ -153,10 +149,11 @@ class GbifService {
                 return gls
             } else {
                 loading = false
-                return null
+                return gls
             }
         }
     }
+
     /**
      * Queries the GBIF search API for the list of datasets to load
      * @param country The country for the datasets
@@ -167,18 +164,18 @@ class GbifService {
         country = country.toUpperCase()
         //first get a request so we know how many we are dealing with
         log.debug(DATASET_SEARCH + " " +country)
-        String url = GBIF_API + MessageFormat.format(DATASET_SEARCH, country)
+        String url = grailsApplication.config.gbifApiUrl + MessageFormat.format(DATASET_SEARCH, country)
         JSONObject countJson = getJSONWS(url + "&limit=1")
         log.debug("Search URL: " + url);
         if (countJson){
-            def total =countJson.getInt("count")
+            def total = countJson.getInt("count")
             def limit = (userLimit == null || userLimit>total) ? total : userLimit
             log.debug("We will create " + limit + " data resources for the supplied country " + country)
-            int i=0
+            int i = 0
             def list = []
-            while(i <limit){
+            while(i < limit){
                 def newLimit = userLimit && userLimit >50 ? userLimit-i:limit
-                def locallimit =newLimit<50?newLimit:50
+                def locallimit = newLimit < 50 ? newLimit : 50
                 JSONObject pageObject = getJSONWS(url + "&limit="+locallimit+"&offset="+i)
                 log.debug(pageObject.get("results").getClass())
                 pageObject.get("results").each {result ->
@@ -189,13 +186,14 @@ class GbifService {
                     i += 1
                 }
             }
-            log.debug("Finished collecting list " +list.size)
+            log.debug("Finished collecting list " + list.size)
             return list
-        } else{
+        } else {
             loading = false
             return null
         }
     }
+
     /**
      * performs the steps to create a new GBIF resource from the supplied
      * mulitpart file
@@ -207,11 +205,16 @@ class GbifService {
     def createGBIFResourceFromMultipart(MultipartFile uploadedFile){
         //1) Save the file to the correct tmp staging location
         def fileId = System.currentTimeMillis()
-        File localFile = new File(grailsApplication.config.uploadFilePath + File.separator+"tmp" + File.separator + fileId)
+        def tmpDir = new File(grailsApplication.config.uploadFilePath + File.separator + "tmp")
+        if(!tmpDir.exists()){
+            FileUtils.forceMkdir(tmpDir)
+        }
+        File localFile = new File(grailsApplication.config.uploadFilePath + File.separator + "tmp" + File.separator + fileId)
         uploadedFile.transferTo(localFile)
         //2) create the GBIF resource based on a local file now
         return createGBIFResource(localFile)
     }
+
     /**
      * Creates a data resource from the supplied file. Includes DWCA creation and preoprety extraction.
      *
@@ -221,7 +224,7 @@ class GbifService {
     def createGBIFResource(File uploadedFile){
         //1) Extract the ZIP file
         //2) Extract the JSON for the data resource to create
-        def json =extractDataResourceJSON(new ZipFile(uploadedFile),uploadedFile.getParentFile());
+        def json = extractDataResourceJSON(new ZipFile(uploadedFile),uploadedFile.getParentFile());
 
         log.debug("The JSON to create the dr : " + json)
         //3) Create the data resource
@@ -234,9 +237,9 @@ class GbifService {
         log.debug("Created the zip file " + zipFileName)
         //6) Upload the DwCA for the resource to the created data resource
         applyDwCA(new File(zipFileName), dr)
-
         return dr
     }
+
     /**
      * Adds the DWCA to the data resource for use in loading
      * @param file a constructed archive to apply to the resoruce
@@ -244,7 +247,7 @@ class GbifService {
      * @return
      */
     def applyDwCA(File file, DataResource dr){
-        try{
+        try {
             log.debug("Copying DwCA to staging and associated the file to the data resource")
             def fileId = System.currentTimeMillis()
             String targetFileName = grailsApplication.config.uploadFilePath + fileId  + File.separator+file.getName()
@@ -265,7 +268,7 @@ class GbifService {
                 log.debug("Finished saving the connection params for " + dr.getUid())
             }
         } catch(Exception e){
-            log.error(e.getClass().toString() + " : " + e.getMessage())
+            log.error(e.getClass().toString() + " : " + e.getMessage(), e)
         }
     }
 
@@ -292,6 +295,7 @@ class GbifService {
         zop.close()
         return zipFileName
     }
+
     /**
      * Extracts all the details from the GBIF download to use for the data resource.
      * @param zipFile
@@ -332,6 +336,7 @@ class GbifService {
         log.debug("the toString : " + jo.toString())
         return jo
     }
+
     /**
      * Extracts the data resource information from the EML file in the supplied directory
      * @param directory
@@ -357,6 +362,7 @@ class GbifService {
         }
 
     }
+
     /**
      * Extracts the text to use as the citation
      * @param directory
@@ -365,6 +371,7 @@ class GbifService {
     def extractCitation(String directory){
         extractFileText(directory, CITATION_FILE)
     }
+
     /**
      * Extracts the text to use as the rights
      * @param directory
@@ -373,6 +380,7 @@ class GbifService {
     def extractRights(String directory){
         extractFileText(directory, RIGHTS_FILE)
     }
+
     /**
      * Generic method to extract the text from a  file.
      * @param directory
@@ -384,41 +392,55 @@ class GbifService {
         //extract value to return
         new File(fileName).text
     }
+
     /**
      * Retrieves the status of the supplied GBIF download
      *
-     *
      * The possible status include:
-     CANCELLED
-     FAILED
-     KILLED
-     PREPARING
-     RUNNING
-     SUCCEEDED
-     SUSPENDED
+     * CANCELLED
+     * FAILED
+     * KILLED
+     * PREPARING
+     * RUNNING
+     * SUCCEEDED
+     * SUSPENDED
      *
      * return "SUCCEEDED" when finished.
      *
      * @param downloadId
      */
-    def getDownloadStatus(String downloadId){
+    def getDownloadStatus(String downloadId, String userName, String password){
         //http://api.gbif.org/v0.9/occurrence/download/0006020-131106143450413
-        def json = getJSONWS(GBIF_API+DOWNLOAD_STATUS + downloadId)
+        def json = getJSONWSWithAuth(grailsApplication.config.gbifApiUrl + DOWNLOAD_STATUS + downloadId, userName, password)
+        log.debug("Download status for ${downloadId} : ${json?.status}")
         return json && json?.status ? json.status : "UNKNOWN"
-//        def http = new HTTPBuilder(GBIF_API+DOWNLOAD_STATUS + downloadId)
-//        http.request(Method.GET, ContentType.JSON){
-//            response.success = { resp, json ->
-//                log.debug("SUCCESS:: "+resp)
-//                log.debug(json)
-//                return json.status
-//            }
-//            response.failure ={ resp ->
-//                log.debug("FAILURE:: "+resp)
-//                return "UNKNOWN"
-//            }
-//        }
-
     }
+
+    /**
+     * Uses a HTTP "GET" to return the JSON output of the supplied url
+     * @param url
+     * @return
+     */
+    def getJSONWSWithAuth(String url, String userName, String password){
+
+        DefaultHttpClient http = createAuthClient(userName, password)
+
+        HttpGet get = new HttpGet(url)
+        get.addHeader("Content-Type", "application/json; charset=UTF-8")
+
+        HttpResponse response = http.execute(get)
+        log.debug("Response code " + response.getStatusLine().getStatusCode())
+        if(response.getStatusLine().getStatusCode() == 200){
+            ByteArrayOutputStream bos = new ByteArrayOutputStream()
+            response.getEntity().writeTo(bos)
+            String respText = bos.toString();
+            JsonSlurper slurper = new JsonSlurper()
+            return slurper.parseText(respText)
+        } else {
+            return null
+        }
+    }
+
     /**
      * Uses a HTTP "GET" to return the JSON output of the supplied url
      * @param url
@@ -428,16 +450,17 @@ class GbifService {
         def http = new HTTPBuilder(url)
         http.request(Method.GET, ContentType.JSON){
             response.success = { resp, json ->
-                log.debug("SUCCESS:: "+resp)
+                log.debug("[getJSONWS] SUCCESS: " + resp)
                 log.debug(json)
                 return json
             }
             response.failure ={ resp ->
-                log.debug("FAILURE:: "+resp)
+                log.debug("[getJSONWS] FAILURE: " + resp)
                 return null
             }
         }
     }
+
     /**
      * Starts the GBIF download by calling the API/
      *
@@ -447,42 +470,66 @@ class GbifService {
      * @param password  The password for the GBIF user.
      * @return The downloadId used to monitor when the download has been completed
      */
-    def startGBIFDownload(String resourceId,String username, String email, String password){
-        String jsonBody = MessageFormat.format(DOWNLOAD_JSON, username, email, resourceId)
-        //String encoding = encodeAsBase64(username+":"+password);
-        log.debug("JSON Body: "+ jsonBody)
-        //NQ: I can't get the Grail HTTPBuilder to work correctly with different request and response data types
-//        String downloadId=null
-//        def downloadHttp = new HTTPBuilder(GBIF_API+OCCURRENCE_DOWNLOAD)
-//        downloadHttp.auth.basic username, password
-//
-//        downloadHttp.request(Method.POST, ContentType.TEXT){
-//            requestContentType = ContentType.JSON
-//            //send ContentType.JSON, jsonBody
-//            body = jsonBody
-//            response.success = { resp, reader ->
-//                log.debug(resp + reader)
-//                downloadId=reader.getText()
-//            }
-//            response.failure = { resp ->
-//                println "Request failed with status ${resp.status}"
-//                println(resp)
-//            }
-//        }
+    def startGBIFDownload(String resourceId, String username, String email, String password){
+        try {
+            log.debug("[startGBIFDownload] Initialising download..... ")
 
+            def jsonBody = [
+                    creator             : username,
+                    notification_address: [],
+                    predicate           : [
+                            type : "equals",
+                            key  : "DATASET_KEY",
+                            value: resourceId
+                    ]
+            ] as JSON
 
-        //application/JSON
-//        def post = new PostMethod(GBIF_API+OCCURRENCE_DOWNLOAD)
-//        def http = new HttpClient()
-        //Below is the way we set up Basic Authentication to work
+            log.debug("Sending request: " + jsonBody)
+
+            //Below is the way we set up Basic Authentication to work
+            DefaultHttpClient http = createAuthClient(username, password)
+
+            def postUrl = grailsApplication.config.gbifApiUrl + OCCURRENCE_DOWNLOAD
+            log.debug("[startGBIFDownload] Posting to " + postUrl)
+            HttpPost post = new HttpPost(postUrl)
+            log.debug("[startGBIFDownload] Posting JSON Body: " + jsonBody.toString(true))
+            def entity = new StringEntity(jsonBody.toString(), HTTP.UTF_8)
+            post.setEntity(entity)
+            post.addHeader("Content-Type", "application/json; charset=UTF-8")
+
+            HttpResponse response = http.execute(post)
+            if(response.getStatusLine().getStatusCode() in [200,201,202] ){
+                ByteArrayOutputStream bos = new ByteArrayOutputStream()
+                response.getEntity().writeTo(bos)
+                String downloadId = bos.toString()
+                log.debug("[startGBIFDownload] Download ID: " + downloadId)
+                downloadId
+            } else {
+                log.error("Response code was " + response.getStatusLine().getStatusCode())
+                null
+            }
+        } catch (Exception e){
+            e.printStackTrace()
+            null
+        }
+    }
+
+    /**
+     * Set up a default client with simple auth.
+     *
+     * @param username
+     * @param password
+     * @return
+     */
+    DefaultHttpClient createAuthClient(String username, String password) {
         def http = new DefaultHttpClient()
-        http.getCredentialsProvider().setCredentials(AuthScope.ANY,new UsernamePasswordCredentials(username,password))
+        http.getCredentialsProvider().setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password))
         http.addRequestInterceptor(new HttpRequestInterceptor() {
             public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
                 AuthState state = (AuthState) context.getAttribute(ClientContext.TARGET_AUTH_STATE);
                 if (state.getAuthScheme() == null) {
                     BasicScheme scheme = new BasicScheme();
-                    org.apache.http.client.CredentialsProvider credentialsProvider = (org.apache.http.client.CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
+                    CredentialsProvider credentialsProvider = (CredentialsProvider) context.getAttribute(ClientContext.CREDS_PROVIDER);
                     Credentials credentials = credentialsProvider.getCredentials(AuthScope.ANY);
                     if (credentials == null) {
                         throw new HttpException();
@@ -493,23 +540,6 @@ class GbifService {
                 }
             }
         }, 0); // 0 = first, and you really want to be first.
-
-        HttpPost post = new HttpPost(GBIF_API + OCCURRENCE_DOWNLOAD)
-        def entity = new StringEntity(jsonBody, HTTP.UTF_8)
-        post.setEntity(entity)
-        post.addHeader("Content-Type", "application/json; charset=UTF-8")
-
-        def response = http.execute(post)
-        ByteArrayOutputStream bos = new ByteArrayOutputStream()
-        response.getEntity().writeTo(bos)
-        String downloadId = bos.toString();
-        log.debug("download id: " + downloadId)
-        return downloadId
-        //post.addRequestHeader("Content-Type", "application/json; charset=UTF-8")
-        //post.setRequestBody(jsonBody)
-        //http.execute(new HttpHost())
-        //log.debug("Return code for POST: " +http.executeMethod(post))
-        //log.debug(post.responseBodyAsString)
+        http
     }
-
 }

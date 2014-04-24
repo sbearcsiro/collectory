@@ -519,7 +519,7 @@ abstract class ProviderGroupController {
     /**
      * Uploads the supplied GBIF file creating a new data resource based on the supplied EML details
      */
-    def uploadGBIFFile ={
+    def uploadGBIFFile = {
         //gbifService.extractDataResourceJSON("/data/biocache-download/GBIF/0005083-131106143450413")
         //gbifService.createGBIFResource(new File("/data/biocache-download/GBIF/0005083-131106143450413.zip"))
         //createGBIFResourceFromMultipart
@@ -529,7 +529,7 @@ abstract class ProviderGroupController {
             render(view: 'gbifUpload')
             return
         }
-        def dr =gbifService.createGBIFResourceFromMultipart(f)
+        def dr = gbifService.createGBIFResourceFromMultipart(f)
         redirect([controller: 'dataResource', action: 'show', id: dr.uid])
     }
 
@@ -543,7 +543,7 @@ abstract class ProviderGroupController {
             if (authService.isAuthorisedToEdit(pg.uid)) {
                 render(view:'upload', model:[
                         instance: pg,
-                        connectionProfiles:metadataService.getConnectionProfilesWithFileUpload(),
+                        connectionProfiles: metadataService.getConnectionProfilesWithFileUpload(),
                         connectionParams: metadataService.getConnectionParameters()
                 ])
             } else {

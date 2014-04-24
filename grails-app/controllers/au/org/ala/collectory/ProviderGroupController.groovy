@@ -226,7 +226,13 @@ abstract class ProviderGroupController {
     /**
      * Update base attributes
      */
-    def updateBase = {BaseCommand cmd ->
+    def updateBase = { //BaseCommand cmd ->
+        BaseCommand cmd = new BaseCommand()
+
+        bindData(cmd, params)
+        //Institution institution
+//        def cmd = new BaseCommand(params)
+
         if(cmd.hasErrors()) {
             cmd.errors.each {println it}
             cmd.id = params.id as int   // these do not seem to be injected
@@ -295,7 +301,11 @@ abstract class ProviderGroupController {
     /**
      * Update location attributes
      */
-    def updateLocation = {LocationCommand cmd ->
+    def updateLocation = {
+
+        LocationCommand cmd = new LocationCommand()
+        bindData(cmd, params)
+
         if(cmd.hasErrors()) {
             cmd.id = params.id as int   // these do not seem to be injected
             cmd.version = params.version as int

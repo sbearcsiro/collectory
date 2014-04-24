@@ -812,9 +812,13 @@ class CollectoryTagLib {
 
     def formatJsonList = { attrs ->
        if(attrs.value){
-           def js = new JsonSlurper()
-           def list = js.parseText(attrs.value?.toString())
-           out << list.join(", ")
+           try {
+               def js = new JsonSlurper()
+               def list = js.parseText(attrs.value?.toString())
+               out << list.join(", ")
+           } catch (Exception e){
+               out << attrs.value
+           }
        }
     }
 

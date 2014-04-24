@@ -107,7 +107,7 @@
                 <p><span class="category">Information withheld: </span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
                 <!-- content types -->
-                 <p><span class="category">Content types: </span> <cl:formatJsonList value="${fieldValue(bean: instance, field: "contentTypes")}"/></p>
+                 <p><span class="category">Content types: </span> <cl:formatJsonList value="${instance.contentTypes}"/></p>
 
                 <cl:editButton uid="${instance.uid}" page="description"/>
               </div>

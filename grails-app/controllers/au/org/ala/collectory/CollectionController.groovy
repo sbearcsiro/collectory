@@ -1,6 +1,8 @@
 package au.org.ala.collectory
 
 import grails.converters.JSON
+import grails.validation.Validateable
+
 import java.text.NumberFormat
 import java.text.ParseException
 
@@ -336,7 +338,9 @@ class CollectionController extends ProviderGroupController {
 }
 
 /** V2 command classes **/
+@Validateable
 class BaseCommand {
+
     long id
     long version
     String name
@@ -356,6 +360,7 @@ class BaseCommand {
     }
 }
 
+@Validateable
 class LocationCommand {
     long id
     long version

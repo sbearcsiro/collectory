@@ -139,6 +139,9 @@ if(!disableAlertLinks){
 if(!disableOverviewMap){
     disableOverviewMap = false
 }
+if(!gbifApiUrl){
+    gbifApiUrl = 'http://api.gbif.org/v0.9'
+}
 
 /******************************************************************************\
  *  TEMPLATES
@@ -391,7 +394,9 @@ log4j = {
             'grails-cache-headers',
             'EhcachePageFragmentCachingFilter',
             'CacheHeadersGrailsPlugin',
-            'grails.plugin.cache.ehcache'
+            'grails.plugin.cache',
+            'grails.plugin.cache.ehcache',
+            'grails.plugin.cache.web.filter.ehcache'
 
     warn   'org.mortbay.log', 'org.springframework.webflow'
 

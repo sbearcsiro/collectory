@@ -56,12 +56,12 @@ class UrlMappings {
         }
 
       "/ws/$entity/summary(.$format)" (controller:'data') {
-          action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
-          constraints {
-            entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
-          summary = 'true'
-          }
-      }
+            action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
+            constraints {
+                entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
+                summary = 'true'
+            }
+        }
 
       // data resource harvesting parameters
       "/ws/dataResource/$uid/connectionParameters(.$format)" (controller:'data', action:'connectionParameters')
@@ -131,6 +131,8 @@ class UrlMappings {
 
       // high-performance name lookup from uid list
       "/ws/resolveNames/$uids" (controller: 'data', action: 'resolveNames')
+
+      "/lookup/summary/$id(.$format)?" (controller:'lookup',action:'summary')
 
       "/ws/collection/contacts/$uid(.$format)?" (controller:'data',action:'contactsForCollections')
       "/ws/institution/contacts/$uid(.$format)?" (controller:'data',action:'contactsForInstitutions')

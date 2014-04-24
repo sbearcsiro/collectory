@@ -11,8 +11,8 @@
 <body onload="load();">
   <style>
   #mapCanvas {
-    width: 300px;
-    height: 300px;
+    width: 500px;
+    height: 500px;
     float: right;
   }
   </style>
@@ -74,66 +74,57 @@
         </tr>
 
         <!-- address -->
-        <tr class="prop">
-          <td valign="top" class="name">
-            <g:message code="providerGroup.address.label" default="Address"/>
-          </td>
-          <td valign="top" colspan="3">
-            <table class="shy">
-              <tr class='prop'>
-                <td valign="top" class="name">
-                  <label for="address.street"><g:message code="providerGroup.address.street.label" default="Street"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.street', 'errors')}">
-                  <g:textField id="street" name="address.street" maxlength="128" value="${command?.address?.street}"/>
-                </td>
-              </tr>
-              <tr class='prop'>
-                <td valign="top" class="name">
-                  <label for="address.city"><g:message code="providerGroup.address.city.label" default="City"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.city', 'errors')}">
-                  <g:textField id="city" name="address.city" maxlength="128" value="${command?.address?.city}"/>
-                </td>
-              </tr>
-              <tr class='prop'>
-                <td valign="top" class="name">
-                  <label for="address.state"><g:message code="providerGroup.address.state.label" default="State or territory"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.state', 'errors')}">
-                  <g:textField id="state" name="address.state" maxlength="128" value="${command?.address?.state}"/>
-                </td>
-              </tr>
-              <tr class='prop'>
-                <td valign="top" class="name">
-                  <label for="address.postcode"><g:message code="providerGroup.address.postcode.label" default="Postcode"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.street', 'errors')}">
-                  <g:textField name="address.postcode" maxlength="128" value="${command?.address?.postcode}"/>
-                </td>
-              </tr>
-              <tr class='prop'>
-                <td valign="top" class="name">
-                  <label for="address.country"><g:message code="providerGroup.address.country.label" default="Country"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.country', 'errors')}">
-                  <g:textField id="country" name="address.country" maxlength="128" value="${command?.address?.country}"/>
-                </td>
-              </tr>
-              <tr class='prop'>
-                <td valign="top" class="name">
-                  <label for="address.postBox"><g:message code="providerGroup.address.postBox.label" default="Postal address"/></label>
-                </td>
-                <td valign="top" class="value ${hasErrors(bean: command, field: 'address.postBox', 'errors')}">
-                  <g:textField name="address.postBox" maxlength="128" value="${command?.address?.postBox}"/>
-                </td>
-              </tr>
-            </table>
-
-          </td>
-        </tr>
+          <tr class='prop'>
+            <td valign="top" class="name">
+              <label for="address.street"><g:message code="providerGroup.address.street.label" default="Street"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: command, field: 'address.street', 'errors')}">
+              <g:textField id="street" name="address.street" maxlength="128" value="${command?.address?.street}"/>
+            </td>
+          </tr>
+          <tr class='prop'>
+            <td valign="top" class="name">
+              <label for="address.city"><g:message code="providerGroup.address.city.label" default="City"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: command, field: 'address.city', 'errors')}">
+              <g:textField id="city" name="address.city" maxlength="128" value="${command?.address?.city}"/>
+            </td>
+          </tr>
+          <tr class='prop'>
+            <td valign="top" class="name">
+              <label for="address.state"><g:message code="providerGroup.address.state.label" default="State or territory"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: command, field: 'address.state', 'errors')}">
+              <g:textField id="state" name="address.state" maxlength="128" value="${command?.address?.state}"/>
+            </td>
+          </tr>
+          <tr class='prop'>
+            <td valign="top" class="name">
+              <label for="address.postcode"><g:message code="providerGroup.address.postcode.label" default="Postcode"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: command, field: 'address.street', 'errors')}">
+              <g:textField name="address.postcode" maxlength="128" value="${command?.address?.postcode}"/>
+            </td>
+          </tr>
+          <tr class='prop'>
+            <td valign="top" class="name">
+              <label for="address.country"><g:message code="providerGroup.address.country.label" default="Country"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: command, field: 'address.country', 'errors')}">
+              <g:textField id="country" name="address.country" maxlength="128" value="${command?.address?.country}"/>
+            </td>
+          </tr>
+          <tr class='prop'>
+            <td valign="top" class="name">
+              <label for="address.postBox"><g:message code="providerGroup.address.postBox.label" default="Postal address"/></label>
+            </td>
+            <td valign="top" class="value ${hasErrors(bean: command, field: 'address.postBox', 'errors')}">
+              <g:textField name="address.postBox" maxlength="128" value="${command?.address?.postBox}"/>
+            </td>
+          </tr>
 
         <!-- latitude -->
+        <div id="mapCanvas" class="pull-right"></div>
         <tr class="prop">
           <td valign="top" class="name">
             <label for="latitude"><g:message code="providerGroup.latitude.label" default="Latitude"/>
@@ -148,7 +139,7 @@
 
           <!-- map spans 4-5 rows -->
           <td rowspan="5">
-            <div id="mapCanvas"></div></td>
+            </td>
         </tr>
 
         <!-- longitude -->
@@ -183,7 +174,8 @@
           </g:if>
         </g:if>
         <tr>
-          <td></td><td colspan="2">Drag pin on map to the exact location of the ${entityNameLower}. You may need to zoom in and turn on the hybrid view to locate the building.</td>
+          <td></td><td colspan="2">Drag pin on map to the exact location of the ${entityNameLower}.<br/>
+                You may need to zoom in and turn on the hybrid view to locate the building.</td>
         </tr>
 
         </tbody>

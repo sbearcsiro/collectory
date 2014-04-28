@@ -17,11 +17,11 @@
                         </tr>
                         <tr class="prop">
                             <td valign="top" class="name"><label for="gbifUsername">GBIF username:</label></td>
-                            <td valign="top" class="value"><g:field type="text" name="gbifUsername" required="true" value="dmartin" /></td>
+                            <td valign="top" class="value"><g:field type="text" name="gbifUsername" required="true" value="" /></td>
                         </tr>
                         <tr class="prop">
                             <td valign="top" class="name"><label for="gbifPassword">GBIF password:</label> </td>
-                            <td valign="top" class="value"><g:field type="password" name="gbifPassword" required="true" value="password" /></td>
+                            <td valign="top" class="value"><g:field type="password" name="gbifPassword" required="true" value="" /></td>
                         </tr>
                         <tr class="prop">
                             <td valign="top" class="name"><label for="maxResources">Maximum resources (will default to all):</label></td>

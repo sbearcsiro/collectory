@@ -47,7 +47,7 @@ class GbifService {
     static final String EML_DIRECTORY = "dataset"
     static final String OCCURRENCE_FILE = "occurrence.txt"
     static final String META_FILE = "/data/collectory/bootstrap/meta.xml"
-    static final String OCCURRENCE_DOWNLOAD = "/occurrence/download" //POST request to this to start download //GET request to retrieve download
+    static final String OCCURRENCE_DOWNLOAD = "/occurrence/download/request" //POST request to this to start download //GET request to retrieve download
     static final String DOWNLOAD_STATUS = "/occurrence/download/" //GET request to this
     static final String DATASET_SEARCH = "/dataset/search?publishingCountry={0}&type=OCCURRENCE" //GET request to this
 

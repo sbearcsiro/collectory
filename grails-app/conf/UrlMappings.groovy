@@ -147,7 +147,8 @@ class UrlMappings {
 
       "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
 
-//      "/ws/$entity" (controller:'data', action:'getEntity')
+      "/ws/$entity?(.$format)?" (controller:'data', action:[GET:'getEntity', POST: 'saveEntity',  PUT:'saveEntity', DELETE: 'delete'])
+
 //      "/ws/institution/contacts/$uid(.$format)?" (controller:'data')
 //      "/ws/dataProvider/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataProviders')
 //      "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')

@@ -29,8 +29,8 @@ class UrlMappings {
       // temporary mock notification service
       "/ws/notify" (controller:'data', action:'notify')
 
-      "/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
-      "/ws/lookup/inst/$inst/coll/$coll"(controller:'lookup',action:'collection')
+      "/lookup/inst/$inst/coll/$coll(.$format)?"(controller:'lookup',action:'collection')
+      "/ws/lookup/inst/$inst/coll/$coll(.$format)?"(controller:'lookup',action:'collection')
       "/ws/lookup/$action/$id"(controller:'lookup')
 
       "/admin/export/$table" (controller:'admin',action:'export')
@@ -55,7 +55,7 @@ class UrlMappings {
             }
         }
 
-      "/ws/$entity/summary(.$format)" (controller:'data') {
+      "/ws/$entity/summary(.$format)?" (controller:'data') {
             action = [HEAD: 'head', GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
             constraints {
                 entity(inList:['collection','institution','dataProvider','dataResource','tempDataResource','dataHub'])
@@ -64,7 +64,7 @@ class UrlMappings {
         }
 
       // data resource harvesting parameters
-      "/ws/dataResource/$uid/connectionParameters(.$format)" (controller:'data', action:'connectionParameters')
+      "/ws/dataResource/$uid/connectionParameters(.$format)?" (controller:'data', action:'connectionParameters')
 
       // raw contact data
       //"/ws/contacts/$id?" (controller: 'data', action: 'contacts')
@@ -75,7 +75,7 @@ class UrlMappings {
       }
 
       // entities that can be edited by a contact
-      "/ws/contacts/$id/authorised(.$format)" (controller: 'data', action: 'authorisedForContact')
+      "/ws/contacts/$id/authorised(.$format)?" (controller: 'data', action: 'authorisedForContact')
 
       // entity contacts
       "/ws/$entity/$uid/contacts/$id?" {
@@ -89,12 +89,12 @@ class UrlMappings {
       // all contacts for an entity type
       // the next 5 rules should be able to be expressed as one rule in the same format as above
       // BUT /ws/$entity/contact does not work for some reason
-      "/ws/collection/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'collection'}
-      "/ws/institution/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
-      "/ws/dataProvider/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
-      "/ws/dataResource/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
-      "/ws/tempDataResource/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'tempDataResource'}
-      "/ws/dataHub/contacts(.$format)" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
+      "/ws/collection/contacts(.$format)?" { controller = 'data'; action = 'contactsForEntities'; entity = 'collection'}
+      "/ws/institution/contacts(.$format)?" { controller = 'data'; action = 'contactsForEntities'; entity = 'institution'}
+      "/ws/dataProvider/contacts(.$format)?" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataProvider'}
+      "/ws/dataResource/contacts(.$format)?" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataResource'}
+      "/ws/tempDataResource/contacts(.$format)?" { controller = 'data'; action = 'contactsForEntities'; entity = 'tempDataResource'}
+      "/ws/dataHub/contacts(.$format)?" { controller = 'data'; action = 'contactsForEntities'; entity = 'dataHub'}
 
       // contacts to be notified on entity instance event
       "/ws/$entity/$uid/contacts/notifiable" {
@@ -115,8 +115,8 @@ class UrlMappings {
       }
         
       // entities in a data hub
-      "/ws/dataHub/$uid/institutions(.$format)" (controller: 'data', action: 'institutionsForDataHub')
-      "/ws/dataHub/$uid/collections(.$format)" (controller: 'data', action: 'collectionsForDataHub')
+      "/ws/dataHub/$uid/institutions(.$format)?" (controller: 'data', action: 'institutionsForDataHub')
+      "/ws/dataHub/$uid/collections(.$format)?" (controller: 'data', action: 'collectionsForDataHub')
 
       // citations
       "/ws/citations/$include?" (controller:'lookup', action:'citations')
@@ -140,8 +140,8 @@ class UrlMappings {
       "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')
       "/ws/dataHub/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataHubs')
       "/ws" (controller:'data',action:'catalogue')
-      "/showConsumers/$id(.$format)" (controller:'entity',action:'showConsumers')
-      "/showProviders/$id(.$format)" (controller:'entity',action:'showProviders')
+      "/showConsumers/$id(.$format)?" (controller:'entity',action:'showConsumers')
+      "/showProviders/$id(.$format)?" (controller:'entity',action:'showProviders')
 
       "/ws/codeMapDump" (controller:'data', action:'codeMapDump')
 

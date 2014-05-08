@@ -154,9 +154,9 @@ class UrlMappings {
 //      "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')
 //      "/ws/dataHub/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataHubs')
 
-      "/ws/tempDataResource" (controller: 'tempDataResource') {
-          action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
-      }
+//      "/ws/tempDataResource" (controller: 'tempDataResource') {
+//          action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
+//      }
 
       "/ws/rif-cs(.$format)" (controller:'rifCs',action:'index')
 

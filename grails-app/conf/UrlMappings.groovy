@@ -161,7 +161,7 @@ class UrlMappings {
 
       "/ws/codeMapDump" (controller:'data', action:'codeMapDump')
 
-      "/ws/dataResource/harvesting" (controller:'reports', action: 'harvesters')
+      "/ws/dataResource/harvesting(.$format)?" (controller:'reports', action: 'harvesters')
 
       "/ws/$entity?(.$format)?" (controller:'data', action:[GET:'getEntity', POST: 'saveEntity',  PUT:'saveEntity', DELETE: 'delete'])
 

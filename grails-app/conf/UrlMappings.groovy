@@ -26,6 +26,8 @@ class UrlMappings {
         constraints {}
       }
 
+      "/ws/rif-cs(.$format)?" (controller:'rifCs',action:'index')
+
       // temporary mock notification service
       "/ws/notify" (controller:'data', action:'notify')
 
@@ -174,7 +176,7 @@ class UrlMappings {
 //          action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
 //      }
 
-      "/ws/rif-cs(.$format)" (controller:'rifCs',action:'index')
+
 
       "/public/resources(.$format)"(controller:'public', action:'resources')
 

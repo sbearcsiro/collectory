@@ -105,6 +105,22 @@ class UrlMappings {
             }
       }
 
+      "/ws/$entity/$uid/contacts(.$format)?" {
+          controller = 'data'
+          action = 'contactsForEntity'
+          constraints {
+              entity(inList: ['collection', 'institution', 'dataProvider', 'dataResource', 'tempDataResource', 'dataHub'])
+          }
+      }
+
+      "/ws/$entity/$uid/contact(.$format)?" {
+        controller = 'data'
+        action = 'contactForEntity'
+        constraints {
+            entity(inList: ['collection', 'institution', 'dataProvider', 'dataResource', 'tempDataResource', 'dataHub'])
+        }
+      }
+
       // html fragment representation
       "/ws/fragment/$entity/$uid" {
           controller = 'data'
@@ -154,9 +170,9 @@ class UrlMappings {
 //      "/ws/dataResource/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataResources')
 //      "/ws/dataHub/contacts/$uid(.$format)?" (controller:'data',action:'contactsForDataHubs')
 
-      "/ws/tempDataResource" (controller: 'tempDataResource') {
-          action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
-      }
+//      "/ws/tempDataResource" (controller: 'tempDataResource') {
+//          action = [GET:'getEntity', PUT:'saveEntity', DELETE:'delete', POST:'saveEntity']
+//      }
 
       "/ws/rif-cs(.$format)" (controller:'rifCs',action:'index')
 

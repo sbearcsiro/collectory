@@ -97,24 +97,24 @@ class DataController {
         if (eTag) {
             addETagHeader eTag
         }
-        // remove this as it seemed to be fooled by local time diffs
-        /*if (isNotModified(last, eTag)) {
-            //println "not modified"
-            notModified()
-        }
-        else {
-            //println "modified"
-            render content
-        }*/
         render content
     }
 
-    def renderJson = {json, last, eTag ->
+    def renderJson = { json, last, eTag ->
+
+        def content = json
+
         if (params.callback) {
-            cacheAwareRender([contentType:'text/javascript', text: "${params.callback}(${json})", encoding: "UTF-8"], last, eTag)
-        } else {
-            cacheAwareRender json, last, eTag
+            content = "${params.callback}(${json})"
         }
+
+        if (last) {
+            addLastModifiedHeader last
+        }
+        if (eTag) {
+            addETagHeader eTag
+        }
+        render(text:content, encoding:"UTF-8", contentType: "application/json")
     }
 
     def renderAsJson = {json, last, eTag ->
@@ -300,6 +300,7 @@ class DataController {
                 def entityInJson = crudService."read${clazz}"(params.pg)
                 entityInJson = convertAnyLocalPaths(entityInJson)
                 response.setContentType("application/json")
+                response.setCharacterEncoding("UTF-8")
                 cacheAwareRender entityInJson, params.pg.lastUpdated, eTag
             } else {
                 // return list of entities
@@ -311,6 +312,8 @@ class DataController {
                 def detail = params.summary ? summary : brief
                 def summaries = list.collect(detail)
                 def eTag = summaries.toString().encodeAsMD5()
+//                response.setCharacterEncoding("UTF-8")
+                response.setContentType("application/json")
                 renderAsJson summaries, last, eTag
             }
         }
@@ -495,6 +498,7 @@ class DataController {
                 } else {
                     //render xml
                     response.setContentType("text/xml")
+                    response.setCharacterEncoding("UTF-8")
                     cacheAwareRender xml, pg.lastUpdated, xml.toString().encodeAsMD5()
                 }
             } else {
@@ -735,7 +739,7 @@ class DataController {
      */
     def contactForEntity = {
         if (params.id) {
-            def cm = buildContactForModel(ContactFor.get(params.id), params.pg.urlForm())
+            def cm = buildContactForModel(ContactFor.get(params.id as Long), params.pg.urlForm())
             addContentLocation "/ws/${params.entity}/${params.pg.uid}/contacts/${params.id}"
             addVaryAcceptHeader()
             withFormat {
@@ -919,9 +923,7 @@ class DataController {
         if(obj in String){
            obj.replaceAll(newPath, oldPath)
         } else if(obj in JSON){
-           def fixed = obj.toString().replaceAll(oldPath, newPath)
-           println "FIXED ######## " + fixed
-           fixed
+           obj.toString().replaceAll(oldPath, newPath)
         }
     }
 

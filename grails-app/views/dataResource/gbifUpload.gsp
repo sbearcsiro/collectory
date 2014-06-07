@@ -9,7 +9,7 @@
     <r:require modules="fileupload"/>
 </head>
 <body>
-<h1>Automatically create a data resource from a GBIF dowload
+<h1>Automatically create a data resource from a GBIF download
 </h1>
 
 <g:uploadForm action="uploadGBIFFile" controller="dataResource">

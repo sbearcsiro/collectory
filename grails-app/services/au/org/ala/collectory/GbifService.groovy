@@ -231,7 +231,7 @@ class GbifService {
         def dr = crudService.insertDataResource(json)
         log.debug(dr.uid + "  " +dr.id + " " +dr.name)//.toString() + " " + dr.hasErrors() + " " + dr.getErrors())
         //4) Add the contact details for the data resource
-        //TODO we may need to add a separate contact at the  moment we are just adding it to the data resource
+        //TODO we may need to add a separate contact - at the moment we are just adding it to the data resource
         //5) Create the DwCA for the resource using the GBIF default meta.xml and occurrences.txt
         String zipFileName = createDWCA(uploadedFile.getParentFile(), json.get("guid"))
         log.debug("Created the zip file " + zipFileName)
@@ -259,8 +259,8 @@ class GbifService {
             def connParams = (new JsonSlurper()).parseText(dr.connectionParameters?:'{}')
             connParams.url = 'file:///'+targetFileName
             connParams.protocol="DwCA"
-            connParams.termsForUniqueKey=["occurrenceID"]
-            //NQ we need a transaction so the this can be executed in a multithreaded manner.
+            connParams.termsForUniqueKey=["gbifID"]
+            //NQ we need a transaction so the this can be executed in a multi-threaded manner.
             DataResource.withTransaction {
                 dr.connectionParameters = (new JsonOutput()).toJson(connParams)
                 log.debug("Finished creating the connection params for " + dr.getUid())
@@ -281,7 +281,7 @@ class GbifService {
      */
     def createDWCA(File directoryForArchive, String guid){
         //create a ZIP File with the occurrence.txt and meta.xml
-        String zipFileName =directoryForArchive.getAbsolutePath() + File.separator + guid + ".zip"
+        String zipFileName = directoryForArchive.getAbsolutePath() + File.separator + guid + ".zip"
         ZipOutputStream zop = new ZipOutputStream(new FileOutputStream(zipFileName))
         //add the occurrence.txt file
         zop.putNextEntry(new ZipEntry(OCCURRENCE_FILE))

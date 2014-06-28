@@ -461,6 +461,8 @@ class CollectoryTagLib {
         if (lsid =~ 'lsid') {  // contains
             def authority = lsid[9..lsid.indexOf(':',10)-1]
             out << "<a${target} rel='nofollow' class='external' href='http://${authority}/${lsid.encodeAsHTML()}'>${lsid.encodeAsHTML()}</a>"
+        } else {
+            out << attrs.guid
         }
     }
 
@@ -1785,7 +1787,12 @@ class CollectoryTagLib {
                     // encode any control characters
                     value = encodeControlChars(cp."${pp.paramName}")
                 }
-                out << "<dt>${pp.display}:</dt><dd>" + (value ?: 'Not supplied') + "</dd>"
+
+                if(pp.paramName == "url"){
+                    out << "<dt id=\"dataURL\">Data URL</dt><dd><a href=\"" + metadataService.convertPath(value)  + "\"> "+metadataService.convertPath(value) +"</a></dd>"
+                }
+
+                out << "<dt id=\"${pp.paramName}\">${pp.display}:</dt><dd>" + (value ?: 'Not supplied') + "</dd>"
             }
             out << "</dl>"
         }

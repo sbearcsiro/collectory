@@ -34,6 +34,7 @@ class UrlMappings {
       "/lookup/inst/$inst/coll/$coll(.$format)?"(controller:'lookup',action:'collection')
       "/ws/lookup/inst/$inst/coll/$coll(.$format)?"(controller:'lookup',action:'collection')
       "/ws/lookup/$action/$id"(controller:'lookup')
+      "/ws/lookup/$action"(controller:'lookup')
 
       "/admin/export/$table" (controller:'admin',action:'export')
 

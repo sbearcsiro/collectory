@@ -36,7 +36,7 @@
                                 <label for="guid"><g:message code="collection.guid.label" default="Guid" /></label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'guid', 'errors')}">
-                                <g:textField name="guid" maxlength="45" value="${command?.guid}" class="input-xlarge"/>
+                                <g:textField name="guid" maxlength="100" value="${command?.guid}" class="input-xxlarge"/>
                                 <cl:helpText code="${entityNameLower}.guid"/>
                               </td>
                               <cl:helpTD/>

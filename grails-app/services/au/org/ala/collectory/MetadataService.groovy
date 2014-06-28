@@ -22,6 +22,7 @@ class MetadataService {
     static transactional = false
 
     // cache connection metadata
+    def grailsApplication
     def connectionProfileMetadata = null
     def connectionParameterMetadata = null
 
@@ -40,6 +41,22 @@ class MetadataService {
             }
         }
         clone
+    }
+
+    def convertAnyLocalPaths(obj){
+        def oldPath = "file:///" + grailsApplication.config.uploadFilePath
+        def newPath = grailsApplication.config.grails.serverURL + grailsApplication.config.uploadExternalUrlPath
+        if(obj in String){
+            obj.replaceAll(oldPath, newPath)
+        } else if(obj in JSON){
+            obj.toString().replaceAll(oldPath, newPath)
+        }
+    }
+
+    def convertPath(obj){
+        def oldPath = "file:///" + grailsApplication.config.uploadFilePath
+        def newPath = grailsApplication.config.grails.serverURL + grailsApplication.config.uploadExternalUrlPath
+        obj.replaceAll(oldPath,newPath)
     }
 
     def getConnectionProfiles() {

@@ -73,6 +73,16 @@ class Collection extends ProviderGroup implements Serializable {
 
     static mapping = {
         sort: 'name'
+        subCollections type: 'text'
+        keywords type: 'text'
+        kingdomCoverage type: 'text'
+        scientificNames type: 'text'
+        pubDescription type: "text"
+        techDescription type: "text"
+        focus type: "text"
+        taxonomyHints type: "text"
+        notes type: "text"
+        networkMembership type: "text"
     }
 
     // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/CollectionType.rdf

@@ -11,6 +11,21 @@ class DataResource extends ProviderGroup implements Serializable {
 
     static mapping = {
         sort: 'name'
+        rights type:'text'
+        citation type:'text'
+        defaultDarwinCoreValues type:'text'
+        connectionParameters type:'text'
+        harvestingNotes type:'text'
+        mobilisationNotes type:'text'
+        dataGeneralizations type:'text'
+        informationWithheld type:'text'
+        permissionsDocument type:'text'
+        pubDescription type: "text"
+        techDescription type: "text"
+        focus type: "text"
+        taxonomyHints type: "text"
+        notes type: "text"
+        networkMembership type: "text"
     }
 
     String rights
@@ -41,8 +56,8 @@ class DataResource extends ProviderGroup implements Serializable {
     Institution institution         // optional link to the institution whose records are served by this resource
 
     static constraints = {
-        rights(nullable:true, maxSize:4096)
-        citation(nullable:true, maxSize:4096)
+        rights(nullable:true)
+        citation(nullable:true)
         licenseType(nullable:true, maxSize:45, inList:licenseTypeList)
         licenseVersion(nullable:true, maxSize:45)
         resourceType(maxSize:255, validator: {
@@ -51,17 +66,17 @@ class DataResource extends ProviderGroup implements Serializable {
         provenance(nullable:true,maxSize:45,inList: provenanceTypesList)
         dataProvider(nullable:true)
         institution(nullable:true)
-        dataGeneralizations(nullable:true, maxSize:2048)
-        informationWithheld(nullable:true, maxSize:2048)
-        permissionsDocument(nullable:true, maxSize:2048)
+        dataGeneralizations(nullable:true)
+        informationWithheld(nullable:true)
+        permissionsDocument(nullable:true)
         permissionsDocumentType(nullable:true, inList: permissionsDocumentTypes)
         status(maxSize:45)
-        harvestingNotes(nullable:true, maxSize:4096)
-        mobilisationNotes(nullable:true, maxSize:4096)
+        harvestingNotes(nullable:true)
+        mobilisationNotes(nullable:true)
         lastChecked(nullable:true)
         dataCurrency(nullable:true)
-        connectionParameters(nullable:true, maxSize:4096)
-        defaultDarwinCoreValues(nullable:true, maxSize:10000)
+        connectionParameters(nullable:true)
+        defaultDarwinCoreValues(nullable:true)
         contentTypes(nullable:true, maxSize:2048)
     }
 

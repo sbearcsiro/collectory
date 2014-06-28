@@ -46,7 +46,6 @@ class GbifService {
     static final String RIGHTS_FILE = "rights.txt"
     static final String EML_DIRECTORY = "dataset"
     static final String OCCURRENCE_FILE = "occurrence.txt"
-    static final String META_FILE = "/data/collectory/bootstrap/meta.xml"
     static final String OCCURRENCE_DOWNLOAD = "/occurrence/download/request" //POST request to this to start download //GET request to retrieve download
     static final String DOWNLOAD_STATUS = "/occurrence/download/" //GET request to this
     static final String DATASET_SEARCH = "/dataset/search?publishingCountry={0}&type=OCCURRENCE" //GET request to this
@@ -216,7 +215,7 @@ class GbifService {
     }
 
     /**
-     * Creates a data resource from the supplied file. Includes DWCA creation and preoprety extraction.
+     * Creates a data resource from the supplied file. Includes DWCA creation and property extraction.
      *
      * @param uploadedFile
      * @return
@@ -224,7 +223,8 @@ class GbifService {
     def createGBIFResource(File uploadedFile){
         //1) Extract the ZIP file
         //2) Extract the JSON for the data resource to create
-        def json = extractDataResourceJSON(new ZipFile(uploadedFile),uploadedFile.getParentFile());
+        def json = extractDataResourceJSON(new ZipFile(uploadedFile), uploadedFile.getParentFile());
+        def meta = extractMetaXML(new ZipFile(uploadedFile))
 
         log.debug("The JSON to create the dr : " + json)
         //3) Create the data resource
@@ -233,7 +233,7 @@ class GbifService {
         //4) Add the contact details for the data resource
         //TODO we may need to add a separate contact - at the moment we are just adding it to the data resource
         //5) Create the DwCA for the resource using the GBIF default meta.xml and occurrences.txt
-        String zipFileName = createDWCA(uploadedFile.getParentFile(), json.get("guid"))
+        String zipFileName = createDWCA(uploadedFile.getParentFile(), json.get("guid"), meta)
         log.debug("Created the zip file " + zipFileName)
         //6) Upload the DwCA for the resource to the created data resource
         applyDwCA(new File(zipFileName), dr)
@@ -279,7 +279,7 @@ class GbifService {
      * @param guid
      * @return
      */
-    def createDWCA(File directoryForArchive, String guid){
+    def createDWCA(File directoryForArchive, String guid, String metaXml){
         //create a ZIP File with the occurrence.txt and meta.xml
         String zipFileName = directoryForArchive.getAbsolutePath() + File.separator + guid + ".zip"
         ZipOutputStream zop = new ZipOutputStream(new FileOutputStream(zipFileName))
@@ -289,11 +289,20 @@ class GbifService {
         zop.closeEntry()
         //add the meta.xml
         zop.putNextEntry(new ZipEntry("meta.xml"))
-        IOUtils.copy(new FileInputStream(META_FILE), zop)
+        IOUtils.write(metaXml, zop)
         zop.closeEntry()
         zop.flush()
         zop.close()
         return zipFileName
+    }
+
+    def extractMetaXML(ZipFile zipFile){
+       def entry = zipFile.getEntry("meta.xml")
+       if(entry !=null){
+           zipFile.getInputStream(entry).text
+       } else {
+           null
+       }
     }
 
     /**
@@ -303,9 +312,9 @@ class GbifService {
      * @return
      */
     def extractDataResourceJSON(ZipFile zipFile, File directoryForArchive){
-        String citation=""
-        String rights=""
-        Map map=[:]
+        String citation = ""
+        String rights = ""
+        Map map = [:]
         zipFile.entries.each{ file ->
             if (file.getName() == CITATION_FILE) {
                 map.get("citation",zipFile.getInputStream(file).text.replaceAll("\n", " "))

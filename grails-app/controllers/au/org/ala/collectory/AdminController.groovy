@@ -11,7 +11,7 @@ import grails.web.JSONBuilder
 class AdminController {
 
     def dataLoaderService, idGeneratorService, authService, metadataService
-
+    def grailsApplication
     //static defaultAction = "home"
     
 /*
@@ -42,7 +42,7 @@ class AdminController {
         def configurationResource = resolver.getResource(ConfigurationHolder.config.reloadable.cfgs[0])
         //new ConfigurationResourceListener().onResourceUpdate(configurationResource)
         String res = "<ul>"
-        ConfigurationHolder.config.each { key, value ->
+        grailsApplication.config.each { key, value ->
             if (value instanceof Map) {
                 res += "<p>" + key + "</p>"
                 res += "<ul>"

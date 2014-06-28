@@ -299,6 +299,18 @@ class LookupController {
         }
     }
 
+    def findResourceByGuid = {
+        response.addHeader HttpHeaders.CONTENT_TYPE, 'application/json'
+        def result = []
+        if(params.guid) {
+            def dr = DataResource.findAllByGuid(params.guid)
+            if(dr){
+               result << dr
+            }
+        }
+        render result as JSON
+    }
+
     def listResources = {
         response.addHeader HttpHeaders.CONTENT_TYPE, 'text/csv'
         Writer w = response.getWriter()

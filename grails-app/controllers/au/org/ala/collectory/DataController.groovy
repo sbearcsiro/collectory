@@ -17,6 +17,8 @@ class DataController {
     
     def index = { }
 
+    def metadataService
+
     /** make sure that uid params point to an existing entity and json is parsable **/
     def beforeInterceptor = this.&check
 
@@ -298,7 +300,7 @@ class DataController {
                 addContentLocation "/ws/${urlForm}/${params.pg.uid}"
                 def eTag = (params.pg.uid + ":" + params.pg.lastUpdated).encodeAsMD5()
                 def entityInJson = crudService."read${clazz}"(params.pg)
-                entityInJson = convertAnyLocalPaths(entityInJson)
+                entityInJson = metadataService.convertAnyLocalPaths(entityInJson)
                 response.setContentType("application/json")
                 response.setCharacterEncoding("UTF-8")
                 cacheAwareRender entityInJson, params.pg.lastUpdated, eTag
@@ -913,17 +915,7 @@ class DataController {
             badRequest "must be a data resource"
         } else {
             response.setContentType("application/json")
-            render convertAnyLocalPaths(pg.connectionParameters)
-        }
-    }
-
-    def convertAnyLocalPaths(obj){
-        def oldPath = "file:///" + grailsApplication.config.uploadFilePath
-        def newPath = grailsApplication.config.grails.serverURL + grailsApplication.config.uploadExternalUrlPath
-        if(obj in String){
-           obj.replaceAll(newPath, oldPath)
-        } else if(obj in JSON){
-           obj.toString().replaceAll(oldPath, newPath)
+            render metadataService.convertAnyLocalPaths(pg.connectionParameters)
         }
     }
 

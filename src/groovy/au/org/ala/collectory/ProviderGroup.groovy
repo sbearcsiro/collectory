@@ -84,16 +84,22 @@ abstract class ProviderGroup implements Serializable {
     static mapping = {
         tablePerHierarchy false
         uid index:'uid_idx'
+        pubDescription type: "text"
+        techDescription type: "text"
+        focus type: "text"
+        taxonomyHints type: "text"
+        notes type: "text"
+        networkMembership type: "text"
     }
 
     static constraints = {
-        guid(nullable:true, maxSize:45)
+        guid(nullable:true, maxSize:100)
         uid(blank:false, maxSize:20)
         name(blank:false, maxSize:1024)
         acronym(nullable:true, maxSize:45)
-        pubDescription(nullable:true, maxSize:20000)
-        techDescription(nullable:true, maxSize:20000)
-        focus(nullable:true, maxSize:4096)
+        pubDescription(nullable:true)
+        techDescription(nullable:true)
+        focus(nullable:true)
         address(nullable:true)
         latitude(max:360.0, min:-360.0, scale:10)
         longitude(max:360.0, min:-360.0, scale:10)
@@ -105,10 +111,10 @@ abstract class ProviderGroup implements Serializable {
         email(nullable:true, maxSize:256)
         phone(nullable:true, maxSize:45)
         isALAPartner()
-        notes(nullable:true, maxSize:2048)
+        notes(nullable:true)
         networkMembership(nullable:true, maxSize:256)
         attributions(nullable:true, maxSize:256)
-        taxonomyHints(nullable:true, maxSize:1024)
+        taxonomyHints(nullable:true)
     }
 
     /*  Contacts  */

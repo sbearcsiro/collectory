@@ -57,7 +57,7 @@
                 </g:if>
 
                 <!-- GUID    -->
-                <p><span class="category">LSID: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category">GUID: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
                 <p><span class="category">UID: </span> ${fieldValue(bean: instance, field: "uid")}</p>

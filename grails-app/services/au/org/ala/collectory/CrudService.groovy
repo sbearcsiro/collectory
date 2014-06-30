@@ -21,6 +21,9 @@ class CrudService {
     static baseObjectProperties = ['address', 'imageRef','logoRef']
     static baseJSONArrays = ['networkMembership']
 
+    static dataHubStringProperties = ['memberDataResources']
+    static dataHubNumberProperties = []
+
     static dataResourceStringProperties = ['rights','citation','dataGeneralizations','informationWithheld',
                 'permissionsDocument','licenseType','licenseVersion','status','mobilisationNotes','provenance',
                 'harvestingNotes','connectionParameters','resourceType','permissionsDocumentType','riskAssessment',
@@ -213,13 +216,19 @@ class CrudService {
         return dp
     }
 
-    def updateDataHub(dp, obj) {
-        updateBaseProperties(dp, obj)
-        dp.userLastModified = obj.user ?: 'Data services'
-        if (!dp.hasErrors()) {
-             dp.save(flush: true)
+    def updateDataHub(dh, obj) {
+        updateBaseProperties(dh, obj)
+        updateDataHubProperties(dh, obj)
+        dh.userLastModified = obj.user ?: 'Data services'
+        if (!dh.hasErrors()) {
+            dh.save(flush: true)
         }
-        return dp
+        return dh
+    }
+
+    def updateDataHubProperties(dh, obj){
+        dh.properties[dataHubStringProperties] = obj
+        dh.properties[dataHubNumberProperties] = obj
     }
 
     /* data resource */

@@ -1,4 +1,6 @@
 package au.org.ala.collectory
+
+import groovy.json.JsonSlurper
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 
 class ManageController {
@@ -26,7 +28,8 @@ class ManageController {
      * Renders the view that allows a user to load all the gbif resources for a country
      */
     def gbifLoadCountry = {
-        render(view: "gbifLoadCountry")
+        //get country list
+        render(view: "gbifLoadCountry", model: ['pubMap': gbifService.getPublishingCountriesMap()])
     }
 
     /**

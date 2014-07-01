@@ -57,6 +57,24 @@ class GbifService {
     def loadMap = [:]
     def stopStatus = ["CANCELLED", "FAILED", "KILLED", "SUCCEEDED", "UNKNOWN"]
 
+    def getPublishingCountriesMap(){
+        def js = new JsonSlurper()
+        def jsonText = new URL(grailsApplication.config.gbifApiUrl + "/node/country").text
+        def isoCodeList = js.parseText(jsonText)
+        //intersect with iso names
+        def isoMap = [:]
+        this.class.classLoader.getResourceAsStream("isoCodes.csv").readLines().each{
+            def codeAndName = it.split("\t")
+            isoMap.put(codeAndName[0], codeAndName[1])
+        }
+        def pubMap = [:]
+        isoCodeList.each {
+            def name = isoMap.get(it)
+            pubMap.put(it, name)
+        }
+        pubMap
+    }
+
     /**
      * Returns the status information for the supplied country
      * @param country

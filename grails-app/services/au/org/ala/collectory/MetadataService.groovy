@@ -79,7 +79,7 @@ class MetadataService {
     }
 
     private loadConnectionMetadata() {
-        println "Loading connection profiles and parameters from disk"
+        log.info "Loading connection profiles and parameters from disk"
         def json = new File("/data/collectory/config/connection-profiles.json").text
         def md = JSON.parse(json)
         // TODO: handle errors

@@ -13,7 +13,9 @@
                     <table>
                         <tr class="prop">
                             <td valign="top" class="name"><label for="country">Publishing country (e.g. SPAIN):</label></td>
-                            <td valign="top" class="value"><g:field type="text" name="country" required="true" value="" /></td>
+                            <td valign="top" class="value">
+                                <g:select name="country" from="${pubMap.entrySet()}" optionKey="key" optionValue="value"/>
+                            </td>
                         </tr>
                         <tr class="prop">
                             <td valign="top" class="name"><label for="gbifUsername">GBIF username:</label></td>

@@ -246,44 +246,9 @@ grails.validateable.packages = ['au.org.ala.collectory']
 // default location for images
 repository.location.images = '/data/collectory/data'
 
-/******* log files **********/
-def logDirectory = "/data/collectory/logs"
-
 /******************************************************************************\
  *  ENVIRONMENT SPECIFIC
 \******************************************************************************/
-//environments {
-//    production {
-//        grails.serverURL = "http://collections.ala.org.au" //"http://www.changeme.com"
-//        grails.context = ''
-//        security.cas.serverName = grails.serverURL
-//        security.cas.serverName = "http://collections.ala.org.au/"
-//        security.cas.contextPath = grails.context
-//        security.cas.appServerName = "http://collections.ala.org.au"
-//    }
-//    test {
-//        //deployed on ala-testweb1.vm.csiro.au
-//        grails.serverURL = "http://testweb1.ala.org.au/collectory"
-//        grails.context = '/collectory'
-//        security.cas.serverName = "http://testweb1.ala.org.au/"
-//        security.cas.contextPath = grails.context
-//        security.cas.appServerName = "http://testweb1.ala.org.au"
-//    }
-//    development {
-//        grails.serverURL = "http://devt.ala.org.au:8080/collectory"
-//        grails.context = '/collectory'
-//        security.cas.serverName = "http://devt.ala.org.au:8080"
-//        security.cas.contextPath = grails.context
-//        security.cas.bypass = false
-//    }
-//}
-
-//println "[collectory] serverUrl = " + grails.serverURL
-//println "[collectory] security.cas.serverName = " + security.cas.serverName
-//println "[collectory] security.cas.context = " + security.cas.contextPath
-//println "[collectory] security.cas.appServerName = " + security.cas.appServerName
-//println "[collectory] security.cas.casServerName = " + security.cas.casServerName
-//println "[collectory] security.cas.uriFilterPattern = " + security.cas.uriFilterPattern
 
 hibernate = "off"
 

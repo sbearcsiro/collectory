@@ -243,6 +243,9 @@ class GbifService {
         //2) Extract the JSON for the data resource to create
         def json = extractDataResourceJSON(new ZipFile(uploadedFile), uploadedFile.getParentFile());
         def meta = extractMetaXML(new ZipFile(uploadedFile))
+        json['resourceType'] = 'records'
+        json['contentTypes'] = (['point occurrence data', 'gbif import'] as JSON).toString()
+
 
         log.debug("The JSON to create the dr : " + json)
         //3) Create the data resource
@@ -251,7 +254,9 @@ class GbifService {
         //4) Add the contact details for the data resource
         //TODO we may need to add a separate contact - at the moment we are just adding it to the data resource
         //5) Create the DwCA for the resource using the GBIF default meta.xml and occurrences.txt
-        String zipFileName = createDWCA(uploadedFile.getParentFile(), json.get("guid"), meta)
+        String zipFileName = uploadedFile.getParentFile().getAbsolutePath() + File.separator + json.get("guid") + ".zip"
+        //add the occurrence.txt file
+        IOUtils.copy(new FileInputStream(uploadedFile), new FileOutputStream(zipFileName))
         log.debug("Created the zip file " + zipFileName)
         //6) Upload the DwCA for the resource to the created data resource
         applyDwCA(new File(zipFileName), dr)

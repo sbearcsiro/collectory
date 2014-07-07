@@ -9,7 +9,7 @@
 %{--<a href="#page-body" class="skip"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>--}%
 <div class="row-fluid">
     <div class="span3 well" id="status" role="complementary">
-        <h3>Application Status</h3>
+        <h3>Application status</h3>
         <ul>
             <li>App version: <g:meta name="app.version"/></li>
             <li>Grails version: <g:meta name="app.grails.version"/></li>

@@ -7,7 +7,7 @@
     </head>
     <body>
         <div class="nav">
-            <h1 style="display:inline;">Editing my profile (${contact.email})</h1><span style="float:right;" class="menuButton"><cl:homeLink/></span>
+            <h1 style="display:inline;"><g:message code="contact.sp.title01" /> (${contact.email})</h1><span style="float:right;" class="menuButton"><cl:homeLink/></span>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -22,7 +22,7 @@
                 <g:hiddenField name="id" value="${contact?.id}" />
                 <g:hiddenField name="version" value="${contact.version}" />
                 <div class="dialog custom-edit">
-                  <h2 style="padding-top:10px;">My profile</h2>
+                  <h2 style="padding-top:10px;"><g:message code="contact.sp.title02" /></h2>
 
                   <div>
                     <table style="border: none;">
@@ -49,15 +49,15 @@
                               <td>
                                 <table class="shy">
                                   <tr>
-                                    <td style="vertical-align:middle;color:gray;">phone:</td>
+                                    <td style="vertical-align:middle;color:gray;"><g:message code="contact.sp.title03" />:</td>
                                     <td class="${hasErrors(bean: contact, field: 'phone', 'errors')}">
                                         <g:textField name="phone" maxlength="45" value="${contact?.phone}" />
                                     </td>
-                                    <td style="vertical-align:middle;color:gray;">mobile:</td>
+                                    <td style="vertical-align:middle;color:gray;"><g:message code="contact.sp.title04" />:</td>
                                     <td class="${hasErrors(bean: contact, field: 'mobile', 'errors')}">
                                         <g:textField name="mobile" maxlength="45" value="${contact?.mobile}" />
                                     </td>
-                                    <td style="vertical-align:middle;color:gray;">fax:</td>
+                                    <td style="vertical-align:middle;color:gray;"><g:message code="contact.sp.title05" />:</td>
                                     <td class="${hasErrors(bean: contact, field: 'fax', 'errors')}">
                                         <g:textField name="fax" maxlength="45" value="${contact?.fax}" />
                                     </td>
@@ -73,20 +73,20 @@
                     <g:each var="cr" in="${contactRels}">
                       <g:set var="uid" value="${cr.cf.entityUid}"/>
                       <g:set var="entity" value="${ProviderGroup.textFormOfEntityType(uid)}"/>
-                      <h2>Contact for ${cr.entityName} (${uid})</h2>
+                      <h2><g:message code="contact.sp.title06" /> ${cr.entityName} (${uid})</h2>
                       <p>
-                        Describe your role within this ${entity}?
+                        <g:message code="contact.sp.des01" /> ${entity}?
                         <g:textField name="${uid}_role" maxlength="45" value="${cr.cf.role}" />
                       </p>
                       <p>
-                        Would you like to be notified by email of any significant events in this ${entity}?
+                        <g:message code="contact.sp.des02" /> ${entity}?
                         <g:checkBox name="${uid}_notify" value="${cr.cf.notify}" onchange="toggleFreq(this);"/>
                       </p>
                       <p id="${uid}_freq" style="display:${cr.cf.notify ? 'block':'none'}">
-                        How often would you like to receive notifications?
-                        <g:radio name="${uid}_frequency" value="each"/> Each event
-                        <g:radio name="${uid}_frequency" value="daily" checked="checked"/> Daily
-                        <g:radio name="${uid}_frequency" value="weekly"/> Weekly
+                        <g:message code="contact.sp.des03" />?
+                        <g:radio name="${uid}_frequency" value="each"/> <g:message code="contact.sp.radio01" />
+                        <g:radio name="${uid}_frequency" value="daily" checked="checked"/> <g:message code="contact.sp.radio02" />
+                        <g:radio name="${uid}_frequency" value="weekly"/> <g:message code="contact.sp.radio03" />
                       </p>
                     </g:each>
                   </div>
@@ -94,8 +94,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateProfile" value="Update" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancelProfile" value="Cancel" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_updateProfile" value="${message(code:"collection.button.update")}" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancelProfile" value="${message(code:"collection.button.cancel")}" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

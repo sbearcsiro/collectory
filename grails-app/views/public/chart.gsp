@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-      <title>Chart generator</title>
+      <title><g:message code="public.chart.title" default="Chart generator"/></title>
       <link rel="stylesheet" href="${resource(dir:'css',file:'charts.css')}" />
       <g:javascript library="jquery-1.5.1.min"/>
       <script type="text/javascript" language="javascript" src="http://www.google.com/jsapi"></script>
@@ -16,37 +16,37 @@
       </style>
   </head>
   <body style="padding: 20px;">
-    <h1>Chart sampler</h1>
-    <h2>Enter a query and choose a chart type</h2>
-    <label for="query">Query:</label> <input id="query" type="text" size="80" value="Macropus"/>
-    <button type="button" id="draw">Draw chart</button>
+    <h1><g:message code="public.chart.body.title01" default="Chart sampler"/></h1>
+    <h2><g:message code="public.chart.body.title02" default="Enter a query and choose a chart type"/></h2>
+    <label for="query"><g:message code="public.chart.label01" default="Query"/>:</label> <input id="query" type="text" size="80" value="Macropus"/>
+    <button type="button" id="draw"><g:message code="public.chart.button01" default="Draw chart"/></button>
     <div style="margin: 20px 0;">
-        <div style="padding-right: 10px; float:left; height:120px;">Type:</div>
+        <div style="padding-right: 10px; float:left; height:120px;"><g:message code="public.chart.label02" default="Type"/>:</div>
         <div id="types" style="display:inline; max-width:600px;">
             <div style="padding-bottom:10px;">
-                <g:radio name="type" value="taxonomy"/> Taxonomy
-                (optional: - <label for="rank">starting rank:</label> <input id="rank" type="text" size="20"/> OR
-                <label for="max">threshold:</label> <input id="max" type="text" size="20"/>)
+                <g:radio name="type" value="taxonomy"/> <g:message code="public.chart.label03" default="Taxonomy"/>
+                (<g:message code="public.chart.label04" default="optional"/>: - <label for="rank"><g:message code="public.chart.label05" default="starting rank"/>:</label> <input id="rank" type="text" size="20"/> <g:message code="public.chart.label06" default="OR"/>
+                <label for="max"><g:message code="public.chart.label07" default="threshold"/>:</label> <input id="max" type="text" size="20"/>)
             </div>
             <div style="padding-bottom: 8px;">
-                <g:radio name="type" value="state"/> State
-                <g:radio name="type" value="institution_uid" checked="checked"/> Institution
-                <g:radio name="type" value="data_resource_uid"/> Data set
-                <g:radio name="type" value="type_status"/> Types
-                <g:radio name="type" value="species_group"/> Common groups
+                <g:radio name="type" value="state"/> <g:message code="public.chart.radio.01" default="State"/>
+                <g:radio name="type" value="institution_uid" checked="checked"/> <g:message code="public.chart.radio.02" default="Institution"/>
+                <g:radio name="type" value="data_resource_uid"/> <g:message code="public.chart.radio.03" default="Data set"/>
+                <g:radio name="type" value="type_status"/> <g:message code="public.chart.radio.04" default="Types"/>
+                <g:radio name="type" value="species_group"/> <g:message code="public.chart.radio.05" default="Common groups"/>
             </div>
             <div style="padding-bottom: 8px;">
-                <g:radio name="type" value="assertions"/> Data assertions
-                <g:radio name="type" value="occurrence_year"/> Decades
-                <g:radio name="type" value="biogeographic_region"/> Biogeographic region
-                <g:radio name="type" value="state_conservation"/> State conservation
+                <g:radio name="type" value="assertions"/> <g:message code="public.chart.radio.06" default="Data assertions"/>
+                <g:radio name="type" value="occurrence_year"/> <g:message code="public.chart.radio.07" default="Decades"/>
+                <g:radio name="type" value="biogeographic_region"/> <g:message code="public.chart.radio.08" default="Biogeographic region"/>
+                <g:radio name="type" value="state_conservation"/> <g:message code="public.chart.radio.09" default="State conservation"/>
             </div>
             <div style="padding-bottom: 8px;">
-                <g:radio name="type" value="other"/> Other named facet:
+                <g:radio name="type" value="other"/> <g:message code="public.chart.radio.10" default="Other named facet"/>:
                 <label for="other"></label> <input id="other" type="text" size="40"/>
             </div>
             <div style="padding-bottom: 8px;">
-                <g:radio name="type" value="el"/> Environmental layer:
+                <g:radio name="type" value="el"/> <g:message code="public.chart.radio.11" default="Environmental layer"/>:
                 <label for="el"></label> <input id="el" type="text" size="40" value="radiation"/>
             </div>
         </div>

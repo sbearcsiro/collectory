@@ -29,25 +29,25 @@
                     <table>
                       <colgroup><col width="15%"><col width="10%"><col width="75%"></colgroup>
                         <tbody>
-                          <tr><td colspan="3">Editing the role of ${cf.contact?.buildName()} for ${command.name}</td></tr>
+                          <tr><td colspan="3"><g:message code="shared.cr.table0101" /> ${cf.contact?.buildName()} for ${command.name}</td></tr>
                           <tr class="prop">
-                            <td style="vertical-align:middle;">Role:</td>
+                            <td style="vertical-align:middle;"><g:message code="shared.cr.table0201" />:</td>
                             <td colspan="2" valign="top" class="value"><g:textField name="role" value="${cf?.role}"/></td>
                           </tr>
                           <tr class="checkbox">
-                            <td style="vertical-align:middle;">Administrator</td>
+                            <td style="vertical-align:middle;"><g:message code="shared.cr.table0301" /></td>
                             <td><g:checkBox style="margin-left:7px;" name="administrator" value="${cf?.administrator}"/></td>
-                            <td>Determines whether the contact can edit properties of this ${entityNameLower}.</td>
+                            <td><g:message code="shared.cr.table0302" /> ${entityNameLower}.</td>
                           </tr>
                           <tr class="checkbox">
-                            <td style="vertical-align:middle;">Notify</td>
+                            <td style="vertical-align:middle;"><g:message code="shared.cr.table0401" /></td>
                             <td><g:checkBox style="margin-left:7px;" name="notify" value="${cf?.notify}"/></td>
-                            <td>If set, the contact will be notified when annotations are made to records in this ${entityNameLower}.</td>
+                            <td><g:message code="shared.cr.table0402" /> ${entityNameLower}.</td>
                           </tr>
                           <tr class="checkbox">
-                            <td style="vertical-align:middle;">Primary contact:</td>
+                            <td style="vertical-align:middle;"><g:message code="shared.cr.table0501" />:</td>
                             <td valign="top" class="value"><g:checkBox style="margin-left:7px;" name="primaryContact" value="${cf?.primaryContact}"/></td>
-                            <td>The primary contact is the one displayed on the public page for this ${entityNameLower}.</td>
+                            <td><g:message code="shared.cr.table0502" /> ${entityNameLower}.</td>
                           </tr>
 
                         </tbody>

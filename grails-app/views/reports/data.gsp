@@ -3,17 +3,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports</title>
+        <title><g:message code="reports.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Data report</h1>
+            <h1><g:message code="reports.data.title01" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
@@ -21,16 +21,16 @@
               <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
 
-                <tr class="reportGroupTitle"><td colspan="3">Totals</td></tr>
-                <tr><td>Collections</td><td>${reports.totalCollections}</td><td></td></tr>
-                <tr><td>Institutions</td><td>${reports.totalInstitutions}</td><td></td></tr>
-                <tr><td>Data providers</td><td>${reports.totalDataProviders}</td><td></td></tr>
-                <tr><td>Data resources</td><td>${reports.totalDataResources}</td><td></td></tr>
-                <tr><td>Data hubs</td><td>${reports.totalDataHubs}</td><td></td></tr>
-                <tr><td>Contacts</td><td>${reports.totalContacts}</td><td></td></tr>
+                <tr class="reportGroupTitle"><td colspan="3"><g:message code="reports.data.table01.tr01" /></td></tr>
+                <tr><td><g:message code="reports.data.table01.tr02" /></td><td>${reports.totalCollections}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.table01.tr03" /></td><td>${reports.totalInstitutions}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.table01.tr04" /></td><td>${reports.totalDataProviders}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.table01.tr05" /></td><td>${reports.totalDataResources}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.table01.tr06" /></td><td>${reports.totalDataHubs}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.table01.tr07" /></td><td>${reports.totalContacts}</td><td></td></tr>
               </table>
 
-              <h3>Collection data quality</h3>
+              <h3><g:message code="reports.data.title02" /></h3>
               <table class="table table-striped table-bordered">
                 <tr><cl:totalAndPercent label="Collections with no collection type" without="${reports.collectionsWithType}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Collections with no focus" without="${reports.collectionsWithFocus}" total="${reports.totalCollections}"/></tr>
@@ -43,7 +43,7 @@
 
               </table>
 
-              <h3>Contact summary</h3>
+              <h3><g:message code="reports.data.title03" /></h3>
               <table class="table table-striped table-bordered">
                 <tr><cl:totalAndPercent label="Collections with no contacts" with="${reports.collectionsWithoutContacts}" total="${reports.totalCollections}"/></tr>
                 <tr><cl:totalAndPercent label="Collections with no email contacts" with="${reports.collectionsWithoutEmailContacts}" total="${reports.totalCollections}"/></tr>

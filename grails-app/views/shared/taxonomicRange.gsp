@@ -8,7 +8,7 @@
     </head>
     <body>
         <div class="title-bar">
-            <h1>Editing: ${command.name}</h1>
+            <h1><g:message code="shared.title.editing" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -25,21 +25,21 @@
                 <g:hiddenField name="range" value="${command.listTaxonomicRange() ? command.listTaxonomicRange().join(',') : ''}" />
 
                 <div>
-                  <h2>Describe the taxonomic range of this resource.</h2>
-                  <p class="lead">Select any number of the groups listed below. The right-hand box shows a consolidated list of your selections.</p>
+                  <h2><g:message code="shared.tr.title01" />.</h2>
+                  <p class="lead"><g:message code="shared.tr.des01" />.</p>
                   %{--<p class="potential-problem">Note that IE<span> </span>&nbsp;has some minor problems with the list below. Nodes in the list will not close. You are still able to use the list to define your taxonomic scope.</p>--}%
                   <div class="row-fluid">
                       <div class=" span4" id="selections">
-                        <h3>Make your selections here</h3>
+                        <h3><g:message code="shared.tr.title02" /></h3>
                         %{--<div> </div>--}%
                         <div id="taxa-tree"></div>
                       </div>
                       <div class="span4 well" id="selected-list">
-                            <h3>Selected groups</h3>
+                            <h3><g:message code="shared.tr.title03" /></h3>
                             <ul></ul>
-                            <button type="button" class="btn" id="clear">clear all</button>
-                            <span class="button"><input type="submit" name="_action_updateTaxonomicRange" value="Update" class="save btn"></span>
-                            <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                            <button type="button" class="btn" id="clear"><g:message code="shared.tr.button01" /></button>
+                            <span class="button"><input type="submit" name="_action_updateTaxonomicRange" value="${message(code:"shared.button.update")}" class="save btn"></span>
+                            <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"shared.button.cancel")}" class="cancel btn"></span>
                       </div>
                    </div>
                 </div>
@@ -48,16 +48,16 @@
 
         <div class="simple_overlay hide" id="help" >
           <div class="details">
-            <h2>Some help pages</h2>
-            <p><a href="#">How do I select taxonomic groups?</a></p>
-            <p><a href="#">How do I save my selections?</a></p>
-            <p><a href="#">How do I define a taxonomic scope?</a></p>
-            <p><a href="#">How do I change the metadata for a data resource?</a></p>
-            <h2>Some relevant FAQs</h2>
-            <p><a href="#">What if my taxonomic group isn't shown here?</a></p>
-            <p><a href="#">Who chose this set of taxonomic groups?</a></p>
-            <p><a href="#">What is this information used for?</a></p>
-            <p><a href="#">How do I report a bug?</a></p>
+            <h2><g:message code="shared.tr.help.title01" /></h2>
+            <p><a href="#"><g:message code="shared.tr.help.link01" />?</a></p>
+            <p><a href="#"><g:message code="shared.tr.help.link02" />?</a></p>
+            <p><a href="#"><g:message code="shared.tr.help.link03" />?</a></p>
+            <p><a href="#"><g:message code="shared.tr.help.link04" />?</a></p>
+            <h2><g:message code="shared.tr.help.title02" /></h2>
+            <p><a href="#"><g:message code="shared.tr.help.link05" />?</a></p>
+            <p><a href="#"><g:message code="shared.tr.help.link06" />?</a></p>
+            <p><a href="#"><g:message code="shared.tr.help.link07" />?</a></p>
+            <p><a href="#"><g:message code="shared.tr.help.link08" />?</a></p>
           </div>
         </div>
 

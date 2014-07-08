@@ -5,7 +5,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
-        <title>Natural History Collections | Atlas of Living Australia</title>
+        <title><g:message code="public.map.title01" /> | <g:message code="public.map.title02" /></title>
         <script src="https://maps.google.com/maps/api/js?v=3&sensor=true"></script>
         <!--ABQIAAAAJdniJYdyzT6MyTJB-El-5RQumuBjAh1ZwCPSMCeiY49-PS8MIhSVhrLc20UWCGPHYqmLuvaS_b_FaQ-->
         <script type="text/javascript" src="${resource(dir:'js', file:'map.js')}"></script>
@@ -22,15 +22,14 @@
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}">Home</a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/">Explore</a><span class="current">Natural History Collections</span></div>
+        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}"><g:message code="public.map.breadcrumb.link01" /></a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/"><g:message code="public.map.breadcrumb.link02" /></a><span class="current"><g:message code="public.map.breadcrumb.span" /></span></div>
         <div class="section full-width">
           <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
           </g:if>
           <div class="hrgroup">
-            <h1>Australia's natural history collections</h1>
-            <p>Learn about the institution, the collections they hold and view records of specimens that have been digitised. Currently only the collections of ALA partners are shown.
-              Over time this list will expand to include all natural history collections in Australia.</p>
+            <h1><g:message code="public.map.header.title" /></h1>
+            <p><g:message code="public.map.header.des" />.</p>
           </div><!--close hrgroup-->
         </div><!--close section-->
       </div><!--close header-->
@@ -45,17 +44,17 @@
       <div class="row-fluid"><!-- wrap map and list-->
         <div id="span6" class="fudge">
           <div class="section">
-            <p style="padding:15px 10px 0 10px">Show these collections:</p>
+            <p style="padding:15px 10px 0 10px"><g:message code="public.map.span6.label01" />:</p>
             <ul id="map-collections">
-              <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all">Select all</label>
+              <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all"><g:message code="public.map.span6.li01" /></label>
                 <ul class="taxaBreakdown">
-                  <li id="herbariaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants">Herbaria</label></li>
-                  <li id="faunaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fauna" id="fauna"/><label for="fauna">Faunal collections</label>
+                  <li id="herbariaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants"><g:message code="public.map.span6.li02" /></label></li>
+                  <li id="faunaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fauna" id="fauna"/><label for="fauna"><g:message code="public.map.span6.li03" /></label>
                     <ul>
-                      <li id="entoBreakdown"><input style="margin-right:8px;" onclick="entoChange()" name="filter" type="checkbox" checked="checked" value="entomology" id="ento"/><label for="ento">Entomological collections</label></li>
+                      <li id="entoBreakdown"><input style="margin-right:8px;" onclick="entoChange()" name="filter" type="checkbox" checked="checked" value="entomology" id="ento"/><label for="ento"><g:message code="public.map.span6.li04" /></label></li>
                     </ul>
                   </li>
-                  <li id="microbialBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes">Microbial collections</label></li>
+                  <li id="microbialBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes"><g:message code="public.map.span6.li05" /></label></li>
                 </ul>
               </li>
             </ul>
@@ -68,22 +67,21 @@
         <div id="map" class="span6">
           <div class="map-column">
             <div class="section">
-              <p style="width:588px;padding-bottom:8px;padding-left:30px;">Click on a map pin to see the collections at that location. Use the map controls to zoom into an area of interest. Or drag your mouse while holding the shift key to zoom to an area.</p>
+              <p style="width:588px;padding-bottom:8px;padding-left:30px;"><g:message code="public.map.map.des01" />.</p>
               <div id="map-container">
                 <div id="map_canvas"></div>
               </div>
-              <p style="padding-left:150px;"><img style="vertical-align: middle;" src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/>indicates there are multiple collections at this location.<br/></p>
+              <p style="padding-left:150px;"><img style="vertical-align: middle;" src="${resource(dir:'images/map', file:'orange-dot-multiple.png')}" width="20" height="20"/><g:message code="public.map.map.des02" />.<br/></p>
             </div><!--close section-->
           </div><!--close column-two-->
         </div><!--close map-->
         <div id="list" class="span6">
           <div class="list-column">
             <div class="nameList section" id="names">
-              <p>Collections are shown grouped by their institution. Click on a collection name to see more details including the digitised specimen records for the collection.
-                Click on the institution name to learn more about the institution.</p>
+              <p><g:message code="public.map.list.des01" />.</p>
               <ul id="filtered-list">
               </ul>
-              <p>Collections not shown on the map (due to lack of location information) are marked <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>.</p>
+              <p><g:message code="public.map.list.des02" /> <img style="vertical-align:middle" src="${resource(dir:'images/map', file:'nomap.gif')}"/>.</p>
             </div><!--close nameList-->
           </div><!--close column-one-->
         </div><!--close list-->

@@ -55,13 +55,13 @@
                   </g:each>
                 </g:if>
                 <!-- GUID    -->
-                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${(fieldValue(bean: instance, field: "guid"))?:'Not supplied'}'/></p>
+                <p><span class="category"><g:message code="collection.show.span01" />:</span> <cl:guid target="_blank" guid='${(fieldValue(bean: instance, field: "guid"))?:'Not supplied'}'/></p>
 
                 <!-- UID    -->
-                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category"><g:message code="providerGroup.uid.label" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category"><g:message code="collection.show.span03" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -74,7 +74,7 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category"><g:message code="datahub.show.lastchange" />:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base"/>
               </div>
@@ -83,19 +83,19 @@
               <div class="show-section well">
                 <!-- Pub Desc -->
                 <h2>Description</h2>
-                <div class="category">Public description</div><div style="clear:both;"></div>
+                <div class="category"><g:message code="collection.show.span04" /></div><div style="clear:both;"></div>
                 <cl:formattedText body="${instance.pubDescription}"/>
 
                 <!-- Tech Desc -->
-                <div class="category">Technical description</div><div style="clear:both;"></div>
+                <div class="category"><g:message code="collection.show.span05" /></div><div style="clear:both;"></div>
                 <cl:formattedText body="${instance.techDescription}"/>
 
                 <!-- Contribution -->
-                <div class="category">Contribution</div><div style="clear:both;"></div>
+                <div class="category"><g:message code="dataprovider.show.span06" /></div><div style="clear:both;"></div>
                 <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
 
                 <!-- Institution type -->
-                <p><span class="category">Institution type:</span> ${fieldValue(bean: instance, field: "institutionType")}</p>
+                <p><span class="category"><g:message code="institution.edit.span07" />:</span> ${fieldValue(bean: instance, field: "institutionType")}</p>
 
                 <!-- Collections -->
                 <h2>Collections</h2>

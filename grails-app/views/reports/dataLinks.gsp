@@ -3,26 +3,26 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports</title>
+        <title><g:message code="reports.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Data relationships</h1>
+            <h1><g:message code="reports.dl.title01" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <p>This list shows which data resources/providers provide data record for which collections/institutions.</p>
-              <p>(P) = data provider, (R) = data resource, (I) = institution, (C) = collection.</p>
+              <p><g:message code="reports.dl.des01" />.</p>
+              <p><g:message code="reports.dl.des02" />.</p>
               <table class="table table-striped table-bordered">
                 <colgroup><col width="45%"/><col width="10%"/><col width="45%"/></colgroup>
-                <tr class="reportHeaderRow"><td>Provider</td><td></td><td>Consumer</td></tr>
+                <tr class="reportHeaderRow"><td><g:message code="reports.dl.table0101" /></td><td></td><td><g:message code="reports.dl.table0102" /></td></tr>
                 <g:each var='link' in="${links}">
                   <g:set var="provider" value="${ProviderGroup._get(link.provider)}"/>
                   <g:set var="consumer" value="${ProviderGroup._get(link.consumer)}"/>

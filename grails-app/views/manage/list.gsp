@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.collectory.Contact; org.codehaus.groovy.grails.commons.ConfigurationHolder; au.org.ala.collectory.ProviderGroup; au.org.ala.collectory.Collection" %>
 <html>
     <head>
-        <title>Metadata Management | Collectory</title>
+        <title><g:message code="manage.show.title" /></title>
 	    <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <r:require modules="smoothness, collectory, jquery_ui_custom" />
     </head>
@@ -10,10 +10,10 @@
       <div class="content">
 
         <div class="pull-right">
-            <g:link class="mainLink btn" controller="public" action="map">View public site</g:link>
+            <g:link class="mainLink btn" controller="public" action="map"><g:message code="manage.list.link01" /></g:link>
         </div>
 
-        <h1>Metadata management</h1>
+        <h1><g:message code="manage.list.title01" /></h1>
 
         <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -22,9 +22,9 @@
         <div class="row-fluid">
             <div class="span3">
                 <ul id="adminNavMenu" class="nav nav-list nav-stacked nav-tabs">
-                    <li><a href="javascript:showSection('adminTools');"><i class="icon-chevron-right">&nbsp;</i> Admin tools</a></li>
-                    <li><a href="javascript:showSection('yourMetadata');"><i class="icon-chevron-right">&nbsp;</i> Your metadata</a></li>
-                    <li><a href="javascript:showSection('addCollection');"><i class="icon-chevron-right">&nbsp;</i> Add a new collection or data resource</a></li>
+                    <li><a href="javascript:showSection('adminTools');"><i class="icon-chevron-right">&nbsp;</i> <g:message code="manage.list.li01" /></a></li>
+                    <li><a href="javascript:showSection('yourMetadata');"><i class="icon-chevron-right">&nbsp;</i> <g:message code="manage.list.li02" /></a></li>
+                    <li><a href="javascript:showSection('addCollection');"><i class="icon-chevron-right">&nbsp;</i> <g:message code="manage.list.li03" /></a></li>
                 </ul>
             </div>
 
@@ -33,31 +33,29 @@
                 <div id="yourMetadata" class="infoSection hide">
                     <g:if test="${show == 'user'}">
                         <div>
-                            <h2>User details</h2>
-                            <p>Security is ${grailsApplication.config.security.cas.bypass ? 'bypassed' : 'active'}.</p>
+                            <h2><g:message code="manage.list.title02" /></h2>
+                            <p><g:message code="manage.list.des02" /> ${grailsApplication.config.security.cas.bypass ? 'bypassed' : 'active'}.</p>
                             <g:set var="username" value="${request.userPrincipal?.name}"/>
                             <g:if test="${username}">
-                                <p>Logged in as ${username}.</p>
+                                <p><g:message code="manage.list.username.des01" /> ${username}.</p>
                                 <p>User ${request.isUserInRole('ROLE_COLLECTION_ADMIN') ? 'has' : 'does not have'} ROLE_COLLECTION_ADMIN.</p>
                                 <p>User ${request.isUserInRole('ROLE_COLLECTION_EDITOR') ? 'has' : 'does not have'} ROLE_COLLECTION_EDITOR.</p>
                             </g:if>
-                            <g:else><p>Not logged in.</p></g:else>
+                            <g:else><p><g:message code="manage.list.des03" />.</p></g:else>
                             <p>
                                 <g:set var="cookiename" value="${cookie(name: 'ALA-Auth')}"/>
-                                <g:if test="${cookiename}">Cookie is present. Name is ${cookiename}.</g:if>
-                                <g:else>No cookie found.</g:else>
+                                <g:if test="${cookiename}"><g:message code="manage.list.cookiename01" /> ${cookiename}.</g:if>
+                                <g:else><g:message code="manage.list.cookiename02" />.</g:else>
                             </p>
                         </div>
                     </g:if>
 
-                    <h2>Your metadata</h2>
-                    <p>The institutions, collections and data resources that you are authorised to access are listed below.
-                    Be aware that all changes are immediately reflected in the website and any hubs or other websites
-                    that use web services.</p>
+                    <h2><g:message code="manage.list.title03" /></h2>
+                    <p><g:message code="manage.list.des04" />.</p>
 
                     <g:if test="${entities}">
                         <table class="shy" style="margin-left: 25px;">
-                            <thead><tr><td style="text-align: center;width:40px;">View</td><td style="text-align: center;width:40px;">Edit</td><td></td></tr></thead>
+                            <thead><tr><td style="text-align: center;width:40px;"><g:message code="manage.list.table01.cell0101" /></td><td style="text-align: center;width:40px;"><g:message code="manage.list.table01.cell0102" /></td><td></td></tr></thead>
                             <g:each in="${entities}" var="ent">
                                 <tr>
                                     <td style="text-align: center;"><g:link controller="public" action="show" id="${ent.uid}">
@@ -74,71 +72,67 @@
                     </g:if>
                     <g:else>
                         <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
-                            <p><strong><em>You are authorised to edit all entities because you are admin.</em></strong></p>
+                            <p><strong><em><g:message code="manage.list.des05" />.</em></strong></p>
                         </cl:ifGranted>
                         <cl:ifNotGranted role="ROLE_COLLECTION_ADMIN">
-                            <p style="font-style: italic;margin: 10px;color: black;">You are not authorised to edit any entities.</p>
+                            <p style="font-style: italic;margin: 10px;color: black;"><g:message code="manage.list.des06" />.</p>
                         </cl:ifNotGranted>
 
                         <cl:ifGranted role="ROLE_COLLECTION_EDITOR">
-                            <p>You have the required role but are not listed as a contact with editor rights on any
-                            collection, institution or dataset. If you believe you should be, ask someone who is listed to add you
-                            as a contact. If you can't do that, click the support link below to send a request to the ALA support team.</p>
+                            <p><g:message code="manage.list.des07" />.</p>
                         </cl:ifGranted>
                         <cl:ifNotGranted role="ROLE_COLLECTION_EDITOR">
-                            <p>You do not have the role required to edit metadata. You can email
-                            <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')">support</span>
-                            to request this role.</p>
+                            <p><g:message code="manage.list.des08" />
+                            <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')"><g:message code="manage.list.des09" /></span>
+                            <g:message code="manage.list.des10" />.</p>
                         </cl:ifNotGranted>
                     </g:else>
 
-                    <p>If you do not see your collection, institution or dataset in the list above, please read
-                    <span id="instructions-link" class="link under">requirements for editing metadata</span>.</p>
+                    <p><g:message code="manage.list.des11" />
+                    <span id="instructions-link" class="link under"><g:message code="manage.list.des12" /></span>.</p>
                     <div id="instructions">
                         <div id="requirementsForEditing">
-                            <h3>Requirements for editing metadata</h3>
-                            <h4>What do I need to edit my metadata?</h4>
-                            <p>You need:</p>
+                            <h3><g:message code="manage.list.title04" /></h3>
+                            <h4><g:message code="manage.list.title05" />?</h4>
+                            <p><g:message code="manage.list.des13" />:</p>
                             <ol>
-                                <li>to be logged in using a standard account</li>
-                                <li>the 'Collections Editor' role</li>
-                                <li>to be listed as a contact with editor rights for the collection, institution or dataset you want to edit.</li>
+                                <li><g:message code="manage.list.li04" /></li>
+                                <li><g:message code="manage.list.li05" /></li>
+                                <li><g:message code="manage.list.li06" />.</li>
                             </ol>
 
-                            <h4 class="ok">You have an ALA account</h4>
-                            <p>You are logged in as <em><cl:loggedInUsername/></em>.</p>
+                            <h4 class="ok"><g:message code="manage.list.title06" /></h4>
+                            <p><g:message code="manage.list.des14" /> <em><cl:loggedInUsername/></em>.</p>
 
                             <cl:ifGranted role="ROLE_COLLECTION_EDITOR">
-                                <h4 class="ok">You have the 'Collections Editor' role</h4>
+                                <h4 class="ok"><g:message code="manage.list.title07" /></h4>
                             </cl:ifGranted>
                             <cl:ifNotGranted role="ROLE_COLLECTION_EDITOR">
-                                <h4 class="missing">You <strong>do not</strong> have the 'Collections Editor' role!</h4>
-                                <p>Send an email to <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')">support</span>
-                                and request ROLE_COLLECTION_EDITOR.</p>
+                                <h4 class="missing"><g:message code="manage.list.title08" />!</h4>
+                                <p><g:message code="manage.list.des15" /> <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')"><g:message code="manage.list.des16" /></span>
+                                <g:message code="manage.list.des17" /> ROLE_COLLECTION_EDITOR.</p>
                             </cl:ifNotGranted>
 
                             <cl:ifGranted role="ROLE_COLLECTION_EDITOR">
                                 <g:if test="${!entities}">
-                                    <h4 class="missing">You are not an editor for any collection, institution or dataset!</h4>
+                                    <h4 class="missing"><g:message code="manage.list.title09" />!</h4>
                                 </g:if>
                                 <g:else>
-                                    <h4 class="ok">You are editor for the ${entities.size()} entities listed above.</h4>
+                                    <h4 class="ok"><g:message code="manage.list.title10" args="[entities.size()]" />.</h4>
                                 </g:else>
                             </cl:ifGranted>
                             <cl:ifNotGranted role="ROLE_COLLECTION_EDITOR">
-                                <h4>You need to be listed as an editor for the entity you want to edit.</h4>
+                                <h4><g:message code="manage.list.title11" />.</h4>
                             </cl:ifNotGranted>
-                            <p>You must be a contact for the entity and have the editor attribute set.</p>
-                            <p>You can be added as a contact and made an editor by another user who has edit rights for the entity.
-                            Or you can send an email to
-                            <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')">support</span>
-                            and ask to be added. You can choose whether your name and contact details should be displayed on the public
-                            page for the entity.</p>
+                            <p><g:message code="manage.list.des18" />.</p>
+                            <p><g:message code="manage.list.des19" />
+                            <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')"><g:message code="manage.list.des16" /></span>
+                            <g:message code="manage.list.des20" />.</p>
 
-                            <h4>I still need help.</h4>
-                            <p>Please send us an email at
-                            <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')">support</span>
-                            and explain your issues.</p>
+                            <h4><g:message code="manage.list.title12" />.</h4>
+                            <p><g:message code="manage.list.des21" />
+                            <span class="link" onclick="return sendEmail('support(SPAM_MAIL@ALA.ORG.AU)ala.org.au')"><g:message code="manage.list.des22" /></span>
+                            <g:message code="manage.list.des23" />.</p>
                         </div>
                     </div>
                 </div>
@@ -146,45 +140,44 @@
                 <div id="addCollection" class="hide infoSection">
                     <cl:ifGranted role="ROLE_COLLECTION_EDITOR">
 
-                        <h2>Add a new data resource</h2>
-                        <p>As a trusted editor you are authorised to add new data resources. Note:</p>
+                        <h2><g:message code="manage.list.addcollection.title01" /></h2>
+                        <p><g:message code="manage.list.addcollection.des01" />:</p>
                         <ul class="list">
-                            <li>Please check that the data resource does not already exist.</li>
-                            <li>The data resource  will become public as soon as you create it.</li>
+                            <li><g:message code="manage.list.addcollection.li01" />.</li>
+                            <li><g:message code="manage.list.addcollection.li02" />.</li>
                         </ul>
 
-                        <g:link controller="dataResource" action="create" class="btn">Create a new data resource</g:link>
+                        <g:link controller="dataResource" action="create" class="btn"><g:message code="manage.list.addcollection.link01" /></g:link>
 
-                        <h2>Add a new collection</h2>
-                        <p>As a trusted editor you are authorised to add new collections. Note:</p>
+                        <h2><g:message code="manage.list.addcollection.title02" /></h2>
+                        <p><g:message code="manage.list.addcollection.des02" />:</p>
                         <ul class="list">
-                            <li>Please check that the collection does not already exist.</li>
-                            <li>You can only link your collection to an institution if you are an editor for the institution.</li>
-                            <li>You will be automatically added as a contact and an editor for the new collection.</li>
-                            <li>You will need to supply a name for the new collection. It will then be created and you will be
-                            directed to the edit pages for the collection to supply further information.</li>
-                            <li>The collection will become public as soon as you create it.</li>
-                            <li>Only ALA administrators can delete collections. Please contact the administrators if you believe a collection should be removed.</li>
+                            <li><g:message code="manage.list.addcollection.li03" />.</li>
+                            <li><g:message code="manage.list.addcollection.li04" />.</li>
+                            <li><g:message code="manage.list.addcollection.li05" />.</li>
+                            <li><g:message code="manage.list.addcollection.li06" />.</li>
+                            <li><g:message code="manage.list.addcollection.li07" />.</li>
+                            <li><g:message code="manage.list.addcollection.li08" />.</li>
                         </ul>
 
-                        <g:link controller="collection" action="create" class="btn">Create a new collection</g:link>
+                        <g:link controller="collection" action="create" class="btn"><g:message code="manage.list.addcollection.link02" /></g:link>
                     </cl:ifGranted>
                 </div>
 
                 <div id="adminTools" class="infoSection">
                 <cl:ifGranted role="ROLE_COLLECTION_ADMIN">
                   <div>
-                    <h2>Admin functions</h2>
-                    <p>You are an administrator (${ProviderGroup.ROLE_ADMIN}). Please use your superpowers wisely.</p>
+                    <h2><g:message code="manage.list.addtools.title01" /></h2>
+                    <p><g:message code="manage.list.addtools.des01" args="[ProviderGroup.ROLE_ADMIN]" />.</p>
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="collection" action="list">View all collections</g:link>
-                        <p class="mainText">Browse all current collections and update collection descriptions.</p>
+                        <g:link class="mainLink" controller="collection" action="list"><g:message code="manage.list.addtools.link01" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des02" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <span class="mainLink">Search for collections</span>
+                        <span class="mainLink"><g:message code="manage.list.addtools.span01" /></span>
 
-                        <p class="mainText">Enter a part of the name of a collection or its acronym, eg insects, fungi, ANIC</p>
+                        <p class="mainText"><g:message code="manage.list.addtools.des03" /></p>
                         <g:form controller="collection" action="searchList" method="get">
                             <div class="input-append">
                                 <g:textField class="mainText" name="term" placeholder="Search for collection"/>
@@ -194,66 +187,66 @@
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="collection" action="create">Add a collection</g:link>
-                        <p class="mainText">Describe a collection that is not currently listed.</p>
+                        <g:link class="mainLink" controller="collection" action="create"><g:message code="manage.list.addtools.link02" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des04" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="institution" action="list">View all institutions</g:link>
-                        <p class="mainText">Browse the institutions that hold collections.</p>
+                        <g:link class="mainLink" controller="institution" action="list"><g:message code="manage.list.addtools.link03" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des05" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataProvider" action="list">View all data providers</g:link>
-                        <p class="mainText">Browse all current data providers.</p>
+                        <g:link class="mainLink" controller="dataProvider" action="list"><g:message code="manage.list.addtools.link04" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des06" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataResource" action="list">View all data resources</g:link>
-                        <p class="mainText">Browse all current data resources.</p>
+                        <g:link class="mainLink" controller="dataResource" action="list"><g:message code="manage.list.addtools.link05" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des07" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataHub" action="list">View all data hubs</g:link>
-                        <p class="mainText">Browse all current data hubs.</p>
+                        <g:link class="mainLink" controller="dataHub" action="list"><g:message code="manage.list.addtools.link06" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des08" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="reports" action="list">View reports</g:link>
-                        <p class="mainText">Browse summaries of Registry contents and usage.</p>
+                        <g:link class="mainLink" controller="reports" action="list"><g:message code="manage.list.addtools.link07" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des09" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="contact" action="list">Manage contacts</g:link>
-                        <p class="mainText">View and edit all known contacts for collections and institutions.</p>
+                        <g:link class="mainLink" controller="contact" action="list"><g:message code="manage.list.addtools.link08" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des10" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="providerCode" action="list">Manage provider codes</g:link>
-                        <p class="mainText">View and edit all known collection and institution codes.</p>
+                        <g:link class="mainLink" controller="providerCode" action="list"><g:message code="manage.list.addtools.link09" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des11" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="providerMap" action="list">Manage provider maps</g:link>
-                        <p class="mainText">View and edit the allocation of collection and institution codes to collections.</p>
+                        <g:link class="mainLink" controller="providerMap" action="list"><g:message code="manage.list.addtools.link10" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des12" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="admin" action="export">Export all data as JSON</g:link>
-                        <p class="mainText">All tables exported verbatim as JSON.</p>
+                        <g:link class="mainLink" controller="admin" action="export"><g:message code="manage.list.addtools.link11" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des13" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="auditLogEvent" action="list" params="[max:1000]">View audit events</g:link>
-                        <p class="mainText">All audit events</p>
+                        <g:link class="mainLink" controller="auditLogEvent" action="list" params="[max:1000]"><g:message code="manage.list.addtools.link12" /></g:link>
+                        <p class="mainText"><g:message code="manage.list.addtools.des14" /></p>
                     </div>
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="manage" action="gbifLoadCountry">Add all GBIF resource for a country</g:link>
-                        <p class="mainText"r>All the resources for a specific country are added as data resource in the collectory</p>
+                        <g:link class="mainLink" controller="manage" action="gbifLoadCountry"><g:message code="manage.list.addtools.link13" /></g:link>
+                        <p class="mainText"r><g:message code="manage.list.addtools.des15" /></p>
                     </div>
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataResource" action="gbifUpload">Upload GBIF file</g:link>
-                        <p class="mainText"r>Uploads a GBIF download as a data resource. (Assumes that a single resource is in the file)</p>
+                        <g:link class="mainLink" controller="dataResource" action="gbifUpload"><g:message code="manage.list.addtools.link14" /></g:link>
+                        <p class="mainText"r><g:message code="manage.list.addtools.des16" /></p>
                     </div>
                   </div>
                 </cl:ifGranted>

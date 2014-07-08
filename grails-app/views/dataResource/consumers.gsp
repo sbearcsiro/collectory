@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-        <h1>Editing: ${command.name}</h1>
+        <h1><g:message code="collection.title.editing" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -28,8 +28,8 @@
                 <g:set var="list" value="${(source == 'co' ? Collection.list([sort:'name']) : Institution.list([sort:'name']))}"/>
                 <g:set var="type" value="${(source == 'co') ? 'collection' : 'institution'}"/>
                 <div>
-                    <p style="padding-top:10px;">Drag a ${type} to the consumers box to add it as a record consumer. Or just click the ${type} to add it.<br/>
-                    Drag or click a record comsumer to remove it.</p>
+                    <p style="padding-top:10px;"><g:message code="dataresource.consumers.des01" args="[type, type]" />.<br/>
+                    <g:message code="dataresource.consumers.des02" />.</p>
                 </div>
                 <div class="row-fluid">
                     <div class="span6">
@@ -46,9 +46,9 @@
                     </div>
                     <div class="span6 well">
                         <div id="selected" class="container">
-                            <h1>Record consumers.</h1>
+                            <h1><g:message code="dataresource.consumers.selected.title01" />.</h1>
                             <g:if test="${!command.listConsumers().findAll{it[0..1] == source}}">
-                                <p>Drag consumers to here.</p>
+                                <p><g:message code="dataresource.consumers.selected.title02" />.</p>
                             </g:if>
                             <ul>
                                 <g:each in="${list}" var="c">
@@ -59,8 +59,8 @@
                             </ul>
                         </div>
                         <div class="buttons">
-                            <span class="button"><input type="submit" name="_action_updateConsumers" value="Update" class="save btn"></span>
-                            <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                            <span class="button"><input type="submit" name="_action_updateConsumers" value="${message(code:"collection.button.update")}" class="save btn"></span>
+                            <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"collection.button.cancel")}" class="cancel btn"></span>
                         </div>
                     </div>
                 </div>

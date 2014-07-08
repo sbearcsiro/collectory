@@ -3,18 +3,18 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports</title>
+        <title><g:message code="reports.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Collection classification (in relation to map filter categories)</h1>
-            <p>${Collection.count()} collections shown. Collections in <span style="color:red;">red</span> are missing keywords that allow classification.</p>
+            <h1><g:message code="reports.classification.title01" /></h1>
+            <p>${Collection.count()} <g:message code="reports.classification.des01" /> <span style="color:red;"><g:message code="reports.classification.des02" /></span> <g:message code="reports.classification.des03" />.</p>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
@@ -22,7 +22,7 @@
               <table class="table table-striped table-bordered">
                 <col width="55%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/>
 
-                <tr class="reportGroupTitle"><th>Collection</th><th>Acronym</th><th>Herbaria</th><th>Fauna</th><th>Ento</th><th>Microbes</th></tr>
+                <tr class="reportGroupTitle"><th><g:message code="reports.classification.td01.title" /></th><th><g:message code="reports.classification.td02.title" /></th><th><g:message code="reports.classification.td03.title" /></th><th><g:message code="reports.classification.td04.title" /></th><th><g:message code="reports.classification.td05.title" /></th><th><g:message code="reports.classification.td06.title" /></th></tr>
                 <g:each var='c' in="${collections}" status="i">
                   <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                     <td>
@@ -41,7 +41,7 @@
                   </tr>
                 </g:each>
                 <tr>
-                  <td>Totals</td><td></td><td>${plants}</td><td>${fauna}</td><td>${entomology}</td><td>${microbes}</td>
+                  <td><g:message code="reports.classification.tr.totals" /></td><td></td><td>${plants}</td><td>${fauna}</td><td>${entomology}</td><td>${microbes}</td>
                 </tr>
 
               </table>

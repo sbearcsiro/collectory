@@ -272,7 +272,7 @@
                             </tr>
                         
 <!-- contacts -->         <tr><td colspan="2">
-                          <p class="wizardHeading">Choose contacts for this collection</p>
+                          <p class="wizardHeading"><g:message code="institution.edit.des01" /></p>
 
                           <span style="margin-left:50px;"><g:message code="providerGroup.existingContacts.label" default="Current contacts for this institution" /></span>
                           <table style="width:80%;border:1px solid #CCC;margin-left:auto;margin-right:auto;margin-bottom:20px;">
@@ -284,7 +284,7 @@
                                     <td valign="top" class="name">${i?.role}</td>
                                     <td valign="top" class="name">
                                       <g:if test="${i?.administrator}">
-                                        Admin
+                                        <g:message code="institution.edit.des02" />
                                       </g:if>
                                     </td>
                                     <td style="width:130px;">
@@ -301,14 +301,14 @@
                           <table style="width:80%;border:1px solid #CCC;margin-left:auto;margin-right:auto;margin-bottom:20px;padding-left:20px;">
 
                             <tr class="prop">
-                              <td valign="top" class="name">Select</td>
+                              <td valign="top" class="name"><g:message code="institution.edit.des03" /></td>
                               <td valign="top" class="value">
                                 <g:select name="addContact" from="${Contact.list()}" optionKey="id" noSelection="${['null':'Select one to add']}" />
                               </td>
                             </tr>
       <!-- role -->         <tr class="prop">
                               <td valign="top" class="name">
-                                <label for="role">Role<br/><span style="color:#777">e.g. Manager, <br/>Curator, Editor</span></label>
+                                <label for="role"><g:message code="institution.edit.des04" /><br/><span style="color:#777"><g:message code="institution.edit.des05" />, <br/><g:message code="institution.edit.des06" /></span></label>
                               </td>
                               <td valign="top" class="value">
                                   <g:textField name="role" maxlength="45"/>
@@ -322,7 +322,7 @@
                             <td class="checkbox">
                               <label>
                                 <g:checkBox name="isAdmin" value="true" />
-                                <span class="hint">Allows the person to edit this institution</span>
+                                <span class="hint"><g:message code="institution.edit.des07" /></span>
                               </label>
                             </td>
                           </tr>
@@ -335,7 +335,7 @@
 
                             </table>
 
-      <!-- add new -->      <span style="margin-left:50px;">Create a new contact and add to this institution</span>
+      <!-- add new -->      <span style="margin-left:50px;"><g:message code="institution.edit.des08" /></span>
                             <table style="width:80%;border:1px solid #CCC;margin-left:auto;margin-right:auto;margin-bottom:20px;padding-left:20px;">
 
       <!-- title-->           <tr class="prop">
@@ -421,7 +421,7 @@
                                 <td class="checkbox">
                                     <label>
                                       <g:checkBox name="publish" value="true"/>
-                                      <span class="hint">Contact will be shown on the collection page</span>
+                                      <span class="hint"><g:message code="institution.edit.des09" /></span>
                                     </label>
                                 </td>
                               </tr>
@@ -442,7 +442,7 @@
                                 <td class="checkbox">
                                   <label>
                                     <g:checkBox name="isAdmin2" value="true" />
-                                    <span class="hint">Allows the person to edit this collection</span>
+                                    <span class="hint"><g:message code="institution.edit.des10" /></span>
                                   </label>
                                 </td>
                               </tr>

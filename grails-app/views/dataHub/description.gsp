@@ -7,7 +7,7 @@
     </head>
     <body>
         <div class="nav">
-        <h1>Editing: ${command.name}</h1>
+        <h1><g:message code="collection.title.editing" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -66,8 +66,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_updateDescription" value="${message(code:"collection.button.update")}" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"collection.button.cancel")}" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

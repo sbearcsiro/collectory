@@ -11,7 +11,7 @@
     </head>
     <body>
         <div class="nav">
-        <h1>Editing: ${command.name}</h1>
+        <h1><g:message code="collection.title.editing" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -96,13 +96,13 @@
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'contentTypes', 'errors')}">
                                 <g:hiddenField name="contentTypes" value="${command.contentTypes}"/>
-                                <p>Click content types to add them to the selected set.
+                                <p><g:message code="dataresource.description.des01" />.
                                 <cl:helpText code="dataResource.informationWithheld"/>
                                 </p>
 
                                 <div class="row-fluid">
                                     <div class="source-box span6">
-                                        <h4>Available</h4>
+                                        <h4><g:message code="dataresource.description.title01" /></h4>
                                         <ul>
                                             <g:each var="ct" in="${DataResource.contentTypesList}">
                                                 <li class='free'>${ct}</li>
@@ -110,9 +110,9 @@
                                         </ul>
                                     </div>
                                     <div class="sink-box span6 well well-small">
-                                        <h4>Selected</h4>
+                                        <h4><g:message code="dataresource.description.title02" /></h4>
                                         <ul>
-                                            <li class="msg">Click items in the left list to add them as content types for this resource.</li>
+                                            <li class="msg"><g:message code="dataresource.description.des02" />.</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -125,8 +125,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateDescription" value="Update" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_updateDescription" value="${message(code:"collection.button.update")}" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"collection.button.cancel")}" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

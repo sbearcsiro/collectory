@@ -5,7 +5,7 @@
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <g:set var="entityName" value="${command.ENTITY_TYPE}"/>
         <g:set var="entityNameLower" value="${command.urlForm()}"/>
-        <title><g:message code="collection.base.label" default="Edit ${entityNameLower}  metadata" /></title>
+        <title><g:message code="collection.base.label" args="[entityNameLower]" default="Edit ${entityNameLower}  metadata" /></title>
     </head>
     <body>
         <div class="nav">
@@ -137,7 +137,7 @@
                         <cl:ifGranted role="${ProviderGroup.ROLE_ADMIN}">
                           <tr class="prop">
                               <td valign="top" class="name">
-                                <label for="isALAPartner"><g:message code="providerGroup.isALAPartner.label" default="Is ALA Partner" /></label>
+                                <label for="isALAPartner"><g:message code="providerGroup.isALAPartner.label" default="=Is ALA Partner" /></label>
                               </td>
                               <td valign="top" class="value ${hasErrors(bean: command, field: 'isALAPartner', 'errors')}">
                                   <g:checkBox name="isALAPartner" value="${command?.isALAPartner}" />

@@ -1,7 +1,7 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <div class="show-section  well">
-  <h2>Record providers</h2>
-  <p>These data resources contribute digitised records for specimens in this ${ProviderGroup.textFormOfEntityType(instance.uid)}.</p>
+  <h2><g:message code="shared.providers.title01" /></h2>
+  <p><g:message code="shared.providers.des01" args="[ProviderGroup.textFormOfEntityType(instance.uid)]" />.</p>
   <ul class="fancy">
     <g:each in="${instance.listProviders()}" var="prov">
       <g:set var="pg" value="${ProviderGroup._get(prov)}"/>
@@ -17,7 +17,7 @@
           </ul>
         </g:if>
       </g:if>
-      <g:else><li>The specified provider does not exist!</li></g:else>
+      <g:else><li><g:message code="shared.providers.li01" />!</li></g:else>
     </g:each>
     <!-- for collections try their institution -->
     <g:if test="${instance instanceof au.org.ala.collectory.Collection && instance.institution}">
@@ -26,14 +26,14 @@
         <g:if test="${pg}">
           <li><g:link controller="${cl.controllerFromUid(uid:prov)}" action="show" id="${prov}">${pg.name}</g:link> (${isProvider ? 'provider' : 'resource'}) - (via the institution)</li>
         </g:if>
-        <g:else><li>The specified provider does not exist!</li></g:else>
+        <g:else><li><g:message code="shared.providers.li01" />!</li></g:else>
       </g:each>
     </g:if>
   </ul>
   <div style="clear:both;"></div>
   <div>
-      <p>To change the relationship with record providers please go to the
-      <g:link controller="dataResource" action="list">data resource(s)</g:link>
-        and edit its <strong>record consumers</strong>.</p>
+      <p><g:message code="shared.providers.des02" />
+      <g:link controller="dataResource" action="list"><g:message code="shared.providers.link01" /></g:link>
+        <g:message code="shared.providers.des03" /> <strong><g:message code="shared.providers.des04" /></strong>.</p>
   </div>
 </div>

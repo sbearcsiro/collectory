@@ -7,7 +7,7 @@
     </head>
     <body>
         <div class="nav">
-            <h1>Editing: ${command.name}</h1>
+            <h1><g:message code="shared.eth.title01" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -31,9 +31,9 @@
                               <label for="taxonomyHints"><g:message code="taxonomyHints.label" default="Taxonomy hints" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'taxonomyHints', 'errors')}">
-                              <p>Hints help in the processing of occurrence records that are associated with this ${command.urlForm()}.</p>
+                              <p><g:message code="shared.eth.des01" /> ${command.urlForm()}.</p>
                               <table class="shy"><colgroup><col width="50%"/><col width="50%"/></colgroup>
-                                <tr><td>Rank</td><td>Name</td></tr>
+                                <tr><td><g:message code="shared.eth.th01" /></td><td><g:message code="shared.eth.th02" /></td></tr>
                                 <g:set var="hints" value="${command.listTaxonomyHints()}"/>
                                 <g:each var="hint" in="${hints}" status="i">
                                   <tr>
@@ -59,8 +59,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateTaxonomyHints" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" name="_action_updateTaxonomyHints" value="${message(code:"shared.eth.button.update")}" class="save"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"shared.eth.button.cancel")}" class="cancel"></span>
                 </div>
             </g:form>
         </div>

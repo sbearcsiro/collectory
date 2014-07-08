@@ -42,13 +42,13 @@
                 <cl:partner test="${instance.isALAPartner}"/><br/>
 
                 <!-- GUID    -->
-                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category"><g:message code="collection.show.span01" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
-                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category"><g:message code="providerGroup.uid.label" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category"><g:message code="collection.show.span03" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -61,7 +61,7 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category"><g:message code="datahub.show.lastchange" />:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base"/>
               </div>
@@ -69,16 +69,16 @@
               <!-- description -->
               <div class="show-section well">
                 <!-- Pub Desc -->
-                <h2>Description</h2>
-                <span class="category">Public description</span><br/>
+                <h2><g:message code="collection.show.title01" /></h2>
+                <span class="category"><g:message code="collection.show.span04" /></span><br/>
                 <cl:formattedText body="${instance.pubDescription?:'Not provided'}"/>
 
                 <!-- Tech Desc -->
-                <span class="category">Technical description</span><br/>
+                <span class="category"><g:message code="collection.show.span05" /></span><br/>
                 <cl:formattedText body="${instance.techDescription?:'Not provided'}"/>
 
                 <!-- Contribution -->
-                <span class="category">Contribution</span><br/>
+                <span class="category"><g:message code="dataprovider.show.span06" /></span><br/>
                 <cl:formattedText body="${instance.focus?:'Not provided'}"/>
 
                 <cl:editButton uid="${instance.uid}" page="description"/>
@@ -93,7 +93,7 @@
                   </g:each>
                 </ul>
                 <p>
-                    <g:link controller="dataResource"  class="btn" action="create" params='[dataProviderUid: "${instance.uid}"]'>create a new data resource for this provider</g:link>
+                    <g:link controller="dataResource"  class="btn" action="create" params='[dataProviderUid: "${instance.uid}"]'><g:message code="dataprovider.show.link01" /></g:link>
                 </p>
               </div>
 

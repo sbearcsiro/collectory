@@ -1,10 +1,9 @@
 <%@ page import="au.org.ala.collectory.ProviderGroup" %>
 <div class="show-section  well">
-  <h2>Record consumers</h2>
-  <p>These institutions and collections hold specimens related to the records sourced from this ${ProviderGroup.textFormOfEntityType(instance.uid)}.
+  <h2><g:message code="shared.consumers.title01" /></h2>
+  <p><g:message code="shared.consumers.des01" args="[ProviderGroup.textFormOfEntityType(instance.uid)]" />.
   <br/>
-    Adding relationships here allows data processing to correctly attribute records down to the collection using collection codes and
-    institution codes associated with the institution.
+    <g:message code="shared.consumers.des02" />.
   </p>
   <ul class="fancy">
     <g:each in="${instance.listConsumers()}" var="con">
@@ -12,12 +11,12 @@
       <g:if test="${pg}">
         <li><g:link controller="${cl.controllerFromUid(uid:con)}" action="show" id="${con}">${pg.name}</g:link> (${con[0..1] == 'in' ? 'institution' : 'collection'})</li>
       </g:if>
-      <g:else><li>The specified consumer does not exist!</li></g:else>
+      <g:else><li><g:message code="shared.consumers.des03" />!</li></g:else>
     </g:each>
   </ul>
   <div style="clear:both;"></div>
   <div>
-      <span class="buttons long"><g:link class="edit btn" action='editConsumers' params="[source:'co']" id="${instance.uid}">Add/remove collections&nbsp;</g:link></span>
-      <span class="buttons long"><g:link class="edit btn" action='editConsumers' params="[source:'in']" id="${instance.uid}">Add/remove institutions</g:link></span>
+      <span class="buttons long"><g:link class="edit btn" action='editConsumers' params="[source:'co']" id="${instance.uid}"><g:message code="shared.consumers.link01" />&nbsp;</g:link></span>
+      <span class="buttons long"><g:link class="edit btn" action='editConsumers' params="[source:'in']" id="${instance.uid}"><g:message code="shared.consumers.link02" /></g:link></span>
   </div>
 </div>

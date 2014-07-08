@@ -13,10 +13,10 @@
   <tr class='prop'>
     <td valign="top" class="name">
       <g:if test="${fieldValue(bean: command, field: 'logoRef.file')}">
-        Choose a <br/>different image
+        <g:message code="shared.mes01" /> <br/><g:message code="shared.mes02" />
       </g:if>
       <g:else>
-        Choose an <br/>image
+        <g:message code="shared.mes03" /> <br/><g:message code="shared.mes04" />
       </g:else>
     </td>
     <td valign="top" class="value ${hasErrors(bean: command, field: 'logoRef.file', 'errors')}">

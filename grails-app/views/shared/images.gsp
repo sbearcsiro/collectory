@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-          <h1>Editing: ${command.name}</h1>
+          <h1><g:message code="shared.images.title01" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -32,8 +32,8 @@
                         <tr class="prop">
                             <td valign="top" class="name">
                               <!--label for="imageRef"><g:message code="providerGroup.${target}.label" default="Image" /></label-->
-                              <g:if test="${target == 'logoRef'}">Logo image</g:if>
-                              <g:else>Representative<br/>image</g:else>
+                              <g:if test="${target == 'logoRef'}"><g:message code="shared.images.des01" /></g:if>
+                              <g:else><g:message code="shared.images.des02" /><br/>image</g:else>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: target, 'errors')}">
                               <g:if test="${target == 'logoRef'}">
@@ -50,9 +50,9 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateImages" value="Update" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_removeImage" value="Remove image" class="cancel btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_updateImages" value="${message(code:"shared.images.button.update")}" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_removeImage" value="${message(code:"shared.images.button.remove")}" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"shared.images.button.cancel")}" class="cancel btn"></span>
                 </div>
             </g:uploadForm>
         </div>

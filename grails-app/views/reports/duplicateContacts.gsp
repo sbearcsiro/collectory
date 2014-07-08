@@ -3,21 +3,20 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports - duplicate contacts</title>
+        <title><g:message code="reports.title" /> - <g:message code="reports.dc.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body reports">
-            <h1>Duplicate contacts</h1>
-            <p>This report shows contacts that are suspected of being duplicates. Multiple contacts with the same email
-            will disrupt the contact's ability to edit their own pages.</p>
-            <h2>Duplicate email addresses</h2>
-            <p>These contacts have the same email address:</p>
+            <h1><g:message code="reports.dc.title01" /></h1>
+            <p><g:message code="reports.dc.des01" />.</p>
+            <h2><g:message code="reports.dc.title02" /></h2>
+            <p><g:message code="reports.dc.des02" />:</p>
             <table class="separate-rows">
                 <col width="35%"><col width="65%">
                 <g:each in="${dupEmails}" var="de">
@@ -33,8 +32,8 @@
                     </tr>
                 </g:each>
             </table>
-            <h2>Duplicate names</h2>
-            <p>These contacts have the same first and last name:</p>
+            <h2><g:message code="reports.dc.title03" /></h2>
+            <p><g:message code="reports.dc.des03" />:</p>
             <table class="separate-rows">
                 <col width="35%"><col width="65%">
                 <g:each in="${dupNames}" var="dn">

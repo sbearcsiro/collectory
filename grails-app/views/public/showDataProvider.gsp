@@ -47,20 +47,17 @@
                         class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
                 <g:if test="${instance.guid?.startsWith('urn:lsid:')}">
                     <span class="lsid"><a href="#lsidText" id="lsid" class="local"
-                                          title="Life Science Identifier (pop-up)">LSID</a></span>
+                                          title="Life Science Identifier (pop-up)"><g:message code="public.lsid" /></a></span>
 
                     <div style="display:none; text-align: left;">
                         <div id="lsidText" style="text-align: left;">
                             <b><a class="external_icon" href="http://lsids.sourceforge.net/"
-                                  target="_blank">Life Science Identifier (LSID):</a></b>
+                                  target="_blank"><g:message code="public.lsidtext.link" />:</a></b>
 
                             <p style="margin: 10px 0;"><cl:guid target="_blank"
                                                                 guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
-                            <p style="font-size: 12px;">LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
-                            significant resources including species names, concepts, occurrences, genes or proteins,
-                            or data objects that encode information about them. To put it simply,
-                            LSIDs are a way to identify and locate pieces of biological information on the web.</p>
+                            <p style="font-size: 12px;"><g:message code="public.lsidtext.des" />.</p>
                         </div>
                     </div>
                 </g:if>
@@ -79,15 +76,15 @@
         <div class="span8">
             <div class="section">
                 <g:if test="${instance.pubDescription}">
-                    <h2>Description</h2>
+                    <h2><g:message code="public.sdp.content.label01" /></h2>
                     <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
                     <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
                 </g:if>
                 <g:if test="${instance.focus}">
-                    <h2>Contribution to the Atlas</h2>
+                    <h2><g:message code="public.sdp.content.label02" /></h2>
                     <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
                 </g:if>
-                <h2>Resources</h2>
+                <h2><g:message code="public.sdp.content.label03" /></h2>
                 <g:set var="hasRecords" value="false"/>
                 <ol>
                     <g:each var="c" in="${instance.getResources().sort { it.name }}">
@@ -101,10 +98,10 @@
 
                 <g:if test="${hasRecords == 'true'}">
                     <div id='usage-stats'>
-                        <h2>Usage statistics</h2>
+                        <h2><g:message code="public.sdp.usagestats.label" /></h2>
 
                         <div id='usage'>
-                            <p>Loading...</p>
+                            <p><g:message code="public.sdp.usage.des" />...</p>
                         </div>
                     </div>
                 </g:if>
@@ -129,7 +126,7 @@
                 </g:if>
 
                 <div class="section">
-                    <h3>Location</h3>
+                    <h3><g:message code="public.sdp.content.label04" /></h3>
                     <g:if test="${instance.address != null && !instance.address.isEmpty()}">
                         <p>
                             <cl:valueOrOtherwise
@@ -154,11 +151,11 @@
             <!-- web site -->
                 <g:if test="${instance.websiteUrl}">
                     <div class="section">
-                        <h3>Web site</h3>
+                        <h3><g:message code="public.sdp.content.label05" /></h3>
 
                         <div class="webSite">
                             <a class='external_icon' target="_blank"
-                               href="${instance.websiteUrl}">Visit the data provider's website</a>
+                               href="${instance.websiteUrl}"><g:message code="public.sdp.content.link01" /></a>
                         </div>
                     </div>
                 </g:if>
@@ -166,22 +163,22 @@
             <!-- network membership -->
                 <g:if test="${instance.networkMembership}">
                     <div class="section">
-                        <h3>Membership</h3>
+                        <h3><g:message code="public.network.membership.label" /></h3>
                         <g:if test="${instance.isMemberOf('CHAEC')}">
-                            <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
+                            <p><g:message code="public.network.membership.des01" /></p>
                             <img src="${resource(absolute: "true", dir: "data/network/", file: "butflyyl.gif")}"/>
                         </g:if>
                         <g:if test="${instance.isMemberOf('CHAH')}">
-                            <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
+                            <p><g:message code="public.network.membership.des02" /></p>
                             <a target="_blank" href="http://www.chah.gov.au"><img
                                     src="${resource(absolute: "true", dir: "data/network/", file: "CHAH_logo_col_70px_white.gif")}"/>
                             </a>
                         </g:if>
                         <g:if test="${instance.isMemberOf('CHAFC')}">
-                            <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+                            <p><g:message code="public.network.membership.des03" /></p>
                         </g:if>
                         <g:if test="${instance.isMemberOf('CHACM')}">
-                            <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
+                            <p><g:message code="public.network.membership.des04" /></p>
                             <img src="${resource(absolute: "true", dir: "data/network/", file: "chacm.png")}"/>
                         </g:if>
                     </div>

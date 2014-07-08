@@ -8,10 +8,10 @@
     <body>
         <div class="nav">
           <g:if test="${mode == 'create'}">
-            <h1>Creating a new collection</h1>
+            <h1><g:message code="collection.range.title01" /></h1>
           </g:if>
           <g:else>
-            <h1>Editing: ${command.name}</h1>
+            <h1><g:message code="collection.title.editing" />: ${command.name}</h1>
           </g:else>
         </div>
         <div id="baseForm" class="body">
@@ -31,10 +31,10 @@
                         <tbody>
 
                         <!-- geographic range -->
-                        <tr><td colspan="3"><h3>Geographic range</h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="collection.range.table01.title" /></h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="geographicDescription">Geographic description</label>
+                              <label for="geographicDescription"><g:message code="collection.range.table01.label01" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'geographicDescription', 'errors')}">
                                 <g:textField name="geographicDescription" class="input-xxlarge" value="${command?.geographicDescription}" />
@@ -45,7 +45,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="states">States</label>
+                              <label for="states"><g:message code="collection.range.table01.label02" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'states', 'errors')}">
                                 <g:textField name="states" value="${command?.states}" />
@@ -55,13 +55,12 @@
                         </tr>
 
                         <tr class="prop">
-                          <td colspan="2">If possible, describe the geographic range of your collection in terms of the
-                          maximum extents of the regions of collection.</td>
+                          <td colspan="2"><g:message code="collection.range.table01.label03" />.</td>
                         </tr>
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="eastCoordinate">Most eastern longitude</label>
+                              <label for="eastCoordinate"><g:message code="collection.range.table01.label04" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'eastCoordinate', 'errors')}">
                               <g:textField name="eastCoordinate" value="${cl.showDecimal(value: command.eastCoordinate)}" />
@@ -72,7 +71,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="westCoordinate">Western extent</label>
+                              <label for="westCoordinate"><g:message code="collection.range.table01.label05" /></label>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'westCoordinate', 'errors')}">
                               <g:textField name="westCoordinate" value="${cl.showDecimal(value: command.westCoordinate)}" />
                               <cl:helpText code="collection.westCoordinate"/>
@@ -82,7 +81,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="northCoordinate">Northern extent</label>
+                              <label for="northCoordinate"><g:message code="collection.range.table01.label06" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'northCoordinate', 'errors')}">
                                 <g:textField name="northCoordinate" value="${cl.showDecimal(value: command.northCoordinate)}" />
@@ -93,7 +92,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="southCoordinate">Southern extent</label>
+                              <label for="southCoordinate"><g:message code="collection.range.table01.label07" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'southCoordinate', 'errors')}">
                               <g:textField name="southCoordinate" value="${cl.showDecimal(value: command.southCoordinate)}" />
@@ -103,10 +102,10 @@
                         </tr>
 
                         <!-- taxonomic range -->
-                        <tr><td colspan="3"><h3>Taxonomic range</h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="collection.range.table01.title02" /></h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="checkbox">
-                              <label for="kingdomCoverage">Kingdom coverage</label>
+                              <label for="kingdomCoverage"><g:message code="collection.range.table01.label08" /></label>
                             </td>
                             <td valign="top" class="checkbox">
                                 <cl:checkBoxList name="kingdomCoverage" from="${Collection.kingdoms}" value="${command?.kingdomCoverage}" />
@@ -117,7 +116,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="scientificNames">Scientific names</label>
+                              <label for="scientificNames"><g:message code="collection.range.table01.label09" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'scientificNames', 'errors')}">
                                 <!--richui:autoComplete name="scientificNames" controller="collection" action="scinames" title="sci name"/-->
@@ -128,7 +127,7 @@
                         </tr>
 
                         <!-- stats -->
-                        <tr><td colspan="3"><h3>Statistics</h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="collection.range.table01.title03" /></h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
                               <label for="numRecords"><g:message code="collection.numRecords.label" default="Number of specimens" /></label>
@@ -155,8 +154,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateRange" value="Update" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_updateRange" value="${message(code:"collection.button.update")}" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"collection.button.cancel")}" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

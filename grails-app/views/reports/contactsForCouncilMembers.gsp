@@ -20,7 +20,7 @@
               <table class="table table-striped table-bordered">
                 <colgroup><col width="60%"/><col width="40%"/></colgroup>
 
-                <tr class="reportGroupTitle"><td colspan="2"><g:message code="reports.cfcm.table0101" /> (${chafc.size()})</td>
+                <tr class="reportGroupTitle"><td colspan="2"><g:message code="reports.chafc" /> (${chafc.size()})</td>
                 <g:each var="p" in="${chafc}">
                   <tr>
                     <td><g:link controller="collection" action="show" id="${p.id}">${p.name}</g:link></td>
@@ -31,12 +31,12 @@
                       <td style="color:blue;">(${p.contact})</td>
                     </g:elseif>
                     <g:else>
-                      <td style="color:red;"><g:message code="reports.cfcm.table0201" /></td>
+                      <td style="color:red;"><g:message code="reports.cfcm.noun" /></td>
                     </g:else>
                   </tr>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td colspan="2"><g:message code="reports.cfcm.table0301" /> (${chaec.size()})</td>
+                <tr class="reportGroupTitle"><td colspan="2"><g:message code="reports.chaec" /> (${chaec.size()})</td>
                 <g:each var="p" in="${chaec}">
                   <tr>
                     <td><g:link controller="collection" action="show" id="${p.id}">${p.name}</g:link></td>
@@ -47,12 +47,12 @@
                       <td style="color:blue;">(${p.contact})</td>
                     </g:elseif>
                     <g:else>
-                      <td style="color:red;"><g:message code="reports.cfcm.table0401" /></td>
+                      <td style="color:red;"><g:message code="reports.cfcm.noun" /></td>
                     </g:else>
                   </tr>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td colspan="2"><g:message code="reports.cfcm.table0501" /> (${chacm.size()})</td>
+                <tr class="reportGroupTitle"><td colspan="2"><g:message code="reports.chacm" /> (${chacm.size()})</td>
                 <g:each var="p" in="${chacm}">
                   <tr>
                     <td><g:link controller="collection" action="show" id="${p.id}">${p.name}</g:link></td>
@@ -63,7 +63,7 @@
                       <td style="color:blue;">(${p.contact})</td>
                     </g:elseif>
                     <g:else>
-                      <td style="color:red;"><g:message code="reports.cfcm.table0601" /></td>
+                      <td style="color:red;"><g:message code="reports.cfcm.noun" /></td>
                     </g:else>
                   </tr>
                 </g:each>

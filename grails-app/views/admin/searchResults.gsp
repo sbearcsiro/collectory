@@ -14,7 +14,7 @@
             <span><g:message code="admin.sr.span01" />.</span>
           </g:if>
           <g:else>
-            <p><g:message code="admin.sr.des01" />.</p>
+            <p><g:message code="admin.sr.des01" /> <em>(<g:message code="admin.sr.des02" />)</em> <g:message code="admin.sr.des03" />.  <g:message code="admin.sr.des04" /> <em>(<g:message code="admin.sr.des05" />)</em> <g:message code="admin.sr.des01" />.</p>
           </g:else>
         </div>
 

@@ -76,7 +76,7 @@
         <div class="span8">
             <div class="section">
                 <g:if test="${instance.pubDescription}">
-                    <h2><g:message code="public.sdp.content.label01" /></h2>
+                    <h2><g:message code="public.des" /></h2>
                     <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
                     <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
                 </g:if>
@@ -101,7 +101,7 @@
                         <h2><g:message code="public.sdp.usagestats.label" /></h2>
 
                         <div id='usage'>
-                            <p><g:message code="public.sdp.usage.des" />...</p>
+                            <p><g:message code="public.usage.des" />...</p>
                         </div>
                     </div>
                 </g:if>
@@ -126,7 +126,7 @@
                 </g:if>
 
                 <div class="section">
-                    <h3><g:message code="public.sdp.content.label04" /></h3>
+                    <h3><g:message code="public.location" /></h3>
                     <g:if test="${instance.address != null && !instance.address.isEmpty()}">
                         <p>
                             <cl:valueOrOtherwise
@@ -151,7 +151,7 @@
             <!-- web site -->
                 <g:if test="${instance.websiteUrl}">
                     <div class="section">
-                        <h3><g:message code="public.sdp.content.label05" /></h3>
+                        <h3><g:message code="public.website" /></h3>
 
                         <div class="webSite">
                             <a class='external_icon' target="_blank"

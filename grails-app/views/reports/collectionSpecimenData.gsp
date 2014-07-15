@@ -21,7 +21,7 @@
               <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="20%"/><col width="20%"/><col width="20%"/></colgroup>
                 <thead>
-                  <th><g:message code="reports.csd.td01.title" /></th><th><g:message code="reports.csd.td02.title" /></th><th><g:message code="reports.csd.td03.title" /></th><th><g:message code="reports.csd.td04.title" /></th>
+                  <th><g:message code="reports.csd.th.collection" /></th><th><g:message code="reports.csd.th.records" /></th><th><g:message code="reports.csd.th.digitised" /></th><th><g:message code="reports.csd.th.inatlas" /></th>
                 </thead>
 
                 <g:each var='m' in="${statistics}">

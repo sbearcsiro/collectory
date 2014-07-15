@@ -36,7 +36,7 @@
 
                     <table class="value">
                       <colgroup><col width="30%"/><col width="40%"/><col width="10%"/><col width="10%"/><col width="10%"/></colgroup>
-                      <thead><th><g:message code="collection.contacts.table01.th01" /></th><th><g:message code="collection.contacts.table01.th02" /></th><th><g:message code="collection.contacts.table01.th03" /></th><th><g:message code="collection.contacts.table01.th04" /></th><th></th></thead>
+                      <thead><th><g:message code="collection.contacts.th.name" /></th><th><g:message code="collection.contacts.th.role" /></th><th><g:message code="collection.contacts.th.admin" /></th><th><g:message code="collection.contacts.th.primary" /></th><th></th></thead>
                       <tbody>
 <!-- current -->          <g:each in="${command.contacts}" var="i" status="row">
                             <g:hiddenField name="contactId" value="${i?.id}"/>
@@ -50,15 +50,15 @@
                                 <g:checkBox style="margin-left:7px;" name="primary_${i.id}" value="${i?.primaryContact}"/>
                               </td>
                               <td valign="baseline" style="width:130px;vertical-align:middle">
-                                <span class="bodyButton"><input type="submit" style="color:#222" class="remove" value="${message(code:"collection.contacts.table01.btn01")}"
+                                <span class="bodyButton"><input type="submit" style="color:#222" class="remove" value="${message(code:"collection.contacts.btn.remove")}"
                                   onclick="document.getElementById('event').value = 'remove';document.getElementById('idToRemove').value = '${i?.id}';return confirm('Remove ${i?.contact?.buildName()} as a contact for this collection?');"/>
                                 </span>
                               </td>
                             </tr>
                             <tr>
                               <td></td><td colspan="4">
-                                <g:message code="collection.contacts.table01.td01" />: ${fieldValue(bean:i.contact, field:"phone")}
-                                <g:message code="collection.contacts.table01.td02" />: ${fieldValue(bean:i.contact, field:"email")}
+                                <g:message code="collection.contacts.th.phone" />: ${fieldValue(bean:i.contact, field:"phone")}
+                                <g:message code="collection.contacts.th.email" />: ${fieldValue(bean:i.contact, field:"email")}
                               </td>
                             </tr>
                           </g:each>
@@ -74,7 +74,7 @@
                       <colgroup><col width="28%"/><col width="62%"/><col width="10%"/></colgroup>
 
                       <tr class="prop">
-                        <td valign="top" class="name"><g:message code="collection.contacts.table02.td01" /></td>
+                        <td valign="top" class="name"><g:message code="collection.contacts.btn.select" /></td>
                         <td valign="top" class="value">
                           <g:select name="addContact" from="${Contact.listOrderByLastName()}" optionKey="id" noSelection="${['null':'Select one to add']}" />
                         </td>
@@ -171,13 +171,13 @@
                           <td class="checkbox">
                               <label>
                                 <g:checkBox name="publish" value="true"/>
-                                <span class="hint"><g:message code="collection.contacts.table03.span02" /></span>
+                                <span class="hint"><g:message code="collection.contacts.span02" /></span>
                               </label>
                           </td>
                         </tr>
 
                         <tr><td>
-                          <input type="submit" onclick="return document.getElementById('event').value = 'create'" class="addAction" value="${message(code:"collection.contacts.table03.btn01")}"/>
+                          <input type="submit" onclick="return document.getElementById('event').value = 'create'" class="addAction" value="${message(code:"collection.contacts.btn.addcontact")}"/>
                         </td></tr>
 
                         <tr><td colspan="2"><div id="addNewContact" class="fieldHelp" style="display:none"><g:message code="collection.addNewContact" /></div></td></tr>

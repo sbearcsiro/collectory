@@ -84,7 +84,7 @@
 <div class="row-fluid">
     <div class="span8">
         <g:if test="${instance.pubDescription || instance.techDescription || instance.focus}">
-            <h2><g:message code="public.sdr.content.label01" /></h2>
+            <h2><g:message code="public.des" /></h2>
         </g:if>
         <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
         <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
@@ -141,7 +141,7 @@
                 <h2><g:message code="public.sdr.usagestats.labe" /></h2>
 
                 <div id='usage'>
-                    <p><g:message code="public.sdr.usage.des" />...</p>
+                    <p><g:message code="public.usage.des" />...</p>
                 </div>
                 <g:if test="${instance.resourceType == 'website'}">
                     <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
@@ -204,7 +204,7 @@
 
         <g:if test="${address != null && !address?.isEmpty()}">
             <div class="section">
-                <h3><g:message code="public.sdr.content.label11" /></h3>
+                <h3><g:message code="public.location" /></h3>
 
                 <g:if test="${!address?.isEmpty()}">
                     <p>
@@ -240,7 +240,7 @@
         </g:if>
         <g:elseif test="${instance.websiteUrl}">
             <div class="section">
-                <h3><g:message code="public.sdr.content.label13" /></h3>
+                <h3><g:message code="public.website" /></h3>
                 <div class="webSite">
                     <a class='external_icon' target="_blank"
                        href="${instance.websiteUrl}"><g:message code="public.sdr.content.link04" /></a>

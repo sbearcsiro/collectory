@@ -9,7 +9,7 @@
       <div class="floating-content manage">
     
         <div style="float:right;">
-            <g:link class="mainLink" controller="public" action="map"><g:message code="manage.index.link01" /></g:link>
+            <g:link class="mainLink" controller="public" action="map"><g:message code="manage.index.link" /></g:link>
         </div>
         <h1><g:message code="manage.index.title01" /></h1>
         <p><g:message code="manage.index.des01" />.</p>

@@ -16,9 +16,9 @@
         <!--Breadcrumbs-->
       <div id="breadcrumb">
         <ol class="breadcrumb">
-            <li><a href='http://www.ala.org.au'><g:message code="data.catalogue.li01" /></a> <span class="icon icon-arrow-right"></span></li>
-            <li><g:link controller="public"><g:message code="data.catalogue.li02" /></g:link> <span class="icon icon-arrow-right"></span></li>
-            <li><g:message code="data.catalogue.li03" /></li>
+            <li><a href='http://www.ala.org.au'><g:message code="data.catalogue.home" /></a> <span class="icon icon-arrow-right"></span></li>
+            <li><g:link controller="public"><g:message code="data.catalogue.collections" /></g:link> <span class="icon icon-arrow-right"></span></li>
+            <li><g:message code="data.catalogue.webservices" /></li>
         </ol>
       </div>
         <div class="section full-width">
@@ -44,16 +44,16 @@
           <h2 id="WS0024"><g:message code="data.catalogue.title02" /></h2>
           <p><g:message code="data.catalogue.des05" />:</p>
           <ul>
-            <li><g:message code="data.catalogue.ws0024.li01" />;</li>
-            <li><g:message code="data.catalogue.ws0024.li02" />;</li>
-            <li><g:message code="data.catalogue.ws0024.li03" />;</li>
-            <li><g:message code="data.catalogue.ws0024.li04" />;</li>
-            <li><g:message code="data.catalogue.ws0024.li05" />;</li>
-            <li><g:message code="data.catalogue.ws0024.li06" /></li>
-            <li><g:message code="data.catalogue.ws0024.li07" />.</li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.collections" /></span> - <g:message code="data.catalogue.ws0024.collections01" />;</li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.institutions" /></span> - <g:message code="data.catalogue.ws0024.institutions01" />;</li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.dps" /></span> - <g:message code="data.catalogue.ws0024.dps01" />;</li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.drs" /></span> - <g:message code="data.catalogue.ws0024.drs01" />;</li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.tdrs" /></span> - <g:message code="data.catalogue.ws0024.tdrs01" />;</li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.dhs" /></span> - <g:message code="data.catalogue.ws0024.dhs01" /></li>
+            <li><span class='entity'><g:message code="data.catalogue.ws0024.contacts" /></span> - <g:message code="data.catalogue.ws0024.contacts01" />.</li>
           </ul>
-          <p><g:message code="data.catalogue.des06" />.</p>
-          <p><g:message code="data.catalogue.des007" />.</p>
+          <p><g:message code="data.catalogue.des0601" /> <em><g:message code="data.catalogue.des0602" /></em> <g:message code="data.catalogue.des0603" /> <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer">RESTful</a> <g:message code="data.catalogue.des0604" /> <a href="http://en.wikipedia.org/wiki/JSON">JSON</a> <g:message code="data.catalogue.des0605" />.</p>
+          <p><g:message code="data.catalogue.des00701" /> <a href="http://code.google.com/p/ala-collectory/w/list"><g:message code="data.catalogue.des00702" /></a>, <g:message code="data.catalogue.des00703" /> <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices"><g:message code="data.catalogue.des00704" /></a>.</p>
           <h3><g:message code="data.catalogue.title03" /></h3>
           <table class="table">
             <colgroup><col width="55%"><col width="45%"></colgroup>
@@ -84,9 +84,9 @@
           </table>
           <h3><g:message code="data.catalogue.title04" /></h3>
           <p><g:message code="data.catalogue.des08" />.</p>
-          <p><g:message code="data.catalogue.des09" />.</p>
-          <p><g:message code="data.catalogue.des10" />.</p>
-          <p><g:message code="data.catalogue.des11" />:</p>
+          <p><span class='entity'>GET</span> <g:message code="data.catalogue.des09" />.</p>
+          <p><span class='entity'>HEAD</span> <g:message code="data.catalogue.des10" />.</p>
+          <p><span class='entity'>POST</span> <g:message code="data.catalogue.des11" />:</p>
           <ul>
             <li><g:message code="data.catalogue.li04" /></li>
             <li><g:message code="data.catalogue.li05" />.</li>
@@ -96,9 +96,9 @@
             <li><g:message code="data.catalogue.li06" /></li>
           </ul>
           <p><g:message code="data.catalogue.des13" />.</p>
-          <p><g:message code="data.catalogue.des14" />.</p>
-          <p><g:message code="data.catalogue.des15" />.</p>
-          <p><g:message code="data.catalogue.des16" />:</p>
+          <p><span class='entity'>PUT</span> <g:message code="data.catalogue.des14" />.</p>
+          <p><span class='entity'>OPTIONS</span> <g:message code="data.catalogue.des15" />.</p>
+          <p><span class='entity'>DELETE</span> <g:message code="data.catalogue.des16" />:</p>
             <ul>
                 <li><g:message code="data.catalogue.li07" /></li>
                 <li><g:message code="data.catalogue.li08" />.</li>
@@ -121,21 +121,21 @@
               <td><a href="${grailsApplication.config.grails.serverURL}/ws/contacts/email/dave.martin@csiro.au">http://collections.ala.org.au/ws/contacts/email/dave.martin@csiro.au</a></td>
             </tr>
           </table>
-          <p><g:message code="data.catalogue.ws0025.des01" />.</p>
+          <p><g:message code="data.catalogue.ws0025.des0101" />. <span class='entity'>PUT</span> <g:message code="data.catalogue.ws0025.des0102" /> <span class='entity'>POST</span> <g:message code="data.catalogue.ws0025.des0103" />. <span class='entity'>DELETE</span> <g:message code="data.catalogue.ws0025.des0104" />.</p>
             <p><g:message code="data.catalogue.ws0025.des02" />:</p>
             <ul>
-                <li><g:message code="data.catalogue.ws0025.li01" /></li>
-                <li><g:message code="data.catalogue.ws0025.li02" />.</li>
+                <li><g:message code="data.catalogue.ws0025.user" /></li>
+                <li><g:message code="data.catalogue.ws0025.apikey" />.</li>
             </ul>
             <p><g:message code="data.catalogue.ws0025.des03" /></p>
             <ul>
-                <li><g:message code="data.catalogue.ws0025.li03" /></li>
-                <li><g:message code="data.catalogue.ws0025.li04" /></li>
-                <li><g:message code="data.catalogue.ws0025.li05" /></li>
-                <li><g:message code="data.catalogue.ws0025.li06" /></li>
-                <li><g:message code="data.catalogue.ws0025.li07" /></li>
-                <li><g:message code="data.catalogue.ws0025.li08" /></li>
-                <li><g:message code="data.catalogue.ws0025.li09" /></li>
+                <li><g:message code="data.catalogue.ws0025.firstname" /></li>
+                <li><g:message code="data.catalogue.ws0025.lastname" /></li>
+                <li><g:message code="data.catalogue.ws0025.fax" /></li>
+                <li><g:message code="data.catalogue.ws0025.phone" /></li>
+                <li><g:message code="data.catalogue.ws0025.mobile" /></li>
+                <li><g:message code="data.catalogue.ws0025.notes" /></li>
+                <li><g:message code="data.catalogue.ws0025.public" /></li>
             </ul>
 
           <p><g:message code="data.catalogue.ws0025.des04" />.</p>
@@ -145,13 +145,13 @@
           <table class="table">
             <colgroup><col width="55%"><col width="45%"></colgroup>
             <tr>
-              <td colspan="2"><g:message code="data.catalogue.ws0025.table0101" />:</td>
+              <td colspan="2"><g:message code="data.catalogue.ws0025.table0101" /> <span class="code"><g:message code="data.catalogue.ws0025.table0102" /></span> <g:message code="data.catalogue.ws0025.table0103" />:</td>
             </tr>
             <tr>
               <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts</span></td>
             </tr>
             <tr>
-              <td><g:message code="data.catalogue.ws0025.table0201" />:</td>
+              <td><g:message code="data.catalogue.ws0025.forexample" />:</td>
               <td><a href="${grailsApplication.config.grails.serverURL}/ws/collection/co13/contacts.json">http://collections.ala.org.au/ws/collection/co13/contacts</a></td>
             </tr>
             <tr>
@@ -161,7 +161,7 @@
               <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/{id}</span></td>
             </tr>
             <tr>
-              <td><g:message code="data.catalogue.ws0025.table0401" />:</td>
+              <td><g:message code="data.catalogue.ws0025.forexample" />:</td>
               <td><a href="${grailsApplication.config.grails.serverURL}/ws/collection/co13/contacts/20.json">http://collections.ala.org.au/ws/collection/co13/contacts/20</a></td>
             </tr>
             <tr>
@@ -171,7 +171,7 @@
               <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/contacts</span></td>
             </tr>
             <tr>
-              <td><g:message code="data.catalogue.ws0025.table0601" />:</td>
+              <td><g:message code="data.catalogue.ws0025.forexample" />:</td>
               <td><a href="${grailsApplication.config.grails.serverURL}/ws/collection/contacts.json">http://collections.ala.org.au/ws/collection/contacts</a></td>
             </tr>
             <tr>
@@ -181,7 +181,7 @@
               <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/{resource type}/{resource uid}/contacts/notifiable</span></td>
             </tr>
             <tr>
-              <td><g:message code="data.catalogue.ws0025.table0801" />:</td>
+              <td><g:message code="data.catalogue.ws0025.forexample" />:</td>
               <td><a href="${grailsApplication.config.grails.serverURL}/ws/collection/co13/contacts/notifiable.json">http://collections.ala.org.au/ws/collection/co13/contacts/notifiable</a></td>
             </tr>
             <tr>
@@ -191,7 +191,7 @@
               <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/contacts/{contact id}/authorised</span></td>
             </tr>
             <tr>
-              <td><g:message code="data.catalogue.ws0025.table1001" />:</td>
+              <td><g:message code="data.catalogue.ws0025.forexample" />:</td>
               <td><a href="${grailsApplication.config.grails.serverURL}/ws/contacts/132/authorised.json">http://collections.ala.org.au/ws/contacts/132/authorised</a></td>
             </tr>
           </table>
@@ -199,11 +199,11 @@
             <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Data_services"><g:message code="data.catalogue.ws0025.link01" />.</a></p>
 
           <p><g:message code="data.catalogue.ws0025.des08" />.</p>
-            <p><g:message code="data.catalogue.ws0025.des09" />.</p>
+            <p><span class='entity'>POST</span> <g:message code="data.catalogue.ws0025.des09" />.</p>
             <p><g:message code="data.catalogue.ws0025.des10" />:</p>
             <ul>
-                <li><g:message code="data.catalogue.ws0025.li10" /></li>
-                <li><g:message code="data.catalogue.ws0025.li11" />.</li>
+                <li><g:message code="data.catalogue.ws0025.user" /></li>
+                <li><g:message code="data.catalogue.ws0025.apikey" />.</li>
             </ul>
             <p><g:message code="data.catalogue.ws0025.des11" /></p>
             <ul>
@@ -217,8 +217,8 @@
             <p><span class='entity'>DELETE</span> <g:message code="data.catalogue.ws0025.des14" />.</p>
             <p><g:message code="data.catalogue.ws0025.des15" />:</p>
             <ul>
-                <li><g:message code="data.catalogue.ws0025.li16" /></li>
-                <li><g:message code="data.catalogue.ws0025.li17" />.</li>
+                <li><g:message code="data.catalogue.ws0025.user" /></li>
+                <li><g:message code="data.catalogue.ws0025.apikey" />.</li>
             </ul>
           <p><g:message code="data.catalogue.ws0025.des16" />.</p>
 
@@ -248,7 +248,7 @@
               <td colspan="2"><span class="code"><span class='entity'>GET</span> http://collections.ala.org.au/ws/citations/<strong>{listOfUIDs}</strong></span></td>
             </tr>
             <tr>
-              <td colspan="2"><g:message code="data.catalogue.ws0032.td0101" />.</td>
+              <td colspan="2"><g:message code="data.catalogue.ws0032.td0101" /> <span class="code"><g:message code="data.catalogue.ws0032.td0102" /></span> <g:message code="data.catalogue.ws0032.td0103" />.</td>
             </tr>
             <tr>
               <td><g:message code="data.catalogue.ws0032.td0201" />:</td>
@@ -330,24 +330,24 @@
         <div class="section infoColumn">
           <h1><g:message code="data.catalogue.ct.title01" /></h1>
           <p>
-            <a href="http://collections.ala.org.au/ws/collection.json"><g:message code="data.catalogue.ct.link01" /></a><br/>
-            <a href="http://collections.ala.org.au/ws/institution.json"><g:message code="data.catalogue.ct.lik02" /></a><br/>
-            <a href="http://collections.ala.org.au/ws/dataProvider.json"><g:message code="data.catalogue.ct.link03" /></a><br/>
-            <a href="http://collections.ala.org.au/ws/dataResource.json"><g:message code="data.catalogue.ct.link04" /></a><br/>
-            <a href="http://collections.ala.org.au/ws/dataHub.json"><g:message code="data.catalogue.ct.link05" /></a><br/>
+            <a href="http://collections.ala.org.au/ws/collection.json"><g:message code="data.catalogue.ct.lacs" /></a><br/>
+            <a href="http://collections.ala.org.au/ws/institution.json"><g:message code="data.catalogue.ct.lais" /></a><br/>
+            <a href="http://collections.ala.org.au/ws/dataProvider.json"><g:message code="data.catalogue.ct.ladps" /></a><br/>
+            <a href="http://collections.ala.org.au/ws/dataResource.json"><g:message code="data.catalogue.ct.ladrs" /></a><br/>
+            <a href="http://collections.ala.org.au/ws/dataHub.json"><g:message code="data.catalogue.ct.lahs" /></a><br/>
           </p>
           <p>
-            <a href="http://collections.ala.org.au/ws/collection/contacts.json"><g:message code="data.catalogue.ct.link06" /></a><br/>
+            <a href="http://collections.ala.org.au/ws/collection/contacts.json"><g:message code="data.catalogue.ct.lmcfec" /></a><br/>
           </p>
 
           <h1><g:message code="data.catalogue.ct.title02" /></h1>
           <p>
-            <a href="http://code.google.com/p/ala-collectory/w/list"><g:message code="data.catalogue.ct.link07" /></a><br/>
-            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices"><g:message code="data.catalogue.ct.link08" /></a><br/>
-            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Data_services"><g:message code="data.catalogue.ct.link09" /></a><br/>
-            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#EML_services"><g:message code="data.catalogue.ct.link10" /></a><br/>
-            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_citation_text_for_a_list_of_UIDs"><g:message code="data.catalogue.ct.link11" /></a><br/>
-            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_services"><g:message code="data.catalogue.ct.link12" /></a><br/>
+            <a href="http://code.google.com/p/ala-collectory/w/list"><g:message code="data.catalogue.ct.pwiki" /></a><br/>
+            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices"><g:message code="data.catalogue.ct.so" /></a><br/>
+            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Data_services"><g:message code="data.catalogue.ct.ds" /></a><br/>
+            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#EML_services"><g:message code="data.catalogue.ct.emls" /></a><br/>
+            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_citation_text_for_a_list_of_UIDs"><g:message code="data.catalogue.ct.cs" /></a><br/>
+            <a href="http://code.google.com/p/ala-collectory/wiki/CollectoryServices#Lookup_services"><g:message code="data.catalogue.ct.ls" /></a><br/>
           </p>
         </div><!--close section-->
       </div><!--close column-two-->

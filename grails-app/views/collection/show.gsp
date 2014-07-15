@@ -50,13 +50,13 @@
       <cl:partner test="${instance.institution?.isALAPartner}"/><br/>
 
       <!-- GUID    -->
-      <p><span class="category"><g:message code="collection.show.span01" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+      <p><span class="category"><g:message code="collection.show.span.lsid" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
       <!-- UID    -->
-      <p><span class="category"><g:message code="collection.show.span02" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+      <p><span class="category"><g:message code="collection.show.span.uid" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
       <!-- Web site -->
-      <p><span class="category"><g:message code="collection.show.span03" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+      <p><span class="category"><g:message code="collection.show.span.cw" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
       <!-- Networks -->
       <g:if test="${instance.networkMembership}">
@@ -77,7 +77,7 @@
     <!-- collection description -->
     <div class="show-section well">
       <!-- Pub Desc -->
-      <h2><g:message code="collection.show.title01" /></h2>
+      <h2><g:message code="collection.show.title.description" /></h2>
 
       <span class="category"><g:message code="collection.show.span04" /></span><br/>
       <cl:formattedText body="${instance.pubDescription}"/>
@@ -100,21 +100,21 @@
       <!-- Keywords -->
       <p><span class="category"><g:message code="collection.show.span09" />:</span> <g:message code="collection.show.des01" />: <cl:valueOrOtherwise value="${instance.listKeywords().join(', ')}" otherwise="none"/>.
         <g:if test="${!instance.listKeywords().contains('fauna')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']"><g:message code="collection.show.link01" /></g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']"><g:message code="collection.show.link.addfauna" /></g:link>)
         </g:if>
         <g:if test="${!instance.listKeywords().contains('plants')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'plants']"><g:message code="collection.show.link02" /></g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'plants']"><g:message code="collection.show.link.addplants" /></g:link>)
         </g:if>
         <g:if test="${!instance.listKeywords().contains('entomology')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'entomology']"><g:message code="collection.show.link03" /></g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'entomology']"><g:message code="collection.show.link.addentomology" /></g:link>)
         </g:if>
         <g:if test="${!instance.listKeywords().contains('microbes')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'microbes']"><g:message code="collection.show.link04" /></g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'microbes']"><g:message code="collection.show.link.addmicrobes" /></g:link>)
         </g:if>
       </p>
 
       <!-- sub collections -->
-      <h2><g:message code="collection.show.title02" /></h2>
+      <h2><g:message code="collection.show.title.subcollections" /></h2>
       <cl:subCollectionList list="${instance.subCollections}"/>
 
       <cl:editButton uid="${instance.uid}" page="description"/>
@@ -128,7 +128,7 @@
 
     <!-- collection scope -->
     <div class="show-section well">
-      <h2><g:message code="collection.show.title03" /></h2>
+      <h2><g:message code="collection.show.title.gr" /></h2>
       <table>
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Geo descrip -->
@@ -158,7 +158,7 @@
           </td>
         </tr>
       </table>
-      <h2><g:message code="collection.show.title04" /></h2>
+      <h2><g:message code="collection.show.title.tr" /></h2>
       <table>
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Focus   -->
@@ -181,7 +181,7 @@
       </table>
 
       <!-- estimate of records -->
-      <h2 style="padding-top:10px;"><g:message code="collection.show.title05" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.title06" /></h2>
+      <h2 style="padding-top:10px;"><g:message code="collection.show.title.numberof" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.title.inthecollection" /></h2>
       <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
         <p><g:message code="collection.show.des07" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.des08" /> <cl:collectionName prefix="the " name="${instance.name}"/> <g:message code="collection.show.des09" /> ${fieldValue(bean: instance, field: "numRecords")}.</p>
       </g:if>
@@ -216,7 +216,7 @@
 
     <!-- Provider codes -->
     <div class="show-section well">
-      <h2><g:message code="collection.show.title07" /></h2>
+      <h2><g:message code="collection.show.title.providercodes" /></h2>
       <p><g:message code="collection.show.des14" />.</p>
       <p><g:message code="collection.show.des15" />: ${instance.getListOfInstitutionCodesForLookup().join(", ")}</p>
       <p><g:message code="collection.show.des16" />: ${instance.getListOfCollectionCodesForLookup().join(", ")}</p>

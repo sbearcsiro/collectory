@@ -21,7 +21,7 @@
     <div class="drs">
         <table class="table table-striped table-bordered">
             <colgroup><col width="53%"/><col width="7%"/><col width="40%"/></colgroup>
-            <tr class="reportGroupTitle"><td><g:message code="reports.resources.tr0101" /> (${DataResource.count()})</td><td><g:message code="reports.resources.tr0102" /></td><td><g:message code="reports.resources.tr0103" /></td></tr>
+            <tr class="reportGroupTitle"><td><g:message code="reports.resources.tr0101" /> (${DataResource.count()})</td><td><g:message code="reports.providers" /></td><td><g:message code="reports.resources.tr0103" /></td></tr>
             <g:each var='c' in="${DataResource.list([sort: 'name'])}">
                 <tr>
                     <td><g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>

@@ -22,7 +22,7 @@
     <div id="content">
       <div id="header">
         <!--Breadcrumbs-->
-        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}"><g:message code="public.map.breadcrumb.link01" /></a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/"><g:message code="public.map.breadcrumb.link02" /></a><span class="current"><g:message code="public.map.breadcrumb.span" /></span></div>
+        <div id="breadcrumb"><a href="${ConfigurationHolder.config.ala.baseURL}"><g:message code="public.map.breadcrumb.home" /></a> <a href="${ConfigurationHolder.config.ala.baseURL}/explore/"><g:message code="public.map.breadcrumb.explore" /></a><span class="current"><g:message code="public.map.breadcrumb.des" /></span></div>
         <div class="section full-width">
           <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -44,17 +44,17 @@
       <div class="row-fluid"><!-- wrap map and list-->
         <div id="span6" class="fudge">
           <div class="section">
-            <p style="padding:15px 10px 0 10px"><g:message code="public.map.span6.label01" />:</p>
+            <p style="padding:15px 10px 0 10px"><g:message code="public.map.label01" />:</p>
             <ul id="map-collections">
-              <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all"><g:message code="public.map.span6.li01" /></label>
+              <li><input id="all" name="all" type="checkbox" value="all" checked="checked" onclick="setAll();"/><label for="all"><g:message code="public.map.selectall" /></label>
                 <ul class="taxaBreakdown">
-                  <li id="herbariaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants"><g:message code="public.map.span6.li02" /></label></li>
-                  <li id="faunaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fauna" id="fauna"/><label for="fauna"><g:message code="public.map.span6.li03" /></label>
+                  <li id="herbariaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="plants" id="plants"/><label for="plants"><g:message code="public.map.herbaria" /></label></li>
+                  <li id="faunaBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="fauna" id="fauna"/><label for="fauna"><g:message code="public.map.fc" /></label>
                     <ul>
-                      <li id="entoBreakdown"><input style="margin-right:8px;" onclick="entoChange()" name="filter" type="checkbox" checked="checked" value="entomology" id="ento"/><label for="ento"><g:message code="public.map.span6.li04" /></label></li>
+                      <li id="entoBreakdown"><input style="margin-right:8px;" onclick="entoChange()" name="filter" type="checkbox" checked="checked" value="entomology" id="ento"/><label for="ento"><g:message code="public.map.ec" /></label></li>
                     </ul>
                   </li>
-                  <li id="microbialBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes"><g:message code="public.map.span6.li05" /></label></li>
+                  <li id="microbialBreakdown"><input style="margin-right:8px;" onclick="filterChange()" name="filter" type="checkbox" checked="checked" value="microbes" id="microbes"/><label for="microbes"><g:message code="public.map.mc" /></label></li>
                 </ul>
               </li>
             </ul>

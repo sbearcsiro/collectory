@@ -8,7 +8,7 @@
     <body id="body-wrapper">
         <div class="nav">
           <g:if test="${mode == 'create'}">
-            <h1><g:message code="collection.des.title01" /></h1>
+            <h1><g:message code="collection.des.title" /></h1>
           </g:if>
           <g:else>
             <h1><g:message code="collection.title.editing" />: ${command.name}</h1>

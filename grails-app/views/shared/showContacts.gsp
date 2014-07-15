@@ -42,20 +42,20 @@
             </td></tr>
 
             <!-- role -->
-            <tr><td colspan="2"><span class="label"><g:message code="shared.scontact.table.label01" />:</span></td></tr>
+            <tr><td colspan="2"><span class="label"><g:message code="shared.scontact.label01" />:</span></td></tr>
             <tr><td>
                 <ul class="detailList">
-                  <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined"><g:message code="shared.scontact.table.li01" /> ${cf.role}</cl:valueOrOtherwise></li>
-                  <li><cl:valueOrOtherwise value="${cf.administrator}" otherwise="Not allowed to edit"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.table.li02" /></cl:valueOrOtherwise></li>
-                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise="Dont notify"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.table.li03" /></cl:valueOrOtherwise></li>
-                  <cl:valueOrOtherwise value="${cf.primaryContact}"><li><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.table.li04" /></li></cl:valueOrOtherwise>
+                  <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined"><g:message code="shared.scontact.li01" /> ${cf.role}</cl:valueOrOtherwise></li>
+                  <li><cl:valueOrOtherwise value="${cf.administrator}" otherwise="Not allowed to edit"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.li02" /></cl:valueOrOtherwise></li>
+                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise="Dont notify"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.li03" /></cl:valueOrOtherwise></li>
+                  <cl:valueOrOtherwise value="${cf.primaryContact}"><li><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.li04" /></li></cl:valueOrOtherwise>
                 </ul>
             </td>
             <td>
               <span class="contactButton buttonRight">
                 <g:link class="edit-small btn" action='editRole' id="${cf.id}"
                   params='[returnTo: "/${command.urlForm()}/edit/${command.id}?page=/shared/showContacts"]'>
-                  <g:message code="shared.scontact.link01" /> ${entityNameLower}
+                  <g:message code="shared.scontact.link.edit" /> ${entityNameLower}
                 </g:link>
               </span>
             </td></tr>
@@ -64,7 +64,7 @@
             <tr><td></td><td>
               <span class="contactButton">
                 <g:link class="removeSmallAction btn btn-danger" action='removeContact' id="${command.id}" onclick="return confirm('Remove ${cf.contact?.buildName()} as a contact for this ${entityNameLower}?');"
-                        params='[idToRemove: "${cf.id}"]'><g:message code="shared.scontact.link02" /> ${entityNameLower}</g:link>
+                        params='[idToRemove: "${cf.id}"]'><g:message code="shared.scontact.link.remove" /> ${entityNameLower}</g:link>
               </span>
             </td></tr>
 
@@ -77,7 +77,7 @@
         <g:form action="addContact" id="${command.id}">
           <table class="shy">
             <colgroup><col width="68%"><col width="32%"></colgroup>
-            <tr><td colspan="2"><g:message code="shared.scontact.table01.cell0101" /></td></tr>
+            <tr><td colspan="2"><g:message code="shared.scontact01.cell0101" /></td></tr>
             <tr><td>
               <g:select name="addContact" from="${Contact.listOrderByLastName()}" optionKey="id" noSelection="${['null':'Select one to add']}" />
             </td><td>
@@ -88,7 +88,7 @@
         OR:<br/>
         <table class="shy">
           <colgroup><col width="68%"><col width="32%"></colgroup>
-          <tr><td><g:message code="shared.scontact.table02.cell0101" /> ${entityNameLower}:</td>
+          <tr><td><g:message code="shared.scontact02.cell0101" /> ${entityNameLower}:</td>
           <td>
           <span class="button">
             <g:link class="addAction btn" controller="contact" action='create' params='[returnTo:"/${command.urlForm()}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>

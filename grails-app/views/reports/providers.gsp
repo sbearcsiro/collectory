@@ -21,7 +21,7 @@
             <div id="dps">
               <table class="table table-striped table-bordered">
                 <colgroup><col width="80%"/><col width="10%"/><col width="10%"/></colgroup>
-                <tr class="reportGroupTitle"><td><g:message code="reports.providers.tr0101" /> (${DataProvider.count()})</td><td><g:message code="reports.providers.tr0102" /></td><td><g:message code="reports.providers.tr0103" /></td></tr>
+                <tr class="reportGroupTitle"><td><g:message code="reports.providers.tr0101" /> (${DataProvider.count()})</td><td><g:message code="reports.providers" /></td><td><g:message code="reports.providers.tr0103" /></td></tr>
                 <g:each var='c' in="${DataProvider.list([sort: 'name'])}">
                   <tr>
                     <td><g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
@@ -35,7 +35,7 @@
             <div class="drs">
               <table class="table table-striped table-bordered">
                 <colgroup><col width="53%"/><col width="7%"/><col width="30%"/><col width="10%"/></colgroup>
-                <tr class="reportGroupTitle"><td><g:message code="reports.providers.tr0201" /> (${DataResource.count()})</td><td><g:message code="reports.providers.tr0202" /></td><td><g:message code="reports.providers.tr0203" /></td><td><g:message code="reports.providers.tr0204" /></td></tr>
+                <tr class="reportGroupTitle"><td><g:message code="reports.providers.tr0201" /> (${DataResource.count()})</td><td><g:message code="reports.providers" /></td><td><g:message code="reports.providers.tr0203" /></td><td><g:message code="reports.providers.tr0204" /></td></tr>
                 <g:each var='c' in="${DataResource.list([sort: 'name'])}">
                   <tr>
                     <td><g:link controller="public" action="show" id="${c.uid}">${fieldValue(bean: c, field: "name")}</g:link></td>
@@ -50,7 +50,7 @@
             <div id="hubs">
               <table>
                 <colgroup><col width="70%"/><col width="30%"/></colgroup>
-                <tr><td><g:message code="reports.providers.tr0301" /></td><td><g:message code="reports.providers.tr0302" /></td></tr>
+                <tr><td><g:message code="reports.providers.tr0301" /></td><td><g:message code="reports.providers" /></td></tr>
                 <tr class="reportGroupTitle"><td colspan="3"><g:message code="reports.providers.tr0401" /> (${DataHub.count()})</td></tr>
                 <g:each var='c' in="${DataHub.list([sort: 'name'])}">
                   <tr>

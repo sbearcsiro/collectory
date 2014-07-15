@@ -9,22 +9,22 @@
     <r:require modules="fileupload"/>
 </head>
 <body>
-<h1><g:message code="dataresource.gbifupload.title01" />
+<h1><g:message code="dataresource.gbifupload.title" />
 </h1>
 
 <g:uploadForm action="uploadGBIFFile" controller="dataResource">
-    <label for="fileToUpload"><g:message code="dataresource.gbifupload.form.label01" />:</label>
+    <label for="fileToUpload"><g:message code="dataresource.gbifupload.label" />:</label>
     <div class="fileupload fileupload-new" data-provides="fileupload">
 
         <div class="well pull-right span5">
             <p>
-                <g:message code="dataresource.gbifupload.form.des01" /> <a href="http://www.gbif.org/"><g:message code="dataresource.gbifupload.form.link01" /></a>.
+                <g:message code="dataresource.gbifupload.des01" /> <a href="http://www.gbif.org/"><g:message code="dataresource.gbifupload.link.gbifportal" /></a>.
                 <br/>
-                <g:message code="dataresource.gbifupload.form.des02" />.
+                <g:message code="dataresource.gbifupload.des02" />.
             </p>
             <p>
-                <b><g:message code="dataresource.gbifupload.form.des03" /></b>: <g:message code="dataresource.gbifupload.form.des04" />.<br/>
-                <g:message code="dataresource.gbifupload.form.des05" />.
+                <b><g:message code="dataresource.gbifupload.des03" /></b>: <g:message code="dataresource.gbifupload.des04" />.<br/>
+                <g:message code="dataresource.gbifupload.des05" />.
             </p>
         </div>
 
@@ -34,15 +34,15 @@
                 <span class="fileupload-preview"></span>
             </div>
             <span class="btn btn-file">
-                <span class="fileupload-new"><g:message code="dataresource.gbifupload.form.span01" /></span>
-                <span class="fileupload-exists"><g:message code="dataresource.gbifupload.form.span02" /></span>
+                <span class="fileupload-new"><g:message code="dataresource.gbifupload.span01" /></span>
+                <span class="fileupload-exists"><g:message code="dataresource.gbifupload.span02" /></span>
                 <input type="file" name="myFile" />
             </span>
-            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload"><g:message code="dataresource.gbifupload.form.link02" /></a>
+            <a href="#" class="btn fileupload-exists" data-dismiss="fileupload"><g:message code="dataresource.gbifupload.link.remove" /></a>
         </div>
         <div style="clear:both">
-            <input type="submit" id="fileToUpload" class="btn fileupload-exists btn-primary" value="${message(code:"dataresource.gbifupload.form.button01")}"/>
-            <span class="btn cancel"><g:message code="dataresource.gbifupload.form.button02" /></span>
+            <input type="submit" id="fileToUpload" class="btn fileupload-exists btn-primary" value="${message(code:"dataresource.gbifupload.btn.upload")}"/>
+            <span class="btn cancel"><g:message code="dataresource.gbifupload.btn.cancel" /></span>
         </div>
 
     </div>

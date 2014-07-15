@@ -20,11 +20,11 @@
               <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
 
-                <tr class="reportGroupTitle"><td colspan="3"><g:message code="reports.show.table01.tr01" /></td></tr>
-                <tr><td><g:message code="reports.show.table01.tr02" /></td><td>${reports.totalCollections}</td><td></td></tr>
-                <tr><td><g:message code="reports.show.table01.tr03" /></td><td>${reports.totalInstitutions}</td><td></td></tr>
-                <tr><td><g:message code="reports.show.table01.tr04" /></td><td>${reports.totalContacts}</td><td></td></tr>
-                <tr><td><g:message code="reports.show.table01.tr05" /></td><td>${reports.totalLogons}</td><td></td></tr>
+                <tr class="reportGroupTitle"><td colspan="3"><g:message code="reports.show.tr01" /></td></tr>
+                <tr><td><g:message code="reports.show.tr02" /></td><td>${reports.totalCollections}</td><td></td></tr>
+                <tr><td><g:message code="reports.show.tr03" /></td><td>${reports.totalInstitutions}</td><td></td></tr>
+                <tr><td><g:message code="reports.show.tr04" /></td><td>${reports.totalContacts}</td><td></td></tr>
+                <tr><td><g:message code="reports.show.tr05" /></td><td>${reports.totalLogons}</td><td></td></tr>
               </table>
 
               <h3><g:message code="reports.show.title01" /></h3>
@@ -72,7 +72,7 @@
                   <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td><g:message code="reports.show.table0301" /></td>
+                <tr class="reportGroupTitle"><td><g:message code="reports.chah" /></td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
                     <g:if test="${reports.chahMembers.size() > 0}">${reports.chahMembers[0].name}</g:if><g:else>None</g:else>
@@ -82,7 +82,7 @@
                   <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td><g:message code="reports.show.table0401" /></td>
+                <tr class="reportGroupTitle"><td><g:message code="reports.chafc" /></td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
                     <g:if test="${reports.chafcMembers.size() > 0}">${reports.chafcMembers[0].name}</g:if><g:else>None</g:else>
@@ -92,7 +92,7 @@
                   <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td><g:message code="reports.show.table0501" /></td>
+                <tr class="reportGroupTitle"><td><g:message code="reports.chaec" /></td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
                     <g:if test="${reports.chaecMembers.size() > 0}">${reports.chaecMembers[0].name}</g:if><g:else>None</g:else>
@@ -102,7 +102,7 @@
                   <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td><g:message code="reports.show.table0601" /></td>
+                <tr class="reportGroupTitle"><td><g:message code="reports.chacm" /></td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
                     <g:if test="${reports.amrrnMembers.size() > 0}">${reports.amrrnMembers[0].name}</g:if><g:else>None</g:else>
@@ -112,7 +112,7 @@
                   <g:if test="${i > 0}"><tr><td></td><td colspan="2">${p.name}</td></tr></g:if>
                 </g:each>
 
-                <tr class="reportGroupTitle"><td><g:message code="reports.show.table0701" /></td>
+                <tr class="reportGroupTitle"><td><g:message code="reports.camd" /></td>
                   <!-- put first member on same line as title -->
                   <td colspan="2">
                     <g:if test="${reports.camdMembers.size() > 0}">${reports.camdMembers[0].name}</g:if><g:else>None</g:else>

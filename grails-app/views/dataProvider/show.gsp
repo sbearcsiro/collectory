@@ -42,13 +42,13 @@
                 <cl:partner test="${instance.isALAPartner}"/><br/>
 
                 <!-- GUID    -->
-                <p><span class="category"><g:message code="collection.show.span01" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category"><g:message code="collection.show.span.lsid" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
                 <p><span class="category"><g:message code="providerGroup.uid.label" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="category"><g:message code="collection.show.span03" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category"><g:message code="collection.show.span.cw" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -69,7 +69,7 @@
               <!-- description -->
               <div class="show-section well">
                 <!-- Pub Desc -->
-                <h2><g:message code="collection.show.title01" /></h2>
+                <h2><g:message code="collection.show.title.description" /></h2>
                 <span class="category"><g:message code="collection.show.span04" /></span><br/>
                 <cl:formattedText body="${instance.pubDescription?:'Not provided'}"/>
 

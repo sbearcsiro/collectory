@@ -53,20 +53,20 @@
 
                 <!-- Institution -->
                 <g:if test="${instance.institution}">
-                  <p><span class="category"><g:message code="dataresource.show.span01" />: </span> <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
+                  <p><span class="category"><g:message code="dataresource.show.sor" />: </span> <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
                 </g:if>
 
                 <!-- GUID    -->
-                <p><span class="category"><g:message code="dataresource.show.span02" />: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category"><g:message code="dataresource.show.guid" />: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
                 <p><span class="category"><g:message code="providerGroup.uid.label" />: </span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- type -->
-                <p><span class="category"><g:message code="dataresource.show.span03" />: </span> ${fieldValue(bean: instance, field: "resourceType")}</p>
+                <p><span class="category"><g:message code="dataresource.show.resourcetype" />: </span> ${fieldValue(bean: instance, field: "resourceType")}</p>
 
                 <!-- Web site -->
-                <p><span class="category"><g:message code="dataresource.show.span04" />: </span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category"><g:message code="dataresource.show.website" />: </span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -86,7 +86,7 @@
 
               <!-- description -->
               <div class="show-section well">
-                <h2><g:message code="collection.show.title01" /></h2>
+                <h2><g:message code="collection.show.title.description" /></h2>
 
                 <!-- Pub Desc -->
                 <span class="category"><g:message code="collection.show.span04" /></span><br/>
@@ -101,10 +101,10 @@
                 <cl:formattedText>${instance.focus?:'Not provided'}</cl:formattedText>
 
                 <!-- generalisations -->
-                <p><span class="category"><g:message code="dataresource.show.span06" />: </span> ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
+                <p><span class="category"><g:message code="dataresource.show.dg" />: </span> ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
 
                 <!-- info withheld -->
-                <p><span class="category"><g:message code="dataresource.show.span07" />: </span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
+                <p><span class="category"><g:message code="dataresource.show.iw" />: </span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
                 <!-- content types -->
                  <p><span class="category"><g:message code="dataResource.contentTypes.label" />: </span> <cl:formatJsonList value="${instance.contentTypes}"/></p>
@@ -127,35 +127,35 @@
                 <h2><g:message code="dataresource.show.title01" /></h2>
 
                 <!-- contributor -->
-                <p><span class="category"><g:message code="dataresource.show.span09" />: </span><cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
+                <p><span class="category"><g:message code="dataresource.show.ac" />: </span><cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
 
                 <!-- status -->
-                <p><span class="category"><g:message code="dataresource.show.span10" />: </span> ${fieldValue(bean: instance, field: "status")}</p>
+                <p><span class="category"><g:message code="dataresource.show.status" />: </span> ${fieldValue(bean: instance, field: "status")}</p>
 
                 <!-- provenance -->
-                <p><span class="category"><g:message code="dataresource.show.span11" />: </span> ${fieldValue(bean: instance, field: "provenance")}</p>
+                <p><span class="category"><g:message code="dataresource.show.provenance" />: </span> ${fieldValue(bean: instance, field: "provenance")}</p>
 
                 <!-- last checked -->
-                <p><span class="category"><g:message code="dataresource.show.span12" />: </span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
+                <p><span class="category"><g:message code="dataresource.show.lc" />: </span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
 
                 <!-- data currency -->
-                <p><span class="category"><g:message code="dataresource.show.span13" />: </span> ${fieldValue(bean: instance, field: "dataCurrency")}</p>
+                <p><span class="category"><g:message code="dataresource.show.dc" />: </span> ${fieldValue(bean: instance, field: "dataCurrency")}</p>
 
                 <!-- harvest frequency -->
-                <p><span class="category"><g:message code="dataresource.show.span14" />: </span>
+                <p><span class="category"><g:message code="dataresource.show.hf" />: </span>
                     <g:if test="${instance.harvestFrequency}">
-                        <g:message code="dataresource.show.span15" args="[instance.harvestFrequency]" />.</p>
+                        <g:message code="dataresource.show.ed" args="[instance.harvestFrequency]" />.</p>
                     </g:if>
-                    <g:else><g:message code="dataresource.show.span16" /></g:else>
+                    <g:else><g:message code="dataresource.show.manual" /></g:else>
 
                 <!-- mobilisation notes -->
-                <p><span class="category"><g:message code="dataresource.show.span17" />: </span> ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
+                <p><span class="category"><g:message code="dataresource.show.mn" />: </span> ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
 
                 <!-- harvesting notes -->
-                <p><span class="category"><g:message code="dataresource.show.span18" />: </span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
+                <p><span class="category"><g:message code="dataresource.show.hn" />: </span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
 
                 <!-- public archive available -->
-                <p><span class="category"><g:message code="dataresource.show.span19" />: </span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
+                <p><span class="category"><g:message code="dataresource.show.paa" />: </span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
 
                 <!-- connection parameters -->
                 <h3><g:message code="dataresource.show.title02" /></h3>
@@ -182,7 +182,7 @@
 
               <div class="well">
                   <h3><g:message code="dataresource.show.title03" /></h3>
-                  <g:link controller="dataResource" action="upload" class="btn" id="${instance.uid}"><i class="icon-upload"></i> <g:message code="dataresource.show.link01" /></g:link>
+                  <g:link controller="dataResource" action="upload" class="btn" id="${instance.uid}"><i class="icon-upload"></i> <g:message code="dataresource.show.link.upload" /></g:link>
               </div>
 
               <!-- rights -->

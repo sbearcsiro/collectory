@@ -77,7 +77,7 @@
     <div class="row-fluid">
             <div class="span8">
                 <g:if test="${instance.pubDescription}">
-                    <h2><g:message code="public.si.content.label01" /></h2>
+                    <h2><g:message code="public.des" /></h2>
                     <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
                     <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
                 </g:if>

@@ -21,13 +21,13 @@
               <table class="table table-striped table-bordered">
                 <colgroup><col width="40%"/><col width="10%"/><col width="50%"/></colgroup>
 
-                <tr class="reportGroupTitle"><td colspan="3"><g:message code="reports.data.table01.tr01" /></td></tr>
-                <tr><td><g:message code="reports.data.table01.tr02" /></td><td>${reports.totalCollections}</td><td></td></tr>
-                <tr><td><g:message code="reports.data.table01.tr03" /></td><td>${reports.totalInstitutions}</td><td></td></tr>
-                <tr><td><g:message code="reports.data.table01.tr04" /></td><td>${reports.totalDataProviders}</td><td></td></tr>
-                <tr><td><g:message code="reports.data.table01.tr05" /></td><td>${reports.totalDataResources}</td><td></td></tr>
-                <tr><td><g:message code="reports.data.table01.tr06" /></td><td>${reports.totalDataHubs}</td><td></td></tr>
-                <tr><td><g:message code="reports.data.table01.tr07" /></td><td>${reports.totalContacts}</td><td></td></tr>
+                <tr class="reportGroupTitle"><td colspan="3"><g:message code="reports.data.tr01" /></td></tr>
+                <tr><td><g:message code="reports.data.tr02" /></td><td>${reports.totalCollections}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.tr03" /></td><td>${reports.totalInstitutions}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.tr04" /></td><td>${reports.totalDataProviders}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.tr05" /></td><td>${reports.totalDataResources}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.tr06" /></td><td>${reports.totalDataHubs}</td><td></td></tr>
+                <tr><td><g:message code="reports.data.tr07" /></td><td>${reports.totalContacts}</td><td></td></tr>
               </table>
 
               <h3><g:message code="reports.data.title02" /></h3>

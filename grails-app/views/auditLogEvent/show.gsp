@@ -10,11 +10,11 @@
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="ale.show.li01" /></g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="ale.show.li.audit" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1><g:message code="ale.show.title01" /></h1>
+            <h1><g:message code="ale.show.title.showaudit" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>

@@ -20,8 +20,8 @@
 
             <div class="dialog">
                 <g:if test="${simple != 'true'}">
-                    <p><g:message code="reports.collections.des01" />.</p>
-                    <p><g:message code="reports.collections.des02" />.</p>
+                    <p><strong><g:message code="reports.collections.view" /></strong> <g:message code="reports.collections.des01" />.</p>
+                    <p><strong><g:message code="reports.collections.edit" /></strong> <g:message code="reports.collections.des02" />.</p>
                 </g:if>
                 <p><g:message code="reports.collections.des03" args="[collections.size()]" />.
                 <g:if test="${simple == 'true'}">
@@ -41,8 +41,8 @@
                     <td>${c.name}</td>
                     <g:if test="${simple != 'true'}">
                         <td>${c.acronym}</td>
-                        <td><g:link controller="public" action="show" id="${c.uid}">View</g:link></td>
-                        <td><g:link controller="collection" action="show" id="${c.uid}">Edit</g:link></td>
+                        <td><g:link controller="public" action="show" id="${c.uid}"><g:message code="reports.collections.view" /></g:link></td>
+                        <td><g:link controller="collection" action="show" id="${c.uid}"><g:message code="reports.collections.edit" /></g:link></td>
                     </g:if>
                   </tr>
                 </g:each>

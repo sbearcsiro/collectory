@@ -13,7 +13,7 @@
             <g:link class="mainLink" controller="public" action="map"><g:message code="admin.index.link01" /></g:link>
           </div>
           <div id="welcome">
-            <g:message code="admin.index.title01" />
+              <h3><g:message code="admin.index.title01" /></h3> <p><g:message code="admin.index.title02" />.</p>
           </div>
 
           <g:if test="${flash.message}">

@@ -34,7 +34,7 @@
               <br/>
               <table class="table table-striped table-bordered">
                 <colgroup><col width="23%"/><col width="25%"/><col width="12%"/><col width="40%"/></colgroup>
-                <tr class="reportHeaderRow"><td><g:message code="reports.changes.td01.title" /></td><td><g:message code="reports.changes.td02.title" /></td><td><g:message code="reports.changes.td03.title" /></td><td><g:message code="reports.changes.td04.title" /></td></tr>
+                <tr class="reportHeaderRow"><td><g:message code="reports.changes.when" /></td><td><g:message code="reports.changes.who" /></td><td><g:message code="reports.changes.did" /></td><td><g:message code="reports.changes.what" /></td></tr>
                 <g:each var='ch' in="${changes}">
                   <tr>
                     <td><g:link controller="auditLogEvent" action="show" id="${ch.id}">${ch.lastUpdated}</g:link></td>

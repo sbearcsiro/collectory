@@ -23,7 +23,7 @@
               <table class="table table-striped table-bordered">
                 <col width="49%"/><col width="7%"/><col width="7%"/><col width="7%"/><col width="20%"/><col width="10%"/>
 
-                <tr class="reportGroupTitle"><th><g:message code="reports.ct.td01.title" /></th><th><g:message code="reports.ct.td02.title" /></th><th><g:message code="reports.ct.td03.title" /></th><th><g:message code="reports.ct.td04.title" /></th><th><g:message code="reports.ct.td05.title" /></th><th><g:message code="reports.ct.td06.title" /></th></tr>
+                <tr class="reportGroupTitle"><th><g:message code="reports.ct.th.collection" /></th><th><g:message code="reports.ct.th.preserved" /></th><th><g:message code="reports.ct.th.cellcultures" /></th><th><g:message code="reports.ct.th.living" /></th><th><g:message code="reports.ct.th.other" /></th><th><g:message code="reports.ct.th.noun" /></th></tr>
                 <g:each var='c' in="${collections}" status="i">
                   <g:set var="types" value="${c.listCollectionTypes()}"/>
                   <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">

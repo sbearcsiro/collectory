@@ -31,10 +31,10 @@
                         <tbody>
 
                         <!-- geographic range -->
-                        <tr><td colspan="3"><h3><g:message code="collection.range.table01.title" /></h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="collection.range.title" /></h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="geographicDescription"><g:message code="collection.range.table01.label01" /></label>
+                              <label for="geographicDescription"><g:message code="collection.range.label01" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'geographicDescription', 'errors')}">
                                 <g:textField name="geographicDescription" class="input-xxlarge" value="${command?.geographicDescription}" />
@@ -45,7 +45,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="states"><g:message code="collection.range.table01.label02" /></label>
+                              <label for="states"><g:message code="collection.range.label02" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'states', 'errors')}">
                                 <g:textField name="states" value="${command?.states}" />
@@ -55,12 +55,12 @@
                         </tr>
 
                         <tr class="prop">
-                          <td colspan="2"><g:message code="collection.range.table01.label03" />.</td>
+                          <td colspan="2"><g:message code="collection.range.label03" />.</td>
                         </tr>
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="eastCoordinate"><g:message code="collection.range.table01.label04" /></label>
+                              <label for="eastCoordinate"><g:message code="collection.range.label04" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'eastCoordinate', 'errors')}">
                               <g:textField name="eastCoordinate" value="${cl.showDecimal(value: command.eastCoordinate)}" />
@@ -71,7 +71,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="westCoordinate"><g:message code="collection.range.table01.label05" /></label>
+                              <label for="westCoordinate"><g:message code="collection.range.label05" /></label>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'westCoordinate', 'errors')}">
                               <g:textField name="westCoordinate" value="${cl.showDecimal(value: command.westCoordinate)}" />
                               <cl:helpText code="collection.westCoordinate"/>
@@ -81,7 +81,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="northCoordinate"><g:message code="collection.range.table01.label06" /></label>
+                              <label for="northCoordinate"><g:message code="collection.range.label06" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'northCoordinate', 'errors')}">
                                 <g:textField name="northCoordinate" value="${cl.showDecimal(value: command.northCoordinate)}" />
@@ -92,7 +92,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="southCoordinate"><g:message code="collection.range.table01.label07" /></label>
+                              <label for="southCoordinate"><g:message code="collection.range.label07" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'southCoordinate', 'errors')}">
                               <g:textField name="southCoordinate" value="${cl.showDecimal(value: command.southCoordinate)}" />
@@ -102,10 +102,10 @@
                         </tr>
 
                         <!-- taxonomic range -->
-                        <tr><td colspan="3"><h3><g:message code="collection.range.table01.title02" /></h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="collection.range.title02" /></h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="checkbox">
-                              <label for="kingdomCoverage"><g:message code="collection.range.table01.label08" /></label>
+                              <label for="kingdomCoverage"><g:message code="collection.range.label08" /></label>
                             </td>
                             <td valign="top" class="checkbox">
                                 <cl:checkBoxList name="kingdomCoverage" from="${Collection.kingdoms}" value="${command?.kingdomCoverage}" />
@@ -116,7 +116,7 @@
 
                         <tr class="prop">
                             <td valign="top" class="name">
-                              <label for="scientificNames"><g:message code="collection.range.table01.label09" /></label>
+                              <label for="scientificNames"><g:message code="collection.range.label09" /></label>
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'scientificNames', 'errors')}">
                                 <!--richui:autoComplete name="scientificNames" controller="collection" action="scinames" title="sci name"/-->
@@ -127,7 +127,7 @@
                         </tr>
 
                         <!-- stats -->
-                        <tr><td colspan="3"><h3><g:message code="collection.range.table01.title03" /></h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="collection.range.title03" /></h3></td></tr>
                         <tr class="prop">
                             <td valign="top" class="name">
                               <label for="numRecords"><g:message code="collection.numRecords.label" default="Number of specimens" /></label>

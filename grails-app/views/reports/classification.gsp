@@ -22,7 +22,7 @@
               <table class="table table-striped table-bordered">
                 <col width="55%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/><col width="9%"/>
 
-                <tr class="reportGroupTitle"><th><g:message code="reports.classification.td01.title" /></th><th><g:message code="reports.classification.td02.title" /></th><th><g:message code="reports.classification.td03.title" /></th><th><g:message code="reports.classification.td04.title" /></th><th><g:message code="reports.classification.td05.title" /></th><th><g:message code="reports.classification.td06.title" /></th></tr>
+                <tr class="reportGroupTitle"><th><g:message code="reports.classification.th.collection" /></th><th><g:message code="reports.classification.th.acronym" /></th><th><g:message code="reports.classification.th.herbaria" /></th><th><g:message code="reports.classification.th.fauna" /></th><th><g:message code="reports.classification.th.ento" /></th><th><g:message code="reports.classification.th.microbes" /></th></tr>
                 <g:each var='c' in="${collections}" status="i">
                   <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                     <td>

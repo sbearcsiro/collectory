@@ -20,8 +20,8 @@
 
             <div class="dialog">
                 <g:if test="${simple != 'true'}">
-                    <p><g:message code="reports.institutions.des01" />.</p>
-                    <p><g:message code="reports.institutions.des02" />.</p>
+                    <p><strong><g:message code="reports.institutions.link.view" /></strong> <g:message code="reports.institutions.des01" />.</p>
+                    <p><g:message code="reports.institutions.link.edit" /></strong> <g:message code="reports.institutions.des02" />.</p>
                 </g:if>
                 <p><g:message code="reports.institutions.des03" args="[institutions.size()]" />.
                 <g:if test="${simple == 'true'}">

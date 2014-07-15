@@ -47,7 +47,7 @@
                 <h2 class="pseudoLink">${inst.name}</h2>
               </g:if>
               <span class="acronym">Acronym: <span id="acronym">${fieldValue(bean: instance, field: "acronym")}</span><cl:change id="acronymLink"/></span>
-              <span class="lsid"><a href="#lsidText" id="lsidbox" class="local" title="Life Science Identifier (pop-up)"><g:message code="collection.show.span01" /></a></span><cl:change id="lsidLink"/>
+              <span class="lsid"><a href="#lsidText" id="lsidbox" class="local" title="Life Science Identifier (pop-up)"><g:message code="collection.show.span.lsid" /></a></span><cl:change id="lsidLink"/>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
                       <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank"><g:message code="public.lsidtext.link" />:</a></b>
@@ -68,7 +68,7 @@
           <div id="column-one">
             <div class="section">
 
-                <h2><g:message code="collection.show.title01" /><cl:change id="descriptionLink"/></h2>
+                <h2><g:message code="collection.show.title.description" /><cl:change id="descriptionLink"/></h2>
                 <div id="description">
                   <cl:formattedText body="${instance.pubDescription}"/>
                   <cl:formattedText body="${instance.techDescription}"/>
@@ -76,18 +76,18 @@
                 <p><span id="temporalSpan"><cl:temporalSpanText start="${instance.startDate}" end="${instance.endDate}" change="true"/></span>
                   <cl:change id="temporalSpanLink"/></p>
 
-                <h2><g:message code="collection.show.title04" /><cl:change id="taxonomicRangeLink"/></h2>
+                <h2><g:message code="collection.show.title.tr" /><cl:change id="taxonomicRangeLink"/></h2>
                 <p class="${instance.focus ? '' : 'empty'}" id="focus">${fieldValue(bean: instance, field: "focus")}</p>
                 <p class="${instance.kingdomCoverage ? '' : 'empty'}" id="kingdomCoverage">Kingdoms covered include: <cl:concatenateStrings values='${fieldValue(bean: instance, field: "kingdomCoverage")}'/>.</p>
                 <p class="${instance.scientificNames ? '' : 'empty'}" id="sciNames"><cl:collectionName name="${instance.name}" prefix="The "/> <g:message code="public.show.oc.des02" />:<br/>
                 <span id="scientificNames"><cl:JSONListAsStrings json='${fieldValue(bean: instance, field: "scientificNames")}'/></span>.</p>
 
-                <h2><g:message code="collection.show.title03" /><cl:change id="geographicRangeLink"/></h2>
+                <h2><g:message code="collection.show.title.gr" /><cl:change id="geographicRangeLink"/></h2>
                 <p class="${instance.geographicDescription ? '' : 'empty'}" id="geographicDescription">${fieldValue(bean: instance, field: "geographicDescription")}</p>
                 <p class="${instance.states ? '' : 'empty'}" id="states"><cl:stateCoverage states='${fieldValue(bean: instance, field: "states")}'/></p>
 
                 <g:set var="nouns" value="${cl.nounForTypes(types:instance.listCollectionTypes())}"/>
-                <h2><g:message code="collection.show.title05" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.title06" /><cl:change id="records"/></h2>
+                <h2><g:message code="collection.show.title.numberof" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.title.inthecollection" /><cl:change id="records"/></h2>
                 <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
                 <p><g:message code="manage.show.des01" args="[nouns]" /> <cl:collectionName prefix="the " name="${instance.name}"/> <g:message code="manage.show.des02" /> ${fieldValue(bean: instance, field: "numRecords")}.</p>
                 </g:if>
@@ -97,7 +97,7 @@
                 </g:if>
                 <p><g:message code="public.show.oc.des13" />.</p>
 
-                <h2><g:message code="collection.show.title02" /><cl:change id="subCollections"/></h2>
+                <h2><g:message code="collection.show.title.subcollections" /><cl:change id="subCollections"/></h2>
                 <p><cl:collectionName prefix="The " name="${instance.name}"/> <g:message code="public.show.oc.des14" />:</p>
                 <cl:subCollectionList list="${instance.subCollections}"/>
 

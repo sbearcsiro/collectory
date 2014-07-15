@@ -170,7 +170,7 @@
                     <h2><g:message code="manage.list.addtools.title01" /></h2>
                     <p><g:message code="manage.list.addtools.des01" args="[ProviderGroup.ROLE_ADMIN]" />.</p>
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="collection" action="list"><g:message code="manage.list.addtools.link01" /></g:link>
+                        <g:link class="mainLink" controller="collection" action="list"><g:message code="manage.list.addtools.vac" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des02" />.</p>
                     </div>
 
@@ -187,65 +187,65 @@
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="collection" action="create"><g:message code="manage.list.addtools.link02" /></g:link>
+                        <g:link class="mainLink" controller="collection" action="create"><g:message code="manage.list.addtools.aac" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des04" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="institution" action="list"><g:message code="manage.list.addtools.link03" /></g:link>
+                        <g:link class="mainLink" controller="institution" action="list"><g:message code="manage.list.addtools.vai" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des05" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataProvider" action="list"><g:message code="manage.list.addtools.link04" /></g:link>
+                        <g:link class="mainLink" controller="dataProvider" action="list"><g:message code="manage.list.addtools.vadp" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des06" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataResource" action="list"><g:message code="manage.list.addtools.link05" /></g:link>
+                        <g:link class="mainLink" controller="dataResource" action="list"><g:message code="manage.list.addtools.vadr" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des07" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataHub" action="list"><g:message code="manage.list.addtools.link06" /></g:link>
+                        <g:link class="mainLink" controller="dataHub" action="list"><g:message code="manage.list.addtools.vadh" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des08" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="reports" action="list"><g:message code="manage.list.addtools.link07" /></g:link>
+                        <g:link class="mainLink" controller="reports" action="list"><g:message code="manage.list.addtools.vr" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des09" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="contact" action="list"><g:message code="manage.list.addtools.link08" /></g:link>
+                        <g:link class="mainLink" controller="contact" action="list"><g:message code="manage.list.addtools.mc" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des10" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="providerCode" action="list"><g:message code="manage.list.addtools.link09" /></g:link>
+                        <g:link class="mainLink" controller="providerCode" action="list"><g:message code="manage.list.addtools.mpc" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des11" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="providerMap" action="list"><g:message code="manage.list.addtools.link10" /></g:link>
+                        <g:link class="mainLink" controller="providerMap" action="list"><g:message code="manage.list.addtools.mpm" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des12" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="admin" action="export"><g:message code="manage.list.addtools.link11" /></g:link>
+                        <g:link class="mainLink" controller="admin" action="export"><g:message code="manage.list.addtools.eadaj" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des13" />.</p>
                     </div>
 
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="auditLogEvent" action="list" params="[max:1000]"><g:message code="manage.list.addtools.link12" /></g:link>
+                        <g:link class="mainLink" controller="auditLogEvent" action="list" params="[max:1000]"><g:message code="manage.list.addtools.vae" /></g:link>
                         <p class="mainText"><g:message code="manage.list.addtools.des14" /></p>
                     </div>
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="manage" action="gbifLoadCountry"><g:message code="manage.list.addtools.link13" /></g:link>
+                        <g:link class="mainLink" controller="manage" action="gbifLoadCountry"><g:message code="manage.list.addtools.addgbif" /></g:link>
                         <p class="mainText"r><g:message code="manage.list.addtools.des15" /></p>
                     </div>
                     <div class="homeCell">
-                        <g:link class="mainLink" controller="dataResource" action="gbifUpload"><g:message code="manage.list.addtools.link14" /></g:link>
+                        <g:link class="mainLink" controller="dataResource" action="gbifUpload"><g:message code="manage.list.addtools.uploadgbif" /></g:link>
                         <p class="mainText"r><g:message code="manage.list.addtools.des16" /></p>
                     </div>
                   </div>

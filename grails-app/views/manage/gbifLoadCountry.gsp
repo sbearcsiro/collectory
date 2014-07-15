@@ -12,13 +12,13 @@
             <div class="span6">
                     <table>
                         <tr class="prop">
-                            <td valign="top" class="name"><label for="country"><g:message code="manage.gbiflc.form.label01" />:</label></td>
+                            <td valign="top" class="name"><label for="country"><g:message code="manage.gbiflc.label01" />:</label></td>
                             <td valign="top" class="value">
                                 <g:select name="country" from="${pubMap.entrySet()}" optionKey="key" optionValue="value"/>
                             </td>
                         </tr>
                         <tr class="prop">
-                            <td valign="top" class="name"><label for="gbifUsername"><g:message code="manage.gbiflc.form.label02" />:</label></td>
+                            <td valign="top" class="name"><label for="gbifUsername"><g:message code="manage.gbiflc.label02" />:</label></td>
                             <td valign="top" class="value"><g:field type="text" name="gbifUsername" required="true" value="" /></td>
                         </tr>
                         <tr class="prop">

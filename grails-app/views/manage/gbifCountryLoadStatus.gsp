@@ -30,18 +30,18 @@
 <g:if test="${gbifSummary}">
 <h1>${gbifSummary.isLoadRunning() ? 'Automatically' : 'Finished'} loading ${gbifSummary.loads.size} resources for ${country}
 </h1>
-<h3><g:message code="manage.gbifcls.title01" /> <g:formatNumber number="${gbifSummary.getPercentageComplete()}" format="#0.00"/> %</h3>
-<h4><g:message code="manage.gbifcls.title02" />: ${gbifSummary.startTime}
+<h3><g:message code="manage.gbifcls.title.completed" /> <g:formatNumber number="${gbifSummary.getPercentageComplete()}" format="#0.00"/> %</h3>
+<h4><g:message code="manage.gbifcls.title.started" />: ${gbifSummary.startTime}
     <g:if test="${gbifSummary.finishTime}">
-        <br/><g:message code="manage.gbifcls.title03" />: ${gbifSummary.finishTime}
+        <br/><g:message code="manage.gbifcls.title.finished" />: ${gbifSummary.finishTime}
     </g:if>
 </h4>
 
 <table class="table table-bordered table-striped">
     <thead>
-        <th><g:message code="manage.gbifcls.th01" /></th>
-        <th><g:message code="manage.gbifcls.th02" /></th>
-        <th><g:message code="manage.gbifcls.th03" /></th>
+        <th><g:message code="manage.gbifcls.th.resource" /></th>
+        <th><g:message code="manage.gbifcls.th.status" /></th>
+        <th><g:message code="manage.gbifcls.th.link" /></th>
     </thead>
 <g:each in="${gbifSummary.loads}" var = "load" >
     <tr class="prop">

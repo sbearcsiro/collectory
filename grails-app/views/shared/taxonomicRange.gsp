@@ -37,7 +37,7 @@
                       <div class="span4 well" id="selected-list">
                             <h3><g:message code="shared.tr.title03" /></h3>
                             <ul></ul>
-                            <button type="button" class="btn" id="clear"><g:message code="shared.tr.button01" /></button>
+                            <button type="button" class="btn" id="clear"><g:message code="shared.tr.btn.clearall" /></button>
                             <span class="button"><input type="submit" name="_action_updateTaxonomicRange" value="${message(code:"shared.button.update")}" class="save btn"></span>
                             <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"shared.button.cancel")}" class="cancel btn"></span>
                       </div>

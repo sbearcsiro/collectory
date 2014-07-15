@@ -74,16 +74,16 @@
 
         <div class="tabbable">
             <ul class="nav nav-tabs" id="overviewTabs">
-                <li><a id="tab1" href="#overviewTab" data-toggle="tab"><g:message code="public.show.overviewtabs.li01" /></a></li>
-                <li><a id="tab2" href="#recordsTab" data-toggle="tab"><g:message code="public.show.overviewtabs.li02" /></a></li>
-                <li id="imagesTabEl" style="display:none;"><a id="tab3" href="#imagesTab" data-toggle="tab"><g:message code="public.show.overviewtabs.li03" /></a></li>
+                <li><a id="tab1" href="#overviewTab" data-toggle="tab"><g:message code="public.show.overviewtabs.overview" /></a></li>
+                <li><a id="tab2" href="#recordsTab" data-toggle="tab"><g:message code="public.show.overviewtabs.records" /></a></li>
+                <li id="imagesTabEl" style="display:none;"><a id="tab3" href="#imagesTab" data-toggle="tab"><g:message code="public.show.overviewtabs.images" /></a></li>
             </ul>
         </div>
 
         <div class="tab-content">
             <div id="overviewTab" class="tab-pane active row-fluid">
                <div id="overview-content" class="span8">
-                  <h2><g:message code="public.show.oc.label01" /></h2>
+                  <h2><g:message code="public.des" /></h2>
                   <cl:formattedText body="${instance.pubDescription}"/>
                   <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
                   <g:if test="${instance.startDate || instance.endDate}">
@@ -145,7 +145,7 @@
                   <div id='usage-stats' style="">
                     <h2><g:message code="public.show.oc.label07" /></h2>
                     <div id='usage'>
-                      <p><g:message code="public.show.oc.des15" />...</p>
+                      <p><g:message code="public.usage.des" />...</p>
                     </div>
                   </div>
                   </g:if>
@@ -168,7 +168,7 @@
                   </div>
 
                   <div class="section">
-                    <h3><g:message code="public.show.osb.label01" /></h3>
+                    <h3><g:message code="public.location" /></h3>
                     <!-- use parent location if the collection is blank -->
                     <g:set var="address" value="${instance.address}"/>
                     <g:if test="${address == null || address.isEmpty()}">
@@ -197,7 +197,7 @@
                   <!-- web site -->
                   <g:if test="${instance.websiteUrl || instance.institution?.websiteUrl}">
                     <div class="section">
-                      <h3><g:message code="public.show.osb.label02" /></h3>
+                      <h3><g:message code="public.website" /></h3>
                       <g:if test="${instance.websiteUrl}">
                         <div class="webSite">
                           <a class='external' rel='nofollow' target="_blank" href="${instance.websiteUrl}"><g:message code="public.show.osb.link01" /></a>

@@ -42,7 +42,7 @@
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle">
-                  <td><g:message code="reports.membership.tr0301" /> (${reports.chafcMembers.size()})</td>
+                  <td><g:message code="reports.chafc" /> (${reports.chafcMembers.size()})</td>
                   <td colspan="2"><b><g:message code="reports.membership.tr0302" /></b></td>
                 </tr>
                 <g:each var="p" in="${reports.chafcMembers}" status="i">
@@ -57,7 +57,7 @@
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle">
-                  <td><g:message code="reports.membership.tr0401" /> (${reports.chaecMembers.size()})</td>
+                  <td><g:message code="reports.chaec" /> (${reports.chaecMembers.size()})</td>
                   <td colspan="2"><b><g:message code="reports.membership.tr0402" /></b></td>
                 </tr>
                 <g:each var="p" in="${reports.chaecMembers}" status="i">
@@ -72,7 +72,7 @@
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle">
-                  <td><g:message code="reports.membership.tr0501" /> (${reports.amrrnMembers.size()})</td>
+                  <td><g:message code="reports.chacm" /> (${reports.amrrnMembers.size()})</td>
                   <td colspan="2"><b><g:message code="reports.membership.tr0502" /></b></td>
                 </tr>
                 <g:each var="p" in="${reports.amrrnMembers}" status="i">
@@ -87,7 +87,7 @@
 
                 <tr><td colspan="3"><hr></td></tr>
                 <tr class="reportGroupTitle">
-                  <td><g:message code="reports.membership.tr0601" /> (${reports.camdMembers.size()})</td>
+                  <td><g:message code="reports.camd" /> (${reports.camdMembers.size()})</td>
                   <td colspan="2"><b><g:message code="reports.membership.tr0602" /></b></td>
                 </tr>
                 <g:each var="p" in="${reports.camdMembers}" status="i">

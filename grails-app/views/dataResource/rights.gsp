@@ -147,7 +147,7 @@
 
                 <div class="buttons">
                     <span class="button"><input type="submit" name="_action_updateRights" value="${message(code:"collection.button.update")}" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"dataresource.gbifupload.form.button02")}" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"dataresource.gbifupload.btn.cancel")}" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

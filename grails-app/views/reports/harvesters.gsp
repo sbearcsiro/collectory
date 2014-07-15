@@ -32,7 +32,7 @@
                 <colgroup width="250"></colgroup>
                 <colgroup span="5" class="center"></colgroup>
                 <thead>
-                    <tr class="reportHeaderRow"><th></th></th><th><g:message code="reports.harvesters.th01" /></th><th><g:message code="reports.harvesters.th02" /></th><th class="center"><g:message code="reports.harvesters.th03" /></th><th class="center"><g:message code="reports.harvesters.th04" /></th><th class="center"><g:message code="reports.harvesters.th05" /></th><th class="center"><g:message code="reports.harvesters.th06" /></th></tr>
+                    <tr class="reportHeaderRow"><th></th></th><th><g:message code="reports.harvesters.th.resource" /></th><th><g:message code="reports.harvesters.th.status" /></th><th class="center"><g:message code="reports.harvesters.th.freq" /></th><th class="center"><g:message code="reports.harvesters.th.lastchecked" /></th><th class="center"><g:message code="reports.harvesters.th.datacurrency" /></th><th class="center"><g:message code="reports.harvesters.th.collection" /></th></tr>
                 </thead>
                 <tbody>
                     <g:each var='r' in="${resources}">

@@ -70,7 +70,7 @@
       <div id="column-one" class="span8">
       <div class="section">
         <g:if test="${instance.pubDescription}">
-          <h2><g:message code="public.sdh.co.label01" /></h2>
+          <h2><g:message code="public.des" /></h2>
           <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
           <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
         </g:if>
@@ -80,7 +80,7 @@
         </g:if>
 
         <h2><g:message code="public.sdh.co.label03" /></h2>
-        <p><g:message code="public.sdh.co.des01" /> <span id="totalRecords"><g:message code="public.sdh.co.des02" />...</span> <g:message code="public.sdh.co.des03" />.
+        <p><g:message code="public.sdh.co.des01" /> <span id="totalRecords"><g:message code="public.usage.des" />...</span> <g:message code="public.sdh.co.des03" />.
             <a href="${grailsApplication.config.biocacheUiURL}/occurrences/search?q=data_hub_uid:${instance.uid}" class="btn">View all records</a>
             %{--&nbsp;&nbsp;&nbsp;<button type=button id="showTimings">Show timings</button>--}%
         </p>
@@ -104,7 +104,7 @@
         </g:if>
 
         <div class="section">
-          <h3><g:message code="public.sdh.ct.label01" /></h3>
+          <h3><g:message code="public.location" /></h3>
           <g:if test="${instance.address != null && !instance.address.isEmpty()}">
             <p>
               <cl:valueOrOtherwise value="${instance.address?.street}">${instance.address?.street}<br/></cl:valueOrOtherwise>
@@ -124,7 +124,7 @@
         <!-- web site -->
         <g:if test="${instance.websiteUrl}">
           <div class="section">
-            <h3><g:message code="public.sdh.ct.label02" /></h3>
+            <h3><g:message code="public.website" /></h3>
             <div class="webSite">
               <a class='external_icon' target="_blank" href="${instance.websiteUrl}"><g:message code="public.sdh.ct.link01" /></a>
             </div>

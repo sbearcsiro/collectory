@@ -39,23 +39,23 @@
       <div class="row-fluid"><!-- wrap map and list-->
         <div class="span4">
           <div class="section">
-            <p><g:message code="public.map3.span4.des01" />.</p>
+            <p><g:message code="public.map3.des01" />.</p>
           </div>
           <div class="section filter-buttons">
             <div class="all selected" id="all" onclick="toggleButton(this);return false;">
-              <h2><a href=""><g:message code="public.map3.span4.link01" /><span id="allButtonTotal"><g:message code="public.map3.span4.link02" /> <collections></collections></span></a></h2>
+              <h2><a href=""><g:message code="public.map3.link.allcollections" /><span id="allButtonTotal"><g:message code="public.map3.link.showall" /> <collections></collections></span></a></h2>
             </div>
             <div class="fauna" id="fauna" onclick="toggleButton(this);return false;">
-              <h2><a href=""><g:message code="public.map3.span4.link03" /><span style=""><g:message code="public.map3.span4.link04" />.</span></a></h2>
+              <h2><a href=""><g:message code="public.map3.link.fauna" /><span style=""><g:message code="public.map3.link.mammals" />.</span></a></h2>
             </div>
             <div class="insects" id="entomology" onclick="toggleButton(this);return false;">
-              <h2><a href=""><g:message code="public.map3.span4.link05" /><span style=""><g:message code="public.map3.span4.link06" />.</span></a></h2>
+              <h2><a href=""><g:message code="public.map3.link.insect" /><span style=""><g:message code="public.map3.link.insects" />.</span></a></h2>
             </div>
             <div class="microbes" id="microbes" onclick="toggleButton(this);return false;">
-              <h2><a href=""><g:message code="public.map3.span4.link07" /><span style=""><g:message code="public.map3.span4.link08" />.</span></a></h2>
+              <h2><a href=""><g:message code="public.map3.link.mos" /><span style=""><g:message code="public.map3.link.protists" />.</span></a></h2>
             </div>
             <div class="plants" id="plants" onclick="toggleButton(this);return false;">
-              <h2><a href=""><g:message code="public.map3.span4.link09" /><span style=""><g:message code="public.map3.span4.link10" />.</span></a></h2>
+              <h2><a href=""><g:message code="public.map3.link.plants" /><span style=""><g:message code="public.map3.link.vascular" />.</span></a></h2>
             </div>
           </div><!--close section-->
           <!--div class="section" style="margin-top:5px;margin-bottom:5px;"><p style="margin-left:8px;padding-bottom:0;color:#666">Note that fauna includes insects.</p></div-->
@@ -74,8 +74,8 @@
         <div class="span8" id="map-list-col">
             <div class="tabbable">
                 <ul class="nav nav-tabs" id="home-tabs">
-                    <li class="active"><a href="#map" data-toggle="tab"><g:message code="public.map3.maplistcol.li01" /></a></li>
-                    <li><a href="#list" data-toggle="tab"><g:message code="public.map3.maplistcol.li02" /></a></li>
+                    <li class="active"><a href="#map" data-toggle="tab"><g:message code="public.map3.maplistcol.map" /></a></li>
+                    <li><a href="#list" data-toggle="tab"><g:message code="public.map3.maplistcol.list" /></a></li>
                 </ul>
             </div>
             <div class="tab-content">

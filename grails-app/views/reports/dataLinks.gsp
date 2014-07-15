@@ -22,7 +22,7 @@
               <p><g:message code="reports.dl.des02" />.</p>
               <table class="table table-striped table-bordered">
                 <colgroup><col width="45%"/><col width="10%"/><col width="45%"/></colgroup>
-                <tr class="reportHeaderRow"><td><g:message code="reports.dl.table0101" /></td><td></td><td><g:message code="reports.dl.table0102" /></td></tr>
+                <tr class="reportHeaderRow"><td><g:message code="reports.dl.provider" /></td><td></td><td><g:message code="reports.dl.consumer" /></td></tr>
                 <g:each var='link' in="${links}">
                   <g:set var="provider" value="${ProviderGroup._get(link.provider)}"/>
                   <g:set var="consumer" value="${ProviderGroup._get(link.consumer)}"/>

@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-        <h1>Editing: ${command.name}</h1>
+        <h1><g:message code="shared.title.editing" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -26,7 +26,7 @@
                 <g:textField name="providers" value="${command.listProviders().join(',')}" />
                 <div class="dialog">
                     <div id="not-selected" class="container">
-                        <h1>Resources:</h1>
+                        <h1><g:message code="shared.providers.notselected.label" />:</h1>
                         <ul>
                             <g:each in="${DataResource.findAllByResourceType('records',[sort:'name'])}" var="r">
                                 <g:if test="${!(r.uid in command.listProviders())}">
@@ -36,7 +36,7 @@
                         </ul>
                     </div>
                     <div id="selected" class="container">
-                        <h1>Record providers.</h1><p>Drag resources to here</p>
+                        <h1><g:message code="shared.providers.selected.title" />.</h1><p><g:message code="shared.providers.selected.des" /></p>
                         <ul>
                             <g:each in="${DataResource.findAllByResourceType('records',[sort:'name'])}" var="r">
                                 <g:if test="${r.uid in command.listProviders()}">
@@ -49,8 +49,8 @@
                 
                 <div style="clear:both;"></div>
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateProviders" value="Update" class="save"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" name="_action_updateProviders" value="${message(code:"shared.button.update")}" class="save"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"shared.button.cancel")}" class="cancel"></span>
                 </div>
             </g:form>
         </div>

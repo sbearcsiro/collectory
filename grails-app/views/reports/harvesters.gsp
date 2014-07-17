@@ -3,7 +3,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports</title>
+        <title><g:message code="reports.title" /></title>
         <link rel="stylesheet" href="${resource(dir:'css/smoothness',file:'jquery-ui-1.8.14.custom.css')}" type="text/css" media="screen"/>
         <g:javascript library="jquery-1.5.1.min"/>
         <g:javascript library="jquery-ui-1.8.14.custom.min"/>
@@ -12,27 +12,27 @@
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Data mobilisation settings</h1>
+            <h1><g:message code="reports.harvesters.title01" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <p>This list shows the metadata that controls data mobilisation.</p>
-              <p>Click the twisty to show connection parameters. Click resource name to edit the resource.</p>
+              <p><g:message code="reports.harvesters.des01" />.</p>
+              <p><g:message code="reports.harvesters.des02" />.</p>
               <p>
-                <span id="toggle"><a class="button" href='javascript:showEmpty();'>Show resources with no mobilisation values.</a></span>
-                <span id="toggleAll"><a class="button" href='javascript:hideAll();'>Show all connection parameters.</a></span>
+                <span id="toggle"><a class="button" href='javascript:showEmpty();'><g:message code="reports.harvesters.des03" />.</a></span>
+                <span id="toggleAll"><a class="button" href='javascript:hideAll();'><g:message code="reports.harvesters.des04" />.</a></span>
               </p>
               <table class="reports table table-striped table-bordered">
                 <colgroup width="3"></colgroup>
                 <colgroup width="250"></colgroup>
                 <colgroup span="5" class="center"></colgroup>
                 <thead>
-                    <tr class="reportHeaderRow"><th></th></th><th>Resource</th><th>Status</th><th class="center">Freq (days)</th><th class="center">Last Checked</th><th class="center">Data Currency</th><th class="center">Connection</th></tr>
+                    <tr class="reportHeaderRow"><th></th></th><th><g:message code="reports.harvesters.th.resource" /></th><th><g:message code="reports.harvesters.th.status" /></th><th class="center"><g:message code="reports.harvesters.th.freq" /></th><th class="center"><g:message code="reports.harvesters.th.lastchecked" /></th><th class="center"><g:message code="reports.harvesters.th.datacurrency" /></th><th class="center"><g:message code="reports.harvesters.th.collection" /></th></tr>
                 </thead>
                 <tbody>
                     <g:each var='r' in="${resources}">

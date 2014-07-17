@@ -3,30 +3,30 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-    <title>Load GBIF Resources From Country</title>
+    <title><g:message code="manage.gbiflc.title" /></title>
 </head>
 <body>
-<h1>Automatically load resources from GBIF based on a supplied country</h1>
+<h1><g:message code="manage.gbiflc.title01" /></h1>
 <div id="baseForm">
     <g:form action="loadAllGbifForCountry" controller="manage">
             <div class="span6">
                     <table>
                         <tr class="prop">
-                            <td valign="top" class="name"><label for="country">Publishing country (e.g. SPAIN):</label></td>
+                            <td valign="top" class="name"><label for="country"><g:message code="manage.gbiflc.label01" />:</label></td>
                             <td valign="top" class="value">
                                 <g:select name="country" from="${pubMap.entrySet()}" optionKey="key" optionValue="value"/>
                             </td>
                         </tr>
                         <tr class="prop">
-                            <td valign="top" class="name"><label for="gbifUsername">GBIF username:</label></td>
+                            <td valign="top" class="name"><label for="gbifUsername"><g:message code="manage.gbiflc.label02" />:</label></td>
                             <td valign="top" class="value"><g:field type="text" name="gbifUsername" required="true" value="" /></td>
                         </tr>
                         <tr class="prop">
-                            <td valign="top" class="name"><label for="gbifPassword">GBIF password:</label> </td>
+                            <td valign="top" class="name"><label for="gbifPassword"><g:message code="manage.gbiflc.label03" />:</label> </td>
                             <td valign="top" class="value"><g:field type="password" name="gbifPassword" required="true" value="" /></td>
                         </tr>
                         <tr class="prop">
-                            <td valign="top" class="name"><label for="maxResources">Maximum resources (will default to all):</label></td>
+                            <td valign="top" class="name"><label for="maxResources"><g:message code="manage.gbiflc.label04" />:</label></td>
                             <td valign="top" class="value"><g:field type="number" name="maxResources"  value="1"/></td>
                         </tr>
                     </table>
@@ -36,18 +36,15 @@
 
             <div class="well pull-right span5">
                 <p>
-                    This tool will download archives from GBIF web services,
-                    store the archives locally and
-                    create an initial metadata record for each resource.<br/>
-                    This will not load the data into the occurrence store automatically.
+                    <g:message code="manage.gbiflc.des01" />.<br/>
+                    <g:message code="manage.gbiflc.des02" />.
                     <br/>
-                    To obtain a username, please register with the GBIF web site
-                    <a href="http://www.gbif.org/user/register">here</a>.
+                    <g:message code="manage.gbiflc.des03" />
+                    <a href="http://www.gbif.org/user/register"><g:message code="manage.gbiflc.link01" /></a>.
                 </p>
                 <p>
-                    <b>Note</b>: This is a simple method of bootstrapping an installation with data
-                    provided by GBIF web services.<br/>
-                    This is not intended for long-term production use.
+                    <b><g:message code="manage.gbiflc.des04" /></b>: <g:message code="manage.gbiflc.des05" />.<br/>
+                    <g:message code="manage.gbiflc.des06" />.
                 </p>
             </div>
         </div>

@@ -9,7 +9,7 @@
     </head>
     <body>
         <div class="nav">
-            <h1>Editing: ${command.name}</h1>
+            <h1><g:message code="collection.title.editing" />: ${command.name}</h1>
         </div>
         <div id="baseForm" class="body">
             <g:if test="${message}">
@@ -100,7 +100,7 @@
                             </td>
                             <td valign="top" class="value ${hasErrors(bean: command, field: 'harvestingNotes', 'errors')}">
                                 <g:textArea name="mobilisationNotes" cols="40" rows="${cl.textAreaHeight(text:command.mobilisationNotes)}" value="${command?.mobilisationNotes}" />
-                                <p>Remember to add your initials and the date of contact.</p>
+                                <p><g:message code="dataresource.contribution.des01" />.</p>
                                 <cl:helpText code="dataResource.mobilisationNotes"/>
                               </td>
                               <cl:helpTD/>
@@ -131,13 +131,13 @@
                         </tr>
 
                         <!-- harvest parameters -->
-                        <tr><td colspan="3"><h3>Connection parameters</h3></td></tr>
+                        <tr><td colspan="3"><h3><g:message code="dataresource.contribution.table0101" /></h3></td></tr>
                         <cl:connectionParameters bean="command" connectionParameters="${command.connectionParameters}"/>
 
                         <g:if test="${command.resourceType == 'records'}">
                             <!-- darwin core defaults -->
-                            <tr><td colspan="3"><h3>Default values for DwC fields</h3></td></tr>
-                            <tr><td colspan="3">Make sure you confirm all defaults with the data provider.</td></tr>
+                            <tr><td colspan="3"><h3><g:message code="dataresource.contribution.table0201" /></h3></td></tr>
+                            <tr><td colspan="3"><g:message code="dataresource.contribution.table0301" />.</td></tr>
                             <g:set var="dwc" value="${command.defaultDarwinCoreValues ? JSON.parse(command.defaultDarwinCoreValues) : [:]}"/>
                             <!-- add fields for each of the important terms -->
                             <g:each in="${DarwinCoreFields.getImportant()}" var="dwcf">
@@ -175,13 +175,13 @@
                             </g:each>
 
                             <!-- add a blank field so other DwC terms can be added -->
-                            <tr id="add-another"><td colspan="3">Choose another DwC term and click button to add a new field.</td></tr>
+                            <tr id="add-another"><td colspan="3"><g:message code="dataresource.contribution.table0401" />.</td></tr>
                             <tr class="prop">
                                 <td valign="top" class="name">
                                     <g:select name="otherKey" from="${DarwinCoreFields.getLessImportant().collect({it.name})}"/>
                                 </td>
                                 <td valign="top" class="value">
-                                    <button id="more-terms" type="button" class="btn">Add new term</button>
+                                    <button id="more-terms" type="button" class="btn"><g:message code="dataresource.contribution.table.button" /></button>
                                 </td>
                             </tr>
 
@@ -192,8 +192,8 @@
                 </div>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" name="_action_updateContribution" value="Update" class="save btn"></span>
-                    <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+                    <span class="button"><input type="submit" name="_action_updateContribution" value="${message(code:"collection.button.update")}" class="save btn"></span>
+                    <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"collection.button.cancel")}" class="cancel btn"></span>
                 </div>
             </g:form>
         </div>

@@ -23,6 +23,6 @@
     </table>
     </g:if>
     <g:else>
-        <p class="lead">There are no collections listed against your login at present.</p>
+        <p class="lead"><g:message code="ale.show.cl.des" />.</p>
     </g:else>
 </div>

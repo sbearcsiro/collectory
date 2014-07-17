@@ -2,17 +2,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Audit</title>
+        <title><g:message code="ale.list.title" /></title>
     </head>
     <body class="content">
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton">Audit list of events</span></li>
+            <li><span class="menuButton"><g:message code="ale.list.li01" /></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Audit - List of events</h1>
+            <h1><g:message code="ale.list.title01" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>

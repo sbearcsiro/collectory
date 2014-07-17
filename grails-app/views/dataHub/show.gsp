@@ -34,13 +34,13 @@
                 <h1>${fieldValue(bean: instance, field: "name")}<cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise></h1>
 
                 <!-- GUID    -->
-                <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category"><g:message code="collection.show.span.lsid" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
-                <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category"><g:message code="collection.show.span.uid" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category"><g:message code="collection.show.span.cw" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -53,14 +53,14 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="category">Last change:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category"><g:message code="datahub.show.lastchange" />:</span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <div><span class="buttons"><g:link class="edit btn" action='edit' params="[page:'/shared/base']" id="${instance.id}">${message(code: 'default.button.edit.label', default: 'Edit')}</g:link></span></div>
               </div>
 
               <!-- description -->
               <div class="show-section well">
-                <h2>Description</h2>
+                <h2><g:message code="collection.show.title.description" /></h2>
 
                 <!-- Pub Desc -->
                 <div class="source">[Public description]</div><div style="clear:both;"></div>
@@ -79,9 +79,9 @@
 
               <!-- members -->
               <div class="show-section well">
-                <h2>Members</h2>
+                <h2><g:message code="datahub.show.title02" /></h2>
                 <g:if test="${instance.listMemberInstitutions()}">
-                    <h3>Institutions</h3>
+                    <h3><g:message code="dataHub.memberInstitutions.label" /></h3>
                     <ul class='simple'>
                     <g:each in="${instance.listMemberInstitutions()}" var="i">
                         <li><g:link controller="institution" action="show" id="${i.uid}">${i.name}</g:link></li>
@@ -89,7 +89,7 @@
                     </ul>
                 </g:if>
                 <g:if test="${instance.listMemberCollections()}">
-                    <h3>Collections</h3>
+                    <h3><g:message code="dataHub.memberCollections.label" /></h3>
                     <ul class='simple'>
                     <g:each in="${instance.listMemberCollections()}" var="i">
                         <li><g:link controller="collection" action="show" id="${i.uid}">${i.name}</g:link></li>
@@ -97,7 +97,7 @@
                     </ul>
                 </g:if>
                 <g:if test="${instance.listMemberDataResources()}">
-                    <h3>Resources</h3>
+                    <h3><g:message code="datahub.show.tile.resources" /></h3>
                     <ul class='simple'>
                     <g:each in="${instance.listMemberDataResources()}" var="i">
                         <li><g:link controller="dataResource" action="show" id="${i.uid}">${i.name}</g:link></li>

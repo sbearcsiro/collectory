@@ -17,7 +17,7 @@
   }
   </style>
 <div class="nav">
-  <h1>Editing: ${fieldValue(bean: command, field: "name")}</h1>
+  <h1><g:message code="shared.location.main.title01" />: ${fieldValue(bean: command, field: "name")}</h1>
 </div>
 <div class="body">
   <g:if test="${message}">
@@ -160,7 +160,7 @@
         <!-- lookup lat/lng -->
         <tr>
           <td></td><td colspan="2">
-            <input type="button" class="classicButton btn" onclick="return codeAddress();" value="Lookup"/> Click to load lat/long based on street address.<div style="width:100%;"></div>
+            <input type="button" class="classicButton btn" onclick="return codeAddress();" value="Lookup"/> <g:message code="shared.location.lookup" />.<div style="width:100%;"></div>
           </td>
         </tr>
 
@@ -168,22 +168,22 @@
           <g:if test="${(command.latitude == -1 || command.longitude == -1) && command.inheritedLatLng()}">
             <tr>
               <td></td><td colspan="2">
-                <input type="button" class="classicButton" onclick="return useInherited();" value="Use inherited"/> Click to load lat/long based on the parent institution's location.<div style="width:100%;"></div>
+                <input type="button" class="classicButton" onclick="return useInherited();" value="Use inherited"/> <g:message code="shared.location.button.useinherited" />.<div style="width:100%;"></div>
               </td>
             </tr>
           </g:if>
         </g:if>
         <tr>
-          <td></td><td colspan="2">Drag pin on map to the exact location of the ${entityNameLower}.<br/>
-                You may need to zoom in and turn on the hybrid view to locate the building.</td>
+          <td></td><td colspan="2"><g:message code="shared.location.main.des01" /> ${entityNameLower}.<br/>
+                <g:message code="shared.location.main.des02" />.</td>
         </tr>
 
         </tbody>
       </table>
     </div>
     <div class="buttons">
-      <span class="button"><input type="submit" name="_action_updateLocation" value="Update" class="save btn"></span>
-      <span class="button"><input type="submit" name="_action_cancel" value="Cancel" class="cancel btn"></span>
+      <span class="button"><input type="submit" name="_action_updateLocation" value="${message(code:"shared.location.button.update")}" class="save btn"></span>
+      <span class="button"><input type="submit" name="_action_cancel" value="${message(code:"shared.location.button.cancel")}" class="cancel btn"></span>
     </div>
   </g:form>
 </div>

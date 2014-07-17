@@ -8,7 +8,7 @@
 
 <%@ page contentType="text/html;charset=UTF-8" %>
 <html>
-  <head><title>Simple GSP page</title></head>
+  <head><title><g:message code="public.listinstitutions.title" /></title></head>
   <body>
     <g:if test="${flash.message}">
       <div class="message">${flash.message}</div>

@@ -9,14 +9,14 @@
 </head>
 <body>
   <div class="nav">
-    <h1>Editing: ${command.name}</h1>
+    <h1><g:message code="shared.title.editing" />: ${command.name}</h1>
   </div>
   <div class="body">
     <g:if test="${flash.message}">
       <div class="message">${flash.message}</div>
     </g:if>
     <div class="dialog emulate-public">
-      <h2>Current contacts</h2>
+      <h2><g:message code="shared.scontact.title01" /></h2>
       <g:each var="cf" in="${command.getContacts()}">
         <div class="show-section well">
           <!-- Name -->
@@ -42,20 +42,20 @@
             </td></tr>
 
             <!-- role -->
-            <tr><td colspan="2"><span class="label">In this collection:</span></td></tr>
+            <tr><td colspan="2"><span class="label"><g:message code="shared.scontact.label01" />:</span></td></tr>
             <tr><td>
                 <ul class="detailList">
-                  <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined">Role is ${cf.role}</cl:valueOrOtherwise></li>
-                  <li><cl:valueOrOtherwise value="${cf.administrator}" otherwise="Not allowed to edit"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Editor</cl:valueOrOtherwise></li>
-                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise="Dont notify"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Notify</cl:valueOrOtherwise></li>
-                  <cl:valueOrOtherwise value="${cf.primaryContact}"><li><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/>Primary contact</li></cl:valueOrOtherwise>
+                  <li><cl:valueOrOtherwise value="${cf.role}" otherwise="No role defined"><g:message code="shared.scontact.li01" /> ${cf.role}</cl:valueOrOtherwise></li>
+                  <li><cl:valueOrOtherwise value="${cf.administrator}" otherwise="Not allowed to edit"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.li02" /></cl:valueOrOtherwise></li>
+                  <li><cl:valueOrOtherwise value="${cf.notify}" otherwise="Dont notify"><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.li03" /></cl:valueOrOtherwise></li>
+                  <cl:valueOrOtherwise value="${cf.primaryContact}"><li><img src="${resource(dir:'images/ala', file:'olive-tick.png')}"/><g:message code="shared.scontact.li04" /></li></cl:valueOrOtherwise>
                 </ul>
             </td>
             <td>
               <span class="contactButton buttonRight">
                 <g:link class="edit-small btn" action='editRole' id="${cf.id}"
                   params='[returnTo: "/${command.urlForm()}/edit/${command.id}?page=/shared/showContacts"]'>
-                  Edit the contact's role in this ${entityNameLower}
+                  <g:message code="shared.scontact.link.edit" /> ${entityNameLower}
                 </g:link>
               </span>
             </td></tr>
@@ -64,7 +64,7 @@
             <tr><td></td><td>
               <span class="contactButton">
                 <g:link class="removeSmallAction btn btn-danger" action='removeContact' id="${command.id}" onclick="return confirm('Remove ${cf.contact?.buildName()} as a contact for this ${entityNameLower}?');"
-                        params='[idToRemove: "${cf.id}"]'>Remove the contact for this ${entityNameLower}</g:link>
+                        params='[idToRemove: "${cf.id}"]'><g:message code="shared.scontact.link.remove" /> ${entityNameLower}</g:link>
               </span>
             </td></tr>
 
@@ -72,12 +72,12 @@
         </div>
       </g:each>
       <!-- add existing contact -->
-      <h2>New contacts</h2>
+      <h2><g:message code="shared.scontact.title02" /></h2>
       <div class="show-section">
         <g:form action="addContact" id="${command.id}">
           <table class="shy">
             <colgroup><col width="68%"><col width="32%"></colgroup>
-            <tr><td colspan="2">Choose an existing contact</td></tr>
+            <tr><td colspan="2"><g:message code="shared.scontact01.cell0101" /></td></tr>
             <tr><td>
               <g:select name="addContact" from="${Contact.listOrderByLastName()}" optionKey="id" noSelection="${['null':'Select one to add']}" />
             </td><td>
@@ -88,7 +88,7 @@
         OR:<br/>
         <table class="shy">
           <colgroup><col width="68%"><col width="32%"></colgroup>
-          <tr><td>Create a new contact and add them to this ${entityNameLower}:</td>
+          <tr><td><g:message code="shared.scontact02.cell0101" /> ${entityNameLower}:</td>
           <td>
           <span class="button">
             <g:link class="addAction btn" controller="contact" action='create' params='[returnTo:"/${command.urlForm()}/addNewContact/${command.id}"]' id="${command.id}">${message(code: 'default.button.addContact.label', default: 'Add new contact')}</g:link>

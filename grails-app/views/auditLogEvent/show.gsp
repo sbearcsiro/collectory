@@ -4,17 +4,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Show AuditLogEvent</title>
+        <title><g:message code="ale.show.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Audit</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="ale.show.li.audit" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Show Audit</h1>
+            <h1><g:message code="ale.show.title.showaudit" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
@@ -24,84 +24,84 @@
 
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Id:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0101" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'id')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Actor:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0201" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'actor')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Uri:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0301" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'uri')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Class Name:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0401" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'className')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Persisted Object Id:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0501" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'persistedObjectId')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Persisted Object Version:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0601" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'persistedObjectVersion')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Event Name:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0701" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'eventName')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Property Name:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0801" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'propertyName')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Old Value:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell0901" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'oldValue')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">New Value:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell1001" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'newValue')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Date Created:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell1101" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'dateCreated')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name">Last Updated:</td>
+                            <td valign="top" class="name"><g:message code="ale.show.cell1201" />:</td>
                             
                             <td valign="top" class="value">${fieldValue(bean:auditLogEventInstance, field:'lastUpdated')}</td>
                             

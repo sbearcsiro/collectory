@@ -53,20 +53,20 @@
 
                 <!-- Institution -->
                 <g:if test="${instance.institution}">
-                  <p><span class="category">Source of records: </span> <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
+                  <p><span class="category"><g:message code="dataresource.show.sor" />: </span> <g:link controller="institution" action="show" id="${instance.institution?.uid}">${instance.institution?.name}</g:link></p>
                 </g:if>
 
                 <!-- GUID    -->
-                <p><span class="category">GUID: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+                <p><span class="category"><g:message code="dataresource.show.guid" />: </span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
                 <!-- UID    -->
-                <p><span class="category">UID: </span> ${fieldValue(bean: instance, field: "uid")}</p>
+                <p><span class="category"><g:message code="providerGroup.uid.label" />: </span> ${fieldValue(bean: instance, field: "uid")}</p>
 
                 <!-- type -->
-                <p><span class="category">Resource type: </span> ${fieldValue(bean: instance, field: "resourceType")}</p>
+                <p><span class="category"><g:message code="dataresource.show.resourcetype" />: </span> ${fieldValue(bean: instance, field: "resourceType")}</p>
 
                 <!-- Web site -->
-                <p><span class="category">Website: </span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+                <p><span class="category"><g:message code="dataresource.show.website" />: </span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
                 <!-- Networks -->
                 <g:if test="${instance.networkMembership}">
@@ -79,35 +79,35 @@
                 </g:if>
 
                 <!-- last edit -->
-                <p><span class="category">Last change: </span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
+                <p><span class="category"><g:message code="datahub.show.lastchange" />: </span> ${fieldValue(bean: instance, field: "userLastModified")} on ${fieldValue(bean: instance, field: "lastUpdated")}</p>
 
                 <cl:editButton uid="${instance.uid}" page="/shared/base" notAuthorisedMessage="You are not authorised to edit this resource."/>
               </div>
 
               <!-- description -->
               <div class="show-section well">
-                <h2>Description</h2>
+                <h2><g:message code="collection.show.title.description" /></h2>
 
                 <!-- Pub Desc -->
-                <span class="category">Public description</span><br/>
+                <span class="category"><g:message code="collection.show.span04" /></span><br/>
                 <cl:formattedText body="${instance.pubDescription?:'Not provided'}"/>
 
                 <!-- Tech Desc -->
-                <span class="category">Technical description</span><br/>
+                <span class="category"><g:message code="collection.show.span05" /></span><br/>
                 <cl:formattedText body="${instance.techDescription?:'Not provided'}"/>
 
                 <!-- Focus -->
-                <span class="category">Focus</span><br/>
+                <span class="category"><g:message code="providerGroup.focus.label" /></span><br/>
                 <cl:formattedText>${instance.focus?:'Not provided'}</cl:formattedText>
 
                 <!-- generalisations -->
-                <p><span class="category">Data generalisations: </span> ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
+                <p><span class="category"><g:message code="dataresource.show.dg" />: </span> ${fieldValue(bean: instance, field: "dataGeneralizations")}</p>
 
                 <!-- info withheld -->
-                <p><span class="category">Information withheld: </span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
+                <p><span class="category"><g:message code="dataresource.show.iw" />: </span> ${fieldValue(bean: instance, field: "informationWithheld")}</p>
 
                 <!-- content types -->
-                 <p><span class="category">Content types: </span> <cl:formatJsonList value="${instance.contentTypes}"/></p>
+                 <p><span class="category"><g:message code="dataResource.contentTypes.label" />: </span> <cl:formatJsonList value="${instance.contentTypes}"/></p>
 
                 <cl:editButton uid="${instance.uid}" page="description"/>
               </div>
@@ -124,41 +124,41 @@
 
               <!-- mobilisation -->
               <div class="show-section well">
-                <h2>Data mobilisation</h2>
+                <h2><g:message code="dataresource.show.title01" /></h2>
 
                 <!-- contributor -->
-                <p><span class="category">Atlas contributor: </span><cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
+                <p><span class="category"><g:message code="dataresource.show.ac" />: </span><cl:tickOrCross test="${instance.status == 'dataAvailable' || instance.status == 'linksAvailable'}">yes|no</cl:tickOrCross></p>
 
                 <!-- status -->
-                <p><span class="category">Status: </span> ${fieldValue(bean: instance, field: "status")}</p>
+                <p><span class="category"><g:message code="dataresource.show.status" />: </span> ${fieldValue(bean: instance, field: "status")}</p>
 
                 <!-- provenance -->
-                <p><span class="category">Provenance: </span> ${fieldValue(bean: instance, field: "provenance")}</p>
+                <p><span class="category"><g:message code="dataresource.show.provenance" />: </span> ${fieldValue(bean: instance, field: "provenance")}</p>
 
                 <!-- last checked -->
-                <p><span class="category">Last checked: </span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
+                <p><span class="category"><g:message code="dataresource.show.lc" />: </span> ${fieldValue(bean: instance, field: "lastChecked")}</p>
 
                 <!-- data currency -->
-                <p><span class="category">Data currency: </span> ${fieldValue(bean: instance, field: "dataCurrency")}</p>
+                <p><span class="category"><g:message code="dataresource.show.dc" />: </span> ${fieldValue(bean: instance, field: "dataCurrency")}</p>
 
                 <!-- harvest frequency -->
-                <p><span class="category">Harvest frequency: </span>
+                <p><span class="category"><g:message code="dataresource.show.hf" />: </span>
                     <g:if test="${instance.harvestFrequency}">
-                        Every ${instance.harvestFrequency} days.</p>
+                        <g:message code="dataresource.show.ed" args="[instance.harvestFrequency]" />.</p>
                     </g:if>
-                    <g:else>Manual</g:else>
+                    <g:else><g:message code="dataresource.show.manual" /></g:else>
 
                 <!-- mobilisation notes -->
-                <p><span class="category">Mobilisation notes: </span> ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
+                <p><span class="category"><g:message code="dataresource.show.mn" />: </span> ${fieldValue(bean: instance, field: "mobilisationNotes")}</p>
 
                 <!-- harvesting notes -->
-                <p><span class="category">Harvesting notes: </span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
+                <p><span class="category"><g:message code="dataresource.show.hn" />: </span> ${fieldValue(bean: instance, field: "harvestingNotes")}</p>
 
                 <!-- public archive available -->
-                <p><span class="category">Public archive available: </span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
+                <p><span class="category"><g:message code="dataresource.show.paa" />: </span><cl:tickOrCross test="${instance.publicArchiveAvailable}">yes|no</cl:tickOrCross></p>
 
                 <!-- connection parameters -->
-                <h3>Connection parameters</h3>
+                <h3><g:message code="dataresource.show.title02" /></h3>
 
                 <cl:showConnectionParameters connectionParameters="${instance.connectionParameters}"/></p>
 
@@ -181,28 +181,28 @@
               </div>
 
               <div class="well">
-                  <h3>File upload</h3>
-                  <g:link controller="dataResource" action="upload" class="btn" id="${instance.uid}"><i class="icon-upload"></i> Upload a data file</g:link>
+                  <h3><g:message code="dataresource.show.title03" /></h3>
+                  <g:link controller="dataResource" action="upload" class="btn" id="${instance.uid}"><i class="icon-upload"></i> <g:message code="dataresource.show.link.upload" /></g:link>
               </div>
 
               <!-- rights -->
               <div class="show-section well">
-                <h2>Citation and rights</h2>
+                <h2><g:message code="dataresource.show.title04" /></h2>
 
                 <!-- citation -->
-                <p><span class="category">Citation: </span> ${fieldValue(bean: instance, field: "citation")}</p>
+                <p><span class="category"><g:message code="dataResource.citation.label" />: </span> ${fieldValue(bean: instance, field: "citation")}</p>
 
                 <!-- rights -->
-                <p><span class="category">Rights: </span> ${fieldValue(bean: instance, field: "rights")}</p>
+                <p><span class="category"><g:message code="dataResource.rights.label" />: </span> ${fieldValue(bean: instance, field: "rights")}</p>
 
                 <!-- license -->
-                <p><span class="category">License type: </span> <cl:displayLicenseType type="${instance.licenseType}"/></p>
+                <p><span class="category"><g:message code="dataResource.licenseType.label" />: </span> <cl:displayLicenseType type="${instance.licenseType}"/></p>
 
                 <!-- license version -->
-                <p><span class="category">License version: </span> ${fieldValue(bean: instance, field: "licenseVersion")}</p>
+                <p><span class="category"><g:message code="dataResource.licenseVersion.label" />: </span> ${fieldValue(bean: instance, field: "licenseVersion")}</p>
 
                 <!-- permissions document -->
-                <p><span class="category">Permissions document: </span>
+                <p><span class="category"><g:message code="dataResource.permissionsDocument.label" />: </span>
                     <g:if test="${instance.permissionsDocument?.startsWith('http://') || instance.permissionsDocument?.startsWith('https://')}">
                         <g:link class="external_icon" target="_blank" url="${instance.permissionsDocument}">${fieldValue(bean: instance, field: "permissionsDocument")}</g:link>
                     </g:if>
@@ -212,16 +212,16 @@
                 </p>
 
                 <!-- permissions document type -->
-                <p><span class="category">Permissions document type: </span> ${fieldValue(bean: instance, field: "permissionsDocumentType")}</p>
+                <p><span class="category"><g:message code="dataResource.permissionsDocumentType.label" />: </span> ${fieldValue(bean: instance, field: "permissionsDocumentType")}</p>
 
                 <!-- DPA flags -->
                 <g:if test="${instance.permissionsDocumentType == 'Data Provider Agreement'}">
-                    <p><span class="category">Risk assessment completed: </span><cl:tickOrCross test="${instance.riskAssessment}">yes|no</cl:tickOrCross></p>
-                    <p><span class="category">Document filed: </span><cl:tickOrCross test="${instance.filed}">yes|no</cl:tickOrCross></p>
+                    <p><span class="category"><g:message code="dataResource.riskAssessment.label" />: </span><cl:tickOrCross test="${instance.riskAssessment}">yes|no</cl:tickOrCross></p>
+                    <p><span class="category"><g:message code="dataresource.show.documentfield.label" />: </span><cl:tickOrCross test="${instance.filed}">yes|no</cl:tickOrCross></p>
                 </g:if>
 
                 <!-- download limit -->
-                <p><span class="category">Download limit: </span> ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
+                <p><span class="category"><g:message code="dataResource.downloadLimit.label" />: </span> ${instance.downloadLimit ? fieldValue(bean:instance,field:'downloadLimit') : 'no limit'}</p>
 
                 <cl:editButton uid="${instance.uid}" page="rights"/>
               </div>

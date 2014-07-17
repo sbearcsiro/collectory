@@ -55,19 +55,16 @@
                     class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
             <g:if test="${instance.guid}">
                 <span class="lsid"><a href="#lsidText" id="lsid" class="local"
-                                  title="Life Science Identifier (pop-up)">LSID</a></span>
+                                  title="Life Science Identifier (pop-up)"><g:message code="public.lsid" /></a></span>
             </g:if>
             <div style="display:none; text-align: left;">
                 <div id="lsidText" style="text-align: left;">
                     <b><a class="external_icon" href="http://lsids.sourceforge.net/"
-                          target="_blank">Life Science Identifier (LSID):</a></b>
+                          target="_blank"><g:message code="public.lsidtext.link" />:</a></b>
 
                     <p><cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
-                    <p>LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
-                    significant resources including species names, concepts, occurrences, genes or proteins,
-                    or data objects that encode information about them. To put it simply,
-                    LSIDs are a way to identify and locate pieces of biological information on the web.</p>
+                    <p><g:message code="public.lsidtext.des" />.</p>
                 </div>
             </div>
         </div>
@@ -87,7 +84,7 @@
 <div class="row-fluid">
     <div class="span8">
         <g:if test="${instance.pubDescription || instance.techDescription || instance.focus}">
-            <h2>Description</h2>
+            <h2><g:message code="public.des" /></h2>
         </g:if>
         <cl:formattedText>${fieldValue(bean: instance, field: "pubDescription")}</cl:formattedText>
         <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
@@ -95,19 +92,19 @@
         <cl:dataResourceContribution resourceType="${instance.resourceType}" status="${instance.status}" tag="p"/>
 
         <g:if test="${instance.contentTypes}">
-            <h2>Type of content</h2>
+            <h2><g:message code="public.sdr.content.label02" /></h2>
             <cl:contentTypes types="${instance.contentTypes}"/>
         </g:if>
-        <h2>Citation</h2>
+        <h2><g:message code="public.sdr.content.label03" /></h2>
         <g:if test="${instance.citation}">
             <cl:formattedText>${fieldValue(bean: instance, field: "citation")}</cl:formattedText>
         </g:if>
         <g:else>
-            <p>No citation information available.</p>
+            <p><g:message code="public.sdr.content.des01" />.</p>
         </g:else>
 
         <g:if test="${instance.rights || instance.creativeCommons}">
-            <h2>Rights</h2>
+            <h2><g:message code="public.sdr.content.label04" /></h2>
             <cl:formattedText>${fieldValue(bean: instance, field: "rights")}</cl:formattedText>
             <g:if test="${instance.creativeCommons}">
                 <p><cl:displayLicenseType type="${instance.licenseType}" version="${instance.licenseVersion}"/></p>
@@ -115,25 +112,25 @@
         </g:if>
 
         <g:if test="${instance.dataGeneralizations}">
-            <h2>Data generalisations</h2>
+            <h2><g:message code="public.sdr.content.label05" /></h2>
             <cl:formattedText>${fieldValue(bean: instance, field: "dataGeneralizations")}</cl:formattedText>
         </g:if>
 
         <g:if test="${instance.informationWithheld}">
-            <h2>Information withheld</h2>
+            <h2><g:message code="public.sdr.content.label06" /></h2>
             <cl:formattedText>${fieldValue(bean: instance, field: "informationWithheld")}</cl:formattedText>
         </g:if>
 
         <g:if test="${instance.downloadLimit}">
-            <h2>Limited downloads</h2>
+            <h2><g:message code="public.sdr.content.label07" /></h2>
 
-            <p>Downloads from this data resource are limited to ${fieldValue(bean: instance, field: "downloadLimit")} records.</p>
+            <p><g:message code="public.sdr.content.des02" /> ${fieldValue(bean: instance, field: "downloadLimit")} <g:message code="public.sdr.content.des03" />.</p>
         </g:if>
 
         <div id="pagesContributed"></div>
 
         <g:if test="${instance.resourceType == 'website' && (instance.lastChecked || instance.dataCurrency)}">
-            <h2>Data currency</h2>
+            <h2><g:message code="public.sdr.content.label08" /></h2>
 
             <p><cl:lastChecked date="${instance.lastChecked}"/>
                 <cl:dataCurrency date="${instance.dataCurrency}"/></p>
@@ -141,10 +138,10 @@
 
         <g:if test="${instance.resourceType == 'website' || instance.resourceType == 'records'}">
             <div id='usage-stats'>
-                <h2>Usage statistics</h2>
+                <h2><g:message code="public.sdr.usagestats.labe" /></h2>
 
                 <div id='usage'>
-                    <p>Loading...</p>
+                    <p><g:message code="public.usage.des" />...</p>
                 </div>
                 <g:if test="${instance.resourceType == 'website'}">
                     <div id="usage-visualization" style="width: 600px; height: 200px;"></div>
@@ -153,23 +150,23 @@
         </g:if>
 
         <g:if test="${instance.resourceType == 'records'}">
-            <h2>Digitised records</h2>
+            <h2><g:message code="public.sdr.content.label09" /></h2>
 
             <div>
                 <p><span
-                        id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.
+                        id="numBiocacheRecords"><g:message code="public.sdr.content.des04" /></span> <g:message code="public.sdr.content.des05" />.
                 <cl:lastChecked date="${instance.lastChecked}"/>
                 <cl:dataCurrency date="${instance.dataCurrency}"/>
                 </p>
                 <cl:recordsLink
-                        collection="${instance}">Click to view records for the ${instance.name} resource.</cl:recordsLink>
+                        collection="${instance}"><g:message code="public.sdr.content.link01" /> ${instance.name} <g:message code="public.sdr.content.link02" />.</cl:recordsLink>
                 <cl:downloadPublicArchive uid="${instance.uid}" available="${instance.publicArchiveAvailable}"/>
             </div>
         </g:if>
         <g:if test="${instance.resourceType == 'records'}">
             <div id="recordsBreakdown" class="section vertical-charts">
                 <g:if test="${!grailsApplication.config.disableOverviewMap}">
-                    <h3>Map of records</h3>
+                    <h3><g:message code="public.sdr.content.label10" /></h3>
                     <cl:recordsMapDirect uid="${instance.uid}"/>
                 </g:if>
                 <div id="tree"></div>
@@ -207,7 +204,7 @@
 
         <g:if test="${address != null && !address?.isEmpty()}">
             <div class="section">
-                <h3>Location</h3>
+                <h3><g:message code="public.location" /></h3>
 
                 <g:if test="${!address?.isEmpty()}">
                     <p>
@@ -234,19 +231,19 @@
     <!-- web site -->
         <g:if test="${instance.resourceType == 'species-list'}">
             <div class="section">
-                <h3>Species lists</h3>
+                <h3><g:message code="public.sdr.content.label12" /></h3>
                 <div class="webSite">
                     <a class='external_icon' target="_blank"
-                       href="${grailsApplication.config.speciesListToolUrl}${instance.uid}">View this species list in species list tool</a>
+                       href="${grailsApplication.config.speciesListToolUrl}${instance.uid}"><g:message code="public.sdr.content.link03" /></a>
                 </div>
             </div>
         </g:if>
         <g:elseif test="${instance.websiteUrl}">
             <div class="section">
-                <h3>Web site</h3>
+                <h3><g:message code="public.website" /></h3>
                 <div class="webSite">
                     <a class='external_icon' target="_blank"
-                       href="${instance.websiteUrl}">Visit the data resource's website</a>
+                       href="${instance.websiteUrl}"><g:message code="public.sdr.content.link04" /></a>
                 </div>
             </div>
         </g:elseif>
@@ -254,23 +251,23 @@
     <!-- network membership -->
         <g:if test="${instance.networkMembership}">
             <div class="section">
-                <h3>Membership</h3>
+                <h3><g:message code="public.network.membership.label" /></h3>
                 <g:if test="${instance.isMemberOf('CHAEC')}">
-                    <p>Member of Council of Heads of Australian Entomological Collections (CHAEC)</p>
+                    <p><g:message code="public.network.membership.des01" /></p>
                     <img src="${resource(absolute: "true", dir: "data/network/", file: "butflyyl.gif")}"/>
                 </g:if>
                 <g:if test="${instance.isMemberOf('CHAH')}">
-                    <p>Member of Council of Heads of Australasian Herbaria (CHAH)</p>
+                    <p><g:message code="public.network.membership.des02" /></p>
                     <a target="_blank" href="http://www.chah.gov.au"><img
                             src="${resource(absolute: "true", dir: "data/network/", file: "CHAH_logo_col_70px_white.gif")}"/>
                     </a>
                 </g:if>
                 <g:if test="${instance.isMemberOf('CHAFC')}">
-                    <p>Member of Council of Heads of Australian Faunal Collections (CHAFC)</p>
+                    <p><g:message code="public.network.membership.des03" /></p>
                     <img src="${resource(absolute: "true", dir: "data/network/", file: "CHAFC_sm.jpg")}"/>
                 </g:if>
                 <g:if test="${instance.isMemberOf('CHACM')}">
-                    <p>Member of Council of Heads of Australian Collections of Microorganisms (CHACM)</p>
+                    <p><g:message code="public.network.membership.des04" /></p>
                     <img src="${resource(absolute: "true", dir: "data/network/", file: "chacm.png")}"/>
                 </g:if>
             </div>
@@ -280,7 +277,7 @@
         <g:set var='attribs' value='${instance.getAttributionList()}'/>
         <g:if test="${attribs.size() > 0}">
             <div class="section" id="infoSourceList">
-                <h4>Contributors to this page</h4>
+                <h4><g:message code="public.sdr.infosourcelist.title" /></h4>
                 <ul>
                     <g:each var="a" in="${attribs}">
                         <li><a href="${a.url}" class="external" target="_blank">${a.name}</a></li>

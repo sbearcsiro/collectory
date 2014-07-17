@@ -26,10 +26,10 @@
             src="${resource(absolute: "true", dir: dir, file: image.file)}"/>
       </a>
       <div class="media-body">
-        <span class="category">File name:</span> ${fieldValue(bean: image, field: "file")} </br/>
-        <span class="category">Caption:</span> ${fieldValue(bean: image, field: "caption")} <br/>
-        <span class="category">Attribution:</span> ${fieldValue(bean: image, field: "attribution")}<br/>
-        <span class="category">Copyright:</span> ${fieldValue(bean: image, field: "copyright")}<br/>
+        <span class="category"><g:message code="shared.images.span01" />:</span> ${fieldValue(bean: image, field: "file")} </br/>
+        <span class="category"><g:message code="shared.images.span02" />:</span> ${fieldValue(bean: image, field: "caption")} <br/>
+        <span class="category"><g:message code="shared.images.span03" />:</span> ${fieldValue(bean: image, field: "attribution")}<br/>
+        <span class="category"><g:message code="shared.images.span04" />:</span> ${fieldValue(bean: image, field: "copyright")}<br/>
       </div>
     </div>
 

@@ -1,6 +1,6 @@
 <!-- Contacts -->
  <div class="show-section well">
- <h2>Contacts</h2>
+ <h2><g:message code="shared.contacts.title01" /></h2>
  <ul class="fancy">
    <g:each in="${contacts}" var="c">
      <li><g:link controller="contact" action="show" id="${c?.contact?.id}">

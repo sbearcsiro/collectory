@@ -5,10 +5,10 @@
   <meta name="layout" content="${grailsApplication.config.ala.skin}"/>
   <g:set var="entityName" value="${instance.ENTITY_TYPE}"/>
   <g:set var="entityNameLower" value="${instance.ENTITY_TYPE.toLowerCase()}"/>
-  <title>Edit ${entityNameLower} metadata</title>
+  <title><g:message code="shared.sc.title" args="[entityNameLower]" /></title>
 </head>
 <div class="nav">
-  <h1>Displaying change history for ${fieldValue(bean: instance, field: "name")}</h1>
+  <h1><g:message code="shared.sc.title01" /> ${fieldValue(bean: instance, field: "name")}</h1>
 </div>
 <div class="body">
   <g:if test="${message}">
@@ -20,38 +20,38 @@
     </div>
   </g:hasErrors>
     <div class="dialog">
-      <p>Changes are shown with the latest first.</p>
+      <p><g:message code="shared.sc.des01" />.</p>
       <g:each in="${changes}" var="ch">
         <div>
           <g:if test="${ch.eventName == 'UPDATE'}">
-            <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} changed the <strong>${ch.propertyName}</strong> field</p>
+            <p class="relatedFollows"><g:message code="shared.sc.des02" args="[ch.lastUpdated, ch.actor, ch.propertyName]" /></p>
             <table class="textChanges table table-striped table-bordered">
               <tr>
-                <td>to:</td><td><cl:cleanString class="changeTo" value="${ch.newValue}" field="${ch.propertyName}"/></td>
+                <td><g:message code="shared.sc.table01.cell0101" />:</td><td><cl:cleanString class="changeTo" value="${ch.newValue}" field="${ch.propertyName}"/></td>
               </tr><tr>
-                <td>from:</td><td><cl:cleanString class="changeFrom" value="${ch.oldValue}" field="${ch.propertyName}"/></td>
+                <td><g:message code="shared.sc.table01.cell0102" />:</td><td><cl:cleanString class="changeFrom" value="${ch.oldValue}" field="${ch.propertyName}"/></td>
               </tr>
             </table>
           </g:if>
           <g:elseif test="${ch.eventName == 'INSERT' && cl.shortClassName(className:ch.className) == 'ContactFor'}">
             <g:set var="cf" value="${ContactFor.get(ch.persistedObjectId)}"/>
-            <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} added a contact</p>
+            <p class="relatedFollows"><g:message code="shared.sc.des03" args="[ch.lastUpdated, ch.actor]" /></p>
             <table class="textChanges table table-striped table-bordered">
               <tr>
-                <td>id:${ch.persistedObjectId}</td><td>${cf ? cf.contact?.buildName() : 'name missing - may have been deleted'}</td>
+                <td><g:message code="shared.sc.table02.cell0101" />:${ch.persistedObjectId}</td><td>${cf ? cf.contact?.buildName() : 'name missing - may have been deleted'}</td>
               </tr>
             </table>
           </g:elseif>
           <g:elseif test="${ch.eventName == 'DELETE' && cl.shortClassName(className:ch.className) == 'ContactFor'}">
-            <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} removed a contact</p>
+            <p class="relatedFollows"><g:message code="shared.sc.des04" args="[ch.lastUpdated, ch.actor]" /></p>
             <table class="textChanges table table-striped table-bordered">
               <tr>
-                <td>id:${ch.persistedObjectId}</td><td>name not available - has been deleted</td>
+                <td><g:message code="shared.sc.table03.cell0101" />:${ch.persistedObjectId}</td><td><g:message code="shared.sc.table03.cell0102" /></td>
               </tr>
             </table>
           </g:elseif>
           <g:elseif test="${ch.eventName == 'INSERT' && ch.uri == instance.uid}">
-            <p class="relatedFollows">At ${ch.lastUpdated} ${ch.actor} created this ${entityNameLower}.</p>
+            <p class="relatedFollows"><g:message code="shared.sc.des05" args="[ch.lastUpdated, ch.actor]" /> ${entityNameLower}.</p>
             <table class="textChanges table table-striped table-bordered">
               <tr>
                 <td colspan="2">${instance.name}</td>

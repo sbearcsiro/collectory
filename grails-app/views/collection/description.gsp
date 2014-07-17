@@ -8,10 +8,10 @@
     <body id="body-wrapper">
         <div class="nav">
           <g:if test="${mode == 'create'}">
-            <h1>Creating a new collection</h1>
+            <h1><g:message code="collection.des.title" /></h1>
           </g:if>
           <g:else>
-            <h1>Editing: ${command.name}</h1>
+            <h1><g:message code="collection.title.editing" />: ${command.name}</h1>
           </g:else>
         </div>
         <div id="baseForm" >
@@ -92,7 +92,7 @@
                     <!-- start date -->
                     <tr class="prop">
                         <td valign="top" class="name">
-                          <label for="startDate">Start date</label>
+                          <label for="startDate"><g:message code="collection.des.startdate" /></label>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: command, field: 'startDate', 'errors')}">
                             <g:textField name="startDate" maxlength="45" value="${command?.startDate}" />
@@ -104,7 +104,7 @@
                     <!-- end date -->
                     <tr class="prop">
                         <td valign="top" class="name">
-                          <label for="endDate">End date</label>
+                          <label for="endDate"><g:message code="collection.des.enddate" /></label>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: command, field: 'endDate', 'errors')}">
                             <g:textField name="endDate" maxlength="45" value="${command?.endDate}" />
@@ -131,9 +131,9 @@
                           <label for="subCollections"><g:message code="scope.subCollections.label" default="Sub-collections" /></label>
                         </td>
                         <td valign="top" class="value ${hasErrors(bean: command, field: 'scope.subCollections', 'errors')}">
-                          <p>Optionally describe any significant collections held within this collection.</p>
+                          <p><g:message code="collection.des.des01" />.</p>
                           <table class="shy"><colgroup><col width="50%"/><col width="50%"/></colgroup>
-                            <tr><td>Name</td><td>Description</td></tr>
+                            <tr><td><g:message code="collection.des.de02" /></td><td><g:message code="collection.des.des03" /></td></tr>
                             <g:set var="subcollections" value="${command.listSubCollections()}"/>
                             <g:each var="sub" in="${subcollections}" status="i">
                               <tr>
@@ -157,8 +157,8 @@
                 </table>
 
                 <div class="buttons">
-                    <span class="button"><input type="submit" class="btn" name="_action_updateDescription" value="Update" class="save"></span>
-                    <span class="button"><input type="submit"  class="btn"name="_action_cancel" value="Cancel" class="cancel"></span>
+                    <span class="button"><input type="submit" class="btn" name="_action_updateDescription" value="${message(code:"collection.button.update")}" class="save"></span>
+                    <span class="button"><input type="submit"  class="btn"name="_action_cancel" value="${message(code:"collection.button.cancel")}" class="cancel"></span>
                 </div>
             </g:form>
         </div>

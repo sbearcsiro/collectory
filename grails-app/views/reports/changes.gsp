@@ -2,29 +2,29 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports</title>
+        <title><g:message code="reports.changes.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Recent changes</h1>
+            <h1><g:message code="reports.changes.title01" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
             <div class="dialog">
-              <p>Click a row to show full details of a change. Click a UID or ID to view the affected entity.</p>
+              <p><g:message code="reports.changes.des01" />.</p>
               <div class="filters">
                   <g:form action="changes">
                     <fieldset>
-                        <legend class="box-label">Filters</legend>
+                        <legend class="box-label"><g:message code="reports.changes.legend01" /></legend>
                         <g:hiddenField name="offset" value="${offset}"/>
-                        <label for="who">Who: <g:textField name="who" value="${who}"/></label>
-                        <label for="what">What: <g:textField name="what" value="${what}"/></label>
+                        <label for="who"><g:message code="reports.changes.who" />: <g:textField name="who" value="${who}"/></label>
+                        <label for="what"><g:message code="reports.changes.what" />: <g:textField name="what" value="${what}"/></label>
                         <g:submitButton class="submit btn " name="filter" value="Search"/>
                         <g:submitButton class="submit btn" name="reset" value="Reset"/>
                         <g:submitButton name="next "  class="btn" value="Next 100»"/>
@@ -34,7 +34,7 @@
               <br/>
               <table class="table table-striped table-bordered">
                 <colgroup><col width="23%"/><col width="25%"/><col width="12%"/><col width="40%"/></colgroup>
-                <tr class="reportHeaderRow"><td>When</td><td>Who</td><td>Did</td><td>What</td></tr>
+                <tr class="reportHeaderRow"><td><g:message code="reports.changes.when" /></td><td><g:message code="reports.changes.who" /></td><td><g:message code="reports.changes.did" /></td><td><g:message code="reports.changes.what" /></td></tr>
                 <g:each var='ch' in="${changes}">
                   <tr>
                     <td><g:link controller="auditLogEvent" action="show" id="${ch.id}">${ch.lastUpdated}</g:link></td>

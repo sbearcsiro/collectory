@@ -49,17 +49,14 @@
                 <h3><g:link action="show" id="${inst.uid}">${inst.name}</g:link></h3>
               </g:if>
               <span style="display:none;">
-                  <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym">Acronym: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
-                  <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)">LSID</a></span>
+                  <cl:valueOrOtherwise value="${instance.acronym}"><span class="acronym"><g:message code="public.show.header.acronym" />: ${fieldValue(bean: instance, field: "acronym")}</span></cl:valueOrOtherwise>
+                  <span class="lsid"><a href="#lsidText" id="lsid" class="local" title="Life Science Identifier (pop-up)"><g:message code="public.lsid" /></a></span>
               </span>
               <div style="display:none; text-align: left;">
                   <div id="lsidText" style="text-align: left;">
-                      <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank">Life Science Identifier (LSID):</a></b>
+                      <b><a class="external_icon" href="http://lsids.sourceforge.net/" target="_blank"><g:message code="public.lsidtext.link" />:</a></b>
                       <p style="margin: 10px 0;"><cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
-                      <p style="font-size: 12px;">LSIDs are persistent, location-independent,resource identifiers for uniquely naming biologically
-                           significant resources including species names, concepts, occurrences, genes or proteins,
-                           or data objects that encode information about them. To put it simply,
-                          LSIDs are a way to identify and locate pieces of biological information on the web. </p>
+                      <p style="font-size: 12px;"><g:message code="public.lsidtext.des" />. </p>
                   </div>
               </div>
             </div>
@@ -77,36 +74,36 @@
 
         <div class="tabbable">
             <ul class="nav nav-tabs" id="overviewTabs">
-                <li><a id="tab1" href="#overviewTab" data-toggle="tab">Overview</a></li>
-                <li><a id="tab2" href="#recordsTab" data-toggle="tab">Records</a></li>
-                <li id="imagesTabEl" style="display:none;"><a id="tab3" href="#imagesTab" data-toggle="tab">Images</a></li>
+                <li><a id="tab1" href="#overviewTab" data-toggle="tab"><g:message code="public.show.overviewtabs.overview" /></a></li>
+                <li><a id="tab2" href="#recordsTab" data-toggle="tab"><g:message code="public.show.overviewtabs.records" /></a></li>
+                <li id="imagesTabEl" style="display:none;"><a id="tab3" href="#imagesTab" data-toggle="tab"><g:message code="public.show.overviewtabs.images" /></a></li>
             </ul>
         </div>
 
         <div class="tab-content">
             <div id="overviewTab" class="tab-pane active row-fluid">
                <div id="overview-content" class="span8">
-                  <h2>Description</h2>
+                  <h2><g:message code="public.des" /></h2>
                   <cl:formattedText body="${instance.pubDescription}"/>
                   <cl:formattedText>${fieldValue(bean: instance, field: "techDescription")}</cl:formattedText>
                   <g:if test="${instance.startDate || instance.endDate}">
                       <p><cl:temporalSpanText start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/></p>
                   </g:if>
 
-                  <h2>Taxonomic range</h2>
+                  <h2><g:message code="public.show.oc.label02" /></h2>
                   <g:if test="${fieldValue(bean: instance, field: 'focus')}">
                     <cl:formattedText>${fieldValue(bean: instance, field: "focus")}</cl:formattedText>
                   </g:if>
                   <g:if test="${fieldValue(bean: instance, field: 'kingdomCoverage')}">
-                    <p>Kingdoms covered include: <cl:concatenateStrings values='${fieldValue(bean: instance, field: "kingdomCoverage")}'/>.</p>
+                    <p><g:message code="public.show.oc.des01" />: <cl:concatenateStrings values='${fieldValue(bean: instance, field: "kingdomCoverage")}'/>.</p>
                   </g:if>
                   <g:if test="${fieldValue(bean: instance, field: 'scientificNames')}">
-                    <p><cl:collectionName name="${instance.name}" prefix="The "/> includes members from the following taxa:<br/>
+                    <p><cl:collectionName name="${instance.name}" prefix="The "/> <g:message code="public.show.oc.des02" />:<br/>
                     <cl:JSONListAsStrings json='${fieldValue(bean: instance, field: "scientificNames")}'/>.</p>
                   </g:if>
 
                   <g:if test="${instance?.geographicDescription || instance.states}">
-                    <h2>Geographic range</h2>
+                    <h2><g:message code="public.show.oc.label03" /></h2>
                     <g:if test="${fieldValue(bean: instance, field: 'geographicDescription')}">
                       <p>${fieldValue(bean: instance, field: "geographicDescription")}</p>
                     </g:if>
@@ -114,41 +111,41 @@
                       <p><cl:stateCoverage states='${fieldValue(bean: instance, field: "states")}'/></p>
                     </g:if>
                     <g:if test="${instance.westCoordinate != -1}">
-                      <p>The western most extent of the collection is: <cl:showDecimal value='${instance.westCoordinate}' degree='true'/></p>
+                      <p><g:message code="public.show.oc.des03" />: <cl:showDecimal value='${instance.westCoordinate}' degree='true'/></p>
                     </g:if>
                     <g:if test="${instance.eastCoordinate != -1}">
-                      <p>The eastern most extent of the collection is: <cl:showDecimal value='${instance.eastCoordinate}' degree='true'/></p>
+                      <p><g:message code="public.show.oc.des04" />: <cl:showDecimal value='${instance.eastCoordinate}' degree='true'/></p>
                     </g:if>
                     <g:if test="${instance.northCoordinate != -1}">
-                      <p>The northern most extent of the collection is: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></p>
+                      <p><g:message code="public.show.oc.des05" />: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></p>
                     </g:if>
                     <g:if test="${instance.southCoordinate != -1}">
-                      <p>The southern most extent of the collection is: <cl:showDecimal value='${instance.southCoordinate}' degree='true'/></p>
+                      <p><g:message code="public.show.oc.des06" />: <cl:showDecimal value='${instance.southCoordinate}' degree='true'/></p>
                     </g:if>
                   </g:if>
 
                   <g:set var="nouns" value="${cl.nounForTypes(types:instance.listCollectionTypes())}"/>
-                  <h2>Number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> in the collection</h2>
+                  <h2><g:message code="public.show.oc.label04" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="public.show.oc.label05" /></h2>
                   <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
-                    <p>The estimated number of ${nouns} in <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
+                    <p><g:message code="public.show.oc.des07" /> ${nouns} in <cl:collectionName prefix="the " name="${instance.name}"/> <g:message code="public.show.oc.des08" /> ${fieldValue(bean: instance, field: "numRecords")}.</p>
                   </g:if>
                   <g:if test="${fieldValue(bean: instance, field: 'numRecordsDigitised') != '-1'}">
-                    <p>Of these ${fieldValue(bean: instance, field: "numRecordsDigitised")} are databased.
-                    This represents <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> of the collection.</p>
+                    <p><g:message code="public.show.oc.des09" /> ${fieldValue(bean: instance, field: "numRecordsDigitised")} <g:message code="public.show.oc.des10" />.
+                    <g:message code="public.show.oc.des11" /> <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> <g:message code="public.show.oc.des12" />.</p>
                   </g:if>
-                  <p>Click the Records & Statistics tab to access those database records that are available through the atlas.</p>
+                  <p><g:message code="public.show.oc.des13" />.</p>
 
                   <g:if test="${instance.listSubCollections()?.size() > 0}">
-                    <h2>Sub-collections</h2>
-                    <p><cl:collectionName prefix="The " name="${instance.name}"/> contains these significant collections:</p>
+                    <h2><g:message code="public.show.oc.label06" /></h2>
+                    <p><cl:collectionName prefix="The " name="${instance.name}"/> <g:message code="public.show.oc.des14" />:</p>
                     <cl:subCollectionList list="${instance.subCollections}"/>
                   </g:if>
 
                   <g:if test="${biocacheRecordsAvailable}">
                   <div id='usage-stats' style="">
-                    <h2>Usage statistics</h2>
+                    <h2><g:message code="public.show.oc.label07" /></h2>
                     <div id='usage'>
-                      <p>Loading...</p>
+                      <p><g:message code="public.usage.des" />...</p>
                     </div>
                   </div>
                   </g:if>
@@ -171,7 +168,7 @@
                   </div>
 
                   <div class="section">
-                    <h3>Location</h3>
+                    <h3><g:message code="public.location" /></h3>
                     <!-- use parent location if the collection is blank -->
                     <g:set var="address" value="${instance.address}"/>
                     <g:if test="${address == null || address.isEmpty()}">
@@ -200,16 +197,16 @@
                   <!-- web site -->
                   <g:if test="${instance.websiteUrl || instance.institution?.websiteUrl}">
                     <div class="section">
-                      <h3>Web site</h3>
+                      <h3><g:message code="public.website" /></h3>
                       <g:if test="${instance.websiteUrl}">
                         <div class="webSite">
-                          <a class='external' rel='nofollow' target="_blank" href="${instance.websiteUrl}">Visit the collection's website</a>
+                          <a class='external' rel='nofollow' target="_blank" href="${instance.websiteUrl}"><g:message code="public.show.osb.link01" /></a>
                         </div>
                       </g:if>
                       <g:if test="${instance.institution?.websiteUrl}">
                         <div class="webSite">
                           <a class='external' rel='nofollow' target="_blank" href="${instance.institution?.websiteUrl}">
-                            Visit the <cl:institutionType inst="${instance.institution}"/>'s website</a>
+                            <g:message code="public.show.osb.link02" /> <cl:institutionType inst="${instance.institution}"/><g:message code="public.show.osb.link03" /></a>
                         </div>
                       </g:if>
                     </div>
@@ -218,21 +215,21 @@
                   <!-- network membership -->
                   <g:if test="${instance.networkMembership}">
                     <div class="section">
-                      <h3>Membership</h3>
+                      <h3><g:message code="public.network.membership.label" /></h3>
                       <g:if test="${instance.isMemberOf('CHAEC')}">
-                        <p>Council of Heads of Australian Entomological Collections</p>
+                        <p><g:message code="public.network.membership.des01" /></p>
                         <img src="${resource(absolute:"true", dir:"data/network/",file:"chaec-logo.png")}"/>
                       </g:if>
                       <g:if test="${instance.isMemberOf('CHAH')}">
-                        <p>Council of Heads of Australasian Herbaria</p>
+                        <p><g:message code="public.network.membership.des02" /></p>
                         <a target="_blank" href="http://www.chah.gov.au"><img src="${resource(absolute:"true", dir:"data/network/",file:"CHAH_logo_col_70px_white.gif")}"/></a>
                       </g:if>
                       <g:if test="${instance.isMemberOf('CHAFC')}">
-                        <p>Council of Heads of Australian Faunal Collections</p>
+                        <p><g:message code="public.network.membership.des03" /></p>
                         <img src="${resource(absolute:"true", dir:"data/network/",file:"chafc.png")}"/>
                       </g:if>
                       <g:if test="${instance.isMemberOf('CHACM')}">
-                        <p>Council of Heads of Australian Collections of Microorganisms</p>
+                        <p><g:message code="public.network.membership.des04" /></p>
                         <img src="${resource(absolute:"true", dir:"data/network/",file:"chacm.png")}"/>
                       </g:if>
                     </div>
@@ -242,7 +239,7 @@
                   <g:set var='attribs' value='${instance.getAttributionList()}'/>
                   <g:if test="${attribs.size() > 0}">
                     <div class="section" id="infoSourceList">
-                      <h4>Contributors to this page</h4>
+                      <h4><g:message code="public.show.osb.label04" /></h4>
                       <ul>
                         <g:each var="a" in="${attribs}">
                           <g:if test="${a.url}">
@@ -258,29 +255,29 @@
                </div>
             </div>
             <div id="recordsTab" class="tab-pane">
-              <h2>Digitised records available through the Atlas</h2>
+              <h2><g:message code="public.show.rt.title" /></h2>
               <div class="row-fluid">
                   <div class="span8">
                     <g:if test="${instance.numRecords != -1}">
                       <p><cl:collectionName prefix="The " name="${instance.name}"/> has an estimated ${fieldValue(bean: instance, field: "numRecords")} ${nouns}.
                         <g:if test="${instance.numRecordsDigitised != -1}">
-                          <br/>The collection has databased <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}'/> of these (${fieldValue(bean: instance, field: "numRecordsDigitised")} records).
+                          <br/><g:message code="public.show.rt.des01" /> <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}'/> <g:message code="public.show.rt.des02" /> (${fieldValue(bean: instance, field: "numRecordsDigitised")} <g:message code="public.show.rt.des03" />).
                         </g:if>
                       </p>
                     </g:if>
                     <g:if test="${biocacheRecordsAvailable}">
-                      <p><span id="numBiocacheRecords">Looking up... the number of records that</span> can be accessed through the Atlas of Living Australia.</p>
+                      <p><span id="numBiocacheRecords"><g:message code="public.show.rt.des04" /></span> <g:message code="public.show.rt.des05" />.</p>
                       <cl:warnIfInexactMapping collection="${instance}"/>
                       <cl:recordsLink entity="${instance}">
-                      Click to view all records for the <cl:collectionName name="${instance.name}"/></cl:recordsLink>
+                      <g:message code="public.show.rt.des06" /> <cl:collectionName name="${instance.name}"/></cl:recordsLink>
                     </g:if>
                     <g:else>
-                      <p>No database records for this collection can be accessed through the Atlas of Living Australia.</p>
+                      <p><g:message code="public.show.rt.des07" />.</p>
                     </g:else>
                     <g:if test="${biocacheRecordsAvailable}">
                         <div style="clear:both;"></div>
                           <div id="collectionRecordsMapContainer">
-                              <h3>Map of occurrence records</h3>
+                              <h3><g:message code="public.show.crmc.title" /></h3>
                               <cl:recordsMapDirect uid="${instance.uid}"/>
                           </div>
                           <div id="charts"></div>
@@ -292,7 +289,7 @@
                         <div class="progress">
                           <div id="progressBar" class="bar bar-success" style="width: 0%;"></div>
                         </div>
-                        <p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>
+                        <p class="caption"><span id="speedoCaption"><g:message code="public.show.speedocaption" />.</span></p>
                     </div>
                   </div>
               </div>
@@ -311,7 +308,7 @@
                    }
                    #imagesList .imgCon img { max-height:150px; }
                </style>
-               <h2>Images from this collection</h2>
+               <h2><g:message code="public.show.it.title" /></h2>
                <div id="imagesSpiel">
                </div>
                <div id="imagesList">

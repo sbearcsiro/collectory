@@ -10,7 +10,7 @@
         <r:require modules="fileupload"/>
     </head>
     <body>
-        <h1>Upload data file for:
+        <h1><g:message code="dataresource.upload.title" />:
             <g:link controller="dataResource" action="show" id="${instance.uid}">
             ${fieldValue(bean: instance, field: "name")}
             <cl:valueOrOtherwise value="${instance.acronym}"> (${fieldValue(bean: instance, field: "acronym")})</cl:valueOrOtherwise>
@@ -18,7 +18,7 @@
         </h1>
 
         <div class="well pull-right span6">
-            You can use this to upload a file.
+            <g:message code="dataresource.upload.des" />.
         </div>
 
         <g:uploadForm action="uploadDataFile" controller="dataResource">
@@ -26,10 +26,10 @@
             <g:hiddenField name="id" value="${instance.uid}"/>
 
             <!-- drag and drop file uploads -->
-            <label for="protocol">Protocol:</label>
+            <label for="protocol"><g:message code="dataresource.upload.label.protocol" />:</label>
             <g:select id="protocol" name="protocol" from="${connectionProfiles}" value="protocol" optionValue="display" optionKey="name"/>
 
-            <label for="fileToUpload">File:</label>
+            <label for="fileToUpload"><g:message code="dataresource.upload.label.file" />:</label>
 
             <div class="fileupload fileupload-new" data-provides="fileupload">
               <div class="input-append">
@@ -38,8 +38,8 @@
                   <span class="fileupload-preview"></span>
                 </div>
                 <span class="btn btn-file">
-                  <span class="fileupload-new">Select file</span>
-                  <span class="fileupload-exists">Change</span>
+                  <span class="fileupload-new"><g:message code="dataresource.upload.label.selectfile" /></span>
+                  <span class="fileupload-exists"><g:message code="dataresource.upload.label.change" /></span>
                   <input type="file" name="myFile" />
                 </span>
                 <a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
@@ -52,7 +52,7 @@
 
             <div style="clear:both">
               <input type="submit" id="fileToUpload" class="btn fileupload-exists btn-primary" value="Upload"/>
-              <span class="btn cancel">Cancel</span>
+              <span class="btn cancel"><g:message code="dataresource.upload.label.cancel" /></span>
             </div>
           </div>
         </g:uploadForm>

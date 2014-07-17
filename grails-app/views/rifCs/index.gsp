@@ -32,7 +32,7 @@
             <originatingSource>${resource.dataProvider.name}</originatingSource>
             </g:if>
             <g:else>
-            <originatingSource>Atlas of Living Australia</originatingSource>
+            <originatingSource><g:message code="rifcs.index.title" /></originatingSource>
             </g:else>
             <collection type="dataset">
                 <identifier type="local">ala.org.au/${resource.uid}</identifier>
@@ -51,7 +51,7 @@
                 <relatedInfo type="website">
                     <identifier type="uri">${resource.websiteUrl}</identifier>
                     <g:if test="${resource.dataProvider}">
-                    <title>See this Collection on the website of ${resource.dataProvider.name}</title>
+                    <title><g:message code="rifcs.index.title01" /> ${resource.dataProvider.name}</title>
                     </g:if>
                 </relatedInfo>
                 </g:if>

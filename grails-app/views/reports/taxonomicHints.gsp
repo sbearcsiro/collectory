@@ -3,17 +3,17 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
-        <title>Registry database reports</title>
+        <title><g:message code="reports.title" /></title>
     </head>
     <body>
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">
-            <h1>Collection taxonomic hints (used to constrain name matching)</h1>
+            <h1><g:message code="reports.th.title01" /></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
             </g:if>
@@ -21,7 +21,7 @@
               <table class="table table-striped table-bordered">
                 <col width="55%"/><col width ="5%"/><col width="40%"/>
 
-                <tr class="reportGroupTitle"><th>Collection</th><th>Acronym</th><th>Taxonomic hint</th></tr>
+                <tr class="reportGroupTitle"><th><g:message code="reports.th.th01" /></th><th><g:message code="reports.th.th02" /></th><th><g:message code="reports.th.th03" /></th></tr>
                 <g:each var='c' in="${collections}" status="i">
                   <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                     <td>

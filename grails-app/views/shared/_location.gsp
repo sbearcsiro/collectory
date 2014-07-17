@@ -1,6 +1,6 @@
 <!-- location -->
 <div class="show-section well">
-  <h2>Location</h2>
+  <h2><g:message code="shared.location.title01" /></h2>
   <table>
     <colgroup><col width="10%"/><col width="45%"/><col width="45%"/></colgroup>
     <!-- Address -->

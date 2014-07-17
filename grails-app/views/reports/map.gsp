@@ -4,14 +4,14 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="layout" content="${grailsApplication.config.ala.skin}" />
         <!--meta name="viewport" content="initial-scale=1.0, user-scalable=no" /-->
-        <title>Registry database reports</title>
+        <title><g:message code="reports.title" /></title>
         <!--script type="text/javascript" src="http://maps.google.com/maps/api/js?v=3.3&sensor=false"></script-->
     </head>
     <body onload="initialize()">
         <div class="nav">
             <ul>
             <li><span class="menuButton"><cl:homeLink/></span></li>
-            <li><span class="menuButton"><g:link class="list" action="list">Reports</g:link></span></li>
+            <li><span class="menuButton"><g:link class="list" action="list"><g:message code="reports.li.reports" /></g:link></span></li>
             </ul>
         </div>
         <div class="body">

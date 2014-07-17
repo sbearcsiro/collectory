@@ -37,7 +37,7 @@
         <!-- BCI -->
         <tr class="prop">
           <td valign="top" class="name">
-            <label for="BCI">Include BCI attribution</label>
+            <label for="BCI"><g:message code="shared.attributes.label01" /></label>
           </td>
           <td valign="top" class="value">
             <g:checkBox name="BCI" value="${BCI}"/>
@@ -49,7 +49,7 @@
         <!-- CHAH -->
         <tr class="prop">
           <td valign="top" class="name">
-            <label for="CHAH">Include CHAH attribution</label>
+            <label for="CHAH"><g:message code="shared.attributes.label02" /></label>
           </td>
           <td valign="top" class="value">
             <g:checkBox name="CHAH" value="${CHAH}"/>
@@ -61,7 +61,7 @@
         <!-- CHACM -->
         <tr class="prop">
           <td valign="top" class="name">
-            <label for="CHACM">Include CHACM attribution</label>
+            <label for="CHACM"><g:message code="shared.attributes.label03" /></label>
           </td>
           <td valign="top" class="value">
             <g:checkBox name="CHACM" value="${CHACM}"/>
@@ -73,7 +73,7 @@
         <!-- institution -->
         <tr class="prop">
           <td valign="top" class="name">
-            <label for="institution">Include institution attribution</label>
+            <label for="institution"><g:message code="shared.attributes.label04" /></label>
           </td>
           <td valign="top" class="value">
             <g:checkBox disabled="true" name="institution" value="${true}"/>

@@ -50,13 +50,13 @@
       <cl:partner test="${instance.institution?.isALAPartner}"/><br/>
 
       <!-- GUID    -->
-      <p><span class="category">LSID:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
+      <p><span class="category"><g:message code="collection.show.span.lsid" />:</span> <cl:guid target="_blank" guid='${fieldValue(bean: instance, field: "guid")}'/></p>
 
       <!-- UID    -->
-      <p><span class="category">UID:</span> ${fieldValue(bean: instance, field: "uid")}</p>
+      <p><span class="category"><g:message code="collection.show.span.uid" />:</span> ${fieldValue(bean: instance, field: "uid")}</p>
 
       <!-- Web site -->
-      <p><span class="category">Collection website:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
+      <p><span class="category"><g:message code="collection.show.span.cw" />:</span> <cl:externalLink href="${fieldValue(bean:instance, field:'websiteUrl')}"/></p>
 
       <!-- Networks -->
       <g:if test="${instance.networkMembership}">
@@ -77,45 +77,44 @@
     <!-- collection description -->
     <div class="show-section well">
       <!-- Pub Desc -->
-      <h2>Description</h2>
+      <h2><g:message code="collection.show.title.description" /></h2>
 
-      <span class="category">Public description</span><br/>
+      <span class="category"><g:message code="collection.show.span04" /></span><br/>
       <cl:formattedText body="${instance.pubDescription}"/>
 
       <!-- Tech Desc -->
-      <span class="category">Technical description</span><br/>
+      <span class="category"><g:message code="collection.show.span05" /></span><br/>
       <cl:formattedText body="${instance.techDescription}"/>
-      <span class="category">Start/End dates</span>
+      <span class="category"><g:message code="collection.show.span06" /></span>
       <g:if test="${instance.startDate || instance.endDate}">
           <p><cl:temporalSpanText start='${fieldValue(bean: instance, field: "startDate")}' end='${fieldValue(bean: instance, field: "endDate")}'/></p>
       </g:if>
       
       <!-- Collection types -->
-      <p><span class="category">Collection types include:</span>
+      <p><span class="category"><g:message code="collection.show.span07" />:</span>
       <cl:JSONListAsStrings json='${instance.collectionType}'/>.</p>
 
       <!-- Active -->
-      <p><span class="category">Activity status is:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
+      <p><span class="category"><g:message code="collection.show.span08" />:</span> <cl:valueOrOtherwise value="${instance.active}" otherwise="unknown"/>.</p>
 
       <!-- Keywords -->
-      <p><span class="category">Keywords:</span> are not directly displayed but are used for searching and filtering.
-        These keywords have been added for this collection: <cl:valueOrOtherwise value="${instance.listKeywords().join(', ')}" otherwise="none"/>.
+      <p><span class="category"><g:message code="collection.show.span09" />:</span> <g:message code="collection.show.des01" />: <cl:valueOrOtherwise value="${instance.listKeywords().join(', ')}" otherwise="none"/>.
         <g:if test="${!instance.listKeywords().contains('fauna')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']">Add fauna</g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'fauna']"><g:message code="collection.show.link.addfauna" /></g:link>)
         </g:if>
         <g:if test="${!instance.listKeywords().contains('plants')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'plants']">Add plants</g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'plants']"><g:message code="collection.show.link.addplants" /></g:link>)
         </g:if>
         <g:if test="${!instance.listKeywords().contains('entomology')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'entomology']">Add entomology</g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'entomology']"><g:message code="collection.show.link.addentomology" /></g:link>)
         </g:if>
         <g:if test="${!instance.listKeywords().contains('microbes')}">
-          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'microbes']">Add microbes</g:link>)
+          (<g:link action="addKeyword" id="${instance.id}" params="[keyword:'microbes']"><g:message code="collection.show.link.addmicrobes" /></g:link>)
         </g:if>
       </p>
 
       <!-- sub collections -->
-      <h2>Sub-collections</h2>
+      <h2><g:message code="collection.show.title.subcollections" /></h2>
       <cl:subCollectionList list="${instance.subCollections}"/>
 
       <cl:editButton uid="${instance.uid}" page="description"/>
@@ -129,7 +128,7 @@
 
     <!-- collection scope -->
     <div class="show-section well">
-      <h2>Geographic range</h2>
+      <h2><g:message code="collection.show.title.gr" /></h2>
       <table>
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Geo descrip -->
@@ -146,20 +145,20 @@
 
         <!-- Extent -->
         <tr class="prop">
-          <td valign="top" class="category">Specimens were collected<br/> within these bounds</td>
+          <td valign="top" class="category"><g:message code="collection.show.coordinate.des01" /><br/> <g:message code="collection.show.coordinate.des02" /></td>
           <td valign="top" class="value">
             <table class="table table-bordered">
               <colgroup><col width="30%"/><col width="40%"/><col width="30%"/></colgroup>
-              <tr><td></td><td>North: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></td><td></td></tr>
-              <tr><td>West: <cl:showDecimal value='${instance.westCoordinate}' degree='true'/></td>
+              <tr><td></td><td><g:message code="collection.show.coordinate.des03" />: <cl:showDecimal value='${instance.northCoordinate}' degree='true'/></td><td></td></tr>
+              <tr><td><g:message code="collection.show.coordinate.des04" />: <cl:showDecimal value='${instance.westCoordinate}' degree='true'/></td>
               <td></td>
-              <td>East: <cl:showDecimal value='${instance.eastCoordinate}' degree='true'/></td></tr>
-              <tr><td></td><td>South: <cl:showDecimal value='${instance.southCoordinate}' degree='true'/></td><td></td></tr>
+              <td><g:message code="collection.show.coordinate.des05" />: <cl:showDecimal value='${instance.eastCoordinate}' degree='true'/></td></tr>
+              <tr><td></td><td><g:message code="collection.show.coordinate.des06" />: <cl:showDecimal value='${instance.southCoordinate}' degree='true'/></td><td></td></tr>
             </table>
           </td>
         </tr>
       </table>
-      <h2>Taxonomic range</h2>
+      <h2><g:message code="collection.show.title.tr" /></h2>
       <table>
         <colgroup><col width="25%"/><col width="75%"/></colgroup>
         <!-- Focus   -->
@@ -182,14 +181,14 @@
       </table>
 
       <!-- estimate of records -->
-      <h2 style="padding-top:10px;">Number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> in the collection</h2>
+      <h2 style="padding-top:10px;"><g:message code="collection.show.title.numberof" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.title.inthecollection" /></h2>
       <g:if test="${fieldValue(bean: instance, field: 'numRecords') != '-1'}">
-        <p>The estimated number of <cl:nounForTypes types="${instance.listCollectionTypes()}"/> within <cl:collectionName prefix="the " name="${instance.name}"/> is ${fieldValue(bean: instance, field: "numRecords")}.</p>
+        <p><g:message code="collection.show.des07" /> <cl:nounForTypes types="${instance.listCollectionTypes()}"/> <g:message code="collection.show.des08" /> <cl:collectionName prefix="the " name="${instance.name}"/> <g:message code="collection.show.des09" /> ${fieldValue(bean: instance, field: "numRecords")}.</p>
       </g:if>
 
       <g:if test="${fieldValue(bean: instance, field: 'numRecordsDigitised') != '-1'}">
-        <p>Of these ${fieldValue(bean: instance, field: "numRecordsDigitised")} are digitised.
-        This represents <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> of the collection.</p>
+        <p><g:message code="collection.show.des10" args="[fieldValue(bean: instance, field: "numRecordsDigitised")]" />.
+        <g:message code="collection.show.des11" /> <cl:percentIfKnown dividend='${instance.numRecordsDigitised}' divisor='${instance.numRecords}' /> <g:message code="collection.show.des12" />.</p>
       </g:if>
 
       %{--<!-- actual biocache records -->--}%
@@ -206,7 +205,7 @@
         %{--<p class="caption"><span id="speedoCaption">No records are available for viewing in the Atlas.</span></p>--}%
       %{--</div>--}%
 
-      <p style="margin-top:20px;">The mapping of records to this collection is based on the provider codes shown in the 'Provider codes' section.</p>
+      <p style="margin-top:20px;"><g:message code="collection.show.des13" />.</p>
       <cl:warnIfInexactMapping collection="${instance}"/>
 
       <cl:editButton uid="${instance.uid}" page="range"/>
@@ -217,16 +216,16 @@
 
     <!-- Provider codes -->
     <div class="show-section well">
-      <h2>Provider codes</h2>
-      <p>These codes control the mapping of online records to this collection.</p>
-      <p>Institution codes: ${instance.getListOfInstitutionCodesForLookup().join(", ")}</p>
-      <p>Collection codes: ${instance.getListOfCollectionCodesForLookup().join(", ")}</p>
+      <h2><g:message code="collection.show.title.providercodes" /></h2>
+      <p><g:message code="collection.show.des14" />.</p>
+      <p><g:message code="collection.show.des15" />: ${instance.getListOfInstitutionCodesForLookup().join(", ")}</p>
+      <p><g:message code="collection.show.des16" />: ${instance.getListOfCollectionCodesForLookup().join(", ")}</p>
       <g:if test="${instance.providerMap}">
         <g:if test="${instance.providerMap?.matchAnyCollectionCode || !instance.providerMap?.exact}">
           <p>
-            <cl:valueOrOtherwise value="${instance.providerMap?.matchAnyCollectionCode}">Will match any collection code. </cl:valueOrOtherwise>
-            <cl:valueOrOtherwise value="${!instance.providerMap?.exact}">Codes do not map exactly to this collection. </cl:valueOrOtherwise>
-            <cl:valueOrOtherwise value="${instance.providerMap?.warning}">Warning is: ${instance.providerMap?.warning}</cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${instance.providerMap?.matchAnyCollectionCode}"><g:message code="collection.show.des17" />. </cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${!instance.providerMap?.exact}"><g:message code="collection.show.des18" />. </cl:valueOrOtherwise>
+            <cl:valueOrOtherwise value="${instance.providerMap?.warning}"><g:message code="collection.show.des19" />: ${instance.providerMap?.warning}</cl:valueOrOtherwise>
           </p>
         </g:if>
         <cl:editButton uid="${instance.uid}" id="${instance.providerMap?.id}" controller="providerMap" action="show" returnTo="${instance.uid}"/>

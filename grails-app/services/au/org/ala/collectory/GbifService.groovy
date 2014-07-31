@@ -1,5 +1,7 @@
 package au.org.ala.collectory
 
+import com.google.common.collect.Iterables
+import com.google.common.collect.Sets
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
@@ -8,6 +10,7 @@ import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
+import org.apache.commons.lang.StringUtils
 import org.apache.http.HttpException
 import org.apache.http.HttpRequest
 import org.apache.http.HttpRequestInterceptor
@@ -49,8 +52,11 @@ class GbifService {
     static final String OCCURRENCE_DOWNLOAD = "/occurrence/download/request" //POST request to this to start download //GET request to retrieve download
     static final String DOWNLOAD_STATUS = "/occurrence/download/" //GET request to this
     static final String DATASET_SEARCH = "/dataset/search?publishingCountry={0}&type=OCCURRENCE" //GET request to this
+    static final String ORGANISATION_GET = '/organization/'
+    static final String GBIF_KEY_URN_PREFIX = 'urn:x-gbif-key:'
 
     def crudService
+    def messageSource
     def CONCURRENT_LOADS = 10
     def pool = Executors.newFixedThreadPool(CONCURRENT_LOADS)
     def loading = false
@@ -112,52 +118,60 @@ class GbifService {
                 pool.submit(new Runnable(){
                     public void run(){
                         def defer = { c -> pool.submit(c as Callable) }
+                        //defer &loadInstitutions(orgs.collect { gbifOrgUrl(it) } )
+                        //final urls = orgs.collect { gbifOrgUrl(it) }.toSet()
+                        def guidToInstId = loadInstitutions(gls.loads)
                         gls.loads.each { l ->
                             defer {
-                                log.debug("Submitting " + l + " to be processed")
-                                //1) Start the download
-                                String downloadId = startGBIFDownload(l.gbifResourceUid,username, null, password)
-                                if(downloadId){
-                                    l.downloadId = downloadId
-                                    //2) Monitor the download
-                                    l.phase = "Generating Download..."
-                                    String status = ""
-                                    while (!stopStatus.contains(status)){
-                                        //sleep for 30 seconds between checks.
-                                        Thread.sleep(3000)
-                                        status = getDownloadStatus(l.downloadId, username, password)
-                                    }
-                                    log.debug("Download status: " + status)
-                                    //3) if the status was "SUCCEEDED" then starts the download
-                                    if(status == "SUCCEEDED"){
-                                        l.phase = "Downloading..."
-                                        File localTmpDir = new File(grailsApplication.config.uploadFilePath + File.separator + "tmp" + File.separator + l.downloadId)
-                                        FileUtils.forceMkdir(localTmpDir)
-                                        String tmpFileName = localTmpDir.getAbsolutePath()+File.separator+ l.downloadId
-                                        IOUtils.copy(new URL(grailsApplication.config.gbifApiUrl + OCCURRENCE_DOWNLOAD + "/" + l.downloadId + ".zip").openStream(), new FileOutputStream(tmpFileName))
-                                        //4) Now create the data resource using the file downloaded
-                                        l.phase = "Creating GBIF Data resource..."
-                                        def dr = createGBIFResource(new File(tmpFileName))
-                                        if(dr){
-                                            l.dataResourceUid = dr.uid
-                                            l.phase = "Data Resource Created"
+                                try {
+                                    log.debug("Submitting " + l + " to be processed")
+                                    //1) Start the download
+                                    String downloadId = startGBIFDownload(l.gbifResourceUid, username, null, password)
+                                    if (downloadId) {
+                                        l.downloadId = downloadId
+                                        //2) Monitor the download
+                                        l.phase = "Generating Download..."
+                                        String status = ""
+                                        while (!stopStatus.contains(status)) {
+                                            //sleep for 30 seconds between checks.
+                                            Thread.sleep(3000)
+                                            status = getDownloadStatus(l.downloadId, username, password)
+                                        }
+                                        log.debug("Download status: " + status)
+                                        //3) if the status was "SUCCEEDED" then starts the download
+                                        if (status == "SUCCEEDED") {
+                                            l.phase = "Downloading..."
+                                            File localTmpDir = new File(grailsApplication.config.uploadFilePath + File.separator + "tmp" + File.separator + l.downloadId)
+                                            FileUtils.forceMkdir(localTmpDir)
+                                            String tmpFileName = localTmpDir.getAbsolutePath() + File.separator + l.downloadId
+                                            download(l, tmpFileName, 3)
+                                            //4) Now create the data resource using the file downloaded
+                                            l.phase = "Creating GBIF Data resource..."
+                                            final instId = guidToInstId[l.publishOrganisationUid ?: l.hostOrganisationUid]
+                                            def dr = createGBIFResource(new File(tmpFileName), instId)
+                                            if (dr) {
+                                                l.dataResourceUid = dr.uid
+                                                l.phase = "Data Resource Created"
+                                            }
+                                        } else {
+                                            l.phase = "Download Failed: " + status
+                                        }
+                                        //Thread.sleep(5000)
+                                        l.setLoaded()
+                                        //l.dataResourceUid="dr123"
+                                        //check to see if all the items have finished loading
+                                        log.debug("IS LOAD STILL RUNNING: " + gls.isLoadRunning())
+                                        loading = gls.isLoadRunning()
+                                        if (!loading) {
+                                            gls.finishTime = new Date()
                                         }
                                     } else {
-                                        l.phase = "Download Failed: " + status
+                                        l.phase = "Failed. Please check your authentication credentials are valid."
+                                        loading = false
+                                        return null
                                     }
-                                    //Thread.sleep(5000)
-                                    l.setLoaded()
-                                    //l.dataResourceUid="dr123"
-                                    //check to see if all the items have finished loading
-                                    log.debug("IS LOAD STILL RUNNING: " + gls.isLoadRunning())
-                                    loading = gls.isLoadRunning()
-                                    if(!loading){
-                                        gls.finishTime = new Date()
-                                    }
-                                } else {
-                                    l.phase = "Failed. Please check your authentication credentials are valid."
-                                    loading = false
-                                    return null
+                                } catch (Throwable t) {
+                                    log.error(t)
                                 }
                             }
                         }
@@ -169,6 +183,150 @@ class GbifService {
                 return gls
             }
         }
+    }
+
+    /**
+     * Download from GBIF occurence download api into tmpFileName, retrying up to retries times, sleeping 3s between
+     * retries.
+     *
+     * @param l The GBIFActiveLoad for this download
+     * @param tmpFileName The file path to save the download to
+     * @param retries The number of retries
+     * @return The number of bytes written
+     */
+    private def download(l, tmpFileName, retries) {
+        try {
+            return IOUtils.copy(new URL(grailsApplication.config.gbifApiUrl + OCCURRENCE_DOWNLOAD + "/" + l.downloadId + ".zip").openStream(), new FileOutputStream(tmpFileName))
+        } catch (IOException e) {
+            if (retries < 1) {
+                log.verbose("Download failed, sleeping 3s and then retrying", e)
+                Thread.sleep(3000)
+                return download(l, tmpFileName, retries - 1)
+            } else {
+                log.error("Download ${l} to ${tmpFileName} failed", e)
+                return -1
+            }
+        }
+    }
+
+    /**
+     * Get the URL to get GBIF organisation data for the specified uuid
+     * @param uuid The GBIF organisation uuid to get data for
+     * @return The url for the uuid
+     */
+    String gbifOrgUrl(String uuid) {
+        grailsApplication.config.gbifApiUrl + ORGANISATION_GET + uuid
+    }
+
+    /**
+     * Get the internal urn that indicates an org uuid comes from gbif
+     * @param uuid The uuid to get the urn for
+     * @return The internal urn for the uuid
+     */
+    String gbifOrgUrn(String uuid) {
+        GBIF_KEY_URN_PREFIX + uuid
+    }
+
+    /**
+     * Convert a urn back into a gbif uuid
+     * @param urn The urn
+     * @return The uuid
+     */
+    String deGbifOrgUrn(String urn) {
+        urn.replace(GBIF_KEY_URN_PREFIX, '')
+    }
+
+    /**
+     * Get the gbif organisation url for an internal urn
+     * @param urn The urn
+     * @return The GBIF url
+     */
+    String gbifOrgUrnToUrl(String urn) {
+        gbifOrgUrl(deGbifOrgUrn(urn))
+    }
+
+    /**
+     * Get and persist the info for all institutions in the load list.
+     * @param loadList The load list
+     * @return A map of gbif org key to internal db id
+     */
+    private def loadInstitutions(List loadList) {
+        final orgGuids = loadList.collect { l -> [l.hostOrganisationUid, l.publishOrganisationUid] }.flatten().toSet()
+
+        log.debug("Loading up to ${Iterables.size(orgGuids)} institutions")
+        def urns = orgGuids.collect { gbifOrgUrn(it) }.toSet()
+        def existing = Institution.byGuid(urns).list()
+        def keyToInstId = existing.collectEntries { ["${deGbifOrgUrn(it.guid)}" : it.id] }
+        log.debug("Found ${existing.size()} existing institutions")
+        def news = Sets.difference(urns, existing.collect({ it.guid }).toSet())
+        log.debug("Loading ${news.size()} new institutions")
+        //news.each { urn ->
+        for (String urn : news) {
+            final url = gbifOrgUrnToUrl(urn)
+            log.debug("Loading $urn from $url")
+            final inst = loadInstitution(url)
+            if (!inst.hasErrors()) {
+                keyToInstId.put(deGbifOrgUrn(inst.guid), inst.id)
+            }
+        }
+        return keyToInstId
+    }
+
+    /**
+     * Persist the GBIF organisation from url into an institution
+     * @param url The url to get
+     * @return The Institution
+     */
+    private def loadInstitution(String url) {
+        final gbifOrg = getJSONWS(url)
+        log.debug("Got org details: ${gbifOrg}")
+        final instObj = convertGbifInstitution(gbifOrg)
+        log.debug("Converted to ${instObj}")
+        final inst = crudService.insertInstitution(instObj)
+        if (inst.hasErrors()) {
+            log.warn("Errors found while trying to save ${inst}:\n${getErrors(inst)}")
+        }
+        return inst
+    }
+
+    /**
+     * Naively extract the filename from a URL or use the given key if no filename is found
+     * @param url The url
+     * @param key The default value
+     * @return The filename
+     */
+    private static def filename(url, key) {
+        StringUtils.substringAfterLast(url.toURL().getPath(), '/') ?: key
+    }
+
+    /**
+     * Convert a gbif org into an institution
+     * @param gbifOrg The gbif org to convert as a json object
+     * @return A JSONObject suitable for crudService.insertInstitution
+     */
+    private def convertGbifInstitution(gbifOrg) {
+        final obj = new net.sf.json.JSONObject()
+        obj.putAll([
+            "guid": gbifOrgUrn(gbifOrg.key),
+            "name": gbifOrg.title,
+            "pubDescription": StringUtils.abbreviate(gbifOrg.description, 255), // TODO Get length from domain constraint
+            "latitude" : gbifOrg.latitude ?: ProviderGroup.NO_INFO_AVAILABLE,
+            "longitude" : gbifOrg.longitude ?: ProviderGroup.NO_INFO_AVAILABLE,
+            "address" : [
+                    "street": gbifOrg?.address?.join("\n"),
+                    "city": gbifOrg.city,
+                    "country": gbifOrg.country,
+                    "postcode": gbifOrg.postalCode
+            ],
+            "phone" : gbifOrg.phone ? gbifOrg.phone[0] : null,
+            //"email" : "",
+            "websiteUrl" : gbifOrg.homepage ? gbifOrg.homepage[0] : null,
+            "logoRef" : gbifOrg.logoUrl ? [
+                    "file": filename(gbifOrg.logoUrl, gbifOrg.key),
+                    "uri": gbifOrg.logoUrl
+            ] : null
+        ])
+        return obj
     }
 
     /**
@@ -198,6 +356,8 @@ class GbifService {
                 pageObject.get("results").each {result ->
                     GBIFActiveLoad gal = new GBIFActiveLoad()
                     gal.gbifResourceUid = result.getString("key")
+                    gal.hostOrganisationUid = result.getString("hostingOrganizationKey")
+                    gal.publishOrganisationUid = result.getString("publishingOrganizationKey")
                     gal.name = result.getString("title")
                     list << gal
                     i += 1
@@ -238,7 +398,7 @@ class GbifService {
      * @param uploadedFile
      * @return
      */
-    def createGBIFResource(File uploadedFile){
+    def createGBIFResource(File uploadedFile, Long institutionId){
         //1) Extract the ZIP file
         //2) Extract the JSON for the data resource to create
         def json = extractDataResourceJSON(new ZipFile(uploadedFile), uploadedFile.getParentFile());
@@ -259,7 +419,7 @@ class GbifService {
         IOUtils.copy(new FileInputStream(uploadedFile), new FileOutputStream(zipFileName))
         log.debug("Created the zip file " + zipFileName)
         //6) Upload the DwCA for the resource to the created data resource
-        applyDwCA(new File(zipFileName), dr)
+        applyDwCA(new File(zipFileName), dr, institutionId)
         return dr
     }
 
@@ -269,7 +429,7 @@ class GbifService {
      * @param dr  The data resource to apply the supplied archive to
      * @return
      */
-    def applyDwCA(File file, DataResource dr){
+    def applyDwCA(File file, DataResource dr, Long institutionId){
         try {
             log.debug("Copying DwCA to staging and associated the file to the data resource")
             def fileId = System.currentTimeMillis()
@@ -285,6 +445,9 @@ class GbifService {
             connParams.termsForUniqueKey=["gbifID"]
             //NQ we need a transaction so the this can be executed in a multi-threaded manner.
             DataResource.withTransaction {
+                if (institutionId) {
+                    dr.institution = Institution.get(institutionId)
+                }
                 dr.connectionParameters = (new JsonOutput()).toJson(connParams)
                 log.debug("Finished creating the connection params for " + dr.getUid())
                 dr.save(flush:true)
@@ -573,5 +736,16 @@ class GbifService {
             }
         }, 0); // 0 = first, and you really want to be first.
         http
+    }
+
+    private def getErrors(obj) {
+        def locale = Locale.default
+        def stringsByField = [:].withDefault { [] }
+        for (fieldErrors in obj.errors) {
+            for (error in fieldErrors.allErrors) {
+                stringsByField[error.field] << messageSource.getMessage(error, locale)
+            }
+        }
+        stringsByField
     }
 }

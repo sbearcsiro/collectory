@@ -28,6 +28,8 @@ class GBIFActiveLoad {
     String name
     String phase="<NOT STARTED>"
     String dataResourceUid
+    String hostOrganisationUid
+    String publishOrganisationUid
     private boolean loaded=false
     public void setLoaded(){
         loaded =true

@@ -28,6 +28,7 @@ grails.project.dependency.resolution = {
 	    runtime 'ant:ant:1.6.5'
         runtime 'commons-httpclient:commons-httpclient:3.1'
         runtime 'org.aspectj:aspectjweaver:1.6.6'
+        compile 'com.google.guava:guava:17.0'
     }
 
     plugins {

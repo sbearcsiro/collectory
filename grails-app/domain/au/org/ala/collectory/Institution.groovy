@@ -16,6 +16,12 @@ class Institution extends ProviderGroup {
     // an institution may have many collections
     static hasMany = [collections: Collection]
 
+    static namedQueries = {
+        byGuid { guids ->
+            'in' ("guid", guids)
+        }
+    }
+
     static constraints = {
         // based on TDWG Ontology - http://code.google.com/p/tdwg-ontology/source/browse/trunk/ontology/voc/InstitutionType.rdf
         institutionType(nullable:true, maxSize:45,

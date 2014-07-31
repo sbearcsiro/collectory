@@ -198,13 +198,13 @@ class GbifService {
         try {
             return IOUtils.copy(new URL(grailsApplication.config.gbifApiUrl + OCCURRENCE_DOWNLOAD + "/" + l.downloadId + ".zip").openStream(), new FileOutputStream(tmpFileName))
         } catch (IOException e) {
-            if (retries < 1) {
+            if (retries > 0) {
                 log.verbose("Download failed, sleeping 3s and then retrying", e)
                 Thread.sleep(3000)
                 return download(l, tmpFileName, retries - 1)
             } else {
                 log.error("Download ${l} to ${tmpFileName} failed", e)
-                return -1
+                throw e
             }
         }
     }
